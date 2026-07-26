@@ -30,7 +30,7 @@ fi
 # 2. Banned names: client/collaborator/project-specific terms must never
 #    appear in pack content. Word-boundary, case-insensitive.
 BANNED='bajaj|finalyca|satyajit|neil|nuv|rm_assist|rm-assist|rm-research|canara|robeco|nutriscan|triage_ai'
-if hits="$(grep -riEnw "$BANNED" skills/ templates/ CONDUCT.md README.md AGENTS.md PLAN.md JOURNAL.md 2>/dev/null)"; then
+if hits="$(grep -riEnw "$BANNED" skills/ templates/ docs/ CONDUCT.md README.md AGENTS.md PLAN.md JOURNAL.md 2>/dev/null)"; then
   echo "FAIL banned names:"
   printf '%s\n' "$hits"
   fail=1
