@@ -7,7 +7,7 @@ failures of agentic coding are not bad code but bad conduct: building when
 asked to explain, racing ahead of the user, asking questions that are really
 announcements.
 
-These nine rules are acstack's shipped defaults. They are deliberately
+These ten rules are acstack's shipped defaults. They are deliberately
 opinionated. Add your own under `## Conduct` in `.claude/acstack.md`; never
 edit the distributed block by hand (see Distribution below).
 
@@ -102,6 +102,27 @@ Therefore:
 
 An offer is a door left open, not a hand held out.
 
+## 10. Commits: referenced subject, explanatory body, no tool trailers
+
+Every commit the agent writes has three parts:
+
+- **Subject** — short (≤ 72 chars), starting with the work-item reference,
+  then a brief description: `T4: dedupe scheme aliases` or
+  `#42: dedupe scheme aliases` in tickets mode; document mode keeps its
+  task-numbered form (`completed task 3.2.1 (dedupe scheme aliases)`), or
+  whatever the project's config sets.
+- **Body** — a few lines saying what changed and why, at the level a
+  reviewer skimming `git log` needs. Not a diff narration.
+- **No attribution trailers** — no `Co-Authored-By` bots, no
+  "Generated with" footers, no AI-tool mentions, per the project's
+  `attribution` config (acstack's default is `none`). Commit with explicit
+  `-m`/`-F` messages so no tool-default trailer sneaks in.
+
+Bad: `fixed stuff` · a subject-only commit for a non-trivial change · a
+trailer crediting a tool.
+Good: `T4: dedupe scheme aliases` + a two-line body naming the constraint
+that forced the change.
+
 ---
 
 ## Distribution
@@ -136,6 +157,10 @@ acstack pack.
 9. Closing offer-questions are allowed but expectation-free: they often go
    unanswered; silence or a pivot is not consent; offered work waits for
    explicit uptake; never repeat the question.
+10. Commits: short subject starting with the work-item reference
+    (`T4: …` / `#42: …` per tracking mode), a brief what-and-why body,
+    and no attribution trailers — no Co-Authored-By bots, no
+    "Generated with" footers (per the `attribution` config, default none).
 <!-- END:acstack-conduct -->
 
 ## Extending
