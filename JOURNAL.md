@@ -18,7 +18,8 @@
 - 30 commits; working tree clean; `scripts/check.sh` all clean.
 - Conduct contract (10 rules) shipped in CONDUCT.md and embedded in this
   repo's AGENTS.md.
-- No GitHub remote yet — creation awaits an explicit go (PLAN.md open item).
+- Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
+  public flip waits on the wave-4 launch checklist.
 - Next: wave 3 (/qa, /secure, /ship, /retro, /learn, /design-audit,
   /doctor) — specs written at wave start, per the standing process.
 
@@ -155,7 +156,7 @@ JOURNAL.md so the self-hosting docs can't leak personal context either.
 
 | Item | Why | What unblocks it |
 |---|---|---|
-| GitHub remote | Repo is local-only; no backup, no collaborator access | Explicit go for `gh repo create` (private) |
+| ~~GitHub remote~~ | Resolved 2026-07-27: private `AaravChadha/acstack` created, `main` pushed and tracking | Done |
 | ~~Fresh-session check~~ | Resolved 2026-07-27: typed `/plan` in a fresh session and it engaged seed mode — loading works; user-only skills simply don't appear in the VS Code extension's subset autocomplete (CLI shows all) | Done |
 | Scratch repo deletion | `acstack-w2-shakedown` served its purpose, still up for inspection | `gh auth refresh -s delete_repo`, then `gh repo delete` |
 | Document-mode commit style | `completed task 3.2.1 (…)` vs terse `3.2.1: <desc>` | One-word decision |

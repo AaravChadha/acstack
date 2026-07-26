@@ -148,5 +148,7 @@ below fully green; repo flipped public.
   the tickets-mode shape. Owner: user.
 - [ ] **Browser probe timing (NEW 2026-07-27).** Playwright mode for /qa —
   wave 3 with http, or deferred until first real need. Owner: user.
-- [ ] **GitHub remote (NEW 2026-07-27).** Private `AaravChadha/acstack`
-  creation awaits explicit user go. Owner: user.
+- [x] **GitHub remote (NEW 2026-07-27).** ~~Private `AaravChadha/acstack`
+  creation awaits explicit user go.~~ **Verdict (2026-07-27):** created
+  private and pushed — `main` tracks `origin/main`, all 31 commits up.
+  Public flip stays gated on the wave-4 launch checklist (4.7).
