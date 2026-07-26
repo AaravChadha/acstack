@@ -82,12 +82,13 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 | Key | Values (default first) | Consumed by |
 |---|---|---|
 | `mode` | `standard` \| `hackathon` | /plan |
-| `tracking` | `document` \| `tickets` | /plan, /do |
+| `tracking` | `document` \| `tickets` | all tracking-aware skills |
 | `push` | `direct` \| `branch-pr` | /do |
 | `branch-prefix` | `feature/` | /do |
 | `db` | `shared-prod` \| `local` \| `none` | /migrate-check |
 | `attribution` | `none` \| `standard` | all skills |
 | `telemetry` | `on` \| `off` (local-only either way) | runtime (coming) |
+| `stale-days` | `30` (days; set in a `## triage` section) | /triage |
 | `subtask-commit-format` | `completed task <number> (<description>)` | /do |
 | `journal-commit-format` | `Journal <date>: <summary>` | /journal |
 

@@ -8,6 +8,9 @@
 > **Revised 2026-07-27:** invocation split changed after review — /challenge,
 > /plan-review, and /triage flipped to model-invocable (was: user-only), and
 > the disambiguation rule below was added. /eval-spec remains user-only.
+> **Revised 2026-07-27 (post-build review):** /challenge's verdict moved to
+> the report's first line and a scope element added — the original 2.1 shape
+> (verdict last) conflicted with the cross-cutting verdict-up-front stance.
 
 ## Cross-cutting
 
@@ -73,8 +76,12 @@ Report shape, in order:
   this breaks in week one, and whether the BRIEF accepts that).
 - **Forcing questions.** Numbered, each answerable in one sentence. These are
   questions for the user, not rhetorical devices.
-- **Verdict.** `proceed` / `narrow first` / `rethink` — one line of reason.
-  No middle mush.
+- **Verdict.** `proceed` / `narrow first` / `rethink` — one line of reason,
+  stated as the report's FIRST line (shared stance: verdict up front, the
+  sections as its evidence). No middle mush.
+- **Scope.** What was not interrogated, so the verdict's coverage is
+  honest. *(Both revised post-build; this shape originally put the verdict
+  last and had no scope element.)*
 
 Timing rule: /challenge is designed for the window between `/plan seed` and
 the BRIEF's committing. If the BRIEF is already frozen, outcomes land in

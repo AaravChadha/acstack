@@ -68,6 +68,8 @@ attempt; a fourth guess destroys more context than it could recover.
 
 ## Tickets mode (`tracking: tickets`)
 
+Preconditions per the pack rule — `gh` present and authenticated, GitHub
+remote exists; name exactly what's missing and fall back to document mode.
 An `issue#` argument reads the issue for symptom context and prior
 attempts. Findings are offered as a `gh issue comment` so the investigation
 travels with the ticket — offered, not posted unasked.

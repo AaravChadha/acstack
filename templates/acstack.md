@@ -44,3 +44,8 @@ context belongs — never inside the pack's skills.
 
 <!-- Per-skill overrides. Example:
 - backup-command: pg_dump "$DATABASE_URL" > backups/pre_$(date +%Y%m%d_%H%M%S).sql -->
+
+## triage
+
+<!-- Per-skill overrides. Example:
+- stale-days: 30              # days without activity before an item counts as stale -->

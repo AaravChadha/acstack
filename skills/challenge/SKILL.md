@@ -35,6 +35,12 @@ opinion trading, which is exactly what this skill exists to prevent.
 
 ## The report — in this order
 
+The report's FIRST line is the verdict — `proceed` / `narrow first` /
+`rethink`, with one line of reason — per the pack's shared report stance:
+verdict up front, evidence after. No middle mush; "proceed with caveats"
+is `narrow first` wearing a softer coat. The sections below are the
+evidence for it.
+
 ### 1. Premise attacks
 
 For each load-bearing premise in the BRIEF's Context: steelman it in one
@@ -60,7 +66,8 @@ numbers, not adjectives:
 - **Hours reality** — estimated build hours vs the hours the Context says
   exist. A 60-hour plan against 10 hours/week is a 6-week plan; say that.
 - **Blast radius** — what the first users experience if this breaks in
-  week one, and whether the BRIEF's stakes section accepts that exposure.
+  week one, and whether the BRIEF's Constraints and Context accept that
+  exposure.
 
 ### 4. Forcing questions
 
@@ -68,10 +75,10 @@ Numbered, each answerable in one sentence, each one the user must answer —
 not rhetorical devices. Draw from the question bank in the checklist
 reference where it fits the project type.
 
-### 5. Verdict
+### 5. Scope
 
-`proceed` / `narrow first` / `rethink` — one line of reason. No middle
-mush; "proceed with caveats" is `narrow first` wearing a softer coat.
+What was NOT interrogated — premises out of scope, reality checks that
+lacked the numbers to run — so the verdict's coverage is honest.
 
 ## Timing and where answers land
 
