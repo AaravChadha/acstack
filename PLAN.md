@@ -52,7 +52,7 @@ messy backlog; `/eval-spec` produces a golden-question spec before any code.
   attacks, narrower-wedge proposal, constraint reality checks).
 - [x] **2.2** /plan-review — engineering lock on PLAN.md: data-flow trace,
   failure modes, test matrix, hidden assumptions.
-- [ ] **2.3** /eval-spec — the eval is the spec: golden questions with
+- [x] **2.3** /eval-spec — the eval is the spec: golden questions with
   category minimums, refusal cases, grader, `acceptable_failure` discipline.
 - [x] **2.4** /investigate — no fixes without investigation; hypotheses vs
   evidence; stop after 3 failed fixes; reads known-bug-classes.
