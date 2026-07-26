@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# acstack setup — symlink the pack's skills into ~/.claude/skills.
+# Usage: ./setup [--uninstall] [--force] [--dry-run]
+#
+# Idempotent: re-running prints "ok" per skill and changes nothing.
+# Never deletes a real (non-symlink) file or directory, even with --force.
+set -euo pipefail
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILLS_SRC="$REPO_DIR/skills"
+SKILLS_DST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
+
+MODE="install"
+FORCE=0
+DRYRUN=0
+for arg in "$@"; do
+  case "$arg" in
+    --uninstall) MODE="uninstall" ;;
+    --force)     FORCE=1 ;;
+    --dry-run)   DRYRUN=1 ;;
+    -h|--help)   grep '^# ' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) echo "unknown option: $arg" >&2; exit 2 ;;
+  esac
+done
+
+run() { if [ "$DRYRUN" -eq 1 ]; then echo "  would: $*"; else "$@"; fi; }
+
+linked=0
+skipped=0
+removed=0
+
+if [ "$MODE" = "install" ]; then
+  [ -d "$SKILLS_SRC" ] || { echo "no skills/ directory at $SKILLS_SRC" >&2; exit 1; }
+  run mkdir -p "$SKILLS_DST"
+  for src in "$SKILLS_SRC"/*/; do
+    [ -d "$src" ] || continue
+    src="${src%/}"
+    name="$(basename "$src")"
+    dst="$SKILLS_DST/$name"
+    if [ -L "$dst" ]; then
+      target="$(readlink "$dst")"
+      if [ "$target" = "$src" ]; then
+        echo "ok      $name (already linked)"
+        linked=$((linked+1))
+      elif [ "$FORCE" -eq 1 ]; then
+        run rm "$dst"
+        run ln -s "$src" "$dst"
+        echo "relink  $name (was -> $target)"
+        linked=$((linked+1))
+      else
+        echo "skip    $name (symlink to $target; use --force to replace)"
+        skipped=$((skipped+1))
+      fi
+    elif [ -e "$dst" ]; then
+      echo "skip    $name (real file/dir at $dst — resolve manually; setup never deletes it)"
+      skipped=$((skipped+1))
+    else
+      run ln -s "$src" "$dst"
+      echo "linked  $name"
+      linked=$((linked+1))
+    fi
+  done
+  echo
+  echo "$linked linked, $skipped skipped."
+  echo "Start a new Claude Code session to load the skills."
+else
+  for dst in "$SKILLS_DST"/*; do
+    [ -L "$dst" ] || continue
+    target="$(readlink "$dst")"
+    case "$target" in
+      "$SKILLS_SRC"/*)
+        run rm "$dst"
+        echo "removed $(basename "$dst")"
+        removed=$((removed+1))
+        ;;
+    esac
+  done
+  echo
+  echo "$removed removed."
+fi
