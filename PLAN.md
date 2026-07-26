@@ -57,7 +57,7 @@ messy backlog; `/eval-spec` produces a golden-question spec before any code.
 - [x] **2.4** /investigate — no fixes without investigation; hypotheses vs
   evidence; stop after 3 failed fixes; reads known-bug-classes.
 - [x] **2.5** /resume — resume-in-5-minutes brief + next 3 unblocked items.
-- [ ] **2.6** Tickets mode: `tracking: tickets` deltas in /plan and /do;
+- [x] **2.6** Tickets mode: `tracking: tickets` deltas in /plan and /do;
   label/milestone/issue-template bootstrap; decision log stays in PLAN.md.
 - [ ] **2.7** /ticket — mode-agnostic capture to issue or PLAN.md task.
 - [ ] **2.8** /triage — backlog hygiene: stale, dupes, missing acceptance,

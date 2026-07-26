@@ -26,9 +26,9 @@ more.
 
 ## Before starting
 
-1. Read the config (per the principles block). If `tracking: tickets` is set,
-   say plainly that tickets mode is not implemented yet and offer to proceed
-   in document mode; do not guess at ticket behavior.
+1. Read the config (per the principles block). If `tracking: tickets` is
+   set, follow `## Tickets mode` below instead of the document-mode
+   sequence.
 2. Locate the subtask named in the arguments (e.g. `3.2.1`) in PLAN.md. Read
    its full text, its parent task, and the parent's `**Acceptance:**` line.
 3. If the subtask is ambiguous, conflicts with its acceptance criteria, or
@@ -58,6 +58,29 @@ more.
    functions, literals — then name any subtasks that group naturally with
    this one (same file, same layer, unblocked by it) and ask whether to
    proceed. Do not start them on your own.
+
+## Tickets mode (`tracking: tickets`)
+
+Preconditions first: `gh` present and authenticated, GitHub remote exists.
+Any failure → name the exact missing precondition, offer document mode.
+
+1. **Pick up.** `/do 42` (or `#42`) takes that issue. Bare `/do` proposes
+   the top unblocked open issue in the current milestone (no `blocked`
+   label) and confirms before starting — it never just begins.
+2. **Branch.** `<branch-prefix><n>-<slug>` (e.g. `feature/42-fix-parser`),
+   regardless of the `push` setting — issue work is branch work.
+3. **Work and commit.** Subjects use the tickets shape per CONDUCT rule 10:
+   `#42: <subject>`. Issue-body checklist items are ticked via
+   `gh issue edit` as they complete — the issue tracks progress the way
+   PLAN.md checkboxes do in document mode.
+4. **Verify.** Run the issue's `## Acceptance criteria` before anything
+   closes. A failing acceptance becomes an issue comment with the exact
+   output — the issue stays open, the failure is not papered over.
+5. **Close via merge.** Work that completes the issue carries `Fixes #42` —
+   in the PR body (`push: branch-pr`) or the final commit body
+   (`push: direct`). Partial work references `#42` without `Fixes`.
+6. **Report and propose** as in document mode; "groupable next" =
+   unblocked issues in the same milestone touching the same files.
 
 ## Hard rules
 

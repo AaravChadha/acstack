@@ -75,7 +75,7 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 | Key | Values (default first) | Consumed by |
 |---|---|---|
 | `mode` | `standard` \| `hackathon` | /plan |
-| `tracking` | `document` \| `tickets` (coming) | /plan, /do |
+| `tracking` | `document` \| `tickets` | /plan, /do |
 | `push` | `direct` \| `branch-pr` | /do |
 | `branch-prefix` | `feature/` | /do |
 | `db` | `shared-prod` \| `local` \| `none` | /migrate-check |
