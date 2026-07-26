@@ -20,7 +20,7 @@
 | Wave | Goal | Exit criterion |
 |---|---|---|
 | [x] 1 — Core + foundation | The five core skills installable and honest | `./setup` round-trips; `scripts/check.sh` clean; skills load in a fresh session |
-| [ ] 2 — Gate, eval, tickets | Planning gets teeth; tickets mode lands | All wave-2 skills load; tickets mode drives a real GitHub repo end-to-end |
+| [x] 2 — Gate, eval, tickets | Planning gets teeth; tickets mode lands | All wave-2 skills load; tickets mode drives a real GitHub repo end-to-end |
 | [ ] 3 — Ship + reflect | Full sprint coverage | /qa (http), /secure, /ship, /retro, /learn, /design-audit, /doctor load and pass their shakedowns |
 | [ ] 4 — Distribution + launch | A stranger can install, trust, and update it | Fresh-machine install test passes; launch checklist all green |
 
@@ -35,7 +35,7 @@ migrate-check — plus installer, config, conduct contract, and guard.
 cleanly; `scripts/check.sh` reports all clean; a fresh session lists all
 five skills. **Status (2026-07-27):** all three verified; 13 commits.
 
-## [ ] Wave 2 — Gate, eval, and tickets layer
+## [x] Wave 2 — Gate, eval, and tickets layer
 
 **Goal:** Planning gains its adversarial gate and eval-first spine; tracking
 gains tickets mode for teams and tracker-native users.
@@ -47,6 +47,18 @@ messy backlog; `/eval-spec` produces a golden-question spec before any code.
 
 **Specs (2026-07-27):** per-skill designs at wave-1 fidelity in
 `docs/wave-2-specs.md`; build starts on approval, in the order given there.
+
+**Status (2026-07-27):** exit criterion passed in scratch repo
+`acstack-w2-shakedown` (private, throwaway): bootstrap idempotent with
+GitHub's default `bug` label left untouched; /ticket filed a well-formed
+issue; /do closed #1 via a `feature/1-…` branch + `Fixes #1` on direct
+push; /triage groomed seeded rot (dupe closed with reason, `needs-
+acceptance` labeled); /eval-spec landed 25 golden cases before any code
+(closed #4); /plan-review caught a real gap (M2 exit ran `eval/run.py`
+that no issue created → filed #8, then locked). Residue: /eval-spec's
+slash-menu visibility awaits a fresh session — user-only skills never
+appear in the model-facing list; re-open with a verdict if it fails to
+load.
 
 - [x] **2.1** /challenge — product interrogation of a BRIEF (premise
   attacks, narrower-wedge proposal, constraint reality checks).
