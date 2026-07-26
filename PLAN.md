@@ -33,7 +33,7 @@ migrate-check — plus installer, config, conduct contract, and guard.
 
 **Exit criterion:** `./setup` links 5 skills idempotently and uninstalls
 cleanly; `scripts/check.sh` reports all clean; a fresh session lists all
-five skills. **Status (2026-07-27):** all three verified; 12 commits.
+five skills. **Status (2026-07-27):** all three verified; 13 commits.
 
 ## [ ] Wave 2 — Gate, eval, and tickets layer
 
