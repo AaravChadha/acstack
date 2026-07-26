@@ -54,7 +54,7 @@ messy backlog; `/eval-spec` produces a golden-question spec before any code.
   failure modes, test matrix, hidden assumptions.
 - [ ] **2.3** /eval-spec — the eval is the spec: golden questions with
   category minimums, refusal cases, grader, `acceptable_failure` discipline.
-- [ ] **2.4** /investigate — no fixes without investigation; hypotheses vs
+- [x] **2.4** /investigate — no fixes without investigation; hypotheses vs
   evidence; stop after 3 failed fixes; reads known-bug-classes.
 - [x] **2.5** /resume — resume-in-5-minutes brief + next 3 unblocked items.
 - [ ] **2.6** Tickets mode: `tracking: tickets` deltas in /plan and /do;
