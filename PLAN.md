@@ -48,7 +48,7 @@ messy backlog; `/eval-spec` produces a golden-question spec before any code.
 **Specs (2026-07-27):** per-skill designs at wave-1 fidelity in
 `docs/wave-2-specs.md`; build starts on approval, in the order given there.
 
-- [ ] **2.1** /challenge — product interrogation of a BRIEF (premise
+- [x] **2.1** /challenge — product interrogation of a BRIEF (premise
   attacks, narrower-wedge proposal, constraint reality checks).
 - [ ] **2.2** /plan-review — engineering lock on PLAN.md: data-flow trace,
   failure modes, test matrix, hidden assumptions.
