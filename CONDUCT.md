@@ -166,7 +166,7 @@ acstack pack.
 ## Extending
 
 Project- or user-specific conduct goes in `.claude/acstack.md` under a
-`## Conduct` section — it applies *in addition to* the nine defaults, never
+`## Conduct` section — it applies *in addition to* the ten defaults, never
 instead of them. When the same correction happens twice, `/learn` offers to
 promote it into that section, the same way recurring bug lessons promote into
 the pack's known-bug-classes.

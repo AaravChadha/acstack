@@ -3,8 +3,11 @@
 > **What this file is.** Per-skill designs for wave 2, written at wave start
 > per PLAN.md's process, at the same fidelity as wave 1's specs. Build
 > follows approval, one increment at a time, in the build order at the end.
-> **Drafted:** 2026-07-27. **Status:** awaiting approval — nothing below is
-> built yet.
+> **Drafted:** 2026-07-27. ~~**Status:** awaiting approval — nothing below
+> is built yet.~~ **Status (2026-07-27, end of day):** all eight items
+> built, independently reviewed (6 findings fixed), and shakedown-passed in
+> a scratch repo; wave 2 ticked in PLAN.md. This document is now the
+> as-built record.
 > **Revised 2026-07-27:** invocation split changed after review — /challenge,
 > /plan-review, and /triage flipped to model-invocable (was: user-only), and
 > the disambiguation rule below was added. /eval-spec remains user-only.
