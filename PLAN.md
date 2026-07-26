@@ -60,7 +60,7 @@ messy backlog; `/eval-spec` produces a golden-question spec before any code.
 - [x] **2.6** Tickets mode: `tracking: tickets` deltas in /plan and /do;
   label/milestone/issue-template bootstrap; decision log stays in PLAN.md.
 - [x] **2.7** /ticket — mode-agnostic capture to issue or PLAN.md task.
-- [ ] **2.8** /triage — backlog hygiene: stale, dupes, missing acceptance,
+- [x] **2.8** /triage — backlog hygiene: stale, dupes, missing acceptance,
   unblocked-but-unassigned, milestone burn.
 
 ## [ ] Wave 3 — Ship + reflect layer
