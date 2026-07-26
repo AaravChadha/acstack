@@ -21,7 +21,7 @@
 - Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
   public flip waits on the wave-4 launch checklist.
 - Next: wave 3 (/qa, /secure, /ship, /retro, /learn, /design-audit,
-  /doctor) — specs written at wave start, per the standing process.
+  /health) — specs written at wave start, per the standing process.
 
 ## How to run it right now
 

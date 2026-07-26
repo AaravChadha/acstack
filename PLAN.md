@@ -95,7 +95,9 @@ probe layer proves both modes' seam with http implemented.
 - [ ] **3.3** /ship — branch-level release: tests + eval suite + docs drift
   + attribution sweep + PR in report shape.
 - [ ] **3.4** /retro — weekly/phase-end trends: velocity vs plan, eval
-  trend, failure-category trends, risk review, local usage stats.
+  trend, failure-category trends, risk review. Usage-stats section is NOT
+  wave 3 — it arrives with local telemetry in 4.3; the wave-3 skill ships
+  without it.
 - [ ] **3.5** /learn — capture lesson to LEARNINGS.md; promote recurring
   ones into the pack's known-bug-classes.
 - [ ] **3.6** /design-audit — UI convention check: palette, honest data
