@@ -3,18 +3,24 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-07-27. Wave 1 built, verified, and installed; repo
-> now self-hosts its own conventions (this file, PLAN.md, AGENTS.md).
+> **Last update**: 2026-07-27 (second entry that day). Waves 1 AND 2 built,
+> verified, and installed; wave 2's exit criterion passed end-to-end in a
+> scratch GitHub repo.
 
 ## TL;DR
 
-- Five core skills exist, pass the guard, and are symlink-installed:
-  /plan, /do, /journal, /audit, /migrate-check.
-- 13 commits; working tree clean; `scripts/check.sh` all clean.
+- Twelve skills exist, pass the guard, and are symlink-installed: /plan,
+  /challenge, /plan-review, /eval-spec, /do, /ticket, /investigate,
+  /resume, /triage, /journal, /audit, /migrate-check.
+- Tickets mode (`tracking: tickets`) is live in /plan and /do — bootstrap,
+  `#N:` commits, `Fixes #N` closes — proven on scratch repo
+  `acstack-w2-shakedown` (private; deletion pending user call).
+- 30 commits; working tree clean; `scripts/check.sh` all clean.
 - Conduct contract (10 rules) shipped in CONDUCT.md and embedded in this
   repo's AGENTS.md.
 - No GitHub remote yet — creation awaits an explicit go (PLAN.md open item).
-- Next: wave 2 (gate, eval-spec, tickets mode) — specs written at wave start.
+- Next: wave 3 (/qa, /secure, /ship, /retro, /learn, /design-audit,
+  /doctor) — specs written at wave start, per the standing process.
 
 ## How to run it right now
 
@@ -22,7 +28,7 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard — must be clean before any commit
-# then start a new Claude Code session; the five skills load at start
+# then start a new Claude Code session; the twelve skills load at start
 ```
 
 ## What's been built
@@ -30,13 +36,76 @@ scripts/check.sh   # pack guard — must be clean before any commit
 | Wave | Status | Highlights |
 |---|---|---|
 | 1 — Core + foundation | ✅ | 5 skills (403 SKILL.md lines total, budget 500/each), 9 reference files, setup round-trip verified, guard clean on first run |
-| 2 — Gate/eval/tickets | ⬜ | 8 items specced at heading level in PLAN.md |
+| 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ⬜ | 7 skills listed |
 | 4 — Distribution + launch | ⬜ | runtime, CI, launch checklist |
 
 ## Key decisions and journey (so you don't relearn)
 
-### Wave 1 built end-to-end (2026-07-27)
+### Wave 2 built, reviewed, and shakedown-passed (2026-07-27)
+
+Starting state: 5 skills, 13 commits, wave-2 items specced at heading level
+only. Ending state: 12 skills, 30 commits, wave 2 ticked with evidence.
+
+Process ran spec → build → check → review → verify, in that order. Specs
+first (`docs/wave-2-specs.md`, all eight items at wave-1 fidelity), then
+one commit per skill in the build order, `check.sh` clean before every
+commit, an independent review pass, then the exit-criterion shakedown.
+
+**Invocation-split revision (before build):** /challenge, /plan-review,
+and /triage flipped from user-only to model-invocable with intent-scoped
+descriptions. **Why model-invocable and not the stricter flag:** users
+don't memorize twelve commands; the conduct contract (rules 2 and 5)
+already blocks uninvited gate-firing, and these skills are report-shaped
+so a mis-fire costs thoroughness, never state. /eval-spec stays user-only
+(creates committed artifacts, sets targets). Added the disambiguation
+rule: when a phrase matches several skills, present candidates with
+one-liners; every new SKILL.md carries an `Adjacent skills:` routing line.
+
+**Independent review earned its step:** 6 findings, 1 blocking —
+`stale-days` was implemented but undocumented in README's config table
+and templates/acstack.md; /challenge's report shape contradicted the
+verdict-up-front stance the spec itself demanded (fixed: verdict is now
+the report's first line, scope section added, spec revised with a dated
+note); /investigate's tickets section was missing the precondition check;
+a phantom BRIEF "stakes section" was reworded.
+
+**Shakedown evidence (scratch repo `acstack-w2-shakedown`, private):**
+bootstrap created 4 labels + 2 milestones and proved idempotency on
+re-run — including leaving GitHub's default `bug` label untouched;
+/ticket turned a brain-dump into well-formed issue #5; /do closed #1 via
+`feature/1-scaffold-cli-count` + `Fixes #1` on direct push (acceptance
+`count → 4` run first, checklist ticked via `gh issue edit`); /triage
+closed dupe #6 with quoted overlap evidence and labeled acceptance-less
+#7 `needs-acceptance`; /eval-spec landed 25 golden cases (10/5/5/5,
+refusal target 100% standalone) while no `ask` code existed, closing #4;
+/plan-review caught a real gap — M2's exit criterion ran `eval/run.py`
+that no issue created — verdict CHANGES REQUIRED, gap filed as #8, then
+locked. `stale-days: 0` was a config override to make staleness testable
+on a day-old repo.
+
+**Why a scratch repo and not acstack itself:** this repo is the living
+demo of document mode (converting it guts the default mode's showcase);
+/triage's test requires seeded rot a healthy repo doesn't have; and
+first-run mistakes belong in a throwaway, not a permanent public history.
+
+**What wave 2 does NOT change (intentional):** no wave-3 skills, no
+runtime/preamble/telemetry (wave 4), no Linear/Jira (GitHub Issues only
+at launch, locked decision), no remote for acstack itself.
+
+**Incidental finds:** model-invocable skills registered mid-session
+without a restart — softens wave 1's "start a new session" note (the
+restart is still needed for user-only skills to be *verified*, since
+they never appear in the model-facing list). CONDUCT.md's Extending
+section still said "nine defaults" from before rule 10 — fixed this
+session. /investigate and /resume passed review but haven't chased a
+real failure / cold start yet; their first real use is their true
+shakedown.
+
+Validation close: `check.sh` all clean on every one of the session's 17
+commits; skills 5 → 12; SKILL.md lines 403 → 1080 (largest file 145 of
+500 budget); reference files 9 → 14; setup round-trip 12 linked, 0
+skipped.
 
 Starting state: repo had 2 commits (init + CONDUCT.md) and no skills;
 `~/.claude/skills/` did not exist on this machine.
@@ -87,8 +156,10 @@ JOURNAL.md so the self-hosting docs can't leak personal context either.
 | Item | Why | What unblocks it |
 |---|---|---|
 | GitHub remote | Repo is local-only; no backup, no collaborator access | Explicit go for `gh repo create` (private) |
-| Fresh-session shakedown | Skills verified statically, not yet run live | Open a new session; run /plan seed on a real project |
+| Fresh-session check | /eval-spec is user-only, invisible to the model's list; needs one slash-menu look; full 12-skill listing too | Open a new session, type `/` |
+| Scratch repo deletion | `acstack-w2-shakedown` served its purpose, still up for inspection | `gh auth refresh -s delete_repo`, then `gh repo delete` |
 | Document-mode commit style | `completed task 3.2.1 (…)` vs terse `3.2.1: <desc>` | One-word decision |
+| Browser probe timing | /qa Playwright mode — wave 3 with http, or deferred | One-word decision at wave-3 spec time |
 
 ## Important file locations
 
