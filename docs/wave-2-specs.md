@@ -5,6 +5,9 @@
 > follows approval, one increment at a time, in the build order at the end.
 > **Drafted:** 2026-07-27. **Status:** awaiting approval — nothing below is
 > built yet.
+> **Revised 2026-07-27:** invocation split changed after review — /challenge,
+> /plan-review, and /triage flipped to model-invocable (was: user-only), and
+> the disambiguation rule below was added. /eval-spec remains user-only.
 
 ## Cross-cutting
 
@@ -26,11 +29,29 @@
 - Report-shaped skills (/challenge, /plan-review, /triage) share /audit's
   stance: verdict up front, findings with evidence, scope stated, proposed
   edits listed — never silently applied.
+- Invocation split: /investigate, /resume, /ticket, /challenge,
+  /plan-review, and /triage are model-invocable, each description scoped to
+  explicit intent ("use when the user asks to …"). What prevents uninvited
+  gate-firing is the conduct contract (rules 2 and 5), not a frontmatter
+  flag — and because these skills are report-shaped, a mis-fire costs an
+  overly thorough answer, never mutated state. /eval-spec is the wave's one
+  user-only skill: like /plan, it creates committed artifacts and sets
+  score targets, so it stays a typed, deliberate act.
+- Disambiguation rule (binds every model-invocable skill in the pack): when
+  a request plausibly matches more than one skill — "review the plan" could
+  mean /plan-review's engineering lock or /audit docs' drift check — never
+  silently pick. Present the candidates, one line each, and let the user
+  choose. To make routing legible, every new SKILL.md carries an
+  `Adjacent skills:` line near the top naming its nearest neighbors with a
+  one-phrase contrast — read by the model when routing and by humans when
+  browsing.
 
 ## 2.1 /challenge — product interrogation of the BRIEF
 
-Frontmatter: `name: challenge`, `argument-hint: "[notes]"`,
-`disable-model-invocation: true` (a gate is invoked deliberately).
+Frontmatter: `name: challenge`, `argument-hint: "[notes]"`, model-invocable.
+Description scoped to intent: use when the user asks to challenge,
+stress-test, or poke holes in a brief or an idea. `Adjacent skills:`
+/plan-review (reviews the plan, not the brief — engineering, not product).
 
 Reads BRIEF.md (legacy PLANNING_PROMPT.md). No brief → say so, point at
 `/plan seed`, stop. Anchored to the document, not persona theater: one
@@ -66,7 +87,10 @@ with their exact question sets, plus a forcing-question bank by project type.
 ## 2.2 /plan-review — the engineering lock on PLAN.md
 
 Frontmatter: `name: plan-review`, `argument-hint: "[phase N | notes]"`,
-`disable-model-invocation: true`.
+model-invocable. Description scoped to intent: use when the user asks to
+review, lock, or sanity-check the plan before building. `Adjacent skills:`
+/audit docs (does the doc match reality — drift, not soundness); /challenge
+(interrogates the brief, not the plan).
 
 Reads PLAN.md + BRIEF.md (legacy fallback). No plan → point at
 `/plan build`, stop. Scope defaults to the whole plan; `phase N` narrows it.
@@ -99,7 +123,9 @@ per-dimension question sets and finding formats.
 ## 2.3 /eval-spec — the eval IS the spec (headline skill)
 
 Frontmatter: `name: eval-spec`, `argument-hint: "[feature | notes]"`,
-`disable-model-invocation: true`.
+`disable-model-invocation: true` — the wave's one user-only skill: it
+creates committed artifacts and sets score targets, so like /plan it stays
+a typed, deliberate act.
 
 Writes the eval before the system exists. For LLM-shaped features the eval
 is the spec: if the golden set doesn't define success, the code has no
@@ -271,8 +297,10 @@ work (CONDUCT rule 5).
 
 ## 2.8 /triage — backlog hygiene on demand
 
-Frontmatter: `name: triage`, `argument-hint: "[notes]"`,
-`disable-model-invocation: true` (an on-demand sweep, deliberately invoked).
+Frontmatter: `name: triage`, `argument-hint: "[notes]"`, model-invocable.
+Description scoped to intent: use when the user asks to triage, groom, or
+clean up the backlog or the plan's open tasks. `Adjacent skills:` /audit
+docs (read-only drift report; /triage proposes tracker and plan actions).
 
 Report-then-apply: the full findings report comes first; only user-approved
 actions are executed. Nothing is ever silently deleted — every close carries
