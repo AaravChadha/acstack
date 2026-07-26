@@ -100,8 +100,20 @@ probe layer proves both modes' seam with http implemented.
   ones into the pack's known-bug-classes.
 - [ ] **3.6** /design-audit — UI convention check: palette, honest data
   labels, slop detection.
-- [ ] **3.7** /doctor — project hygiene: docs present/non-drifted, config
-  valid, secrets clean, conduct block current.
+- [ ] **3.7** ~~/doctor~~ → **Verdict (2026-07-27):** ships as **/health**
+  — avoids shadowing Claude Code's bundled /doctor diagnostic (user skills
+  always take precedence over built-ins, no escape syntax), and /health is
+  the skill's lineage name anyway. Scope unchanged: project hygiene — docs
+  present/non-drifted, config valid, secrets clean, conduct block current.
+
+> **Decision (2026-07-27):** skill-name shadowing. /plan and /resume keep
+> their names and deliberately shadow the built-in plan-mode command and
+> session-resume command — the shadow is global (`~/.claude/skills`), but
+> both built-ins keep alternate entry paths (Shift+Tab for plan mode,
+> `claude -r` for session resume). Tradeoff: adopters lose the typed
+> forms; mitigated by documenting both shadows in README v2 (4.6).
+> Revisit when adopter feedback shows the /resume shadow hurts in
+> practice.
 
 ## [ ] Wave 4 — Distribution + launch
 
@@ -121,7 +133,10 @@ below fully green; repo flipped public.
   and `--hook` (SessionStart recall).
 - [ ] **4.5** CI: GitHub Action running check.sh + shellcheck on every PR.
 - [ ] **4.6** PRINCIPLES.md, docs/ARCHITECTURE.md (every preamble line
-  documented), CONTRIBUTING.md; README v2 with a see-it-work walkthrough.
+  documented), CONTRIBUTING.md; README v2 with a see-it-work walkthrough
+  and the built-in shadowing disclosure (/plan, /resume — per the
+  2026-07-27 decision; also why user-only skills miss the VS Code
+  autocomplete).
 - [ ] **4.7** Launch checklist: check.sh clean, fresh-machine test, demo
   transcript, credits line verified, no personal data in history, flip
   public.
