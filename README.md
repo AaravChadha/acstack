@@ -13,8 +13,15 @@ machine state.
 
 | Skill | What it does | Typical invocation |
 |---|---|---|
-| `/plan` | Frozen BRIEF.md → written architecture pushback (the gate) → living PLAN.md with runnable exit criteria; honest replanning; hackathon mode | `/plan seed` |
-| `/do` | Complete one numbered subtask: execute → verify acceptance → tick the exact box → commit plan+code together → push or PR | `/do 3.2.1` |
+| `/plan` | Frozen BRIEF.md → written architecture pushback (the gate) → living PLAN.md with runnable exit criteria; honest replanning; hackathon mode; tickets-mode bootstrap | `/plan seed` |
+| `/challenge` | Interrogate the BRIEF: premise attacks, a narrower wedge, cost/hours/blast-radius reality checks, proceed/narrow/rethink verdict | `/challenge` |
+| `/plan-review` | Engineering lock on PLAN.md: data-flow trace, failure modes, test matrix, hidden assumptions → LOCKED or CHANGES REQUIRED | `/plan-review` |
+| `/eval-spec` | The eval is the spec: golden set with category minimums + refusal cases + pinned grader, written before the system exists | `/eval-spec search` |
+| `/do` | Complete one numbered subtask (or issue, in tickets mode): execute → verify acceptance → tick the exact box → commit plan+code together → push or PR | `/do 3.2.1` |
+| `/ticket` | Capture a brain-dump as a well-formed work item — GitHub issue or PLAN.md task; unknowns marked TBD, never invented | `/ticket "…"` |
+| `/investigate` | Root-cause before any fix: minimal repro, hypotheses vs evidence, three-strikes stop rule | `/investigate "500 on save"` |
+| `/resume` | Five-minute catch-up: where the project is, divergence flags, next 3 unblocked tasks | `/resume` |
+| `/triage` | Backlog hygiene: stale, dupes, missing acceptance, ready work, milestone burn — report first, apply on approval | `/triage` |
 | `/journal` | End-of-session JOURNAL.md entry: exact bugs, before→after numbers, eval failure classification, PLAN.md sync | `/journal` |
 | `/audit` | code: evidence-led defect report · docs: doc-says/reality-is drift check · eval: failure classification + never-inflate rule | `/audit code src/` |
 | `/migrate-check` | Read-only pre-flight for migrations against shared Postgres; per-statement classification; written GO/NO-GO | `/migrate-check` |
@@ -26,9 +33,9 @@ git clone https://github.com/AaravChadha/acstack.git ~/Documents/acstack
 cd ~/Documents/acstack && ./setup
 ```
 
-Start a new Claude Code session; the five skills appear as `/plan`,
-`/journal`, `/do`, `/audit`, `/migrate-check`. Uninstall with
-`./setup --uninstall` — it removes only symlinks that point into this repo.
+Start a new Claude Code session; the twelve skills above load as slash
+commands. Uninstall with `./setup --uninstall` — it removes only symlinks
+that point into this repo.
 
 Requirements: git and a POSIX shell. Nothing else — no runtime, no package
 manager, no build step. macOS/Linux; on Windows, copy the `skills/*`
