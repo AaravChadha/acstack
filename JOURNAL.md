@@ -156,7 +156,7 @@ JOURNAL.md so the self-hosting docs can't leak personal context either.
 | Item | Why | What unblocks it |
 |---|---|---|
 | GitHub remote | Repo is local-only; no backup, no collaborator access | Explicit go for `gh repo create` (private) |
-| Fresh-session check | /eval-spec is user-only, invisible to the model's list; needs one slash-menu look; full 12-skill listing too | Open a new session, type `/` |
+| ~~Fresh-session check~~ | Resolved 2026-07-27: typed `/plan` in a fresh session and it engaged seed mode — loading works; user-only skills simply don't appear in the VS Code extension's subset autocomplete (CLI shows all) | Done |
 | Scratch repo deletion | `acstack-w2-shakedown` served its purpose, still up for inspection | `gh auth refresh -s delete_repo`, then `gh repo delete` |
 | Document-mode commit style | `completed task 3.2.1 (…)` vs terse `3.2.1: <desc>` | One-word decision |
 | Browser probe timing | /qa Playwright mode — wave 3 with http, or deferred | One-word decision at wave-3 spec time |

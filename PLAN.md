@@ -55,10 +55,14 @@ issue; /do closed #1 via a `feature/1-…` branch + `Fixes #1` on direct
 push; /triage groomed seeded rot (dupe closed with reason, `needs-
 acceptance` labeled); /eval-spec landed 25 golden cases before any code
 (closed #4); /plan-review caught a real gap (M2 exit ran `eval/run.py`
-that no issue created → filed #8, then locked). Residue: /eval-spec's
+that no issue created → filed #8, then locked). ~~Residue: /eval-spec's
 slash-menu visibility awaits a fresh session — user-only skills never
 appear in the model-facing list; re-open with a verdict if it fails to
-load.
+load.~~ **Verdict (2026-07-27):** closed — fresh session verified manual
+invocation works (typed `/plan` engaged seed mode). User-only skills are
+absent from the VS Code extension's autocomplete because the extension
+lists only a subset of commands (documented; the CLI menu shows all) —
+cosmetic, not a load failure.
 
 - [x] **2.1** /challenge — product interrogation of a BRIEF (premise
   attacks, narrower-wedge proposal, constraint reality checks).
