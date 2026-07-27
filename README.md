@@ -30,6 +30,7 @@ machine state.
 | `/qa` | Exercise the running app through the probe layer: happy-path flows, adversarial inputs, auth-gate probing; PASS/FAIL report with exact repro commands (http now; browser deferred) | `/qa http://localhost:3000` |
 | `/secure` | Confidence-gated security review: findings need an exploit scenario + high/medium/low rating; sweeps auth gates, secrets, injection, LLM tool-use; reports only | `/secure src/` |
 | `/design-audit` | Static UI convention check: off-palette colors, wrong name casing, dishonest data labels, AI-slop, leaked internal language — file:line findings with fixes | `/design-audit src/ui/` |
+| `/retro` | Trend across sessions: velocity vs plan dates, eval-score trend, failure-category trends, open-risk status — written into JOURNAL.md | `/retro week` |
 
 ## Install
 
@@ -38,7 +39,7 @@ git clone https://github.com/AaravChadha/acstack.git ~/Documents/acstack
 cd ~/Documents/acstack && ./setup
 ```
 
-Start a new Claude Code session; the seventeen skills above load as slash
+Start a new Claude Code session; the eighteen skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 
