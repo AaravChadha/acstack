@@ -31,6 +31,7 @@ machine state.
 | `/secure` | Confidence-gated security review: findings need an exploit scenario + high/medium/low rating; sweeps auth gates, secrets, injection, LLM tool-use; reports only | `/secure src/` |
 | `/design-audit` | Static UI convention check: off-palette colors, wrong name casing, dishonest data labels, AI-slop, leaked internal language — file:line findings with fixes | `/design-audit src/ui/` |
 | `/retro` | Trend across sessions: velocity vs plan dates, eval-score trend, failure-category trends, open-risk status — written into JOURNAL.md | `/retro week` |
+| `/ship` | Branch-level release: five gates (clean state, tests, eval-vs-target, docs drift, attribution) then a report-shaped PR wiring `Fixes #N` or PLAN task IDs | `/ship` |
 
 ## Install
 
@@ -39,7 +40,7 @@ git clone https://github.com/AaravChadha/acstack.git ~/Documents/acstack
 cd ~/Documents/acstack && ./setup
 ```
 
-Start a new Claude Code session; the eighteen skills above load as slash
+Start a new Claude Code session; the nineteen skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 
@@ -90,7 +91,8 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 | `mode` | `standard` \| `hackathon` | /plan |
 | `tracking` | `document` \| `tickets` | all tracking-aware skills |
 | `push` | `direct` \| `branch-pr` | /do |
-| `branch-prefix` | `feature/` | /do |
+| `branch-prefix` | `feature/` | /do, /ship |
+| `test-command` | (auto-detected; set to override) | /ship |
 | `db` | `shared-prod` \| `local` \| `none` | /migrate-check |
 | `attribution` | `none` \| `standard` | all skills |
 | `telemetry` | `on` \| `off` (local-only either way) | runtime (coming) |
