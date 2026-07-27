@@ -25,6 +25,7 @@ machine state.
 | `/journal` | End-of-session JOURNAL.md entry: exact bugs, before→after numbers, eval failure classification, PLAN.md sync | `/journal` |
 | `/audit` | code: evidence-led defect report · docs: doc-says/reality-is drift check · eval: failure classification + never-inflate rule | `/audit code src/` |
 | `/migrate-check` | Read-only pre-flight for migrations against shared Postgres; per-statement classification; written GO/NO-GO | `/migrate-check` |
+| `/learn` | Capture a durable lesson to LEARNINGS.md (symptom → cause → fix, seen-count); recurring lessons promoted into the pack's known-bug-classes | `/learn "…"` |
 
 ## Install
 
@@ -33,7 +34,7 @@ git clone https://github.com/AaravChadha/acstack.git ~/Documents/acstack
 cd ~/Documents/acstack && ./setup
 ```
 
-Start a new Claude Code session; the twelve skills above load as slash
+Start a new Claude Code session; the thirteen skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 
