@@ -65,7 +65,7 @@ Grep families and the default convention set live in
    strings; error messages exposing internals (stack traces, table
    names, file paths) — cross-referenced to /secure when they leak
    system detail; inconsistent terminology for the same object across
-   screens ("portfolio" here, "account" there).
+   screens ("order" here, "purchase" there).
 
 ## Stance and report shape
 

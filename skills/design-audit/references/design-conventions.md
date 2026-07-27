@@ -69,13 +69,17 @@ git grep -nE '(console\.(log|debug)|TODO|FIXME|XXX)' -- '*.jsx' '*.tsx' '*.vue' 
 ## 4. Client-facing language
 
 ```bash
-git grep -niE '(stack trace|traceback|Exception|Error:|undefined|NaN|\[object Object\])' -- '*.html' '*.jsx' '*.tsx' '*.vue' '*.svelte'
+# case-SENSITIVE and anchored to rendered-string contexts — NaN/undefined
+# without -i, so ordinary code (isNaN, === undefined) isn't dragged in
+git grep -nE '(stack trace|traceback|Traceback|Exception|Error:|\[object Object\]|>NaN<|>undefined<)' -- '*.html' '*.jsx' '*.tsx' '*.vue' '*.svelte'
 ```
 
 - Error UI exposing internals (stack traces, table/column names, file
   paths, framework errors) — a finding here AND a cross-reference to
-  /secure when it leaks system structure.
+  /secure when it leaks system structure. These greps surface candidates
+  in rendered contexts; a hit inside pure logic is noise, not a finding.
 - Internal codenames or jargon in user-visible strings.
 - Terminology drift: the same domain object named differently across
-  screens. Report the pair with both locations — consistency is the
-  convention, and the fix names which term wins.
+  screens ("order" on one, "purchase" on another). Report the pair with
+  both locations — consistency is the convention, and the fix names
+  which term wins.

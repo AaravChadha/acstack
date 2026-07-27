@@ -130,7 +130,7 @@ that forced the change.
 The block below is what acstack installs into a project's `AGENTS.md`
 (via `/plan seed`) or into `~/.claude/CLAUDE.md` (via `setup --global`).
 It is marker-fenced so pack upgrades can refresh it without touching
-hand-written content around it. `/doctor` verifies it is present and current.
+hand-written content around it. `/health` verifies it is present and current.
 
 <!-- BEGIN:acstack-conduct -->
 ## Agent conduct

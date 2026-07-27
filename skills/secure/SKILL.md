@@ -36,7 +36,7 @@ A finding exists ONLY if it carries both:
 
 - **An exploit scenario** — who sends what request or input, and what
   they obtain. Concrete: "an authenticated user swaps the `id` in
-  GET /api/portfolios/:id and reads another user's holdings", not
+  GET /api/orders/:id and reads another user's order", not
   "IDs might be guessable".
 - **A confidence rating:**
   - `high` — demonstrated, or the vulnerable path is directly evidenced
@@ -80,8 +80,12 @@ carries a fix DIRECTION (one line); the user decides what gets built.
 
 ## Report shape
 
-First line is the verdict: `no high-confidence findings` or
-`<N> findings (<X> high, <Y> medium, <Z> low)`. Then:
+First line is the verdict. The count form is used whenever there is at
+least one finding at ANY confidence — `<N> findings (<X> high, <Y>
+medium, <Z> low)` — so a medium-only report never hides behind
+"no high-confidence findings". `no findings` is stated only when the
+count is truly zero; `no high-confidence findings, <Y> medium / <Z> low`
+when there are lower-confidence findings but no high ones. Then:
 
 - **Findings**, severity-ordered: surface · `file:line` · the exploit
   scenario · confidence (with what evidence sets it) · fix direction.

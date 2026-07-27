@@ -54,16 +54,18 @@ compare:
 Cheap checks only; deep drift is /audit docs:
 
 ```bash
+git log --oneline <default>..HEAD           # the commits being shipped
 # README quickstart still runs (where cheap)
 # the shipped work's PLAN exit criterion, if runnable
-git log <default>..HEAD --format='%H' | while read -r c; do :; done  # commits shipped
-grep -n "$(git log -1 --format=%s)" JOURNAL.md   # does the journal mention this work?
+git log <default>..HEAD --format='%s' | grep -Fqf - JOURNAL.md \
+  && echo "journal mentions the work" || echo "journal silent"
 ```
 
 - README quickstart visibly broken → BLOCK.
 - Shipped PLAN exit criterion runnable and failing → BLOCK.
 - JOURNAL silent on the work → don't block; propose `/journal` first and
-  let the user rule.
+  let the user rule. (Fixed-string match — commit subjects carry `().[]`,
+  which a regex grep would misread.)
 
 ## 5. Attribution
 

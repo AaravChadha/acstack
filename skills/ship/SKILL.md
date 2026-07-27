@@ -65,7 +65,10 @@ with a report-shaped body: what-and-why lede, a per-gate evidence table
   completes (from the commits' `#N` refs and the milestone) and is tied
   to that milestone. Preconditions per the pack rule (gh, auth, remote).
 - **Document mode:** the body names the PLAN task IDs shipped; a phase
-  exit criterion that passed in gate 4 is ticked per /do's convention.
+  exit criterion that passed in gate 4 is ticked per /do's convention —
+  committed to the branch (`completed <phase> exit criterion`) BEFORE the
+  push, so the tick ships with the work and gate 1's clean-tree assertion
+  stays honest. No orphan post-push edit.
 
 Report ends with the PR URL and one line per gate. /ship opens the PR;
 it never merges — the merge is a human act.

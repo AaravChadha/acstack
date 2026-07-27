@@ -90,7 +90,7 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 |---|---|---|
 | `mode` | `standard` \| `hackathon` | /plan |
 | `tracking` | `document` \| `tickets` | all tracking-aware skills |
-| `push` | `direct` \| `branch-pr` | /do |
+| `push` | `direct` \| `branch-pr` | /do, /ship |
 | `branch-prefix` | `feature/` | /do, /ship |
 | `test-command` | (auto-detected; set to override) | /ship |
 | `db` | `shared-prod` \| `local` \| `none` | /migrate-check |
@@ -100,7 +100,7 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 | `base-url` | (unset; set in a `## qa` section) | /qa |
 | `palette`, `product-names` | (unset; set in a `## design-audit` section) | /design-audit |
 | `subtask-commit-format` | `completed task <number> (<description>)` | /do |
-| `journal-commit-format` | `Journal <date>: <summary>` | /journal |
+| `journal-commit-format` | `Journal <date>: <summary>` | /journal, /retro |
 
 `attribution: none` (the default) means generated docs, commits, and PR
 bodies carry no AI-tool mentions and no attribution trailers. Flip to

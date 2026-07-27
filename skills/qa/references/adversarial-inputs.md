@@ -12,8 +12,9 @@ silent wrong answer is always a finding, however absurd the input.
 - 500-character string (one token, no spaces).
 - Regex-special characters: `.*+?()[]{}|\^$` — as one input.
 - Empty string, and whitespace-only (`"   "`).
-- Unicode: an emoji, a U+202F narrow no-break space inside a phrase,
-  an en-dash where a hyphen is expected (the known-bug-classes trio).
+- Unicode: an emoji, plus the known-bug-classes lookalike trio — a
+  U+202F narrow no-break space and a U+00A0 NBSP inside a phrase, and a
+  U+2013 en-dash where a hyphen is expected.
 - An HTML/script fragment: `<b>x</b><script>1</script>` — expect it
   escaped or rejected, never rendered or executed.
 
