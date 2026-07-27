@@ -21,7 +21,7 @@
 |---|---|---|
 | [x] 1 — Core + foundation | The five core skills installable and honest | `./setup` round-trips; `scripts/check.sh` clean; skills load in a fresh session |
 | [x] 2 — Gate, eval, tickets | Planning gets teeth; tickets mode lands | All wave-2 skills load; tickets mode drives a real GitHub repo end-to-end |
-| [ ] 3 — Ship + reflect | Full sprint coverage | /qa (http), /secure, /ship, /retro, /learn, /design-audit, /doctor load and pass their shakedowns |
+| [x] 3 — Ship + reflect | Full sprint coverage | /qa (http), /secure, /ship, /retro, /learn, /design-audit, /health load and pass their shakedowns |
 | [ ] 4 — Distribution + launch | A stranger can install, trust, and update it | Fresh-machine install test passes; launch checklist all green |
 
 ---
@@ -79,7 +79,7 @@ cosmetic, not a load failure.
 - [x] **2.8** /triage — backlog hygiene: stale, dupes, missing acceptance,
   unblocked-but-unassigned, milestone burn.
 
-## [ ] Wave 3 — Ship + reflect layer
+## [x] Wave 3 — Ship + reflect layer
 
 **Goal:** Cover the rest of the sprint: test, secure, release, retrospect,
 learn, and project hygiene.
@@ -87,26 +87,40 @@ learn, and project hygiene.
 **Exit criterion:** Each skill passes a shakedown on a real project; /qa
 probe layer proves both modes' seam with http implemented.
 
+**Status (2026-07-27):** all seven built (19 skills total), independently
+reviewed (9 findings, 0 blocking, all should-fix/nits addressed), and
+shakedown-passed. /qa http probe found the seeded auth gap and a crash on
+`limit=abc`; the browser probe declined honestly with the dated deferral
+(seam proven — identical report skeleton). /secure ran clean on acstack
+and found the seeded key + auth gap on the scratch app. /design-audit
+flagged the off-palette color, the unlabeled mock chart, and slop copy.
+/ship's five gates ran on a scratch feature branch (fix verified:
+`limit=abc → 400`). /learn captured a lesson, bumped `seen` on the
+repeat, and its promotion path added a real class to known-bug-classes.
+/health and /retro ran on acstack. **Shakedown earned a real fix:** the
+secret-scan regex missed prefixed key formats (`sk-proj-…`, `sk_live_…`)
+— widened and promoted (commit d709d70).
+
 **Specs (2026-07-27):** per-skill designs at waves-1/2 fidelity in
 `docs/wave-3-specs.md`; build starts on approval, in the order given
 there.
 
-- [ ] **3.1** /qa — flows + adversarial inputs; probe layer abstracted
+- [x] **3.1** /qa — flows + adversarial inputs; probe layer abstracted
   (http now, browser later).
-- [ ] **3.2** /secure — confidence-gated findings with exploit scenarios;
+- [x] **3.2** /secure — confidence-gated findings with exploit scenarios;
   auth gates, secrets hygiene, injection surface, LLM tool-use trust
   boundaries.
-- [ ] **3.3** /ship — branch-level release: tests + eval suite + docs drift
+- [x] **3.3** /ship — branch-level release: tests + eval suite + docs drift
   + attribution sweep + PR in report shape.
-- [ ] **3.4** /retro — weekly/phase-end trends: velocity vs plan, eval
+- [x] **3.4** /retro — weekly/phase-end trends: velocity vs plan, eval
   trend, failure-category trends, risk review. Usage-stats section is NOT
   wave 3 — it arrives with local telemetry in 4.3; the wave-3 skill ships
   without it.
-- [ ] **3.5** /learn — capture lesson to LEARNINGS.md; promote recurring
+- [x] **3.5** /learn — capture lesson to LEARNINGS.md; promote recurring
   ones into the pack's known-bug-classes.
-- [ ] **3.6** /design-audit — UI convention check: palette, honest data
+- [x] **3.6** /design-audit — UI convention check: palette, honest data
   labels, slop detection.
-- [ ] **3.7** ~~/doctor~~ → **Verdict (2026-07-27):** ships as **/health**
+- [x] **3.7** ~~/doctor~~ → **Verdict (2026-07-27):** ships as **/health**
   — avoids shadowing Claude Code's bundled /doctor diagnostic (user skills
   always take precedence over built-ins, no escape syntax), and /health is
   the skill's lineage name anyway. Scope unchanged: project hygiene — docs

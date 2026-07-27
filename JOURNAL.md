@@ -3,25 +3,25 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-07-27 (second entry that day). Waves 1 AND 2 built,
-> verified, and installed; wave 2's exit criterion passed end-to-end in a
-> scratch GitHub repo.
+> **Last update**: 2026-07-27 (third entry that day). Waves 1, 2, AND 3
+> built, reviewed, and shakedown-passed — 19 skills, the full roster. The
+> repo is now on GitHub (private). Wave 4 (distribution + launch) is next.
 
 ## TL;DR
 
-- Twelve skills exist, pass the guard, and are symlink-installed: /plan,
-  /challenge, /plan-review, /eval-spec, /do, /ticket, /investigate,
-  /resume, /triage, /journal, /audit, /migrate-check.
+- Nineteen skills — the full roster — exist, pass the guard, and are
+  symlink-installed. Wave 3 added the last seven: /learn, /health, /qa,
+  /secure, /design-audit, /retro, /ship.
 - Tickets mode (`tracking: tickets`) is live in /plan and /do — bootstrap,
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
-- 30 commits; working tree clean; `scripts/check.sh` all clean.
+- Working tree clean; `scripts/check.sh` all clean; `./setup` links 19.
 - Conduct contract (10 rules) shipped in CONDUCT.md and embedded in this
   repo's AGENTS.md.
 - Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
   public flip waits on the wave-4 launch checklist.
-- Next: wave 3 (/qa, /secure, /ship, /retro, /learn, /design-audit,
-  /health) — specs written at wave start, per the standing process.
+- Next: wave 4 (distribution + launch) — runtime preamble, bin/, VERSION,
+  telemetry, CI, README v2, launch checklist.
 
 ## How to run it right now
 
@@ -38,10 +38,122 @@ scripts/check.sh   # pack guard — must be clean before any commit
 |---|---|---|
 | 1 — Core + foundation | ✅ | 5 skills (403 SKILL.md lines total, budget 500/each), 9 reference files, setup round-trip verified, guard clean on first run |
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
-| 3 — Ship + reflect | ⬜ | 7 skills listed |
+| 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ⬜ | runtime, CI, launch checklist |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Wave 3 built, reviewed, and shakedown-passed (2026-07-27 evening)
+
+Starting state: 12 skills, wave-3 items specced at heading level only,
+repo local-only. Ending state: 19 skills (the full roster), repo on
+GitHub (private), wave 3 ticked with evidence.
+
+Process ran the same spec → approval → build → check → review → shakedown
+order as wave 2. Specs first (`docs/wave-3-specs.md`, all seven at
+waves-1/2 fidelity), one commit per skill in the order /learn → /health →
+/qa → /secure → /design-audit → /retro → /ship, `check.sh` clean before
+every commit, each commit carrying its own README rows so no doc-drift
+window opened.
+
+**Two decisions settled at spec time (both parked for the user, both
+recorded):** browser probe **deferred** to first real need — wave 3 ships
+the http probe with the seam designed for both modes, so browser mode is
+additive later (locked-decision-8's no-penalty bet); /retro ships
+**without** a usage-stats section (it arrives with wave-4 telemetry, so
+no placeholder). All seven skills are model-invocable — the first
+zero-user-only wave; the report-shaped five can only mis-fire into
+thoroughness, /learn follows /ticket's frictionless-capture precedent,
+and /ship follows /do's (it acts, but only on explicit ship intent, and
+every failing gate stops the release with no force path).
+
+**The probe seam is the wave's architectural deliverable.** A probe
+exposes reach/act/observe; the skill's method and report never name a
+transport. http is implemented; an attempted `probe: browser` declines
+honestly with the dated deferral and offers http. The report skeleton is
+identical either way — that identity is the seam proof the exit criterion
+demanded, and when the browser probe lands only the reference file grows.
+
+**Independent review (9 findings, 0 blocking).** A subagent reviewed all
+seven skills against the spec and pack conventions; guard-enforced
+dimensions (principles byte-identity, banned names, budgets, read-only
+stances) verified clean. Fixed: a no-op `while` loop and a
+regex-not-fixed-string journal grep in ship-gates.md; the document-mode
+PLAN tick now commits to the branch before push (it had dirtied the tree
+gate 1 certifies clean); README config table (`push` missing /ship,
+`journal-commit-format` missing /retro); a stale `/doctor` reference in
+CONDUCT.md (which ships into adopter projects); /secure's verdict rule
+made unambiguous so a medium-only report can't hide behind "no
+high-confidence findings"; the known-bug-classes lookalike trio corrected
+(U+202F/U+00A0/U+2013, not emoji); two high-noise greps tightened.
+Genericized the one finance-flavored example (portfolios/holdings →
+orders) per the generic-core rule. Not changed: three skills name
+accurate `Adjacent skills:` neighbors beyond the spec's non-exhaustive
+list — enhancement, kept.
+
+**Shakedown across two venues earned a real fix.** On acstack itself
+(document mode): /health produced an honest report — correctly flagging
+the mid-wave-stale JOURNAL and the deliberately-external BRIEF (acstack's
+seed is the design doc outside the repo); /secure ran clean (`no
+findings` on a markdown-and-shell pack); /retro produced a real trend
+(verdict on-plan, honest "no eval/ — not assessable", browser-probe and
+GitHub-remote risks both retired this session). On a seeded scratch app
+(stdlib http server with a hardcoded key, an unauthenticated `/admin`, an
+unvalidated int cast, an off-palette color, an unlabeled mock-data
+chart): /qa http mode found the auth gap (200 on unauth `/admin`) and the
+`limit=abc` crash, passed the benign adversarial inputs, and the browser
+mode declined honestly — seam proven; /secure found the key and the auth
+gap with high confidence; /design-audit flagged the `#ff00aa` off-palette
+color, the `mockData` revenue chart, and the slop copy while sparing the
+in-palette token colors; /ship ran all five gates on a feature branch
+that hardened the crash (verified: `limit=abc → 400`); /learn captured a
+lesson, bumped `seen` on the repeat without duplicating, and proposed
+promotion at seen ≥ 2.
+
+**The fix the shakedown earned:** the seeded key `sk-live-…` made both
+/secure and /health report clean — `sk-[A-Za-z0-9]{20,}` stops at the
+first hyphen after the prefix, so it misses `sk-proj-…` (OpenAI project
+keys), `sk_live_…` (Stripe), and `sk-live-…`. Widened both patterns to
+`sk[-_][A-Za-z0-9_-]{20,}`, verified against all three formats plus a
+bare `sk-…`, and promoted the class into known-bug-classes.md via
+/learn's own promotion path (applied here because this is the pack repo
+and the gap is verified). A genuine security miss a passing-looking sweep
+would have hidden.
+
+**Incidental find (test-harness, not a pack defect):** an early /qa
+server never died and held port 8799, so later "fresh" servers silently
+failed to bind and a fix looked broken (`limit=abc → [000]`) until the
+stale process was hard-killed — then the fix verified correctly. Chased
+it down rather than reporting a false gate failure; noting it so the next
+shakedown kills prior servers first.
+
+**What wave 3 does NOT change (intentional):** no Playwright/browser
+probe (deferred; seam ready), no /retro usage-stats (wave 4), no wave-4
+runtime (preamble, bin/, VERSION, telemetry, CI, `setup --global`), no
+Linear/Jira. The `gh pr create` + `Fixes #N` plumbing /ship reuses was
+proven end-to-end by /do in the wave-2 scratch repo and was not re-run
+against a live remote this wave (stated, not a gap).
+
+Validation close: `check.sh` clean on every wave-3 commit; skills 12 →
+19; SKILL.md files 12 → 19 (largest still /plan at 145 of 500 budget);
+reference files 14 → 21; setup round-trip 19 linked, 0 skipped; the seven
+new skills registered in the model-facing list mid-session (no restart
+needed for model-invocable skills — confirms wave 2's incidental find).
+
+#### Retro (2026-07-27 — wave 3)
+
+- **Velocity vs plan:** wave 3 scoped at 7 skills, all 7 delivered in one
+  session; no dated per-phase targets in PLAN, so velocity is reported as
+  raw close-rate, not vs-plan slippage.
+- **Eval trend:** no `eval/` in this repo — not assessable (the pack is
+  skills + shell, not an eval'd product). One honest line, as designed.
+- **Failure-category trends:** this session — doc-drift (README config
+  rows, CONDUCT `/doctor`), reference-command bugs (no-op loop,
+  regex-vs-fixed-string), and one security-regex gap. The regex gap is
+  the sole recurrence-worthy class and was promoted to known-bug-classes.
+- **Risk review:** browser-probe timing → **retired** (deferred by
+  verdict); GitHub remote → **retired** (created private this session);
+  document-mode commit style → **still open** (owner: user).
 
 ### Wave 2 built, reviewed, and shakedown-passed (2026-07-27)
 
