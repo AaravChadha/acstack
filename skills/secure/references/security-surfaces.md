@@ -31,7 +31,7 @@ git grep -nE '(authorize|requireAuth|currentUser|getSession|checkOwner)'
 git ls-files | grep -E '(^|/)\.env(\.|$)'          # tracked secrets
 grep -nE '^!' .gitignore 2>/dev/null                # the !.env negation trap
 git log --all --oneline -- '*.env' '*secret*' '*credential*' | head
-git grep -nE '(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|-----BEGIN [A-Z ]*PRIVATE KEY)' -- . ':!*.md'
+git grep -nE '(sk[-_][A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|-----BEGIN [A-Z ]*PRIVATE KEY)' -- . ':!*.md'
 git grep -niE '(api[_-]?key|secret|token|password)\s*[:=]\s*["'"'"'][^"'"'"']{8,}' -- . ':!*.md'
 ```
 

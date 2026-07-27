@@ -65,6 +65,19 @@ lessons into this file.
   the migration table says "already applied" and skips it.
 - **Check:** re-lands get a NEW timestamped folder — see /migrate-check.
 
+## Secret-scan regex missing prefixed key formats
+
+- **Symptom:** a hardcoded API key sits in tracked source, but the
+  secret grep reports clean — the key is never surfaced.
+- **Cause:** a pattern like `sk-[A-Za-z0-9]{20,}` assumes the token is
+  alphanumerics straight after `sk-`. Real keys carry a separator-joined
+  prefix — OpenAI project keys `sk-proj-…`, Stripe `sk_live_…` /
+  `sk_test_…` — so the first `-` or `_` ends the character class and the
+  match fails.
+- **Check:** allow the separators in the class:
+  `sk[-_][A-Za-z0-9_-]{20,}`. Verify against `sk-proj-…`, `sk_live_…`,
+  and a bare `sk-…` sample before trusting a "no secrets" result.
+
 ## Gitignore negation leaking secrets
 
 - **Symptom:** a real `.env` is committed despite `.env*` in .gitignore.
