@@ -87,6 +87,10 @@ learn, and project hygiene.
 **Exit criterion:** Each skill passes a shakedown on a real project; /qa
 probe layer proves both modes' seam with http implemented.
 
+**Specs (2026-07-27):** per-skill designs at waves-1/2 fidelity in
+`docs/wave-3-specs.md`; build starts on approval, in the order given
+there.
+
 - [ ] **3.1** /qa — flows + adversarial inputs; probe layer abstracted
   (http now, browser later).
 - [ ] **3.2** /secure — confidence-gated findings with exploit scenarios;
@@ -148,8 +152,12 @@ below fully green; repo flipped public.
 - [ ] **Document-mode commit style (NEW 2026-07-27).** Keep
   `completed task 3.2.1 (…)` or switch to terse `3.2.1: <desc>` to match
   the tickets-mode shape. Owner: user.
-- [ ] **Browser probe timing (NEW 2026-07-27).** Playwright mode for /qa —
-  wave 3 with http, or deferred until first real need. Owner: user.
+- [x] **Browser probe timing (NEW 2026-07-27).** ~~Playwright mode for /qa —
+  wave 3 with http, or deferred until first real need.~~ **Verdict
+  (2026-07-27):** deferred to first real need (user call at wave-3 spec
+  time). Wave 3 ships the http probe with the seam designed for both
+  modes, so adding browser later stays additive — locked decision 8's
+  no-architectural-penalty bet, restated in `docs/wave-3-specs.md`.
 - [x] **GitHub remote (NEW 2026-07-27).** ~~Private `AaravChadha/acstack`
   creation awaits explicit user go.~~ **Verdict (2026-07-27):** created
   private and pushed — `main` tracks `origin/main`, all 31 commits up.
