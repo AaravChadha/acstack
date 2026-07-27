@@ -1,0 +1,81 @@
+---
+name: health
+description: Read-only project checkup - three docs present and fresh, CLAUDE.md pointer intact, conduct block current, config valid, secrets clean, attribution honored, learnings alive, tickets-mode prerequisites met. Every failed check comes with its exact fix command, never applied. Use when the user asks for a health check, a project checkup, or whether the project setup is sane.
+argument-hint: "[notes]"
+---
+
+# /health — the five-minute project checkup
+
+Answers one question: is this project's acstack setup sound, or quietly
+rotting? Named /health, not /doctor — Claude Code ships a built-in
+/doctor for its own install, and this skill examines your project, not
+your tooling (naming verdict 2026-07-27).
+
+`Adjacent skills:` /audit docs (deep doc-vs-reality drift triples;
+/health is the quick structural checkup) · /resume (where the work is;
+/health is whether the setup is broken) · /triage (grooms the backlog;
+/health checks the scaffolding around it).
+
+<!-- acstack:principles -->
+## Operating principles
+
+- Be direct. Push back in writing when the plan or the user is wrong. No sycophancy.
+- Never delete a decision. Supersede it: `~~old~~ → **Verdict (YYYY-MM-DD):** new call — reason.`
+- Never fix, tune, or delete a test or eval case to raise a score. Log the miss honestly and leave the case unchanged.
+- Name exact things: regex patterns, function signatures, model names, before → after numbers. Never "fixed bugs".
+- Attribution: follow the project's `attribution` setting (default `none`) — no AI-tool mentions in generated docs, no attribution trailers in commits or PRs. Commit with explicit `-m`/`-F` messages only.
+- Config: read `.claude/acstack.md` at the project root (fall back to `~/.claude/acstack.md`) before acting. `## Settings` keys override pack defaults; a `## <skill-name>` section overrides both. Unknown keys and sections are ignored.
+- Docs: BRIEF.md (frozen seed) / PLAN.md (living plan) / JOURNAL.md (rolling journal). If the repo uses legacy names (PLANNING_PROMPT.md / PLANNING.md / STATUS.md), use those instead — never create both.
+- Recall: if `LEARNINGS.md` exists at the project root, read it before starting.
+- Conduct: follow the `acstack-conduct` block in this repo's AGENTS.md — the word is the mode; the user sets the pace.
+<!-- /acstack:principles -->
+
+## Stance
+
+Read-only, always. Every ✗ finding names the exact command or edit that
+would fix it — and applies none of them. /health diagnoses; the user
+(or /plan, /learn, /journal on request) treats.
+
+## The checks
+
+Exact commands for each live in `references/health-checks.md`. Run all
+that apply; skip none silently — a check that can't run (e.g. copy
+install instead of symlinks) is reported as `skipped — <why>`.
+
+1. **Docs.** BRIEF/PLAN/JOURNAL present (legacy names accepted and
+   named as such). JOURNAL stale if work commits postdate its last
+   update. PLAN has an open phase with a runnable exit criterion.
+2. **Pointer.** CLAUDE.md is exactly the one-line `@AGENTS.md` pointer.
+   Anything else is flagged — never silently rewritten (/plan's rule).
+3. **Conduct.** The marker-fenced `acstack-conduct` block exists in
+   AGENTS.md and matches the installed pack's CONDUCT.md block. Stale →
+   show the refresh edit.
+4. **Config.** `.claude/acstack.md` readable; keys outside the README
+   table listed as info (the extension hook, not an error); mode
+   prerequisites consistent — `tracking: tickets` with no gh, no auth,
+   or no remote is a ✗.
+5. **Secrets.** No .env-class file tracked; no gitignore negation
+   un-ignoring one; no obvious key patterns in tracked files; .env
+   absent from history (in history → the key is burned; say "rotate").
+6. **Attribution.** Recent commit messages honor the `attribution`
+   config — default `none` means any AI trailer or tool mention is a ✗.
+7. **Learnings.** LEARNINGS.md present and touched within `stale-days`
+   (default 30, `## triage` section) — otherwise an info line pointing
+   at /learn. A project that stops learning is drifting; this is info,
+   not failure.
+8. **Tickets extras** (`tracking: tickets` only). gh installed and
+   authenticated, the pack label set present, the issue template
+   present, stale-issue count vs `stale-days` (count only — the sweep
+   itself is /triage's job).
+
+Checks whose artifacts land in wave 4 — hook installed, VERSION and
+update-check freshness, conduct-in-global — are added by that wave, and
+are not reported as missing before then.
+
+## Report shape
+
+First line is the verdict: `HEALTHY` or `<N> issues, <M> info`. Then
+the table — check | ✓ / ✗ / info / skipped | evidence | fix command —
+one row per check above, in order. Close with scope: what was checked,
+what was skipped and why. No prose padding between the verdict and the
+table; the table is the report.
