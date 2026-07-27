@@ -28,6 +28,7 @@ machine state.
 | `/learn` | Capture a durable lesson to LEARNINGS.md (symptom → cause → fix, seen-count); recurring lessons promoted into the pack's known-bug-classes | `/learn "…"` |
 | `/health` | Read-only project checkup: docs, pointer, conduct block, config, secrets, attribution, learnings, tickets prerequisites — every ✗ with its exact fix command | `/health` |
 | `/qa` | Exercise the running app through the probe layer: happy-path flows, adversarial inputs, auth-gate probing; PASS/FAIL report with exact repro commands (http now; browser deferred) | `/qa http://localhost:3000` |
+| `/secure` | Confidence-gated security review: findings need an exploit scenario + high/medium/low rating; sweeps auth gates, secrets, injection, LLM tool-use; reports only | `/secure src/` |
 
 ## Install
 
@@ -36,7 +37,7 @@ git clone https://github.com/AaravChadha/acstack.git ~/Documents/acstack
 cd ~/Documents/acstack && ./setup
 ```
 
-Start a new Claude Code session; the fifteen skills above load as slash
+Start a new Claude Code session; the sixteen skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 
