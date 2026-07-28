@@ -14,6 +14,35 @@
 > - No client/company/collaborator names in pack content (guard-enforced).
 > - `scripts/check.sh` clean before every commit.
 > - Public launch only after the wave-4 checklist passes.
+> - **Every check-shaped skill ships a positive control (NEW 2026-07-29).**
+>   A fixture containing a known instance of what the skill is supposed to
+>   catch, plus a check that fails if the skill does not catch it.
+>   Rationale: wave 3's shakedown planted an `sk-live-…` key and `/secure`
+>   reported *clean* — a broken check returning a pass is worse than no
+>   check, because it converts an unknown into a false certainty. Without
+>   positive controls we have evidence our checks RUN, not that they WORK.
+>   Applies retroactively to /qa, /secure, /design-audit, /health, and to
+>   every wave-6 lens.
+> - **Reports state what they did NOT check (NEW 2026-07-29).** Already
+>   practiced via the `Scope` element; recorded here as binding because it
+>   is the primary defense against false confidence. A verdict is an input
+>   to the user's judgment, never a permission slip.
+>
+> **Known limitations (recorded 2026-07-29, not defects):**
+> - **One repo = one BRIEF/PLAN/JOURNAL.** Every skill assumes a single
+>   product per repository. Monorepos and multi-product repos break this
+>   silently — `/resume` and `/retro` would confidently report on the
+>   wrong product. Needs a README statement and a `/health` row;
+>   multi-product support is out of scope at launch.
+> - **Correlated blind spots are structural.** Wave 6's lenses decorrelate
+>   by having different checklists, not by being independent reviewers —
+>   they share one model's priors. `/board` cannot manufacture genuine
+>   independence, and the open slot is answered by the same prior that
+>   created the gap. Mitigation is honest scope statements, not more
+>   reviewers.
+> - **Absence is nearly invisible to diff-scoped review.** A missing auth
+>   check in an untouched file produces no diff lines. Whole-surface runs
+>   of /secure and /qa are the counterweight to review-time-only checking.
 
 ## Index of waves
 
@@ -26,6 +55,7 @@
 | [ ] 5 — Gates: pre-flight + verification | Nothing destructive or unverified lands quietly | Each gate returns a written verdict on a seeded repo; none of them can write |
 | [ ] 6 — The review board | Multi-perspective review without personas | Each lens returns a verdict on a seeded project; /board consolidates with dissents preserved |
 | [ ] 7 — Operate | Coverage past the merge | Deploy → verify → rollback path proven; incident path exercised once |
+| [ ] B — Browser layer | *Unscheduled, demand-triggered* — unblocks rendered QA, a11y, design, perf | Browser probe implements the existing reach/act/observe contract; every dependent skill still degrades cleanly without it |
 
 > **Roadmap note (2026-07-29):** waves 5–7 were designed after a survey of
 > gstack (53 skills, inspected from a clone), obra/superpowers (14),
@@ -206,6 +236,36 @@ below fully green; repo flipped public.
   it is non-obvious: it keeps an append-only session memlog and per-epic
   retros and still ships no way to ask them anything.
 
+- [ ] **4.12** /eval-run — close the loop on the flagship methodology.
+  Today `/eval-spec` writes the spec and golden set, `/ship`'s eval gate
+  *runs the eval per its run command*, and `/audit eval` reviews a
+  report — all three assume a runner that no skill produces. Wave 2's own
+  shakedown caught this: `/plan-review` flagged that M2's exit criterion
+  invoked `eval/run.py` that no issue created. Launching "the eval is the
+  spec" while the pack can specify and audit an eval but not execute one
+  is a credibility gap in the single strongest differentiator — the
+  adopter runs `/eval-spec`, gets 25 golden cases, and hits a cliff.
+  **Scope:** scaffold the runner for the project's stack (a generic
+  runner is impossible at zero dependencies — executing an eval means
+  calling a model API), execute it, compute the headline from the raw
+  results file and never by hand, and write results in the shape
+  `/audit eval` already expects. **Acceptance:** on a scratch project
+  with a golden set, produces a results file and a headline that
+  `/audit eval` can read and `/ship`'s eval gate can compare to target.
+- [ ] **4.13** `/health` row auditing the project's own agent
+  instructions — contradictory rules, stale references, project
+  instructions conflicting with the installed conduct block. acstack
+  manages AGENTS.md and CLAUDE.md but never reviews their quality, which
+  is odd for a pack whose thesis is that instructions are the product.
+  Small: one check row, not a skill.
+
+> **Risk (2026-07-29):** wave 4 now carries 13 items, seven of them
+> infrastructure, before a launch. If it slips, the honest order to cut
+> is 4.13 (a check row), then 4.11 (/why — valuable but not
+> launch-blocking), then 4.10. **4.12 should not be cut** — cutting it
+> means softening the eval-first claim in README v2, which costs more
+> than the delay. Revisit at the 4.7 checklist.
+
 > **Decision (2026-07-29):** 4.10 and 4.11 pulled into the launch wave.
 > Both are unusually cheap — one is a new target on a skill that already
 > exists, the other a reader for a corpus already three waves deep — and
@@ -267,8 +327,21 @@ personas. Each reads a named artifact, applies a checklist, and returns a
 verdict. No first names, no roleplay, no "as your architect I would say".
 
 **Exit criterion:** Each lens returns a verdict on a seeded project
-carrying its specific defect class; `/board` convenes the relevant ones
-and consolidates without averaging dissent away.
+carrying its specific defect class (its positive control, per the
+cross-cutting rule); `/board` convenes the relevant ones and consolidates
+without averaging dissent away.
+
+> **Cross-cutting rule for every lens — the open slot (2026-07-29).**
+> Each lens ends with one step that is explicitly NOT on its checklist:
+> "what is wrong here that none of the above would catch?" Rationale: a
+> checklist can only find what it enumerates, so lenses have a blind spot
+> at the edge of their own list — the one place persona-style prompting
+> genuinely outperforms them. The open slot recovers most of that
+> exploratory value for one line per skill and zero runtime cost. It is
+> NOT redundant with `/board`: `/board` decorrelates *across* checklists,
+> but every finding still originates from some checklist, so five lenses
+> still cannot see what none of them lists. Build it into 6.1 onward
+> rather than retrofitting.
 
 - [ ] **6.1** /architect — the system's shape as built: module
   boundaries, coupling, which direction dependencies point, abstractions
@@ -298,7 +371,30 @@ and consolidates without averaging dissent away.
   builder's rationalizations. Proven in practice — wave 3's independent
   review ran this way and found the `sk-live-` secret-regex gap that a
   self-review demonstrably missed. Prior art: gstack `/autoplan`, BMAD's
-  parallel review subagents.
+  parallel review subagents. Build LAST — it is worthless until
+  6.1–6.5 exist.
+
+  > **Design warnings (2026-07-29) — do not build this naively as "spawn
+  > five agents."** The fan-out is trivial; these are the hard parts.
+  > (a) **Consolidation** — merging N reports into one verdict without
+  > losing the single sharp dissent. If it over-merges it drops findings;
+  > if it does not merge, the user gets five reports and no verdict,
+  > which is worse than one good review. (b) **Routing** — running all
+  > lenses on a typo fix trains people to skip the skill; skipping /a11y
+  > on a UI change makes it worse than useless. (c) **False confidence
+  > is the failure mode** — "the board found no blockers" reads as far
+  > more authoritative than one reviewer, while being only as good as the
+  > union of its checklists. That is an eval score flattered by a narrow
+  > golden set, in review clothing. The report MUST state which lenses
+  > ran, which did not, and why. (d) **Volume defeats attention** — apply
+  > /secure's confidence-gate discipline to the consolidated report.
+- [ ] **6.7** /skill — turn a repeated workflow into a compliant
+  SKILL.md: principles block verbatim, `Adjacent skills:` routing line,
+  description scoped to explicit intent, under the line budget, passing
+  check.sh, with its positive-control fixture. acstack's thesis is that
+  discipline should be written down and version-controlled; giving
+  adopters no way to encode *theirs* is the difference between extending
+  the pack and forking it. Prior art: obra/superpowers `writing-skills`.
 
 ## [ ] Wave 7 — Operate
 
@@ -320,6 +416,51 @@ project; the incident path exercised once against a seeded outage.
   only *detects* drift; nothing in the pack writes.
 - [ ] **7.4** /cost — what a feature cost in tokens and infrastructure.
   Depends on 4.3's telemetry pipe.
+
+## [ ] Deferred — browser layer (unscheduled, demand-triggered)
+
+**Trigger, not a date.** The browser probe was deferred 2026-07-27 to
+first real need (a UI whose flows cannot be exercised over http). This
+section records what that decision *also* deferred, so the dependency
+chain is not re-derived when the trigger fires. Nothing here is scheduled;
+all of it unblocks together.
+
+The probe seam already shipped ready for this: `/qa` defines reach / act /
+observe transport-agnostically, and the report skeleton is identical
+across modes, so the browser mode is a second implementation of an
+existing contract — not a redesign.
+
+- [ ] **B.1** /qa browser mode — Playwright behind the existing probe
+  contract (reach = page load, act = one user action, observe = resulting
+  DOM / visible text / console errors). Only `references/probe-layer.md`
+  grows; SKILL.md gains a mode name and nothing else. **This is the item
+  that carries the runtime dependency** — everything below is gated on it.
+- [ ] **B.2** /design-audit rendered mode — deferred with the same verdict
+  in `docs/wave-3-specs.md`. Static analysis cannot see computed layout,
+  actual contrast against rendered backgrounds, or overflow.
+- [ ] **B.3** /a11y rendered tier (6.2 ships static-only). Static catches
+  missing alt text, absent labels, and some ARIA misuse; **focus order,
+  computed roles, real contrast ratios, and keyboard traps require a
+  rendered DOM.** Wave 6's /a11y must therefore state its static ceiling
+  honestly in its scope line rather than implying full coverage.
+- [ ] **B.4** /perf — recorded here as a **deliberate omission, not an
+  oversight** (same treatment as the browser probe itself). Page-level
+  performance needs the browser; backend performance needs load tooling
+  neither the pack nor its zero-dependency constraint provides today.
+  gstack covers this with `/benchmark` on a Bun runtime — a road acstack
+  declines at launch.
+- [ ] **B.5** Visual regression — screenshot capture and diffing across
+  runs. Cheapest capability to add once B.1 exists, and the one that most
+  needs a stated policy on where images live (repo-owned memory says the
+  repo; image bloat says otherwise — decide at trigger time).
+
+> **Constraint check (2026-07-29):** the browser layer is the first thing
+> in the roadmap that breaks "zero runtime dependencies beyond git + POSIX
+> shell." When the trigger fires, that cross-cutting constraint needs an
+> explicit amendment — most likely "the browser layer is optional and
+> every skill degrades to its static/http tier without it," which is what
+> `/qa`'s honest-decline path already models. Do not let it land by
+> accident.
 
 ## Open items (decide as we go)
 
