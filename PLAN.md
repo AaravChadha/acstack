@@ -69,6 +69,7 @@
 | [x] 2 — Gate, eval, tickets | Planning gets teeth; tickets mode lands | All wave-2 skills load; tickets mode drives a real GitHub repo end-to-end |
 | [x] 3 — Ship + reflect | Full sprint coverage | /qa (http), /secure, /ship, /retro, /learn, /design-audit, /health load and pass their shakedowns |
 | [ ] 4 — Distribution + launch | A stranger can install, trust, and update it | Fresh-machine install test passes; launch checklist all green |
+| [ ] 4.5 — Post-launch hardening | More rigorous and more capable, once real adopters exist | Each item's acceptance passes; journal records what adopter feedback reordered |
 | [ ] 5 — Gates: pre-flight + verification | Nothing destructive or unverified lands quietly | Each gate returns a written verdict on a seeded repo; none of them can write |
 | [ ] 6 — The review board | Multi-perspective review without personas | Each lens returns a verdict on a seeded project; /board consolidates with dissents preserved |
 | [ ] 7 — Operate | Coverage past the merge | Deploy → verify → rollback path proven; incident path exercised once |
@@ -213,10 +214,6 @@ below fully green; repo flipped public.
 - [ ] **4.2** Slim per-invocation preamble (≤12 lines, hand-maintained,
   budget enforced by check.sh) + `bin/` helpers (config resolve,
   update-check, recall) — POSIX sh only; `runtime: off` degrades cleanly.
-- [ ] **4.3** Local-only telemetry (`~/.acstack/usage.jsonl`) + /retro
-  usage section + human-approved aggregate share flow.
-- [ ] **4.4** `setup --global` (conduct block into `~/.claude/CLAUDE.md`)
-  and `--hook` (SessionStart recall).
 - [ ] **4.5** CI: GitHub Action running check.sh + shellcheck on every PR.
 - [ ] **4.6** PRINCIPLES.md, docs/ARCHITECTURE.md (every preamble line
   documented), CONTRIBUTING.md; README v2 with a see-it-work walkthrough
@@ -284,6 +281,160 @@ below fully green; repo flipped public.
   conduct block; `/health` gains a row verifying it is present and
   current. **Acceptance:** check.sh fails when the table's skill set
   differs from the set carrying `disable-model-invocation: true`.
+- [ ] **4.12** /eval-run — close the loop on the flagship methodology.
+  Today `/eval-spec` writes the spec and golden set, `/ship`'s eval gate
+  *runs the eval per its run command*, and `/audit eval` reviews a
+  report — all three assume a runner that no skill produces. Wave 2's own
+  shakedown caught this: `/plan-review` flagged that M2's exit criterion
+  invoked `eval/run.py` that no issue created. Launching "the eval is the
+  spec" while the pack can specify and audit an eval but not execute one
+  is a credibility gap in the single strongest differentiator — the
+  adopter runs `/eval-spec`, gets 25 golden cases, and hits a cliff.
+  **Scope:** scaffold the runner for the project's stack (a generic
+  runner is impossible at zero dependencies — executing an eval means
+  calling a model API), execute it, compute the headline from the raw
+  results file and never by hand, and write results in the shape
+  `/audit eval` already expects. **Acceptance:** on a scratch project
+  with a golden set, produces a results file and a headline that
+  `/audit eval` can read and `/ship`'s eval gate can compare to target.
+- [ ] **4.14** Multi-product detection — make the one-repo assumption
+  visible instead of silent. Three parts:
+  1. **`/health` row.** Flags a repo that violates the assumption.
+     Signals, strongest first: more than one BRIEF.md / PLAN.md /
+     JOURNAL.md below the root; workspace markers
+     (`pnpm-workspace.yaml`, `lerna.json`, `turbo.json`, a `workspaces`
+     key in package.json, `[workspace]` in Cargo.toml, `go.work`); and
+     `apps/` `packages/` `services/` directories each carrying their own
+     manifest. Reported as **info, not a failure** — a monorepo is not
+     broken, it is unsupported, and the two deserve different words.
+  2. **The resolve-one-document-set rule** applied to every
+     document-reading skill's scope line (cross-cutting rule above).
+     Ambiguity → name the candidate paths, stop.
+  3. **README statement** of the constraint, so an adopter with a
+     monorepo learns it before installing rather than after a `/retro`
+     confidently reports on the wrong product.
+
+  **Acceptance:** on a seeded two-product repo, `/health` names both
+  document sets and `/resume` halts with the candidates listed instead of
+  picking one. That seeded repo is also this task's positive control.
+- [ ] **4.15** Positive controls for the shipped check-shaped skills —
+  the carrier for the cross-cutting rule above, which was binding with
+  nobody owning it. Each of /qa, /secure, /design-audit, /health,
+  /audit, and /migrate-check gets a fixture containing a known instance
+  of what it must catch, plus an assertion that fails when the skill
+  misses it. **Acceptance:** seeding each fixture makes its check fail;
+  removing the seed makes it pass. Evidence this is not theoretical: the
+  `sk-live-` key (a check that ran and did not work) and check.sh's own
+  description guard on 2026-07-29, whose first control passed
+  misleadingly and would have shipped unverified.
+- [ ] **4.17** Guard coverage for the mechanically-detectable classes —
+  the carrier for "grow check.sh, not the prose", and the higher-value
+  half of the 2026-07-29 process review (the four AGENTS.md verification
+  rules are the lesser half). Six of that day's ten defects were
+  mechanically detectable and none was guarded. Add to `scripts/check.sh`:
+  1. **Routing line present** — every `skills/*/SKILL.md` carries
+     `Adjacent skills:` (five wave-1 skills lacked it for two waves).
+  2. **Cross-references resolve** — every `/skill-name` referenced in a
+     SKILL.md names a real directory; every referenced file path exists.
+  3. **Config-key reachability** — every key in README's table appears in
+     `templates/acstack.md` AND is read by the skill the table names.
+  4. **Shared-snippet byte-identity** — the secret-scan regex, the six
+     eval failure buckets, and the adversarial input list are each
+     duplicated across 2–4 files with no guard; the regex had *already*
+     drifted (`ghp_` in one copy, absent in the other). Either mark one
+     copy canonical and diff the rest, as done for the principles block,
+     or collapse the duplicates.
+  5. **Verdict-first present** — every report-shaped skill states its
+     verdict-first stance (five violated it while the pack claimed it).
+  6. **Frontmatter parses** — extend the description guard to assert the
+     whole block parses and each description survives intact.
+
+  **Acceptance:** each of the six fires against a seeded defect and is
+  silent on the clean tree — demonstrated, per 4.15.
+
+> **Process note (2026-07-29):** 4.14, 4.15, 4.16, 4.17, and 4.18 all
+> exist because cross-cutting rules were written as decisions with no task
+> owning the work — the multi-product rule, the positive-control rule, the
+> commit-format verdict, and the audit findings left loose. Recording a
+> decision is not scheduling it. Any future cross-cutting rule added to
+> this document must name its carrier task in the same edit (now also
+> binding via AGENTS.md).
+
+> **Split decision (2026-07-29).** ~~Wave 4 carries 18 items.~~ Split into
+> wave 4 (11 items, launch-blocking) and wave 4.5 (7 items, post-launch).
+> **The dividing line: wave 4 is "nothing an adopter touches is broken,
+> missing, or lying"; wave 4.5 is "the pack is more rigorous and more
+> capable."** An item stays in wave 4 only if its absence would mislead a
+> stranger on day one — a broken install, a doc that lies, an undiscoverable
+> skill, a flagship that dead-ends, a wrong answer delivered confidently, or
+> a trust claim the code does not back.
+>
+> Why each borderline call went the way it did:
+> - **4.12 /eval-run stays.** Eval-first is the headline claim; an adopter
+>   who runs /eval-spec and finds no way to execute the result has hit a
+>   cliff inside the differentiator.
+> - **4.14 multi-product stays.** Its absence produces confidently wrong
+>   answers rather than a missing feature. Wrong beats absent, badly.
+> - **4.15 and 4.17 stay** because 4.7 literally depends on them: the launch
+>   checklist requires every guard demonstrated firing and cross-references
+>   resolving. Moving them would have forced 4.7 to be weakened to "every
+>   guard that happens to exist", which is the asserted-not-demonstrated
+>   pattern this wave exists to kill. They are also cheap — six shell greps.
+> - **4.10 and 4.11 move**, superseding the 2026-07-29 pull-forward below.
+>   New information: wave 4 grew 7 → 18 items after that call. Two extra
+>   differentiator skills are worth less than shipping eleven other items on
+>   time, and neither is broken-without — they are additive.
+> - **4.3 telemetry moves.** "Nothing phones home" is *more* true with no
+>   telemetry at all, so its absence weakens no claim.
+> - **4.4 `setup --global`/`--hook` moves.** The hook writes to
+>   `~/.claude/CLAUDE.md` — the riskiest surface in the pack, and the one
+>   most improved by real adopter feedback before it ships.
+> - **4.18 moves.** Each gap is a genuine edge case, not a day-one break.
+>
+> **Task IDs are NOT renumbered.** Wave 4.5 holds 4.3, 4.4, 4.10, 4.11,
+> 4.13, 4.16, 4.18 under their original numbers, per the pack's own rule
+> that existing tasks are never renumbered (/ticket). Non-contiguous IDs
+> within a wave cost less than breaking every cross-reference in this
+> document and every reference in the journal.
+
+> ~~**Decision (2026-07-29):** 4.10 and 4.11 pulled into the launch wave.~~
+> **Superseded (2026-07-29, same day):** both moved to wave 4.5 by the
+> split above. The original reasoning — that both are cheap and
+> demonstrably unclaimed by every surveyed pack — still holds and is why
+> they sit at the top of wave 4.5 rather than later. What changed is the
+> denominator: wave 4 was 7 items when they were pulled in and 18 when the
+> split was made.
+
+> **Risk (2026-07-29):** wave 4 now carries 11 items, six of them
+> infrastructure. If it still slips, the cut order is 4.8 (`allowed-tools`
+> — then soften README v2's trust claim to match), then 4.9 (referral
+> block — costs discoverability, and adopters can still read the README).
+> **Do not cut 4.7, 4.12, 4.14, 4.15, or 4.17.** 4.7 is the gate itself;
+> 4.12 protects the headline claim; 4.14 stops confidently wrong answers;
+> 4.15 and 4.17 are what make the other checks trustworthy — this repo has
+> produced two documented cases of a check that ran and did not work.
+
+## [ ] Wave 4.5 — Post-launch hardening and capability
+
+**Goal:** Everything that makes the pack more rigorous and more capable
+without being required for a stranger's first week. Ships as a normal
+release after launch, informed by whatever real adopters hit first.
+
+**Exit criterion:** Each item's own acceptance passes; `scripts/check.sh`
+clean; the wave's journal entry records which items real adopter feedback
+reordered, if any.
+
+> **Why post-launch:** none of these produces a broken install, a doc that
+> lies, an undiscoverable skill, or a confidently wrong answer — the four
+> failure modes wave 4 exists to prevent. Several are *better* for waiting:
+> 4.4 touches the user's global config, and 4.18's degradation paths are
+> best specified against edge cases adopters actually report rather than
+> ones guessed at.
+
+- [ ] **4.3** Local-only telemetry (`~/.acstack/usage.jsonl`) + /retro
+  usage section + human-approved aggregate share flow.
+- [ ] **4.4** `setup --global` (conduct block into `~/.claude/CLAUDE.md`)
+  and `--hook` (SessionStart recall).
 - [ ] **4.10** /audit tests — fourth target on the existing skill
   (*pulled forward from wave 5, 2026-07-29*). Sweeps an existing suite
   for tests that pass without catching: assertion-free and tautological
@@ -310,23 +461,6 @@ below fully green; repo flipped public.
   it returns the 2026-07-27 shadowing verdict from PLAN 3.7 with its
   reason; asked about a decision with no record, it says so rather than
   inventing one.
-
-- [ ] **4.12** /eval-run — close the loop on the flagship methodology.
-  Today `/eval-spec` writes the spec and golden set, `/ship`'s eval gate
-  *runs the eval per its run command*, and `/audit eval` reviews a
-  report — all three assume a runner that no skill produces. Wave 2's own
-  shakedown caught this: `/plan-review` flagged that M2's exit criterion
-  invoked `eval/run.py` that no issue created. Launching "the eval is the
-  spec" while the pack can specify and audit an eval but not execute one
-  is a credibility gap in the single strongest differentiator — the
-  adopter runs `/eval-spec`, gets 25 golden cases, and hits a cliff.
-  **Scope:** scaffold the runner for the project's stack (a generic
-  runner is impossible at zero dependencies — executing an eval means
-  calling a model API), execute it, compute the headline from the raw
-  results file and never by hand, and write results in the shape
-  `/audit eval` already expects. **Acceptance:** on a scratch project
-  with a golden set, produces a results file and a headline that
-  `/audit eval` can read and `/ship`'s eval gate can compare to target.
 - [ ] **4.13** `/health` row auditing the project's own agent
   instructions — contradictory rules, stale references, project
   instructions conflicting with the installed conduct block. acstack
@@ -335,38 +469,6 @@ below fully green; repo flipped public.
   Small: one check row, not a skill. **Acceptance:** on a repo whose
   AGENTS.md contradicts the installed conduct block, `/health` flags the
   conflict and names both rules.
-
-- [ ] **4.14** Multi-product detection — make the one-repo assumption
-  visible instead of silent. Three parts:
-  1. **`/health` row.** Flags a repo that violates the assumption.
-     Signals, strongest first: more than one BRIEF.md / PLAN.md /
-     JOURNAL.md below the root; workspace markers
-     (`pnpm-workspace.yaml`, `lerna.json`, `turbo.json`, a `workspaces`
-     key in package.json, `[workspace]` in Cargo.toml, `go.work`); and
-     `apps/` `packages/` `services/` directories each carrying their own
-     manifest. Reported as **info, not a failure** — a monorepo is not
-     broken, it is unsupported, and the two deserve different words.
-  2. **The resolve-one-document-set rule** applied to every
-     document-reading skill's scope line (cross-cutting rule above).
-     Ambiguity → name the candidate paths, stop.
-  3. **README statement** of the constraint, so an adopter with a
-     monorepo learns it before installing rather than after a `/retro`
-     confidently reports on the wrong product.
-
-  **Acceptance:** on a seeded two-product repo, `/health` names both
-  document sets and `/resume` halts with the candidates listed instead of
-  picking one. That seeded repo is also this task's positive control.
-
-- [ ] **4.15** Positive controls for the shipped check-shaped skills —
-  the carrier for the cross-cutting rule above, which was binding with
-  nobody owning it. Each of /qa, /secure, /design-audit, /health,
-  /audit, and /migrate-check gets a fixture containing a known instance
-  of what it must catch, plus an assertion that fails when the skill
-  misses it. **Acceptance:** seeding each fixture makes its check fail;
-  removing the seed makes it pass. Evidence this is not theoretical: the
-  `sk-live-` key (a check that ran and did not work) and check.sh's own
-  description guard on 2026-07-29, whose first control passed
-  misleadingly and would have shipped unverified.
 - [ ] **4.16** Implement the 2026-07-29 commit-format verdict — the
   carrier for a decision recorded as `[x]` while nothing emitted the new
   shape. Edit CONDUCT rule 10, `/do`, `/ship`, and README's
@@ -374,31 +476,6 @@ below fully green; repo flipped public.
   and `ticket #2: <description>` (tickets). **Acceptance:** no pack file
   still documents `completed task N (…)` or a bare `#N:` subject as the
   current format; wave-2's JOURNAL entry keeps its historical wording.
-
-- [ ] **4.17** Guard coverage for the mechanically-detectable classes —
-  the carrier for "grow check.sh, not the prose", and the higher-value
-  half of the 2026-07-29 process review (the four AGENTS.md verification
-  rules are the lesser half). Six of that day's ten defects were
-  mechanically detectable and none was guarded. Add to `scripts/check.sh`:
-  1. **Routing line present** — every `skills/*/SKILL.md` carries
-     `Adjacent skills:` (five wave-1 skills lacked it for two waves).
-  2. **Cross-references resolve** — every `/skill-name` referenced in a
-     SKILL.md names a real directory; every referenced file path exists.
-  3. **Config-key reachability** — every key in README's table appears in
-     `templates/acstack.md` AND is read by the skill the table names.
-  4. **Shared-snippet byte-identity** — the secret-scan regex, the six
-     eval failure buckets, and the adversarial input list are each
-     duplicated across 2–4 files with no guard; the regex had *already*
-     drifted (`ghp_` in one copy, absent in the other). Either mark one
-     copy canonical and diff the rest, as done for the principles block,
-     or collapse the duplicates.
-  5. **Verdict-first present** — every report-shaped skill states its
-     verdict-first stance (five violated it while the pack claimed it).
-  6. **Frontmatter parses** — extend the description guard to assert the
-     whole block parses and each description survives intact.
-
-  **Acceptance:** each of the six fires against a seeded defect and is
-  silent on the clean tree — demonstrated, per 4.15.
 - [ ] **4.18** Remaining degradation paths and config consistency — the
   audit's per-skill gaps not closed on 2026-07-29. Every one is a place a
   skill would guess instead of stopping:
@@ -423,38 +500,6 @@ below fully green; repo flipped public.
 
   **Acceptance:** for each, the precondition is removed and the skill
   names what is missing and stops, rather than proceeding on a guess.
-
-> **Process note (2026-07-29):** 4.14, 4.15, and 4.16 all exist because
-> three separate rules were written as decisions with no task owning the
-> work — the multi-product rule, the positive-control rule, and the
-> commit-format verdict. Recording a decision is not the same as
-> scheduling it. Any future cross-cutting rule added to this document
-> must name its carrier task in the same edit.
-
-> **Risk (2026-07-29):** wave 4 now carries 18 items, seven of them
-> infrastructure, before a launch. That is a lot, and the honest cut
-> order if it slips is: 4.13 (a check row), then 4.16 (the commit-format
-> edit — cosmetic, and the old shapes still work), then 4.11 (/why —
-> valuable but not launch-blocking), then 4.10.
->
-> **Do not cut 4.12, 4.14, or 4.15.** 4.12 is the eval runner: cutting it
-> means launching "the eval is the spec" while unable to run one. 4.14
-> stops a monorepo adopter getting confidently wrong answers on day one.
-> 4.15 is positive controls — without them the pack's checks are
-> unverified, and this repo has now produced two documented cases of a
-> check that ran and did not work. Each costs more than the delay would.
-> Revisit at the 4.7 checklist.
-
-> **Decision (2026-07-29):** 4.10 and 4.11 pulled into the launch wave.
-> Both are unusually cheap — one is a new target on a skill that already
-> exists, the other a reader for a corpus already three waves deep — and
-> both are demonstrably unclaimed by every major pack surveyed. Launching
-> with 21 skills rather than 19 gives README v2 a differentiator argument
-> — counting /why (4.11) and /eval-run (4.12) as the two new skill
-> directories; 4.10 adds a fourth *target* to /audit, not a skill
-> that does not rest on roadmap promises. Tradeoff: wave 4 grows by two
-> skills before a launch already carrying seven infrastructure items.
-> Revisit if 4.1–4.7 slip.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
