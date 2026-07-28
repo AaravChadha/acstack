@@ -3,9 +3,11 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-07-27 (third entry that day). Waves 1, 2, AND 3
-> built, reviewed, and shakedown-passed — 19 skills, the full roster. The
-> repo is now on GitHub (private). Wave 4 (distribution + launch) is next.
+> **Last update**: 2026-07-29. Waves 1–3 built and shakedown-passed (19
+> skills). Since then: the roadmap extended to waves 4/4.5/5/6/7 plus a
+> deferred browser layer (34 skills at the end), two independent audits
+> that found a shipped bug in /ship, and four verification rules added to
+> AGENTS.md. Wave 4 (11 launch-blocking items) is next; nothing built yet.
 
 ## TL;DR
 
@@ -15,13 +17,16 @@
 - Tickets mode (`tracking: tickets`) is live in /plan and /do — bootstrap,
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
-- Working tree clean; `scripts/check.sh` all clean; `./setup` links 19.
+- Working tree clean; `scripts/check.sh` all clean (5 guard sections);
+  `./setup` links 19.
 - Conduct contract (10 rules) shipped in CONDUCT.md and embedded in this
-  repo's AGENTS.md.
+  repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
   public flip waits on the wave-4 launch checklist.
-- Next: wave 4 (distribution + launch) — runtime preamble, bin/, VERSION,
-  telemetry, CI, README v2, launch checklist.
+- Roadmap runs to 34 skills: wave 4 (launch, 11 items) → 4.5 (post-launch
+  hardening, 7) → 5 (pre-flight gates) → 6 (review board) → 7 (operate),
+  plus an unscheduled browser layer. Full detail in PLAN.md.
+- Next: wave 4. Specs get written at wave start, per the standing process.
 
 ## How to run it right now
 
@@ -39,9 +44,143 @@ scripts/check.sh   # pack guard — must be clean before any commit
 | 1 — Core + foundation | ✅ | 5 skills (403 SKILL.md lines total, budget 500/each), 9 reference files, setup round-trip verified, guard clean on first run |
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
-| 4 — Distribution + launch | ⬜ | runtime, CI, launch checklist |
+| 4 — Distribution + launch | ⬜ | 11 launch-blocking items: runtime, CI, README v2, discoverability, eval runner, guards, the 9-point demonstrated launch checklist |
+| 4.5 — Post-launch hardening | ⬜ | 7 items split out 2026-07-29: telemetry, `setup --global`, /audit tests, /why, remaining degradation paths |
+| 5 / 6 / 7 — Gates, review board, operate | ⬜ | 15 skills: pre-flight family, the lens board, post-merge coverage |
+| B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Roadmap to 34 skills, and an audit that found a shipped bug (2026-07-29)
+
+Starting state: 19 skills, wave 3 closed, PLAN.md at 182 lines covering
+waves 1–4, four open decisions. Ending state: same 19 skills, PLAN.md at
+769 lines covering waves 1–7 plus a deferred browser layer, 34 open tasks,
+zero open decisions, and one live bug fixed. 10 commits, no skills built —
+this was a planning and correction session, deliberately.
+
+**Competitive survey (cloned, not recalled).** gstack was cloned and read
+file-by-file: **53 user-facing skills** (59 SKILL.md files less the router,
+4 OpenClaw duplicates, 1 example), v1.60.1.0, 71 top-level dirs, a Bun
+runtime with compiled ~58MB binaries, a headless Chromium daemon, opt-in
+Supabase telemetry, and an optional Postgres "brain" over MCP. Its README
+still advertises "23 specialists and 8 power tools" — stale against its own
+tree. Three peers were surveyed by subagent: obra/superpowers (14 skills),
+GitHub spec-kit (10 commands), BMAD-METHOD (6 agent roles).
+
+The scan that mattered checked four capabilities against all four packs.
+**Test-quality auditing, decision archaeology, dependency hygiene, DB
+migration safety, and evals/golden sets are absent from every one of them.**
+Two corrections to earlier assumptions came out of it: `/verify` is *not*
+white space (superpowers gates the agent on itself, spec-kit's
+`/speckit.converge` diffs code against spec, BMAD runs an Acceptance
+Auditor subagent), and acstack's tickets mode is *deeper* than spec-kit's,
+whose issue export has no labels, milestones, or write-back.
+
+**Size philosophy is a real fork.** gstack's SKILL.md files average ~1,054
+lines and top out at 2,359; acstack's average 87, largest 149. Invoking
+gstack's /ship loads 1,417 lines at once against acstack's 74 plus
+references on demand. Anthropic's authoring guidance favours the smaller
+number — one place where the bigger pack is the worse pattern.
+
+**Waves 5–7 designed, then split into 5–7 plus 4.5.** Roster ends at 34
+skills, two-thirds of gstack's. The team-of-perspectives goal is met by
+**lenses, not personas**: each reviewer reads a named artifact and returns
+a verdict, no roleplay, no first names — which keeps "gstack simulates the
+team; acstack encodes the discipline" true while still convening a board.
+`/board` and the per-lens open slot were kept as *complements*, not
+alternatives: /board decorrelates across checklists, but every finding
+still originates from one, so five lenses cannot see what none of them
+lists. Only the open slot reaches past enumeration.
+
+**The live bug.** `/ship`'s description contained `wiring Fixes #N`, and
+YAML ends an unquoted scalar at space-hash — silently discarding the entire
+trigger clause. Verified both ways against the live skill listing: it
+previously ended mid-sentence at "wiring Fixes" and now carries full text.
+It shipped in wave 3 and the wave-3 review missed it **by reading the file
+instead of the parsed result**. `check.sh` gained a guard (5 sections now,
+was 4). The guard's own first positive control passed misleadingly, because
+the fix had already removed the `#` the control was testing for — caught
+only by re-seeding a genuine hazard.
+
+**Two independent audits, 25 findings.** A PLAN.md formatting/consistency
+audit and an all-19-skills thoroughness audit ran as context-free
+subagents. Formatting came back clean (numbering, cross-refs, tables,
+checkbox coherence). Substantive errors, mostly mine: 4.8 called /retro
+read-only when it appends to JOURNAL.md and commits, so its acceptance
+would have failed against a correct implementation; the `sk-live` incident
+was recorded two contradictory ways and git settled it (`d709d70` is
+"(shakedown finding)", `dfe291d` the review's) — **the shakedown found it
+and /secure initially MISSED the planted key**; 6.6 credited the review for
+it, weakening /board's argument by resting on a false example.
+
+**The recurring defect the user caught.** Three cross-cutting rules —
+multi-product detection, positive controls, commit format — were written as
+binding decisions with **no task owning the work**. Found when the user
+asked "did we add the multirepo thing"; the honest answer was that it was a
+note with no carrier and nothing detected it. All three now have carriers
+(4.14, 4.15, 4.16), plus a rule requiring future cross-cutting rules to
+name their carrier in the same edit.
+
+**Cross-skill consistency, closed.** "The pack rule" was cited by five
+skills and defined nowhere canonical — README now carries it. Adjacency
+routing lines were missing from all five wave-1 skills, `/plan` worst
+(nothing routed to /challenge, /plan-review, or /eval-spec, the entire
+planning chain); all 19 now carry one. `templates/acstack.md` had no `##
+qa`, `## design-audit`, or `## ship` sections, so four documented config
+keys were unreachable from the file adopters copy; all 14 keys now present.
+The secret regex had **already drifted** between its two copies (`ghp_` in
+one, absent in the other) — from the wave-3 fix touching only one file.
+
+**Verdict-first, the pack's own stated stance, was violated by five of its
+own skills** — /migrate-check and /ship put verdicts last, /audit docs
+emitted bare triples with no verdict or scope *despite promising scope*,
+/triage led with findings, and /plan-review buried it in a late section its
+own wave-2 spec had required be first. All five fixed.
+
+**Four verification rules added to AGENTS.md**, each traceable to a defect
+this repo shipped: verify the consumed form not the authored form; prove a
+new check fails before trusting it passes; a cross-cutting rule names its
+carrier in the same edit; a claim about a set enumerates the set. Kept out
+of CONDUCT.md deliberately — that is an interaction contract shipping to
+adopters, and these are construction discipline. Promotion only if one
+proves out across projects, the same bar /learn uses.
+
+**Why guards over prose:** six of the ten defects were mechanically
+detectable and none was guarded. The pack's own thesis is that mechanical
+beats rhetorical — it is the whole argument for `allowed-tools` over a
+prose promise. Carrier task 4.17 adds the six classes to check.sh; the four
+AGENTS.md rules are explicitly the *lesser* half.
+
+**Wave 4 split (18 → 11 + 7).** The dividing line: wave 4 is "nothing an
+adopter touches is broken, missing, or lying"; wave 4.5 is "the pack is
+more rigorous and more capable." 4.15 and 4.17 stayed because 4.7 literally
+depends on them — the checklist demands every guard demonstrated firing, so
+moving them would have forced 4.7 back to asserting. /audit tests and /why
+moved *out*, superseding a same-day decision that pulled them in: the
+reasoning held, but the denominator changed from 7 items to 18. Task IDs
+were not renumbered, per the pack's own never-renumber rule.
+
+**4.7 rewritten** from six asserted lines to nine demonstrated ones. Nothing
+in it is satisfiable by re-reading a file, and it requires **both** a
+context-free multi-agent audit and a main-thread pass — because this session
+proved neither substitutes for the other: subagents found the truncated
+description and the /retro misclassification that the author had re-read
+without noticing, while the main thread found the misleading positive
+control and the provenance contradiction, each needing context the other
+lacked.
+
+**What this session did NOT do (intentional):** built no skills, wrote no
+wave-5/6/7 specs (those get written at wave start, per the standing
+process), implemented none of the recorded decisions (commit format, the
+six guards, positive controls — all carriers, not code), and did not delete
+the wave-2 scratch repo (owner: user; contents verified disposable, backup
+taken).
+
+Validation close: `check.sh` clean on all 10 commits; check.sh sections
+4 → 5; PLAN.md 182 → 769 lines; open tasks 4 → 34 across waves 4/4.5/5/6/7
+plus 5 deferred browser items; AGENTS.md rules 5 → 9; skills unchanged at
+19 (1743 SKILL.md lines, 21 reference files); open decisions 4 → 0.
 
 ### Wave 3 built, reviewed, and shakedown-passed (2026-07-27 evening)
 
