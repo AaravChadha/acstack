@@ -19,8 +19,14 @@ brand conformance — and say which in scope.
 
 ## 1. Palette + branding
 
+> **Regex note.** `git grep -E` is POSIX ERE: `\b` and `\s` do NOT work.
+> `\b` matches nothing at all (silently returning zero hits), and `\s`
+> parses as a literal `s`. Use `-w` for word boundaries and
+> `[[:space:]]` for whitespace. Both bugs shipped here until 2026-07-29
+> and made this skill's primary check report clean on dirty input.
+
 ```bash
-git grep -nE '#[0-9a-fA-F]{3,8}\b' -- '*.css' '*.scss' '*.js' '*.jsx' '*.ts' '*.tsx' '*.vue' '*.svelte'
+git grep -nE '#[0-9a-fA-F]{3,8}' -- '*.css' '*.scss' '*.js' '*.jsx' '*.ts' '*.tsx' '*.vue' '*.svelte'
 git grep -nE 'rgb\(|rgba\(|hsl\('
 ```
 
@@ -34,7 +40,7 @@ git grep -nE 'rgb\(|rgba\(|hsl\('
 ## 2. Honest data labels
 
 ```bash
-git grep -niE '(mock|sample|dummy|placeholder|fake|lorem|test)\s*(data|value|user|chart)'
+git grep -niE '(mock|sample|dummy|placeholder|fake|lorem|test)[[:space:]]*(data|value|user|chart)'
 git grep -niE '(faker|mockData|SAMPLE_|DUMMY_|generateFake|randomInt|Math\.random)'
 ```
 
@@ -51,8 +57,8 @@ git grep -niE '(faker|mockData|SAMPLE_|DUMMY_|generateFake|randomInt|Math\.rando
 ## 3. Slop detection
 
 ```bash
-git grep -niE '\b(lorem ipsum|dolor sit)\b'
-git grep -niE '\b(simply|just|seamlessly|effortlessly|powerful|blazing|cutting-edge|revolutionary|unleash)\b' -- '*.html' '*.jsx' '*.tsx' '*.vue' '*.svelte' '*.md'
+git grep -niEw '(lorem ipsum|dolor sit)'
+git grep -niEw '(simply|just|seamlessly|effortlessly|powerful|blazing|cutting-edge|revolutionary|unleash)' -- '*.html' '*.jsx' '*.tsx' '*.vue' '*.svelte' '*.md'
 git grep -nE '(console\.(log|debug)|TODO|FIXME|XXX)' -- '*.jsx' '*.tsx' '*.vue' '*.svelte' '*.html'
 ```
 

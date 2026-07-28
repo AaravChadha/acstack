@@ -56,45 +56,62 @@ else
   fi
 fi
 
-# 3. Frontmatter description safety. An unquoted YAML scalar ends at " #"
-#    (comment) and is ambiguous at ": ". /ship shipped truncated at
-#    "wiring Fixes #N" — losing its whole trigger sentence — so this is
-#    guarded, not trusted to review.
+# 3. Frontmatter safety. An unquoted YAML scalar ends at " #" (comment) and
+#    is ambiguous at ": ". /ship shipped truncated at "wiring Fixes #N",
+#    losing its whole trigger sentence. Every rule here is covered by the
+#    matrix in docs/guard-matrix.sh — extend that FIRST, then this.
 for f in skills/*/SKILL.md; do
   dir="$(basename "$(dirname "$f")")"
-  name="$(sed -n 's/^name: *//p' "$f" | head -1)"
-  desc="$(sed -n 's/^description: //p' "$f" | head -1)"
-
-  # name must match its directory — a mismatch installs under one name and
-  # advertises another.
-  if [ "$name" != "$dir" ]; then
-    echo "FAIL frontmatter: $f declares name '$name' but lives in skills/$dir/"
-    fail=1
+  # normalize CRLF, then take only the frontmatter block (between the first
+  # two --- lines). Anything outside it is body text, not frontmatter.
+  fm="$(tr -d '\r' < "$f" | awk 'NR==1 && $0!="---"{exit} NR==1{next} /^---$/{exit} {print}')"
+  if [ -z "$fm" ]; then
+    echo "FAIL frontmatter: $f has no --- delimited frontmatter block"
+    fail=1; continue
   fi
-  if [ -z "$desc" ]; then
+
+  name="$(printf '%s\n' "$fm" | sed -n 's/^name:[[:space:]]*//p' | head -1 | sed 's/[[:space:]]*$//')"
+  [ "$name" = "$dir" ] || { echo "FAIL frontmatter: $f declares name '$name' but lives in skills/$dir/"; fail=1; }
+
+  descs="$(printf '%s\n' "$fm" | sed -n 's/^description:[[:space:]]*//p')"
+  if [ -z "$descs" ]; then
     echo "FAIL frontmatter: $f has no description"
-    fail=1
-    continue
+    fail=1; continue
   fi
 
-  case "$desc" in
-    '"'*'"'|"'"*"'") continue ;;              # properly quoted, both ends
-    '"'*|"'"*)
-      echo "FAIL description: $f opens a quote it never closes on the same line"
-      fail=1; continue ;;
-    '#'*)                                     # leading # = whole value is a comment
-      echo "FAIL description: $f starts with '#' — YAML reads the value as null"
-      fail=1; continue ;;
-  esac
-  if printf '%s' "$desc" | grep -q ' #'; then
-    echo "FAIL description: $f has an unquoted ' #' — YAML truncates it into a comment"
-    fail=1
-  fi
-  if printf '%s' "$desc" | grep -q ': '; then
-    echo "FAIL description: $f has an unquoted ': ' — quote the description"
-    fail=1
-  fi
+  # check EVERY description line, not just the first — a hazard on a second
+  # one was a real false negative when this used `head -1`.
+  while IFS= read -r d; do
+    [ -n "$d" ] || continue
+    case "$d" in
+      '"'*)
+        printf '%s' "$d" | grep -qE '^"([^"\\]|\\.)*"[[:space:]]*(#.*)?$' \
+          || { echo "FAIL description: $f has an unterminated double-quoted description"; fail=1; }
+        continue ;;
+      "'"*)
+        printf '%s' "$d" | grep -qE "^'([^']|'')*'[[:space:]]*(#.*)?\$" \
+          || { echo "FAIL description: $f has an unterminated single-quoted description"; fail=1; }
+        continue ;;
+      '#'*)
+        echo "FAIL description: $f starts with '#' — YAML reads the value as null"
+        fail=1; continue ;;
+    esac
+    printf '%s' "$d" | grep -q ' #' && { echo "FAIL description: $f has an unquoted ' #' — YAML truncates it into a comment"; fail=1; }
+    printf '%s' "$d" | grep -q ': '  && { echo "FAIL description: $f has an unquoted ': ' — quote the description"; fail=1; }
+  done <<EOF
+$descs
+EOF
 done
+
+# 3b. POSIX-ERE hazards in documented grep commands. `git grep -E` does not
+#     support \b (matches nothing, silently) or \s (parses as literal 's').
+#     Both shipped in reference files and made /design-audit's and /secure's
+#     primary checks report clean on dirty input.
+if hits="$(grep -rnE '^[[:space:]]*git grep' skills/*/references/*.md 2>/dev/null | grep -E '\\b|\\s')"; then
+  echo "FAIL regex: \\b or \\s in a git grep -E command (POSIX ERE lacks both; use -w and [[:space:]])"
+  printf '%s\n' "$hits"
+  fail=1
+fi
 
 # 4. SKILL.md line budget (< 500 per Claude Code guidance).
 for f in skills/*/SKILL.md; do

@@ -1,7 +1,12 @@
 # Security surfaces — checklists and grep patterns
 
 Every finding still needs an exploit scenario and a confidence rating
-(SKILL.md). These patterns FIND candidates; they don't rate them — a
+(SKILL.md). These patterns FIND candidates; they don't rate them.
+
+> **Regex note.** `git grep -E` is POSIX ERE — `\s` parses as a literal
+> `s`, so `\s*` means "zero or more letter s". Until 2026-07-29 that made
+> the secret sweep below miss every assignment written with spaces around
+> `=`. Use `[[:space:]]`; use `-w` for word boundaries, never `\b` — a
 grep hit is a lead, not a finding. Record the exact command run under
 `Safety checks:`.
 
@@ -32,7 +37,7 @@ git ls-files | grep -E '(^|/)\.env(\.|$)'          # tracked secrets
 grep -nE '^!' .gitignore 2>/dev/null                # the !.env negation trap
 git log --all --oneline -- '*.env' '*secret*' '*credential*' | head
 git grep -nE '(sk[-_][A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|-----BEGIN [A-Z ]*PRIVATE KEY)' -- . ':!*.md'
-git grep -niE '(api[_-]?key|secret|token|password)\s*[:=]\s*["'"'"'][^"'"'"']{8,}' -- . ':!*.md'
+git grep -niE '(api[_-]?key|secret|token|password)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}' -- . ':!*.md'
 ```
 
 A secret anywhere in history is compromised regardless of the current
@@ -44,7 +49,7 @@ history". This is the `!.env` known-bug-class; cross-reference
 
 ```bash
 # SQL built by concatenation / interpolation rather than parameterized
-git grep -nE '(query|execute|raw)\s*\(\s*[`"'"'"'].*(\$\{|\+ )' 
+git grep -nE '(query|execute|raw)[[:space:]]*\([[:space:]]*[`"'"'"'].*(\$\{|\+ )' 
 git grep -nE '\$queryRawUnsafe|\.raw\(|executeRawUnsafe'
 # shell out with interpolated input
 git grep -nE '(exec|execSync|spawn|os\.system|subprocess).*(\$\{|\+ |%s|f["'"'"'])'
@@ -66,8 +71,8 @@ git grep -nE '(innerHTML|dangerouslySetInnerHTML|v-html|render_template_string)'
 The surface with no OWASP muscle-memory, so check it explicitly:
 
 ```bash
-git grep -nE '(tools?\s*[:=]|function_call|tool_call|register_tool|@tool)'
-git grep -nE '(system\s*[:=]|systemPrompt|system_prompt|messages\.append)'
+git grep -nE '(tools?[[:space:]]*[:=]|function_call|tool_call|register_tool|@tool)'
+git grep -nE '(system[[:space:]]*[:=]|systemPrompt|system_prompt|messages\.append)'
 ```
 
 - **Untrusted-in-trusted-position:** user-supplied text (a document, a
