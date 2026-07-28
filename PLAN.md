@@ -30,14 +30,17 @@
 >   `sk-[A-Za-z0-9]{20,}` stopped at the first hyphen after the prefix.
 >   A broken check returning a pass is worse than no check, because it
 >   converts an unknown into a false certainty. Without positive controls
->   we have evidence our checks RUN, not that they WORK. Proven twice:
->   the same discipline caught a *second* false pass on 2026-07-29, when
->   check.sh's new description guard appeared to work and did not.
+>   we have evidence our checks RUN, not that they WORK. Three false passes
+>   are now documented: this one, check.sh's description guard on
+>   2026-07-29, and /design-audit's palette check, whose `\b` matched
+>   nothing at all in POSIX ERE. (/ship's gate 1 was a false FAIL — loud,
+>   not silent, and so a different class.)
 >   Applies retroactively to /qa, /secure, /design-audit, /health, /audit,
 >   and /migrate-check, and to every wave-6 lens — carrier task **4.15**.
 > - **Resolve one document set, and say which (NEW 2026-07-29).** Every
 >   document-reading skill (/plan, /do, /resume, /journal, /retro, /ship,
->   /audit docs, /health, /ticket, /triage, /learn, and /why (4.11))
+>   /audit docs, /health, /ticket, /triage, /learn, /plan-review, /challenge,
+>   and /why (4.11))
 >   resolves exactly ONE BRIEF/PLAN/JOURNAL set and names its path in the
 >   scope line. If more than one candidate set exists, list the candidates
 >   and STOP — never pick one silently. Ambiguity is a reason to stop, not
@@ -277,8 +280,12 @@ below fully green; repo flipped public.
   > included /retro. /retro is NOT read-only — it appends a dated entry
   > to JOURNAL.md and commits it (`skills/retro/SKILL.md:67`). The
   > acceptance criterion as first written would have failed against a
-  > correctly-built /retro. /migrate-check is excluded because it already
-  > declares `allowed-tools`; it is the template the other five copy.
+  > correctly-built /retro. **/migrate-check** is excluded because it
+  > already declares `allowed-tools` — it is the template the other five
+  > copy. **/qa** is excluded because it makes network requests: its tool
+  > set is narrower-than-write but not the same shape, and 4.15 groups it
+  > with the check-shaped skills for positive controls, which is a
+  > different question from whether it can write.
 - [ ] **4.9** Referral block — discoverability for typed-only skills, per
   the 2026-07-29 verdict in Open items. Marker-fenced `acstack-referrals`
   roster in AGENTS.md (skill → one-line definition → suggest-when); a
@@ -345,7 +352,14 @@ below fully green; repo flipped public.
      SKILL.md names a real directory; every referenced file path exists.
   3. **Config-key reachability** — every key in README's table appears in
      `templates/acstack.md` AND is read by the skill the table names.
-  4. **Shared-snippet byte-identity** — the secret-scan regex, the six
+  4. **Shared-snippet drift** — pick one canonical home per snippet and
+     make the others cite it, then guard the citations. Note the guard can
+     only be byte-identity while duplicates EXIST; once they become
+     citations, the check becomes "the cited section exists". The
+     adversarial-input bank has already diverged three ways (audit has
+     "empty query", eval-spec has "prompt-injection-shaped", neither
+     carries the bank's HTML or Unicode cases). Covers: the secret-scan
+     regex, the six
      eval failure buckets, and the adversarial input list are each
      duplicated across 2–4 files with no guard; the regex had *already*
      drifted (`ghp_` in one copy, absent in the other). Either mark one
@@ -359,29 +373,6 @@ below fully green; repo flipped public.
   **Acceptance:** each of the six fires against a seeded defect and is
   silent on the clean tree — demonstrated, per 4.15.
 
-- [ ] **4.20** Canonicalize the duplicated snippets that have already
-  drifted — carrier for findings the 2026-07-29 audits raised and this
-  session did not fix inline. The six eval failure buckets appear in
-  `audit/SKILL.md`, `journal/SKILL.md`, `eval-review-rules.md`, and
-  `retro-sections.md`; the adversarial-input bank appears in
-  `qa/references/adversarial-inputs.md` plus restatements in `audit`,
-  `eval-spec`, and `qa` **that have already diverged** — audit alone has
-  "empty query", eval-spec alone has "prompt-injection-shaped", and
-  neither carries the bank's HTML-fragment or Unicode cases. Pick one
-  canonical home per snippet, make the others cite it, and extend 4.17.4's
-  byte-identity guard to cover them. **Acceptance:** editing a canonical
-  snippet without updating its citations fails check.sh.
-- [ ] **4.21** Generalize `/do`'s degradation pattern to its peers —
-  carrier for the audit finding that the fix landed in one skill only.
-  `/ticket` and `/triage` document mode assume PLAN.md exists; `/retro`
-  degrades for missing eval history but not a missing JOURNAL or PLAN;
-  `/journal`'s PLAN-sync step has no missing-PLAN path; `/do` step 2 has
-  no path for a task group with no `**Acceptance:**` line — it would
-  declare done unverified, the exact rot `/triage` and `/plan-review` are
-  built to flag. Also: `/journal` never says which files its commit
-  stages, so it could sweep unrelated work. **Acceptance:** each named
-  skill, run against a repo missing its input, names what is missing and
-  stops rather than proceeding.
 - [ ] **4.22** Fix `setup --dry-run` reporting work it did not do. It
   prints per-item "linked <skill>" and a "19 linked, 0 skipped" summary
   while creating nothing; `--uninstall --dry-run` prints "removed <skill>"
@@ -400,9 +391,36 @@ below fully green; repo flipped public.
   the contradiction standing. **Acceptance:** `T4:` appears nowhere as a
   live format, and the body and condensed block agree.
 
-> **Process note (2026-07-29):** 4.14, 4.15, 4.17, 4.20–4.23 (this wave)
-> and 4.16,
-> 4.18 (wave 4.5) all exist because cross-cutting rules were written as decisions with no task
+- [ ] **4.24** Purge the banned-name roster from git history before the
+  public flip. `883d729` moved the list out of the tracked tree, but the
+  names remain in history — `git log -S'<token>' --all` finds them in
+  `92e9779` (added) and `883d729` (removed). A private repo makes this
+  latent; flipping public makes it a disclosure. Options: rewrite history
+  (`git filter-repo`), or squash to a single root commit before the flip.
+  **Acceptance:** `git log -p --all | grep -iE '<roster>'` returns nothing
+  on the repo that goes public. **This blocks 4.7's public flip** — it is
+  the one launch item that cannot be fixed after the fact.
+- [ ] **4.25** Decide and document `/do`'s push default. `push: direct` is
+  the shipped default, so `/do 1.1` on a fresh clone commits AND pushes
+  with no confirmation — an adopter's first invocation can push to their
+  default branch. That may be the intended ergonomics for a solo user, but
+  it is the opposite of Claude Code's own posture and is documented
+  nowhere prominent. Either change the default to `branch-pr`, or keep it
+  and say so plainly in README's install section. **Acceptance:** a new
+  adopter cannot be surprised by a push — either it does not happen, or
+  the README told them before they ran it. Owner: user (product call).
+- [ ] **4.26** Correct README's requirements and footprint claims.
+  "git and bash 3.2+. Nothing else" is true of install only: tickets mode
+  needs `gh` (nine skills), `/qa` needs `curl`, `/migrate-check` defaults
+  to `pg_dump` under `db: shared-prod`, and 4.12's eval runner needs a
+  model API. Separately, "The three documents" undersells the footprint —
+  `/plan seed` also creates LEARNINGS.md, rewrites CLAUDE.md to a pointer,
+  edits AGENTS.md, and offers `.claude/acstack.md`. **Acceptance:** a
+  reader can predict every file the pack will touch and every binary it
+  may invoke, before installing.
+
+> **Process note (2026-07-29):** 4.14, 4.15, 4.17, 4.22–4.26 (this wave)
+> and 4.16, 4.18 (wave 4.5) all exist because cross-cutting rules were written as decisions with no task
 > owning the work — the multi-product rule, the positive-control rule, the
 > commit-format verdict, and the audit findings left loose. Recording a
 > decision is not scheduling it. Any future cross-cutting rule added to
@@ -411,6 +429,8 @@ below fully green; repo flipped public.
 
 > **Split decision (2026-07-29).** ~~Wave 4 carries 18 items.~~ Split into
 > wave 4 (11 items, launch-blocking) and wave 4.5 (7 items, post-launch).
+> *(Counts as of the split. 4.19–4.23 were added afterwards by the second
+> audit round; current totals are in the Risk note below.)*
 > **The dividing line: wave 4 is "nothing an adopter touches is broken,
 > missing, or lying"; wave 4.5 is "the pack is more rigorous and more
 > capable."** An item stays in wave 4 only if its absence would mislead a
@@ -455,26 +475,28 @@ below fully green; repo flipped public.
 > split was made.
 
 > **Risk (2026-07-29, revised same day):** the split left wave 4 at 11
-> items; the second audit round added 4.20–4.23 as carriers, taking it to
-> **15**. Those four are cleanup of defects already found, not new
+> items; two further audit rounds added carriers, taking it to **16**. Those four are cleanup of defects already found, not new
 > ambition — but the wave is heavy again and that should be watched rather
 > than discovered late.
 >
 > Cut order if it slips: 4.22 (`--dry-run` output — cosmetic and rarely
-> hit), then 4.20 (snippet canonicalization — the drift is documented and
-> the guard can follow later), then 4.8 (`allowed-tools`, and soften README
+> hit), then 4.26 (README requirements — a doc correction, though it is
+> the kind that loses trust), then 4.8 (`allowed-tools`, and soften README
 > v2's trust claim to match), then 4.9 (referral block — costs
 > discoverability, but the README still explains the typed-only skills).
 >
-> **Do not cut 4.7, 4.12, 4.14, 4.15, 4.17, 4.21, or 4.23.** 4.7 is the
+> **Do not cut 4.7, 4.12, 4.14, 4.15, 4.17, 4.23, 4.24, or 4.25.** 4.7 is the
 > gate itself; 4.12 protects the headline claim; 4.14 stops confidently
 > wrong answers; 4.15 and 4.17 are what make every other check
 > trustworthy — this repo has produced three documented cases of a check
 > that ran and did not work (the `sk-live` regex, the description guard's
-> first control, and /ship's gate 1 blocking every release); 4.21 stops
-> skills guessing when their inputs are missing; and 4.23 must land before
-> 4.16, since implementing the commit format without resolving rule 10's
-> self-contradiction would cement a format nothing emits.
+> first control, /design-audit's palette check matching nothing, and
+> /ship's gate 1 blocking every release); 4.23 must land before 4.16, or
+> implementing the commit format would cement a `T4:` shape nothing emits;
+> **4.24 is absolute** — it is the only launch item that cannot be fixed
+> after the flip, since history is public the moment the repo is; and 4.25
+> is the difference between an adopter's first command being useful and it
+> being a surprise push.
 
 ## [ ] Wave 4.5 — Post-launch hardening and capability
 
@@ -544,8 +566,14 @@ reordered, if any.
   and `ticket #2: <description>` (tickets). **Acceptance:** no pack file
   still documents `completed task N (…)` or a bare `#N:` subject as the
   current format; wave-2's JOURNAL entry keeps its historical wording.
-- [ ] **4.18** Remaining degradation paths and config consistency — the
-  audit's per-skill gaps not closed on 2026-07-29. Every one is a place a
+- [ ] **4.18** Remaining degradation paths and config consistency — every
+  place a skill would guess instead of stopping. (Absorbed the former **~~4.21~~**, filed
+  2026-07-29 as a near-duplicate of this task in the *other* wave — the
+  split line cannot adjudicate one task sitting on both sides of it. That
+  ID is retired, not reused.)
+  Also from that filing: `/do` step 2 has no path for a task group with no
+  `**Acceptance:**` line — it would declare done unverified, the exact rot
+  `/triage` and `/plan-review` exist to flag. Every one is a place a
   skill would guess instead of stopping:
   - `/audit eval` — no results file present.
   - `/plan seed` — BRIEF.md already exists (it is a *frozen* document;
@@ -644,10 +672,14 @@ scratch project; none of them can write (enforced by `allowed-tools`, per
 personas. Each reads a named artifact, applies a checklist, and returns a
 verdict. No first names, no roleplay, no "as your architect I would say".
 
-**Exit criterion:** Each lens returns a verdict on a seeded project
-carrying its specific defect class (its positive control, per the
-cross-cutting rule); `/board` convenes the relevant ones and consolidates
-without averaging dissent away.
+**Exit criterion:** Each **lens** (6.1–6.5) returns a verdict on a seeded
+project carrying its specific defect class (its positive control, per the
+cross-cutting rule); `/board` (6.6) convenes the relevant ones and
+consolidates without averaging dissent away; `/skill` (6.7) produces a
+SKILL.md that passes check.sh. 6.6 and 6.7 are deliberately NOT lenses —
+6.7 writes files — so the per-lens criterion and the open-slot rule below
+apply to 6.1–6.5 only. Stated explicitly because the same set-assertion
+error already produced two bugs this wave-planning round.
 
 > **Cross-cutting rule for every lens — the open slot (2026-07-29).**
 > Each lens ends with one step that is explicitly NOT on its checklist:
