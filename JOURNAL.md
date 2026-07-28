@@ -3,11 +3,12 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-07-29. Waves 1–3 built and shakedown-passed (19
-> skills). Since then: the roadmap extended to waves 4/4.5/5/6/7 plus a
-> deferred browser layer (38 skills at the end), two independent audits
-> that found a shipped bug in /ship, and four verification rules added to
-> AGENTS.md. Wave 4 (11 launch-blocking items) is next; nothing built yet.
+> **Last update**: 2026-07-29 (second entry that day). Waves 1–3 built and
+> shakedown-passed (19 skills). Since then: the roadmap extended to waves
+> 4/4.5/5/6/7 plus a deferred browser layer (38 skills at the end), six
+> independent audits across two rounds, four verification rules added to
+> AGENTS.md, and three broken checks fixed — including /ship's gate 1,
+> which blocked every release. Wave 4 (15 items) is next; nothing built.
 
 ## TL;DR
 
@@ -23,7 +24,7 @@
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
   public flip waits on the wave-4 launch checklist.
-- Roadmap runs to 38 skills: wave 4 (launch, 11 items) → 4.5 (post-launch
+- Roadmap runs to 38 skills: wave 4 (launch, 15 items) → 4.5 (post-launch
   hardening, 8) → 5 (pre-flight gates) → 6 (review board) → 7 (operate),
   plus an unscheduled browser layer. Full detail in PLAN.md.
 - Next: wave 4. Specs get written at wave start, per the standing process.
@@ -44,12 +45,98 @@ scripts/check.sh   # pack guard — must be clean before any commit
 | 1 — Core + foundation | ✅ | 5 skills (403 SKILL.md lines total, budget 500/each), 9 reference files, setup round-trip verified, guard clean on first run |
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
-| 4 — Distribution + launch | ⬜ | 11 launch-blocking items: runtime, CI, README v2, discoverability, eval runner, guards, the 9-point demonstrated launch checklist |
+| 4 — Distribution + launch | ⬜ | 15 launch-blocking items: runtime, CI, README v2, discoverability, eval runner, guards, the 9-point demonstrated launch checklist |
 | 4.5 — Post-launch hardening | ⬜ | 8 items split out 2026-07-29: telemetry, `setup --global`, /audit tests, /why, /refactor, remaining degradation paths |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family, the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Second audit round: four agents, ~39 findings, three broken checks (2026-07-29, later)
+
+A four-agent re-check of the whole plan and all 19 skills — plan structure
+after the wave split, verification that the morning's fixes actually
+landed, cross-document consistency, and an adversarial pass told to find
+what the earlier audits missed. It found more than the first round, and
+the most valuable findings were about **checks that ran and did not work**.
+
+**`/ship`'s gate 1 blocked every release on this repo.**
+`git rev-parse --abbrev-ref origin/HEAD` exits 128 when `origin/HEAD` is
+unset — true of any repo made by `git init` + `git remote add` rather than
+`git clone`, including this one — while *still printing `origin/HEAD` on
+stdout*. The documented pipeline therefore produced the literal string
+`HEAD`, `git log HEAD..HEAD` returned zero commits, and gate 1 reported
+"nothing to ship" forever. Replaced with a four-step resolution that can
+never silently yield `HEAD`.
+
+**Gate 4 reported evidence it did not have.** With an empty commit range,
+`grep -Fqf -` receives a zero-byte pattern file, and BSD grep **matches
+everything** — so it printed "journal mentions the work" from nothing.
+Verified on macOS. The empty case is now guarded first, and the check's
+opposite weakness is documented: it matches commit subjects verbatim
+against a journal that rarely quotes them, so it proposes `/journal` and
+never blocks. `/ship`'s "any failing gate STOPS the release" rule now
+names that exception, because a rule with an unstated exception is not a
+rule.
+
+**The morning's own guard had a false negative in its own bug class.** A
+description whose FIRST character is `#` is read by YAML as a comment and
+the value becomes null — the same vanishing-trigger-sentence failure the
+guard was written for after `/ship`. An agent proved it by building a fake
+pack that passed clean. The guard now also catches malformed quoting, a
+missing description, and a `name:` that disagrees with its directory; all
+six branches were demonstrated firing before commit.
+
+**A fix I made that morning was a regression.** Repointing five skills to
+"README's tickets-mode section" is wrong: skills run inside *other* repos,
+where README is that project's README and has no such section. A vague
+pointer became a wrong one — the exact guess the fix targeted. All six
+citations now state the three preconditions inline and are
+standalone-readable. Same class: four skills cited a "pack's shared
+verdict-first stance" documented nowhere.
+
+**Three adopter-facing claims were false.** `CONDUCT.md` — the file
+`/plan seed` installs into adopter projects — promised the conduct block
+installs via `setup --global`; that flag does not exist. README claimed
+"git and a POSIX shell" while both scripts shebang bash and use
+`BASH_SOURCE` and process substitution. README and check.sh's own header
+each listed four guard checks when there are five, every stale copy
+omitting the newest one.
+
+**Skill-level contradictions.** `/audit`'s eval reference told it to "Fix
+the prompt / the source data / the parser" while SKILL.md says it never
+fixes — the column is now the remedy to *recommend*. `/migrate-check`'s
+non-Prisma fix had landed in step 2 only; steps 5, 6, 8 stayed Prisma-only
+and its `allowed-tools` whitelist permits no other migration CLI, so it
+now names those checks as skipped rather than implying coverage. `/ship`
+contradicted itself three ways on whether a PR exists under
+`push: direct`.
+
+**The carrier defect recurred a fourth time, and my own rule missed it.**
+Two skills proposed in analysis — refactor safety and dependency upgrade —
+were never scheduled. The rule written that morning said "a *cross-cutting
+rule* names its carrier task in the same edit" and these were *skills*, so
+it did not catch them. Rule broadened to "anything named as needed work".
+`/upgrade` landed as 5.5; `/refactor` went to 4.5 as **4.19** — putting it
+in wave 5 would have broken that wave's "none of them can write" exit
+criterion, the same set-property error as the `/retro` misclassification.
+
+**What this round did NOT fix (carriers 4.20–4.23):** snippet
+canonicalization (the adversarial-input bank has already diverged three
+ways), generalizing `/do`'s degradation pattern to `/ticket`, `/triage`,
+`/retro`, `/journal`, `setup --dry-run` reporting work it did not do, and
+CONDUCT rule 10's self-contradiction over `T4:` — which must land before
+4.16 or that task would cement a format nothing emits.
+
+Validation close: 5 commits including this entry, `check.sh` clean on
+each; guard sections 4 → 5, with all 6 branches demonstrated firing
+against seeded defects; wave 4 11 → 15 items; roster 34 → 38 skills;
+PLAN 809 → 869 lines. Numbers corrected against ground truth rather than
+memory — and two of THIS entry's own figures were wrong on first write
+(PLAN length and commit count) and caught by re-measuring before commit,
+which is the verify-the-consumed-form rule applied to the journal itself:
+skill average 87 → 93, `/ship` 74 → 98 lines, wave-1 starting commits
+2 → 3 (git log), PLAN length 821 → 809 → 869.
 
 ### Roadmap to 38 skills, and an audit that found a shipped bug (2026-07-29)
 
