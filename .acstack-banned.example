@@ -1,0 +1,20 @@
+# Banned-name list — copy to .acstack-banned (gitignored) and edit.
+#
+# scripts/check.sh fails the guard if any of these appear in pack content.
+# One extended-regex alternative per line; blank lines and # comments are
+# ignored. Matching is word-boundary and case-insensitive.
+#
+# WHY THIS FILE IS NOT THE LIST ITSELF: the list names the very clients,
+# collaborators, and projects you are trying to keep out of a public repo.
+# Committing it publishes exactly what it exists to protect — and until
+# 2026-07-29 this pack made that mistake, hardcoding a real roster inside
+# check.sh, which also did not scan its own directory and so could never
+# catch itself. Keep your real list untracked.
+#
+# Pick tokens that are distinctive. Short common words (a first name like
+# "neil", a fragment like "nuv") will false-positive on ordinary prose.
+
+acmecorp
+initech
+globex
+some-client-project

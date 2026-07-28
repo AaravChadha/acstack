@@ -160,7 +160,10 @@ skills/<name>/        # one directory per skill: SKILL.md + references/
 ## Development
 
 Run `scripts/check.sh` before committing pack changes. It fails on
-principles-block drift, personal/client names in pack content, unsafe or
+principles-block drift, personal/client names in pack content (from your
+own untracked `.acstack-banned` list — copy `.acstack-banned.example`; the
+list is deliberately NOT committed, since it names the very clients it
+protects), unsafe or
 mismatched frontmatter (a description YAML would truncate, a `name:` that
 disagrees with its directory), oversized SKILL.md files, and shell syntax
 errors.

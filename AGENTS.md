@@ -10,8 +10,12 @@ Binding rules for this repo:
   commit — fix the drift, don't skip the check.
 - The `acstack:principles` block is edited ONLY in README.md (canonical),
   then propagated verbatim to every `skills/*/SKILL.md`.
-- No client, company, or collaborator names anywhere in pack content — the
-  guard enforces a banned list; when in doubt, genericize.
+- No client, company, or collaborator names anywhere in pack content. The
+  guard reads its list from untracked `.acstack-banned` (see
+  `.acstack-banned.example`) and sweeps `scripts/` and `setup` too — the
+  list was hardcoded inside check.sh until 2026-07-29, in a repo destined
+  to go public, and the sweep excluded its own directory so it could never
+  catch itself. When in doubt, genericize.
 - Skills stay under 500 lines and plain markdown — no bash preambles until
   the wave-4 runtime lands, and none beyond its documented budget after.
 - Commit style: lowercase `<verb> <object> (<detail>)` subject + a brief

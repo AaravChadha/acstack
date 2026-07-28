@@ -5,3 +5,6 @@
 .vscode/
 scratch/
 *.local.md
+
+# local banned-name list — must never be committed
+.acstack-banned

@@ -8,6 +8,7 @@ set -euo pipefail
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_DIR"
 fail=0
+skipped=0
 
 extract_principles() {
   awk '/<!-- acstack:principles -->/{f=1} f{print} /<!-- \/acstack:principles -->/{f=0}' "$1"
@@ -30,11 +31,29 @@ fi
 
 # 2. Banned names: client/collaborator/project-specific terms must never
 #    appear in pack content. Word-boundary, case-insensitive.
-BANNED='bajaj|finalyca|satyajit|neil|nuv|rm_assist|rm-assist|rm-research|canara|robeco|nutriscan|triage_ai'
-if hits="$(grep -riEnw "$BANNED" skills/ templates/ docs/ CONDUCT.md README.md AGENTS.md PLAN.md JOURNAL.md 2>/dev/null)"; then
-  echo "FAIL banned names:"
-  printf '%s\n' "$hits"
-  fail=1
+#    The list itself lives OUTSIDE the tracked tree: it names the clients and
+#    collaborators being protected, so committing it publishes exactly what it
+#    guards. Until 2026-07-29 this script hardcoded a real roster AND excluded
+#    scripts/ from its own sweep, so it could never catch itself.
+BANNED_FILE="${ACSTACK_BANNED_FILE:-.acstack-banned}"
+[ -f "$BANNED_FILE" ] || BANNED_FILE="$HOME/.claude/acstack-banned"
+if [ ! -f "$BANNED_FILE" ]; then
+  echo "SKIP banned names: no list found (.acstack-banned or ~/.claude/acstack-banned)."
+  echo "     Copy .acstack-banned.example and edit it. A missing list is NOT a pass —"
+  echo "     nothing was checked."
+  skipped=$((skipped + 1))
+else
+  BANNED="$(grep -vE '^\s*(#|$)' "$BANNED_FILE" | paste -sd'|' -)"
+  if [ -z "$BANNED" ]; then
+    echo "SKIP banned names: $BANNED_FILE has no entries — nothing was checked."
+    skipped=$((skipped + 1))
+  elif hits="$(grep -riEnw "$BANNED" \
+        skills/ templates/ docs/ scripts/ setup \
+        CONDUCT.md README.md AGENTS.md PLAN.md JOURNAL.md 2>/dev/null)"; then
+    echo "FAIL banned names:"
+    printf '%s\n' "$hits"
+    fail=1
+  fi
 fi
 
 # 3. Frontmatter description safety. An unquoted YAML scalar ends at " #"
@@ -95,7 +114,11 @@ if command -v shellcheck >/dev/null 2>&1; then
 fi
 
 if [ "$fail" -eq 0 ]; then
-  echo "check.sh: all clean"
+  if [ "$skipped" -gt 0 ]; then
+    echo "check.sh: no failures, but $skipped check(s) SKIPPED — coverage is incomplete"
+  else
+    echo "check.sh: all clean"
+  fi
 else
   exit 1
 fi
