@@ -2,9 +2,9 @@
 
 ## The classification buckets
 
-Every failure lands in exactly one. **The response column is the remedy to
-RECOMMEND, not work /audit performs** — /audit reports and never fixes
-(SKILL.md). Where a bucket says "fix", the report names the fix and who
+Every failure lands in exactly one. **The "Recommended remedy" column is
+what to RECOMMEND, not work /audit performs** — /audit reports and never
+fixes (SKILL.md). Where a bucket says "fix", the report names the fix and who
 would apply it; the user decides, and any fix lands as its own reviewable
 commit.
 

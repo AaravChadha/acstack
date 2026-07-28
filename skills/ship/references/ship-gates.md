@@ -22,14 +22,29 @@ Resolve in this order and stop if none succeeds:
 
 ```bash
 d="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@')"
-[ -n "$d" ] || d="$(git remote show origin 2>/dev/null | sed -n '/HEAD branch/s/.*: //p')"
-[ -n "$d" ] || for c in main master; do git show-ref -q --verify "refs/heads/$c" && d="$c" && break; done
-[ -n "$d" ] || { echo "BLOCKED — cannot determine the default branch; pass it explicitly"; exit 1; }
-git log --oneline "$d"..HEAD      # the commits being shipped (non-empty)
+[ -n "$d" ] || for c in main master trunk; do
+  git show-ref -q --verify "refs/heads/$c" && d="$c" && break
+done
+# validate before use — a name that does not resolve is not a default branch
+if [ -z "$d" ] || ! git rev-parse --verify -q "$d" >/dev/null; then
+  echo "BLOCKED — cannot determine the default branch; pass it explicitly"
+else
+  git log --oneline "$d"..HEAD    # the commits being shipped (non-empty)
+fi
 ```
 
-`$d` must never be empty or the literal `HEAD`; if it is, that is a
-BLOCKED verdict naming the failed resolution, not a zero-commit result.
+**Two traps this avoids.** `git remote show origin` looks like a good
+second step and is not: it is a **network call** on every gate-1 run (it
+can hang on an auth prompt), and when the remote's HEAD is unborn it
+prints `HEAD branch: (unknown)`, so `$d` becomes the literal string
+`(unknown)` — swapping one bad sentinel for another. The `rev-parse
+--verify` line is what makes that impossible: whatever `$d` holds must
+resolve to a real ref before it is used.
+
+**`$d` is a shell variable and does not survive into the later gates**,
+which run as separate commands. Gates 4 and 5 below re-resolve it with
+the same block, or take the branch name as a literal. Never assume it
+carries over.
 
 - Dirty tree → BLOCK: "commit or stash first" with the porcelain output.
 - On the default branch → offer to cut `<branch-prefix><slug>` and move

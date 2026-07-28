@@ -68,7 +68,8 @@ Append to JOURNAL.md as a dated entry under `## Key decisions and
 journey`, newest first:
 `### Retro (YYYY-MM-DD — <window>)`. Commit using the project's
 `journal-commit-format` (pack default `Journal <date>: <summary>`) with
-`retro — <summary>` as the summary, brief body, attribution per config. PLAN edits the retro proposes are listed for the user to apply
+`retro — <summary>` as the summary, brief body, attribution per config.
+PLAN edits the retro proposes are listed for the user to apply
 via `/plan replan` — /retro writes the journal, not the plan.
 
 ## Tickets-mode delta

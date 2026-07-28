@@ -62,11 +62,24 @@ start — that is its entire value.
 Seed housekeeping (same invocation):
 - Ensure `CLAUDE.md` is exactly `@AGENTS.md`. If it has real content, flag it
   and propose moving the content to AGENTS.md — never silently rewrite.
-- Ensure AGENTS.md contains the pack's `acstack-conduct` block (copy the
-  marker-fenced block from the pack's CONDUCT.md). Refresh only between the
-  markers; never touch content outside them.
+- Ensure AGENTS.md contains the pack's `acstack-conduct` block. **Resolve
+  the pack root first** — `setup` symlinks only `skills/*/`, so CONDUCT.md
+  and `templates/` are NOT on any path relative to the user's project:
+
+  ```bash
+  pack_root="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/plan")")")"
+  ```
+
+  Read the marker-fenced block from `$pack_root/CONDUCT.md` and copy it
+  **verbatim**. If the readlink fails (a copy install rather than
+  symlinks), say so and ask the user for the pack path — **never
+  reconstruct the block from memory.** An invented conduct block is worse
+  than none: it looks authoritative and binds the agent to rules the pack
+  never wrote. Refresh only between the markers; never touch content
+  outside them.
 - Create an empty `LEARNINGS.md` if none exists (a place for /learn later).
-- Offer to copy `templates/acstack.md` to `.claude/acstack.md` if absent.
+- Offer to copy `$pack_root/templates/acstack.md` to `.claude/acstack.md`
+  if absent — same resolution, same honest stop if it fails.
 
 ## The gate — before build
 

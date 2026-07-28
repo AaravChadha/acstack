@@ -42,10 +42,11 @@ safety) · /audit code (defects in code; this gates schema changes).
    cannot be resolved, say exactly that and ask for the target path —
    never assume Prisma.**
 
-   **Honest scope on non-Prisma stacks.** Steps 4 (classification) and 3
-   (backup path) are stack-agnostic and run normally. Steps 5, 6, and 8
-   are Prisma-specific, and the `allowed-tools` whitelist deliberately
-   permits no migration CLI except `prisma migrate status` — running an
+   **Honest scope on non-Prisma stacks.** Steps 3 (backup path) and 4
+   (classification) are stack-agnostic and run normally. Steps 5, 6, 7,
+   and 8 name Prisma commands specifically, and the `allowed-tools`
+   whitelist deliberately permits no migration CLI except
+   `prisma migrate status` — running an
    arbitrary stack's CLI is exactly the mutation risk this skill exists
    to prevent. So on Drizzle/Alembic/Rails/Flyway/plain SQL, say plainly:
    *"history-drift and command-discipline checks skipped — <stack> CLI is

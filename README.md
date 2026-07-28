@@ -96,7 +96,7 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 | `test-command` | (auto-detected; set to override) | /ship |
 | `db` | `shared-prod` \| `local` \| `none` | /migrate-check |
 | `attribution` | `none` \| `standard` | all skills |
-| `telemetry` | `on` \| `off` (local-only either way) | runtime (coming) |
+| `telemetry` | `off` \| `on` — local-only either way; **not implemented yet** | runtime (4.3) |
 | `stale-days` | `30` (days; set in a `## triage` section) | /triage, /health |
 | `base-url` | (unset; set in a `## qa` section) | /qa |
 | `palette`, `product-names` | (unset; set in a `## design-audit` section) | /design-audit |
@@ -112,7 +112,8 @@ bodies carry no AI-tool mentions and no attribution trailers. Flip to
 ### Tickets-mode preconditions
 
 Skills that touch a tracker (`tracking: tickets`) check three things on
-every invocation, and this is the canonical statement they refer to:
+every invocation. Each skill states these inline so it reads correctly
+on its own inside your repo; this section is the human-facing summary:
 
 1. `gh` is installed,
 2. `gh auth status` succeeds,

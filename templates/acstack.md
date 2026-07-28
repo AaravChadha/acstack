@@ -17,7 +17,7 @@ context belongs — never inside the pack's skills.
 - branch-prefix: feature/     # used when push is branch-pr
 - db: shared-prod             # shared-prod | local | none — /migrate-check strictness
 - attribution: none           # none (no AI mentions/trailers in generated docs & commits) | standard
-- telemetry: on               # on (local-only usage log) | off
+- telemetry: off              # off | on (local-only usage log; NOT built yet — wave 4.3)
 - subtask-commit-format: completed task <number> (<description>)
 - journal-commit-format: Journal <date>: <summary>
 
