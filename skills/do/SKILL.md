@@ -1,6 +1,6 @@
 ---
 name: do
-description: Complete one numbered subtask from PLAN.md end-to-end - execute exactly the named subtask, run its acceptance check, tick the exact box, commit with the task reference, push or open a PR per project config, report what was edited, and propose subtasks that group naturally with it. Use when the user asks to do or complete a specific numbered task like 3.2.1.
+description: Complete one numbered subtask from PLAN.md end-to-end - execute exactly the named subtask, run its acceptance check, tick the exact box, commit with the task reference locally (never pushes - that is /ship's job), report what was edited, and propose subtasks that group naturally with it. Use when the user asks to do or complete a specific numbered task like 3.2.1.
 argument-hint: "<subtask-id> [notes]"
 ---
 
@@ -66,11 +66,16 @@ the subtask turns out to be a bug hunt).
    `completed task <number> (<description>)`), plus a brief what-and-why
    body per CONDUCT rule 10. Include the PLAN.md checkbox change in the same
    commit so plan and code move together.
-5. **Push.**
-   - `push: direct` (default): `git push`.
-   - `push: branch-pr`: create `<branch-prefix><short-topic>`, push, open a
-     PR with `gh pr create`. The PR body follows the report shape: what
-     changed, why, how it was verified. Attribution per config.
+5. **Stop at the commit — /do never pushes.** The commit is local and
+   reversible; a push is outward-facing and is not. `/do` is
+   model-invocable, so an agent can reach it without the user typing
+   anything, and an unattended push is the one step of this sequence that
+   cannot be undone quietly. Report the commit and let the user push.
+
+   Say so explicitly in the report: `committed locally — not pushed`, plus
+   the exact command they would run (`git push`, or
+   `git push -u origin <branch>` on a new branch). Publishing a subtask is
+   `/ship`'s job, and it runs five gates first.
 6. **Report and propose.** Tell the user exactly what was edited — files,
    functions, literals — then name any subtasks that group naturally with
    this one (same file, same layer, unblocked by it) and ask whether to
@@ -84,8 +89,8 @@ Any failure → name the exact missing precondition, offer document mode.
 1. **Pick up.** `/do 42` (or `#42`) takes that issue. Bare `/do` proposes
    the top unblocked open issue in the current milestone (no `blocked`
    label) and confirms before starting — it never just begins.
-2. **Branch.** `<branch-prefix><n>-<slug>` (e.g. `feature/42-fix-parser`),
-   regardless of the `push` setting — issue work is branch work.
+2. **Branch.** `<branch-prefix><n>-<slug>` (e.g. `feature/42-fix-parser`)
+   — issue work is branch work. Created locally; not pushed.
 3. **Work and commit.** Subjects use the tickets shape per CONDUCT rule 10:
    `#42: <subject>`. Issue-body checklist items are ticked via
    `gh issue edit` as they complete — the issue tracks progress the way
@@ -93,9 +98,10 @@ Any failure → name the exact missing precondition, offer document mode.
 4. **Verify.** Run the issue's `## Acceptance criteria` before anything
    closes. A failing acceptance becomes an issue comment with the exact
    output — the issue stays open, the failure is not papered over.
-5. **Close via merge.** Work that completes the issue carries `Fixes #42` —
-   in the PR body (`push: branch-pr`) or the final commit body
-   (`push: direct`). Partial work references `#42` without `Fixes`.
+5. **Close via merge.** Work that completes the issue carries `Fixes #42`
+   in the final commit body; partial work references `#42` without `Fixes`.
+   The branch stays local until the user pushes it or runs `/ship` — the
+   issue closes when the branch merges, which is a human act either way.
 6. **Report and propose** as in document mode; "groupable next" =
    unblocked issues in the same milestone touching the same files.
 

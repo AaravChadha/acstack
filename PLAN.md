@@ -400,15 +400,28 @@ below fully green; repo flipped public.
   **Acceptance:** `git log -p --all | grep -iE '<roster>'` returns nothing
   on the repo that goes public. **This blocks 4.7's public flip** — it is
   the one launch item that cannot be fixed after the fact.
-- [ ] **4.25** Decide and document `/do`'s push default. `push: direct` is
-  the shipped default, so `/do 1.1` on a fresh clone commits AND pushes
-  with no confirmation — an adopter's first invocation can push to their
-  default branch. That may be the intended ergonomics for a solo user, but
-  it is the opposite of Claude Code's own posture and is documented
-  nowhere prominent. Either change the default to `branch-pr`, or keep it
-  and say so plainly in README's install section. **Acceptance:** a new
-  adopter cannot be surprised by a push — either it does not happen, or
-  the README told them before they ran it. Owner: user (product call).
+- [x] **4.25** ~~Decide and document `/do`'s push default.~~ **Verdict
+  (2026-07-29):** `/do` no longer pushes at all. It completes the subtask,
+  verifies acceptance, ticks the box, commits **locally**, and reports
+  `committed locally — not pushed` with the exact command the user would
+  run. The `push` key now governs `/ship` only.
+
+  **Why removal rather than switching the default to `branch-pr`:** a
+  commit is local and reversible; a push is outward-facing and is not, so
+  bundling them into one unconfirmed step was the actual defect — not
+  which push mode was selected. `branch-pr` as the default would also have
+  put `gh` on the critical path of the pack's most-used skill, breaking
+  the install promise for anyone on GitLab or a local-only repo, and
+  PR-per-subtask is self-review for a solo user: you author and merge it
+  yourself, which catches nothing. The real recheck already exists one
+  level up in `/ship`'s five gates, at feature granularity where it
+  belongs.
+
+  **The decisive fact:** `/do` is model-invocable, so an agent can reach
+  it without the user typing anything. An unattended `git push` is the one
+  step in that sequence that cannot be undone quietly. Tradeoff: the user
+  now runs one extra command to publish. Revisit if that friction turns
+  out to bite in practice.
 - [ ] **4.26** Correct README's requirements and footprint claims.
   "git and bash 3.2+. Nothing else" is true of install only: tickets mode
   needs `gh` (nine skills), `/qa` needs `curl`, `/migrate-check` defaults
@@ -485,18 +498,18 @@ below fully green; repo flipped public.
 > v2's trust claim to match), then 4.9 (referral block — costs
 > discoverability, but the README still explains the typed-only skills).
 >
-> **Do not cut 4.7, 4.12, 4.14, 4.15, 4.17, 4.23, 4.24, or 4.25.** 4.7 is the
+> **Do not cut 4.7, 4.12, 4.14, 4.15, 4.17, 4.23, or 4.24.** 4.7 is the
 > gate itself; 4.12 protects the headline claim; 4.14 stops confidently
 > wrong answers; 4.15 and 4.17 are what make every other check
-> trustworthy — this repo has produced three documented cases of a check
-> that ran and did not work (the `sk-live` regex, the description guard's
-> first control, /design-audit's palette check matching nothing, and
-> /ship's gate 1 blocking every release); 4.23 must land before 4.16, or
-> implementing the commit format would cement a `T4:` shape nothing emits;
-> **4.24 is absolute** — it is the only launch item that cannot be fixed
-> after the flip, since history is public the moment the repo is; and 4.25
-> is the difference between an adopter's first command being useful and it
-> being a surprise push.
+> trustworthy — this repo has produced **three false passes** (the
+> `sk-live` secret regex, check.sh's description guard on its own first
+> control, and /design-audit's palette check, whose `\b` matched nothing
+> in POSIX ERE) plus one false FAIL (/ship's gate 1 blocking every
+> release, which is loud rather than silent and so a different class);
+> 4.23 must land before 4.16, or implementing the commit format would
+> cement a `T4:` shape nothing emits; and **4.24 is absolute** — the only
+> launch item that cannot be fixed after the flip, since history is public
+> the moment the repo is. (4.25 is closed: /do no longer pushes.)
 
 ## [ ] Wave 4.5 — Post-launch hardening and capability
 

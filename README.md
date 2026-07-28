@@ -17,7 +17,7 @@ machine state.
 | `/challenge` | Interrogate the BRIEF: premise attacks, a narrower wedge, cost/hours/blast-radius reality checks, proceed/narrow/rethink verdict | `/challenge` |
 | `/plan-review` | Engineering lock on PLAN.md: data-flow trace, failure modes, test matrix, hidden assumptions → LOCKED or CHANGES REQUIRED | `/plan-review` |
 | `/eval-spec` | The eval is the spec: golden set with category minimums + refusal cases + pinned grader, written before the system exists | `/eval-spec search` |
-| `/do` | Complete one numbered subtask (or issue, in tickets mode): execute → verify acceptance → tick the exact box → commit plan+code together → push or PR | `/do 3.2.1` |
+| `/do` | Complete one numbered subtask (or issue, in tickets mode): execute → verify acceptance → tick the exact box → commit plan+code together (local only — `/ship` publishes) | `/do 3.2.1` |
 | `/ticket` | Capture a brain-dump as a well-formed work item — GitHub issue or PLAN.md task; unknowns marked TBD, never invented | `/ticket "…"` |
 | `/investigate` | Root-cause before any fix: minimal repro, hypotheses vs evidence, three-strikes stop rule | `/investigate "500 on save"` |
 | `/resume` | Five-minute catch-up: where the project is, divergence flags, next 3 unblocked tasks | `/resume` |
@@ -91,8 +91,8 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 |---|---|---|
 | `mode` | `standard` \| `hackathon` | /plan |
 | `tracking` | `document` \| `tickets` | all tracking-aware skills |
-| `push` | `direct` \| `branch-pr` | /do, /ship |
-| `branch-prefix` | `feature/` | /do, /ship |
+| `push` | `direct` \| `branch-pr` — governs **/ship only**; /do never pushes | /ship |
+| `branch-prefix` | `feature/` | /do (branch name), /ship |
 | `test-command` | (auto-detected; set to override) | /ship |
 | `db` | `shared-prod` \| `local` \| `none` | /migrate-check |
 | `attribution` | `none` \| `standard` | all skills |

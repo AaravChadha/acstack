@@ -13,7 +13,8 @@ context belongs — never inside the pack's skills.
 
 - mode: standard              # standard | hackathon
 - tracking: document          # document (PLAN.md checkboxes) | tickets (GitHub Issues)
-- push: direct                # direct (git push) | branch-pr (feature branch + PR)
+- push: direct                # /ship only: direct (git push) | branch-pr (branch + PR)
+                              # /do never pushes - it commits locally and stops
 - branch-prefix: feature/     # used when push is branch-pr
 - db: shared-prod             # shared-prod | local | none — /migrate-check strictness
 - attribution: none           # none (no AI mentions/trailers in generated docs & commits) | standard
