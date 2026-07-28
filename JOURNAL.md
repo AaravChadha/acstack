@@ -3,12 +3,13 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-07-29 (second entry that day). Waves 1–3 built and
+> **Last update**: 2026-07-29 (third entry that day). Waves 1–3 built and
 > shakedown-passed (19 skills). Since then: the roadmap extended to waves
 > 4/4.5/5/6/7 plus a deferred browser layer (38 skills at the end), six
-> independent audits across two rounds, four verification rules added to
-> AGENTS.md, and three broken checks fixed — including /ship's gate 1,
-> which blocked every release. Wave 4 (15 items) is next; nothing built.
+> independent audits across three rounds, four verification rules added to
+> AGENTS.md, and six broken checks fixed — including a banned-name roster
+> that lived inside the guard meant to prevent it. Wave 4 (15 items) is
+> next; no skills built today.
 
 ## TL;DR
 
@@ -18,14 +19,15 @@
 - Tickets mode (`tracking: tickets`) is live in /plan and /do — bootstrap,
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
-- Working tree clean; `scripts/check.sh` all clean (5 guard sections);
-  `./setup` links 19.
+- Working tree clean; `scripts/check.sh` all clean (6 guard sections);
+  `./setup` links 19. Banned-name list is untracked (`.acstack-banned`) —
+  copy `.acstack-banned.example`, or the guard reports SKIPPED.
 - Conduct contract (10 rules) shipped in CONDUCT.md and embedded in this
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
   public flip waits on the wave-4 launch checklist.
-- Roadmap runs to 38 skills: wave 4 (launch, 15 items) → 4.5 (post-launch
-  hardening, 8) → 5 (pre-flight gates) → 6 (review board) → 7 (operate),
+- Roadmap runs to 38 skills, 44 open tasks: wave 4 (launch, 15) → 4.5
+  (post-launch hardening, 8) → 5 (pre-flight gates) → 6 (review board) → 7 (operate),
   plus an unscheduled browser layer. Full detail in PLAN.md.
 - Next: wave 4. Specs get written at wave start, per the standing process.
 
@@ -47,10 +49,95 @@ scripts/check.sh   # pack guard — must be clean before any commit
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ⬜ | 15 launch-blocking items: runtime, CI, README v2, discoverability, eval runner, guards, the 9-point demonstrated launch checklist |
 | 4.5 — Post-launch hardening | ⬜ | 8 items split out 2026-07-29: telemetry, `setup --global`, /audit tests, /why, /refactor, remaining degradation paths |
-| 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family, the lens board, post-merge coverage |
+| 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Third audit round: the guard was the leak, and my fixes were the bugs (2026-07-29, evening)
+
+Four more agents — fix-verification, plan structure, execute-everything, and
+a fresh-eyes adopter read — with each finding tagged **pre-existing** vs
+**introduced by recent fixes**. That tagging is the session's most useful
+output, because it answers whether this process converges.
+
+**It does, but the curve is not what the raw counts suggest.** Findings ran
+25 → ~39 → ~35 across three rounds, but the share caused by the *previous*
+fix pass ran roughly 0% → 25% → **60%**. Round 3's fix-verification agent
+tagged **9 of its 11 findings as caused by my own last five commits**. The
+mechanism is in the git log: ~1,000 lines of prose were written in a day,
+and prose has a defect rate. Each round was removing N defects and writing
+back ~0.25N. Repeating it alone would converge slowly and never to zero.
+What broke the cycle was writing `docs/guard-matrix.sh` (15 cases, 6
+must-pass / 9 must-fail) BEFORE the fix — it reproduced all four
+regressions, then passed 15/15 after. A matrix cannot silently regress; a
+careful re-read can.
+
+**The guard was the leak.** `check.sh` hardcoded a plaintext roster of real
+client, company, and collaborator names — in a repo whose plan is to flip
+public — and its sweep covered `skills/ templates/ docs/` and the root
+markdown but **not `scripts/`**, so it could never catch itself. It was the
+only place in the tracked tree those names appeared. Found by the agent
+reading the repo as a stranger, which called it the single most damaging
+thing present; that is right. The list now lives in untracked
+`.acstack-banned` with `.acstack-banned.example` committed in its place,
+the sweep includes `scripts/` and `setup` (verified by seeding a token into
+check.sh and watching it fail), and a missing list now prints SKIP with a
+final line of "no failures, but N check(s) SKIPPED" instead of "all clean".
+**Not fixed by any edit:** the names remain in git history across two
+commits — carrier 4.24, and the one launch item that cannot be repaired
+after the flip.
+
+**Two shipped checks found nothing at all.** `git grep -E` is POSIX ERE:
+`\b` matches **nothing** and `\s` parses as a literal `s`. So
+`/design-audit`'s primary palette check found zero hex colors in a file
+containing two, and `/secure`'s secret sweep caught 1 of 3 planted secrets
+— every assignment written with spaces around `=` was invisible. Both
+pre-existing since wave 3, both reproduced on a fixture repo before and
+after. Fixed with `[[:space:]]` and `-w` (`-w` rather than dropping the
+boundary, because bare `(just|simply)` matches inside "justify" and
+"adjustment"), and check.sh section 3b now fails on `\b` or `\s` in any
+documented `git grep` command — anchored to command lines, because the
+first version flagged the prose explaining the hazard.
+
+**My own hardening was a regression.** The frontmatter guard added that
+morning missed a hazard on a second `description:` line (`head -1`) and
+falsely rejected three kinds of valid YAML: a quoted description with a
+trailing comment, a `name:` with trailing whitespace, and any CRLF file.
+Rewritten to parse the frontmatter block properly. Likewise the gate-1 fix
+swapped one bad sentinel for another — `git remote show origin` prints
+`HEAD branch: (unknown)` on an unborn remote HEAD, and is a network call on
+every run. Replaced with local-only resolution plus `rev-parse --verify`,
+tested across five repo shapes.
+
+**`/plan seed` could not reach the files it installs.** `setup` symlinks
+only `skills/*/`, so `CONDUCT.md` and `templates/` exist on no path from a
+user's project — the pack's headline feature had an installer whose likely
+failure was inventing the conduct block from memory. Now resolves the pack
+root by `readlink` and stops honestly if that fails.
+
+**Push removed from `/do` (verdict 4.25).** `/do` now commits locally and
+reports `committed locally — not pushed`; the `push` key governs `/ship`
+only. The decisive fact was that **`/do` is model-invocable** — only
+`/plan` and `/eval-spec` are user-only — so an agent could reach it with
+the user typing nothing, and an unattended push is the one step that cannot
+be undone quietly. Removal beat switching the default to `branch-pr`,
+which would have put `gh` on the critical path of the most-used skill and
+made every subtask a self-reviewed PR. The real recheck already lives one
+level up in `/ship`'s five gates.
+
+Also fixed: `telemetry: on` shipped as the template default for a component
+with no code; `CONDUCT.md` (which installs into adopter projects) promised
+a `setup --global` flag that does not exist; README claimed POSIX shell
+while both scripts are bash-only. And the plan's own carriers were partly
+duplicates — 4.21 duplicated 4.18 across two waves while being marked both
+do-not-cut and post-launch, and 4.20 duplicated 4.17.4 with an acceptance
+its own remedy made unsatisfiable. Both folded; IDs retired, not reused.
+
+Validation close: 5 commits, `check.sh` clean on each; guard sections
+5 → 6; `docs/guard-matrix.sh` added (15 cases, 15 passing); PLAN 869 → 914
+lines; open tasks 44 across waves 4/4.5/5/6/7 plus 5 deferred browser
+items; skills unchanged at 19.
 
 ### Second audit round: four agents, ~39 findings, three broken checks (2026-07-29, later)
 
