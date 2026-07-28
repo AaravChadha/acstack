@@ -2,16 +2,20 @@
 
 ## The classification buckets
 
-Every failure lands in exactly one:
+Every failure lands in exactly one. **The response column is the remedy to
+RECOMMEND, not work /audit performs** — /audit reports and never fixes
+(SKILL.md). Where a bucket says "fix", the report names the fix and who
+would apply it; the user decides, and any fix lands as its own reviewable
+commit.
 
-| Bucket | Meaning | Legitimate response |
+| Bucket | Meaning | Recommended remedy |
 |---|---|---|
 | prompt issue | The subject misbehaved because its instructions are wrong/ambiguous | Fix the prompt, re-run |
 | grader brittleness | The subject was right; the assertion was too literal | Fix the grader (see below) |
 | provider flake | Infra/API failure unrelated to the subject (malformed tool call, timeout, rate cap) | Track, retry policy, defer |
 | data issue | The expected value itself is wrong at the source | Fix the source data |
 | parser issue | Upstream extraction fed the subject bad data | Fix the parser, re-ingest, re-run |
-| genuinely ambiguous | Reasonable readings disagree | `acceptable_failure: <written reason>` — the ONLY bucket that may survive unfixed |
+| genuinely ambiguous | Reasonable readings disagree | `acceptable_failure: <written reason>` — the ONLY bucket that may survive unremedied |
 
 `FAIL → fixed` notation for resolved failures; a "Read" column carries the
 interpretation, not just the verdict.

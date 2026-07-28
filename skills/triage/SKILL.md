@@ -31,12 +31,9 @@ grooms the many existing ones).
 ## Stance: report, then apply
 
 The report opens with a one-line verdict — `backlog healthy` or
-`<N> findings across <M> categories` — before any finding, per the
-pack's verdict-first stance. Then the numbered findings, then the
-applied-actions list.
-
-The full findings report comes first — numbered, each finding with its
-evidence and its proposed action. Then the user picks; only approved
+`<N> findings across <M> categories` — before any finding. Then the
+numbered findings, each with its evidence and its proposed action, then
+the applied-actions list. Then the user picks; only approved
 actions are executed, and each applied action is confirmed by name.
 Nothing is ever silently deleted or closed: every close carries a written
 reason. Supersede-don't-delete applies to backlogs exactly as it applies
@@ -47,7 +44,9 @@ Config: `stale-days` from a `## triage` section in `.claude/acstack.md`
 
 ## Tickets mode (`tracking: tickets`)
 
-Preconditions per README's tickets-mode section (gh, auth, remote). The sweep:
+Preconditions — `gh` installed, `gh auth status` succeeding, and a
+GitHub remote present. Any failure names WHICH one failed and offers
+document mode; never guess. The sweep:
 
 1. **Stale.** Open issues with no activity in `stale-days` days → propose
    close-with-reason (`superseded by #M` / `no longer planned — <reason>`)

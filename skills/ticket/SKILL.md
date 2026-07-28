@@ -50,8 +50,9 @@ gave up on filing.
 
 ## Tickets mode (`tracking: tickets`)
 
-Preconditions per README's tickets-mode section (gh, auth, remote — name what's missing,
-offer document mode). Then `gh issue create`:
+Preconditions — `gh` installed, `gh auth status` succeeding, and a
+GitHub remote present. Any failure names WHICH one failed and offers
+document mode; never guess. Then `gh issue create`:
 
 - Body follows `.github/ISSUE_TEMPLATE/task.md` (acceptance / files /
   out-of-scope sections).

@@ -68,8 +68,7 @@ one-line script, a doc lookup, a 10-row sample query.
 ## Verdict
 
 **Stated as the report's FIRST line**, before the four dimensions —
-they are its evidence, not its build-up (the pack's shared verdict-first
-stance; restate it here at the end).
+they are its evidence, not its build-up. Restate it here at the end.
 
 - **`LOCKED`** — the plan survives all four dimensions. Append one additive
   line under PLAN.md's Gate verdict block:

@@ -36,7 +36,7 @@ opinion trading, which is exactly what this skill exists to prevent.
 ## The report — in this order
 
 The report's FIRST line is the verdict — `proceed` / `narrow first` /
-`rethink`, with one line of reason — per the pack's shared report stance:
+`rethink`, with one line of reason — stated as the report's FIRST line:
 verdict up front, evidence after. No middle mush; "proceed with caveats"
 is `narrow first` wearing a softer coat. The sections below are the
 evidence for it.

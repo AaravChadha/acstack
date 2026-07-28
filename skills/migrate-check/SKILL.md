@@ -1,6 +1,6 @@
 ---
 name: migrate-check
-description: Pre-flight safety check for Prisma/SQL migrations. MUST be run before creating or applying any migration in a project whose database is shared Postgres. Classifies every SQL statement additive vs destructive, checks migration-history drift and folder reuse, enforces create-only plus deploy discipline, identifies the backup path first, and ends with a written GO or NO-GO verdict. Never fixes anything - it blocks and explains.
+description: "Pre-flight safety check for Prisma/SQL migrations. MUST be run before creating or applying any migration in a project whose database is shared Postgres. Opens with a written GO or NO-GO verdict, then classifies every SQL statement additive vs destructive, checks migration-history drift and folder reuse, enforces create-only plus deploy discipline, and identifies the backup path first. Never fixes anything - it blocks and explains."
 argument-hint: "[prisma/migrations/<folder>]"
 allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash(ls:*), Bash(cat:*), Bash(npx prisma migrate status:*)
 ---
@@ -40,8 +40,18 @@ safety) · /audit code (defects in code; this gates schema changes).
    file in the project's migrations directory (Drizzle, Rails, Alembic,
    Flyway, plain SQL). **If the stack cannot be determined or the target
    cannot be resolved, say exactly that and ask for the target path —
-   never assume Prisma.** Statement classification (step 4) is
-   stack-agnostic and runs the same way once a target exists.
+   never assume Prisma.**
+
+   **Honest scope on non-Prisma stacks.** Steps 4 (classification) and 3
+   (backup path) are stack-agnostic and run normally. Steps 5, 6, and 8
+   are Prisma-specific, and the `allowed-tools` whitelist deliberately
+   permits no migration CLI except `prisma migrate status` — running an
+   arbitrary stack's CLI is exactly the mutation risk this skill exists
+   to prevent. So on Drizzle/Alembic/Rails/Flyway/plain SQL, say plainly:
+   *"history-drift and command-discipline checks skipped — <stack> CLI is
+   outside this skill's read-only whitelist; verify applied-migration
+   history manually before the GO."* A narrowed verdict stated is honest;
+   a full verdict implied from a partial check is not.
 3. **Backup and undo path FIRST.** Name the exact backup command (default
    `pg_dump "$DATABASE_URL" > backups/pre_<timestamp>.sql`; config
    `## migrate-check` `backup-command` overrides) and the restore step. If
@@ -71,8 +81,8 @@ safety) · /audit code (defects in code; this gates schema changes).
 ## The verdict
 
 **The verdict is the report's FIRST line**, then the evidence that earned
-it — the pack's shared stance. A reader who stops after one line must
-still get the answer. Restate it at the end as a written block, always:
+it — a reader who stops after one line must still get the answer. Restate
+it at the end as a written block, always:
 
 - `**Verdict: GO**` — only when every statement is additive, history is
   clean, and the backup path is named. Include the exact next commands in
