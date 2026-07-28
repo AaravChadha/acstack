@@ -41,9 +41,30 @@ fi
 #    "wiring Fixes #N" — losing its whole trigger sentence — so this is
 #    guarded, not trusted to review.
 for f in skills/*/SKILL.md; do
-  desc="$(sed -n 's/^description: //p' "$f")"
+  dir="$(basename "$(dirname "$f")")"
+  name="$(sed -n 's/^name: *//p' "$f" | head -1)"
+  desc="$(sed -n 's/^description: //p' "$f" | head -1)"
+
+  # name must match its directory — a mismatch installs under one name and
+  # advertises another.
+  if [ "$name" != "$dir" ]; then
+    echo "FAIL frontmatter: $f declares name '$name' but lives in skills/$dir/"
+    fail=1
+  fi
+  if [ -z "$desc" ]; then
+    echo "FAIL frontmatter: $f has no description"
+    fail=1
+    continue
+  fi
+
   case "$desc" in
-    '"'*|"'"*) continue ;;   # quoted: safe
+    '"'*'"'|"'"*"'") continue ;;              # properly quoted, both ends
+    '"'*|"'"*)
+      echo "FAIL description: $f opens a quote it never closes on the same line"
+      fail=1; continue ;;
+    '#'*)                                     # leading # = whole value is a comment
+      echo "FAIL description: $f starts with '#' — YAML reads the value as null"
+      fail=1; continue ;;
   esac
   if printf '%s' "$desc" | grep -q ' #'; then
     echo "FAIL description: $f has an unquoted ' #' — YAML truncates it into a comment"

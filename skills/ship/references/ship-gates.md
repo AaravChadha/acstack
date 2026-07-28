@@ -10,9 +10,26 @@ blocks.
 ```bash
 git status --porcelain            # empty = clean tree
 git rev-parse --abbrev-ref HEAD   # current branch
-git rev-parse --abbrev-ref origin/HEAD | sed 's@^origin/@@'   # default branch
-git log --oneline <default>..HEAD # the commits being shipped (non-empty)
 ```
+
+**Resolving the default branch — do NOT use `git rev-parse origin/HEAD`.**
+`origin/HEAD` is unset in any repo made by `git init` + `git remote add`
+(only `git clone` sets it). That command then *fails with exit 128 while
+still printing `origin/HEAD` on stdout*, so a naive pipeline yields the
+literal string `HEAD`, `git log HEAD..HEAD` returns zero commits, and gate
+1 blocks every release with "nothing to ship". Verified on this repo.
+Resolve in this order and stop if none succeeds:
+
+```bash
+d="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@')"
+[ -n "$d" ] || d="$(git remote show origin 2>/dev/null | sed -n '/HEAD branch/s/.*: //p')"
+[ -n "$d" ] || for c in main master; do git show-ref -q --verify "refs/heads/$c" && d="$c" && break; done
+[ -n "$d" ] || { echo "BLOCKED — cannot determine the default branch; pass it explicitly"; exit 1; }
+git log --oneline "$d"..HEAD      # the commits being shipped (non-empty)
+```
+
+`$d` must never be empty or the literal `HEAD`; if it is, that is a
+BLOCKED verdict naming the failed resolution, not a zero-commit result.
 
 - Dirty tree → BLOCK: "commit or stash first" with the porcelain output.
 - On the default branch → offer to cut `<branch-prefix><slug>` and move
@@ -54,12 +71,31 @@ compare:
 Cheap checks only; deep drift is /audit docs:
 
 ```bash
-git log --oneline <default>..HEAD           # the commits being shipped
+git log --oneline "$d"..HEAD                # the commits being shipped
 # README quickstart still runs (where cheap)
 # the shipped work's PLAN exit criterion, if runnable
-git log <default>..HEAD --format='%s' | grep -Fqf - JOURNAL.md \
-  && echo "journal mentions the work" || echo "journal silent"
+
+# journal mention — guard the empty case FIRST
+subjects="$(git log "$d"..HEAD --format='%s')"
+if [ -z "$subjects" ]; then
+  echo "journal check skipped — no commits in range (see gate 1)"
+elif printf '%s\n' "$subjects" | grep -Fqf - JOURNAL.md; then
+  echo "journal mentions the work"
+else
+  echo "journal silent"
+fi
 ```
+
+**Why the empty guard is load-bearing:** `grep -Fqf -` with a zero-byte
+pattern file **matches everything** on BSD grep (macOS), so an empty
+commit range would report "journal mentions the work" from no evidence at
+all — a false pass, which this pack treats as worse than no check.
+
+Note the check is deliberately weak in the other direction too: it matches
+commit subjects verbatim against JOURNAL.md, and journals rarely quote
+subjects, so "journal silent" is the common answer even for well-journaled
+work. It therefore **proposes `/journal` and never blocks** — treat a
+silent result as a prompt to look, not as evidence of absence.
 
 - README quickstart visibly broken → BLOCK.
 - Shipped PLAN exit criterion runnable and failing → BLOCK.
