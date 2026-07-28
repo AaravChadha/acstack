@@ -270,8 +270,8 @@ JOURNAL.md so the self-hosting docs can't leak personal context either.
 |---|---|---|
 | ~~GitHub remote~~ | Resolved 2026-07-27: private `AaravChadha/acstack` created, `main` pushed and tracking | Done |
 | ~~Fresh-session check~~ | Resolved 2026-07-27: typed `/plan` in a fresh session and it engaged seed mode — loading works; user-only skills simply don't appear in the VS Code extension's subset autocomplete (CLI shows all) | Done |
-| Scratch repo deletion | `acstack-w2-shakedown` served its purpose, still up for inspection | `gh auth refresh -s delete_repo`, then `gh repo delete` |
-| Document-mode commit style | `completed task 3.2.1 (…)` vs terse `3.2.1: <desc>` | One-word decision |
+| Scratch repo deletion | `acstack-w2-shakedown` — contents verified disposable 2026-07-29 (backup taken); policy decided: never reuse, always create fresh per wave | `gh auth refresh -s delete_repo`, then `gh repo delete` — owner: user |
+| ~~Document-mode commit style~~ | Resolved 2026-07-29: both modes symmetric — `task 2.3.2: <desc>` / `ticket #2: <desc>`; `#` kept for GitHub auto-linking. Implementation pending (CONDUCT rule 10, /do, /ship, README) | Done (decision) |
 | ~~Browser probe timing~~ | Resolved 2026-07-27: deferred to first real need; wave 3 ships http with the seam browser-ready | Done |
 
 ## Important file locations

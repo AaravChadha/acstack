@@ -163,9 +163,59 @@ below fully green; repo flipped public.
 
 ## Open items (decide as we go)
 
-- [ ] **Document-mode commit style (NEW 2026-07-27).** Keep
-  `completed task 3.2.1 (…)` or switch to terse `3.2.1: <desc>` to match
-  the tickets-mode shape. Owner: user.
+- [x] **Commit subject format (NEW 2026-07-27).** ~~Document mode: keep
+  `completed task 3.2.1 (…)` or switch to terse `3.2.1: <desc>`.~~
+  **Verdict (2026-07-29):** both modes take one symmetric shape — the
+  mode changes the noun, nothing else:
+  - document mode — `task 2.3.2: <description>` (was
+    `completed task 2.3.2 (<description>)`)
+  - tickets mode — `ticket #2: <description>` (was `#2: <description>`)
+
+  The `#` is kept in tickets mode deliberately: GitHub auto-links `#2` in
+  a commit subject, and dropping it would trade a working cross-reference
+  for nothing. Issue closing is unaffected either way — that comes from
+  `Fixes #N` in the body.
+
+  **Not yet implemented.** Lands with an edit to CONDUCT rule 10, `/do`,
+  `/ship`, and README's `subtask-commit-format` row. Until then the pack
+  still emits the old shapes, and wave-2's JOURNAL entry keeps describing
+  `#N:` as the format of its day (supersede-don't-delete: history stays
+  as written). This repo's own commits are unaffected — acstack uses the
+  lowercase `<verb> <object> (<detail>)` convention from AGENTS.md.
+- [x] **Scratch-repo policy (NEW 2026-07-29).** **Verdict (2026-07-29):**
+  never reuse a shakedown repo — create a fresh one per wave that needs
+  one, throw it away after. Each wave seeds *conflicting* conditions
+  (wave 2 needed a rotten backlog; wave 3 needed a vulnerable app; wave 6
+  would need dependency sprawl), and reuse destroys the property these
+  tests exist to prove: tickets-mode bootstrap idempotency is only
+  testable once per repo, from cold. Wave 3 already drifted this way on
+  its own — it used a local scratch directory and created no repo at all,
+  because nothing in it needed tickets mode. The launch demo (4.7) is a
+  separate, deliberately curated artifact, never a promoted leftover.
+  Deletion of `acstack-w2-shakedown` is owner: user (needs
+  `gh auth refresh -s delete_repo`); contents verified disposable
+  2026-07-29 — the only non-generated artifacts were 25 golden cases
+  hardcoded to a 4-row toy fixture, and an empty LEARNINGS.md.
+- [x] **Referral block / discoverability (NEW 2026-07-29).** Typed-only
+  skills (`disable-model-invocation: true`) are invisible to the agent,
+  so it cannot recommend what it cannot see — a user who never discovers
+  `/plan` has effectively installed nothing. **Verdict (2026-07-29):**
+  a marker-fenced `acstack-referrals` roster in AGENTS.md (skill →
+  one-line definition → suggest-when), guarded by check.sh asserting the
+  table matches exactly the set of skills carrying
+  `disable-model-invocation: true`, verified by a `/health` row, and
+  installed by `/plan seed` alongside the conduct block.
+
+  Behavior placement: ~~text local to the block~~ / ~~new CONDUCT rule
+  11~~ → **a half-sentence clause on existing rule 9.** A referral IS an
+  offer, and rule 9 already governs offers (permitted, expectation-free,
+  never repeated, silence is not consent). Rule 11 was rejected as a
+  category mismatch — rules 1–10 govern how an agent talks to a human and
+  hold with zero skills installed, whereas referral is a property of the
+  pack; it would also have needed the roster table anyway, buying no
+  independence while making every existing install stale. The count stays
+  at ten. Slated for wave 4 (distribution is where discoverability
+  belongs). **Not yet implemented.**
 - [x] **Browser probe timing (NEW 2026-07-27).** ~~Playwright mode for /qa —
   wave 3 with http, or deferred until first real need.~~ **Verdict
   (2026-07-27):** deferred to first real need (user call at wave-3 spec
