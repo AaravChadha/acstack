@@ -23,6 +23,15 @@
 >   positive controls we have evidence our checks RUN, not that they WORK.
 >   Applies retroactively to /qa, /secure, /design-audit, /health, and to
 >   every wave-6 lens.
+> - **Resolve one document set, and say which (NEW 2026-07-29).** Every
+>   document-reading skill (/plan, /do, /resume, /journal, /retro, /ship,
+>   /audit docs, /health, /ticket, /triage, /learn, and wave-4's /why)
+>   resolves exactly ONE BRIEF/PLAN/JOURNAL set and names its path in the
+>   scope line. If more than one candidate set exists, list the candidates
+>   and STOP — never pick one silently. Ambiguity is a reason to stop, not
+>   to guess (CONDUCT rule 8). This does not add monorepo *support*; it
+>   converts a silent wrong-product answer into an honest halt, which is
+>   the whole cost of the limitation below.
 > - **Reports state what they did NOT check (NEW 2026-07-29).** Already
 >   practiced via the `Scope` element; recorded here as binding because it
 >   is the primary defense against false confidence. A verdict is an input
@@ -32,8 +41,9 @@
 > - **One repo = one BRIEF/PLAN/JOURNAL.** Every skill assumes a single
 >   product per repository. Monorepos and multi-product repos break this
 >   silently — `/resume` and `/retro` would confidently report on the
->   wrong product. Needs a README statement and a `/health` row;
->   multi-product support is out of scope at launch.
+>   wrong product. Multi-product *support* stays out of scope at launch;
+>   detection and an honest halt do not — see the resolve-one-document-set
+>   rule above and task **4.14**.
 > - **Correlated blind spots are structural.** Wave 6's lenses decorrelate
 >   by having different checklists, not by being independent reviewers —
 >   they share one model's priors. `/board` cannot manufacture genuine
@@ -259,12 +269,35 @@ below fully green; repo flipped public.
   is odd for a pack whose thesis is that instructions are the product.
   Small: one check row, not a skill.
 
-> **Risk (2026-07-29):** wave 4 now carries 13 items, seven of them
+- [ ] **4.14** Multi-product detection — make the one-repo assumption
+  visible instead of silent. Three parts:
+  1. **`/health` row.** Flags a repo that violates the assumption.
+     Signals, strongest first: more than one BRIEF.md / PLAN.md /
+     JOURNAL.md below the root; workspace markers
+     (`pnpm-workspace.yaml`, `lerna.json`, `turbo.json`, a `workspaces`
+     key in package.json, `[workspace]` in Cargo.toml, `go.work`); and
+     `apps/` `packages/` `services/` directories each carrying their own
+     manifest. Reported as **info, not a failure** — a monorepo is not
+     broken, it is unsupported, and the two deserve different words.
+  2. **The resolve-one-document-set rule** applied to every
+     document-reading skill's scope line (cross-cutting rule above).
+     Ambiguity → name the candidate paths, stop.
+  3. **README statement** of the constraint, so an adopter with a
+     monorepo learns it before installing rather than after a `/retro`
+     confidently reports on the wrong product.
+
+  **Acceptance:** on a seeded two-product repo, `/health` names both
+  document sets and `/resume` halts with the candidates listed instead of
+  picking one. That seeded repo is also this task's positive control.
+
+> **Risk (2026-07-29):** wave 4 now carries 14 items, seven of them
 > infrastructure, before a launch. If it slips, the honest order to cut
 > is 4.13 (a check row), then 4.11 (/why — valuable but not
-> launch-blocking), then 4.10. **4.12 should not be cut** — cutting it
-> means softening the eval-first claim in README v2, which costs more
-> than the delay. Revisit at the 4.7 checklist.
+> launch-blocking), then 4.10. **Neither 4.12 nor 4.14 should be cut** —
+> 4.14 is what stops a monorepo adopter getting confidently wrong answers
+> on day one, and cutting 4.12 means softening the eval-first claim in
+> README v2 — both cost more than the delay would. Revisit at the 4.7
+> checklist.
 
 > **Decision (2026-07-29):** 4.10 and 4.11 pulled into the launch wave.
 > Both are unusually cheap — one is a new target on a skill that already
