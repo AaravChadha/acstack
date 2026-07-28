@@ -4,9 +4,11 @@
 > what ships in each wave and how we know a wave is done. Waves 1–3 are
 > built (19 skills); detailed per-skill specs for later waves get written
 > at wave start, at the same fidelity as waves 1–3's (`docs/wave-2-specs.md`,
-> `docs/wave-3-specs.md`; wave 1's live in the founding design doc). The founding design discussion (skill roster
-> rationale, infra tradeoffs, telemetry stance) predates this file and is
-> summarized in README.md and CONDUCT.md.
+> `docs/wave-3-specs.md`). The founding design discussion — wave-1 specs,
+> skill-roster rationale, infra tradeoffs, telemetry stance, and the
+> numbered locked decisions — predates this file, lives under
+> `~/.claude/plans/` outside this repo, and is summarized in README.md
+> and CONDUCT.md.
 >
 > **Cross-cutting constraints (apply to every wave):**
 > - Plain markdown skills; zero runtime dependencies beyond git + POSIX shell.
@@ -221,9 +223,45 @@ below fully green; repo flipped public.
   and the built-in shadowing disclosure (/plan, /resume — per the
   2026-07-27 decision; also why user-only skills miss the VS Code
   autocomplete).
-- [ ] **4.7** Launch checklist: check.sh clean, fresh-machine test, demo
-  transcript, credits line verified, no personal data in history, flip
-  public.
+- [ ] **4.7** Launch checklist — every line must be *demonstrated*, not
+  asserted. Nothing here is checkable by re-reading a file (AGENTS.md's
+  verify-the-consumed-form rule); each item names the artifact that
+  proves it.
+
+  **Mechanical**
+  1. `scripts/check.sh` green, and every guard in it shown firing against
+     a seeded defect — a guard with no demonstrated failure mode does not
+     count as coverage.
+  2. Every skill's frontmatter **parses**, and each description survives
+     intact into the live skill listing (the `/ship` truncation class).
+  3. Cross-references resolve: every skill named by another skill exists,
+     every referenced file path exists, every config key in README is
+     reachable from `templates/acstack.md` and read by the skill claimed.
+  4. `./setup` round-trips on a **fresh machine**: install → idempotent
+     re-run → uninstall removes exactly what it created → reinstall.
+
+  **Independent review — both kinds, because they catch different classes**
+  5. A multi-agent audit of PLAN.md and all skills, run as subagents with
+     no prior conversation context. Every finding resolved or explicitly
+     accepted in writing with a reason.
+  6. A main-thread pass over the same ground. The 2026-07-29 audits proved
+     neither substitutes for the other: the subagents found a shipped
+     truncated description and a misclassified read-only skill that the
+     author had re-read without noticing, while the main thread found a
+     positive control that passed misleadingly and a provenance
+     contradiction — each needing context the other lacked.
+
+  **Content**
+  7. Demo transcript recorded against a real project, deliberately
+     curated — never a promoted shakedown leftover.
+  8. Credits line verified; no personal, client, or collaborator data
+     anywhere in the history (not just the working tree).
+  9. Every wave-4 acceptance line actually run, with its output pasted
+     into the wave's journal entry.
+
+  Only then flip public. **Acceptance:** the launch commit's journal entry
+  carries evidence for all nine — a command and its output, or a named
+  artifact — with no line resting on "looks right".
 - [ ] **4.8** `allowed-tools` on the **five** structurally read-only
   skills — /secure, /health, /design-audit, /audit, /resume. Their
   never-writes promise is prose today; this makes it mechanical. README
@@ -337,6 +375,55 @@ below fully green; repo flipped public.
   still documents `completed task N (…)` or a bare `#N:` subject as the
   current format; wave-2's JOURNAL entry keeps its historical wording.
 
+- [ ] **4.17** Guard coverage for the mechanically-detectable classes —
+  the carrier for "grow check.sh, not the prose", and the higher-value
+  half of the 2026-07-29 process review (the four AGENTS.md verification
+  rules are the lesser half). Six of that day's ten defects were
+  mechanically detectable and none was guarded. Add to `scripts/check.sh`:
+  1. **Routing line present** — every `skills/*/SKILL.md` carries
+     `Adjacent skills:` (five wave-1 skills lacked it for two waves).
+  2. **Cross-references resolve** — every `/skill-name` referenced in a
+     SKILL.md names a real directory; every referenced file path exists.
+  3. **Config-key reachability** — every key in README's table appears in
+     `templates/acstack.md` AND is read by the skill the table names.
+  4. **Shared-snippet byte-identity** — the secret-scan regex, the six
+     eval failure buckets, and the adversarial input list are each
+     duplicated across 2–4 files with no guard; the regex had *already*
+     drifted (`ghp_` in one copy, absent in the other). Either mark one
+     copy canonical and diff the rest, as done for the principles block,
+     or collapse the duplicates.
+  5. **Verdict-first present** — every report-shaped skill states its
+     verdict-first stance (five violated it while the pack claimed it).
+  6. **Frontmatter parses** — extend the description guard to assert the
+     whole block parses and each description survives intact.
+
+  **Acceptance:** each of the six fires against a seeded defect and is
+  silent on the clean tree — demonstrated, per 4.15.
+- [ ] **4.18** Remaining degradation paths and config consistency — the
+  audit's per-skill gaps not closed on 2026-07-29. Every one is a place a
+  skill would guess instead of stopping:
+  - `/audit eval` — no results file present.
+  - `/plan seed` — BRIEF.md already exists (it is a *frozen* document;
+    regenerating it is the same defect class as /eval-spec's step 0).
+  - `/journal` — which files the commit stages (today it could sweep in
+    unrelated work), an empty session, a non-git repo.
+  - `/ticket` — document mode assumes PLAN.md exists.
+  - `/qa` — where auth credentials come from for gated flows.
+  - `/learn` — how it detects it is running inside the acstack repo,
+    which currently gates whether promotion is applied or only printed.
+  - `/triage`, `/retro`, `/design-audit` — missing PLAN.md, missing
+    JOURNAL.md, and a path containing no UI files.
+  - `/investigate` — state the verdict up front; root cause currently
+    lands at step 5 with no lede.
+  - Config: README lists `journal-commit-format` for /journal and /retro,
+    but /resume also reads it and /retro hardcodes the format instead;
+    `test-command` is listed for /ship, which never names it (only
+    `references/ship-gates.md` does); `## Collaborators` is used by /plan
+    and documented nowhere.
+
+  **Acceptance:** for each, the precondition is removed and the skill
+  names what is missing and stops, rather than proceeding on a guess.
+
 > **Process note (2026-07-29):** 4.14, 4.15, and 4.16 all exist because
 > three separate rules were written as decisions with no task owning the
 > work — the multi-product rule, the positive-control rule, and the
@@ -344,7 +431,7 @@ below fully green; repo flipped public.
 > scheduling it. Any future cross-cutting rule added to this document
 > must name its carrier task in the same edit.
 
-> **Risk (2026-07-29):** wave 4 now carries 16 items, seven of them
+> **Risk (2026-07-29):** wave 4 now carries 18 items, seven of them
 > infrastructure, before a launch. That is a lot, and the honest cut
 > order if it slips is: 4.13 (a check row), then 4.16 (the commit-format
 > edit — cosmetic, and the old shapes still work), then 4.11 (/why —
@@ -408,7 +495,7 @@ scratch project; none of them can write (enforced by `allowed-tools`, per
   session, another agent, a teammate — against a running system.
 
 > **Decision (2026-07-29):** /verify folded into this wave rather than
-> keeping a one-item wave 5. Its two companions (/audit tests, /why) moved
+> keeping this wave at a single item. Its two companions (/audit tests, /why) moved
 > to wave 4, and "honest measurement" as a theme moved with them; what
 > remains is a gate, which is what this wave is. Tradeoff: the wave now
 > mixes pre-change gates with a post-change one. Revisit if /verify grows
@@ -523,7 +610,7 @@ project; the incident path exercised once against a seeded outage.
 - [ ] **7.4** /cost — what a feature cost in tokens and infrastructure.
   Depends on 4.3's telemetry pipe.
 
-## [ ] Deferred — browser layer (unscheduled, demand-triggered)
+## [ ] Wave B (Deferred) — browser layer (unscheduled, demand-triggered)
 
 **Trigger, not a date.** The browser probe was deferred 2026-07-27 to
 first real need (a UI whose flows cannot be exercised over http). This
@@ -627,8 +714,10 @@ existing contract — not a redesign.
   wave 3 with http, or deferred until first real need.~~ **Verdict
   (2026-07-27):** deferred to first real need (user call at wave-3 spec
   time). Wave 3 ships the http probe with the seam designed for both
-  modes, so adding browser later stays additive — locked decision 8's
-  no-architectural-penalty bet, restated in `docs/wave-3-specs.md`.
+  modes, so adding browser later stays additive. That is the founding
+  design doc's no-architectural-penalty bet (locked decision 8; the doc
+  lives under `~/.claude/plans/`, outside this repo), restated in
+  `docs/wave-3-specs.md`.
 - [x] **GitHub remote (NEW 2026-07-27).** ~~Private `AaravChadha/acstack`
   creation awaits explicit user go.~~ **Verdict (2026-07-27):** created
   private and pushed — `main` tracks `origin/main`, all 31 commits up.

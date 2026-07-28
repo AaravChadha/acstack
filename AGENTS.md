@@ -17,6 +17,33 @@ Binding rules for this repo:
 - Commit style: lowercase `<verb> <object> (<detail>)` subject + a brief
   what-and-why body, no attribution trailers (CONDUCT rule 10).
 
+Verification rules (added 2026-07-29, each from a defect this repo shipped):
+
+- **Verify the consumed form, not the authored form.** The file you wrote is
+  not evidence; the thing that reads it is. Check the parsed frontmatter, the
+  rendered markdown, the command's actual output — not your own text. `/ship`
+  shipped for a whole wave with a YAML-truncated description, losing its
+  entire trigger sentence, because it was re-read instead of parsed.
+- **Prove a new check fails before trusting that it passes.** Seed the defect
+  the check exists to catch and watch it fire. A green check with no
+  demonstrated failure mode is decoration. This repo has produced two: the
+  `sk-[A-Za-z0-9]{20,}` secret regex that reported clean on a planted key, and
+  the description guard whose first positive control passed misleadingly
+  because the text it tested had already been fixed.
+- **A cross-cutting rule names its carrier task in the same edit.** Recording
+  a decision is not scheduling it. Three rules — multi-product detection,
+  positive controls, and the commit-subject format — were binding with nobody
+  owning the work until an audit found them orphaned.
+- **A claim about a set enumerates the set.** "The six read-only skills" was
+  written without opening six files, and `/retro` — which appends to
+  JOURNAL.md and commits — was in the list. Count it, list it, or don't claim
+  it. This applies to your own earlier statements too: in a long session,
+  re-read before restating, or you will contradict yourself in writing.
+
+These four are repo-binding, not part of the shipped conduct block. Promote
+one into CONDUCT.md only if it proves out across projects — the same bar
+`/learn` uses for promoting a lesson into known-bug-classes.
+
 <!-- BEGIN:acstack-conduct -->
 ## Agent conduct
 
