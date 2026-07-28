@@ -1,9 +1,10 @@
 # PLAN.md — acstack
 
 > **Purpose of this document.** The operative roadmap for the pack itself:
-> what ships in each wave and how we know a wave is done. Wave 1 is built;
-> detailed per-skill specs for later waves get written at wave start, at the
-> same fidelity as wave 1's. The founding design discussion (skill roster
+> what ships in each wave and how we know a wave is done. Waves 1–3 are
+> built (19 skills); detailed per-skill specs for later waves get written
+> at wave start, at the same fidelity as waves 1–3's (`docs/wave-2-specs.md`,
+> `docs/wave-3-specs.md`; wave 1's live in the founding design doc). The founding design discussion (skill roster
 > rationale, infra tradeoffs, telemetry stance) predates this file and is
 > summarized in README.md and CONDUCT.md.
 >
@@ -17,12 +18,16 @@
 > - **Every check-shaped skill ships a positive control (NEW 2026-07-29).**
 >   A fixture containing a known instance of what the skill is supposed to
 >   catch, plus a check that fails if the skill does not catch it.
->   Rationale: wave 3's shakedown planted an `sk-live-…` key and `/secure`
->   reported *clean* — a broken check returning a pass is worse than no
->   check, because it converts an unknown into a false certainty. Without
->   positive controls we have evidence our checks RUN, not that they WORK.
->   Applies retroactively to /qa, /secure, /design-audit, /health, and to
->   every wave-6 lens.
+>   Rationale: wave 3's shakedown planted an `sk-live-…` key and
+>   `/secure`'s secrets sweep reported *clean* — its pattern
+>   `sk-[A-Za-z0-9]{20,}` stopped at the first hyphen after the prefix.
+>   A broken check returning a pass is worse than no check, because it
+>   converts an unknown into a false certainty. Without positive controls
+>   we have evidence our checks RUN, not that they WORK. Proven twice:
+>   the same discipline caught a *second* false pass on 2026-07-29, when
+>   check.sh's new description guard appeared to work and did not.
+>   Applies retroactively to /qa, /secure, /design-audit, /health, /audit,
+>   and /migrate-check, and to every wave-6 lens — carrier task **4.15**.
 > - **Resolve one document set, and say which (NEW 2026-07-29).** Every
 >   document-reading skill (/plan, /do, /resume, /journal, /retro, /ship,
 >   /audit docs, /health, /ticket, /triage, /learn, and wave-4's /why)
@@ -105,8 +110,8 @@ messy backlog; `/eval-spec` produces a golden-question spec before any code.
 `acstack-w2-shakedown` (private, throwaway): bootstrap idempotent with
 GitHub's default `bug` label left untouched; /ticket filed a well-formed
 issue; /do closed #1 via a `feature/1-…` branch + `Fixes #1` on direct
-push; /triage groomed seeded rot (dupe closed with reason, `needs-
-acceptance` labeled); /eval-spec landed 25 golden cases before any code
+push; /triage groomed seeded rot (dupe closed with reason,
+`needs-acceptance` labeled); /eval-spec landed 25 golden cases before any code
 (closed #4); /plan-review caught a real gap (M2 exit ran `eval/run.py`
 that no issue created → filed #8, then locked). ~~Residue: /eval-spec's
 slash-menu visibility awaits a fresh session — user-only skills never
@@ -145,14 +150,20 @@ reviewed (9 findings, 0 blocking, all should-fix/nits addressed), and
 shakedown-passed. /qa http probe found the seeded auth gap and a crash on
 `limit=abc`; the browser probe declined honestly with the dated deferral
 (seam proven — identical report skeleton). /secure ran clean on acstack
-and found the seeded key + auth gap on the scratch app. /design-audit
-flagged the off-palette color, the unlabeled mock chart, and slop copy.
+and found the auth gap on the scratch app — but **initially MISSED the
+seeded key**, reporting clean; see the fix below. /design-audit flagged
+the off-palette color, the unlabeled mock chart, and slop copy.
 /ship's five gates ran on a scratch feature branch (fix verified:
 `limit=abc → 400`). /learn captured a lesson, bumped `seen` on the
 repeat, and its promotion path added a real class to known-bug-classes.
 /health and /retro ran on acstack. **Shakedown earned a real fix:** the
-secret-scan regex missed prefixed key formats (`sk-proj-…`, `sk_live_…`)
-— widened and promoted (commit d709d70).
+secret-scan regex missed every prefixed key format — `sk-live-…` (the
+one actually seeded), `sk-proj-…`, `sk_live_…` — because
+`sk-[A-Za-z0-9]{20,}` stops at the first hyphen after the prefix. Widened
+to `sk[-_][A-Za-z0-9_-]{20,}` and promoted to known-bug-classes (commit
+d709d70). Found by the **shakedown**, not by the independent review — the
+review read files, the shakedown ran the check against a planted defect,
+which is the whole argument for positive controls.
 
 **Specs (2026-07-27):** per-skill designs at waves-1/2 fidelity in
 `docs/wave-3-specs.md`; build starts on approval, in the order given
@@ -213,12 +224,20 @@ below fully green; repo flipped public.
 - [ ] **4.7** Launch checklist: check.sh clean, fresh-machine test, demo
   transcript, credits line verified, no personal data in history, flip
   public.
-- [ ] **4.8** `allowed-tools` on the six structurally read-only skills
-  (/secure, /health, /design-audit, /audit, /resume, /retro). Their
+- [ ] **4.8** `allowed-tools` on the **five** structurally read-only
+  skills — /secure, /health, /design-audit, /audit, /resume. Their
   never-writes promise is prose today; this makes it mechanical. README
   v2 claims "audit what you're trusting in five minutes" — this is what
-  backs that claim. **Acceptance:** each of the six declares a read-only
-  tool set; check.sh asserts none of them can Write/Edit.
+  backs that claim. **Acceptance:** each of the five declares a read-only
+  tool set; check.sh asserts none of them can Write/Edit; the assertion
+  is proved by a positive control (a seeded write attempt must fail).
+
+  > **Correction (2026-07-29):** this item originally said "six" and
+  > included /retro. /retro is NOT read-only — it appends a dated entry
+  > to JOURNAL.md and commits it (`skills/retro/SKILL.md:67`). The
+  > acceptance criterion as first written would have failed against a
+  > correctly-built /retro. /migrate-check is excluded because it already
+  > declares `allowed-tools`; it is the template the other five copy.
 - [ ] **4.9** Referral block — discoverability for typed-only skills, per
   the 2026-07-29 verdict in Open items. Marker-fenced `acstack-referrals`
   roster in AGENTS.md (skill → one-line definition → suggest-when); a
@@ -236,6 +255,10 @@ below fully green; repo flipped public.
   applied to tests instead of eval scores. Confirmed absent from gstack,
   spec-kit, and BMAD; superpowers has the material only as guidance for
   someone *writing* a test, never as a sweep over a suite that exists.
+  **Acceptance:** on a suite seeded with an assertion-free test, a
+  tautological assert, and a test that passes against deliberately broken
+  code, `/audit tests` names all three; on a clean suite it returns no
+  findings. (That seeded suite is this target's positive control, 4.15.)
 - [ ] **4.11** /why — decision archaeology (*pulled forward from wave 5,
   2026-07-29*). Answers "why is this code like this" from BRIEF
   constraints → dated PLAN decision blocks → JOURNAL entries → git blame,
@@ -245,6 +268,10 @@ below fully green; repo flipped public.
   agent-built codebase. Confirmed absent everywhere — BMAD is the proof
   it is non-obvious: it keeps an append-only session memlog and per-epic
   retros and still ships no way to ask them anything.
+  **Acceptance:** asked why this repo's hygiene skill is named /health,
+  it returns the 2026-07-27 shadowing verdict from PLAN 3.7 with its
+  reason; asked about a decision with no record, it says so rather than
+  inventing one.
 
 - [ ] **4.12** /eval-run — close the loop on the flagship methodology.
   Today `/eval-spec` writes the spec and golden set, `/ship`'s eval gate
@@ -267,7 +294,9 @@ below fully green; repo flipped public.
   instructions conflicting with the installed conduct block. acstack
   manages AGENTS.md and CLAUDE.md but never reviews their quality, which
   is odd for a pack whose thesis is that instructions are the product.
-  Small: one check row, not a skill.
+  Small: one check row, not a skill. **Acceptance:** on a repo whose
+  AGENTS.md contradicts the installed conduct block, `/health` flags the
+  conflict and names both rules.
 
 - [ ] **4.14** Multi-product detection — make the one-repo assumption
   visible instead of silent. Three parts:
@@ -290,20 +319,52 @@ below fully green; repo flipped public.
   document sets and `/resume` halts with the candidates listed instead of
   picking one. That seeded repo is also this task's positive control.
 
-> **Risk (2026-07-29):** wave 4 now carries 14 items, seven of them
-> infrastructure, before a launch. If it slips, the honest order to cut
-> is 4.13 (a check row), then 4.11 (/why — valuable but not
-> launch-blocking), then 4.10. **Neither 4.12 nor 4.14 should be cut** —
-> 4.14 is what stops a monorepo adopter getting confidently wrong answers
-> on day one, and cutting 4.12 means softening the eval-first claim in
-> README v2 — both cost more than the delay would. Revisit at the 4.7
-> checklist.
+- [ ] **4.15** Positive controls for the shipped check-shaped skills —
+  the carrier for the cross-cutting rule above, which was binding with
+  nobody owning it. Each of /qa, /secure, /design-audit, /health,
+  /audit, and /migrate-check gets a fixture containing a known instance
+  of what it must catch, plus an assertion that fails when the skill
+  misses it. **Acceptance:** seeding each fixture makes its check fail;
+  removing the seed makes it pass. Evidence this is not theoretical: the
+  `sk-live-` key (a check that ran and did not work) and check.sh's own
+  description guard on 2026-07-29, whose first control passed
+  misleadingly and would have shipped unverified.
+- [ ] **4.16** Implement the 2026-07-29 commit-format verdict — the
+  carrier for a decision recorded as `[x]` while nothing emitted the new
+  shape. Edit CONDUCT rule 10, `/do`, `/ship`, and README's
+  `subtask-commit-format` row to `task 2.3.2: <description>` (document)
+  and `ticket #2: <description>` (tickets). **Acceptance:** no pack file
+  still documents `completed task N (…)` or a bare `#N:` subject as the
+  current format; wave-2's JOURNAL entry keeps its historical wording.
+
+> **Process note (2026-07-29):** 4.14, 4.15, and 4.16 all exist because
+> three separate rules were written as decisions with no task owning the
+> work — the multi-product rule, the positive-control rule, and the
+> commit-format verdict. Recording a decision is not the same as
+> scheduling it. Any future cross-cutting rule added to this document
+> must name its carrier task in the same edit.
+
+> **Risk (2026-07-29):** wave 4 now carries 16 items, seven of them
+> infrastructure, before a launch. That is a lot, and the honest cut
+> order if it slips is: 4.13 (a check row), then 4.16 (the commit-format
+> edit — cosmetic, and the old shapes still work), then 4.11 (/why —
+> valuable but not launch-blocking), then 4.10.
+>
+> **Do not cut 4.12, 4.14, or 4.15.** 4.12 is the eval runner: cutting it
+> means launching "the eval is the spec" while unable to run one. 4.14
+> stops a monorepo adopter getting confidently wrong answers on day one.
+> 4.15 is positive controls — without them the pack's checks are
+> unverified, and this repo has now produced two documented cases of a
+> check that ran and did not work. Each costs more than the delay would.
+> Revisit at the 4.7 checklist.
 
 > **Decision (2026-07-29):** 4.10 and 4.11 pulled into the launch wave.
 > Both are unusually cheap — one is a new target on a skill that already
 > exists, the other a reader for a corpus already three waves deep — and
 > both are demonstrably unclaimed by every major pack surveyed. Launching
 > with 21 skills rather than 19 gives README v2 a differentiator argument
+> — counting /why (4.11) and /eval-run (4.12) as the two new skill
+> directories; 4.10 adds a fourth *target* to /audit, not a skill
 > that does not rest on roadmap promises. Tradeoff: wave 4 grows by two
 > skills before a launch already carrying seven infrastructure items.
 > Revisit if 4.1–4.7 slip.
@@ -401,11 +462,23 @@ without averaging dissent away.
   **subagent with no prior conversation context**, and returns one
   consolidated report with dissents preserved rather than averaged. The
   context-free part is load-bearing: it stops a reviewer inheriting the
-  builder's rationalizations. Proven in practice — wave 3's independent
-  review ran this way and found the `sk-live-` secret-regex gap that a
-  self-review demonstrably missed. Prior art: gstack `/autoplan`, BMAD's
-  parallel review subagents. Build LAST — it is worthless until
-  6.1–6.5 exist.
+  builder's rationalizations. Proven in practice twice: wave 3's
+  context-free review returned 9 findings the author's own re-read had
+  not produced, and the 2026-07-29 audits found a *shipped* bug — /ship's
+  YAML-truncated description — that the wave-3 review had missed by
+  reading the file instead of the parsed result. Prior art: gstack
+  `/autoplan`, BMAD's parallel review subagents. Build LAST — it is
+  worthless until 6.1–6.5 exist.
+
+  > **Attribution correction (2026-07-29):** this item previously
+  > credited the independent review with finding the `sk-live-`
+  > secret-regex gap. Git says otherwise — `d709d70` is titled
+  > "(shakedown finding)" and `dfe291d` carries the review's findings.
+  > The shakedown found it by running the check against a planted key;
+  > the review never did. The argument for context-free subagents stands
+  > on its own evidence above, but it does not stand on that example, and
+  > a claim resting on the wrong provenance is the kind of thing /board
+  > itself is supposed to catch.
 
   > **Design warnings (2026-07-29) — do not build this naively as "spawn
   > five agents."** The fan-out is trivial; these are the hard parts.
