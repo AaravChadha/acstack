@@ -57,9 +57,18 @@ and the PR body template live in `references/ship-gates.md`.
 
 ## The act
 
-Only when all five pass. Push per `push` config, then `gh pr create`
-with a report-shaped body: what-and-why lede, a per-gate evidence table
-(the test/eval numbers, the doc checks), and an out-of-scope line.
+Only when all five pass. Push per `push` config, then open the PR.
+
+**Under `push: direct` there is no PR to open.** Say so plainly, push the
+branch, and report the gate evidence as the release record — do not
+invent a PR step the config disabled. If the user wants a PR anyway,
+they ask; `/ship` never flips the config on their behalf. Opening a PR
+also requires `gh` in *both* modes: check it before the act, and on
+failure name the missing precondition and stop with the branch pushed
+(README's tickets-mode section defines the check).
+
+The PR body is report-shaped: what-and-why lede, a per-gate evidence
+table (the test/eval numbers, the doc checks), and an out-of-scope line.
 
 - **Tickets mode:** the PR carries `Fixes #N` for each issue the branch
   completes (from the commits' `#N` refs and the milestone) and is tied
@@ -70,5 +79,8 @@ with a report-shaped body: what-and-why lede, a per-gate evidence table
   push, so the tick ships with the work and gate 1's clean-tree assertion
   stays honest. No orphan post-push edit.
 
-Report ends with the PR URL and one line per gate. /ship opens the PR;
+**The report's first line is the verdict** — `SHIPPED — <PR url>`,
+`BLOCKED at gate <n> — <reason>`, or `PUSHED (no PR — push: direct)` —
+then one line per gate as its evidence. A reader who stops after one
+line must still know whether the release happened. /ship opens the PR;
 it never merges — the merge is a human act.

@@ -30,6 +30,11 @@ grooms the many existing ones).
 
 ## Stance: report, then apply
 
+The report opens with a one-line verdict — `backlog healthy` or
+`<N> findings across <M> categories` — before any finding, per the
+pack's verdict-first stance. Then the numbered findings, then the
+applied-actions list.
+
 The full findings report comes first — numbered, each finding with its
 evidence and its proposed action. Then the user picks; only approved
 actions are executed, and each applied action is confirmed by name.

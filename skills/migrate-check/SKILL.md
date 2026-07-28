@@ -34,8 +34,14 @@ safety) · /audit code (defects in code; this gates schema changes).
 1. **Resolve the safety level** from config `db:`. Default when unspecified
    is **shared-prod** — the conservative assumption. `local` → lighter path
    (step 8). `none` → say so in one line and stop.
-2. **Identify the target**: the folder named in the arguments, else the
-   newest unapplied migration per `npx prisma migrate status`.
+2. **Identify the target**: the folder or file named in the arguments,
+   else the newest unapplied migration. Resolution is stack-dependent —
+   `npx prisma migrate status` for Prisma; otherwise the newest unapplied
+   file in the project's migrations directory (Drizzle, Rails, Alembic,
+   Flyway, plain SQL). **If the stack cannot be determined or the target
+   cannot be resolved, say exactly that and ask for the target path —
+   never assume Prisma.** Statement classification (step 4) is
+   stack-agnostic and runs the same way once a target exists.
 3. **Backup and undo path FIRST.** Name the exact backup command (default
    `pg_dump "$DATABASE_URL" > backups/pre_<timestamp>.sql`; config
    `## migrate-check` `backup-command` overrides) and the restore step. If
@@ -64,7 +70,9 @@ safety) · /audit code (defects in code; this gates schema changes).
 
 ## The verdict
 
-End with a written block, always:
+**The verdict is the report's FIRST line**, then the evidence that earned
+it — the pack's shared stance. A reader who stops after one line must
+still get the answer. Restate it at the end as a written block, always:
 
 - `**Verdict: GO**` — only when every statement is additive, history is
   clean, and the backup path is named. Include the exact next commands in

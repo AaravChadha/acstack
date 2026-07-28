@@ -39,6 +39,19 @@ the subtask turns out to be a bug hunt).
    looks already done, push back in writing before touching code. Do not
    start work you'd have to defend later.
 
+**When a precondition fails, stop and say which** — never guess a target:
+
+- **No PLAN.md** (and no legacy `PLANNING.md`) → say so, point at
+  `/plan build`, stop.
+- **The named ID is not in PLAN.md** → say the ID was not found, list the
+  closest open subtask IDs, and ask. Never silently pick a neighbour.
+- **Bare `/do` with no argument** → propose the top unblocked subtask
+  (every prerequisite box checked, in plan order) and confirm before
+  starting — matching tickets mode's behavior rather than guessing.
+- **The box is already `[x]`** → re-run its acceptance. Passing → say it
+  is already done and stop. Failing → report the regression and offer
+  `/triage`'s re-open verdict; do not silently redo the work.
+
 ## The sequence
 
 1. **Execute.** Complete the named subtask — strictly scoped to it. Adjacent

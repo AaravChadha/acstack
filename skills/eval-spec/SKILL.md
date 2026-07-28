@@ -31,9 +31,18 @@ committed artifacts and sets score targets, a deliberate act like /plan.
 
 ## The sequence
 
+0. **Refuse to overwrite an existing eval.** If `eval/spec.md` or
+   `eval/golden.jsonl` already exists, stop and say so. A committed
+   golden set is the definition of done; regenerating it silently
+   rewrites the target, which is the never-inflate rule's exact failure
+   mode. Offer instead to ADD cases to the existing set, or to supersede
+   one specific case per the hard rules below. Proceed only when neither
+   file exists.
 1. **Read** BRIEF.md and PLAN.md. The BRIEF's domain landmines become
    adversarial cases — every do-NOT rule in the brief is a test waiting to
-   be written.
+   be written. No BRIEF → say so and proceed from PLAN plus the
+   interview, noting in `eval/spec.md` that landmines were not sourced
+   from a brief.
 2. **Interview** for categories: what kinds of questions will real users
    ask, what must the system refuse, what does partial credit mean. Push
    for the ugly categories the user hasn't thought about — the eval's value

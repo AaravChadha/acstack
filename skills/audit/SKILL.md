@@ -60,8 +60,10 @@ Drift check — every claim a doc makes that reality can contradict:
 - File-location tables vs actual paths.
 - Run the README quickstart where cheap; a broken quickstart is drift.
 
-Output: a numbered list of `doc says / reality is / fix` triples. Nothing
-else counts as a docs finding.
+Output: a verdict first — `NO DRIFT` or `<N> drift findings` — then a
+numbered list of `doc says / reality is / fix` triples. Nothing else
+counts as a docs finding. Close with scope: which documents and which
+claims were checked, and which were too expensive to verify.
 
 ## Target: eval
 
