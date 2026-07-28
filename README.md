@@ -44,8 +44,9 @@ Start a new Claude Code session; the nineteen skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 
-Requirements: git and a POSIX shell. Nothing else — no runtime, no package
-manager, no build step. macOS/Linux; on Windows, copy the `skills/*`
+Requirements: git and bash 3.2+ (the version macOS ships). Nothing else —
+no runtime, no package manager, no build step. macOS/Linux; on Windows,
+copy the `skills/*`
 directories into `~/.claude/skills/` manually (symlink support is a roadmap
 item).
 
@@ -99,8 +100,10 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 | `stale-days` | `30` (days; set in a `## triage` section) | /triage, /health |
 | `base-url` | (unset; set in a `## qa` section) | /qa |
 | `palette`, `product-names` | (unset; set in a `## design-audit` section) | /design-audit |
+| `backup-command` | `pg_dump "$DATABASE_URL" > backups/pre_<ts>.sql` (set in a `## migrate-check` section) | /migrate-check |
+| `## Collaborators` | (unset; a section, not a key) | /plan (hackathon owner tags) |
 | `subtask-commit-format` | `completed task <number> (<description>)` | /do |
-| `journal-commit-format` | `Journal <date>: <summary>` | /journal, /retro |
+| `journal-commit-format` | `Journal <date>: <summary>` | /journal, /resume, /retro |
 
 `attribution: none` (the default) means generated docs, commits, and PR
 bodies carry no AI-tool mentions and no attribution trailers. Flip to
@@ -117,8 +120,13 @@ every invocation, and this is the canonical statement they refer to:
 
 If any one fails, the skill names **which** precondition failed and offers
 document mode. It never guesses, and it never silently degrades — an
-honest halt beats a tracker operation against the wrong repo. Consumed by
-/plan, /do, /ticket, /triage, /investigate, /retro, and /ship.
+honest halt beats a tracker operation against the wrong repo.
+
+All nine tickets-aware skills apply it: /plan, /do, /ticket, /triage,
+/investigate, /resume, /retro, /health, and /ship. Each states the three
+preconditions inline rather than pointing here, so a skill read on its own
+in your repo is complete — this section is the human-facing summary, not a
+dependency.
 
 ## Operating principles
 
@@ -144,7 +152,7 @@ Every skill carries this block verbatim (canonical copy below;
 ```
 CONDUCT.md            # the agent interaction contract (10 rules)
 setup                 # symlink installer / uninstaller
-scripts/check.sh      # pack guard: principles drift, banned names, budgets
+scripts/check.sh      # pack guard: principles, names, frontmatter, budgets, syntax
 templates/acstack.md  # per-project config template
 skills/<name>/        # one directory per skill: SKILL.md + references/
 ```
@@ -152,8 +160,10 @@ skills/<name>/        # one directory per skill: SKILL.md + references/
 ## Development
 
 Run `scripts/check.sh` before committing pack changes. It fails on
-principles-block drift, personal/client names in pack content, oversized
-SKILL.md files, and shell syntax errors.
+principles-block drift, personal/client names in pack content, unsafe or
+mismatched frontmatter (a description YAML would truncate, a `name:` that
+disagrees with its directory), oversized SKILL.md files, and shell syntax
+errors.
 
 ## Credits
 

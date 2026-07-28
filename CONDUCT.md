@@ -128,7 +128,9 @@ that forced the change.
 ## Distribution
 
 The block below is what acstack installs into a project's `AGENTS.md`
-(via `/plan seed`) or into `~/.claude/CLAUDE.md` (via `setup --global`).
+(via `/plan seed`). A `setup --global` path that installs the same block
+into `~/.claude/CLAUDE.md` is planned but **not yet built** — do not rely
+on it; install per-project until it ships.
 It is marker-fenced so pack upgrades can refresh it without touching
 hand-written content around it. `/health` verifies it is present and current.
 

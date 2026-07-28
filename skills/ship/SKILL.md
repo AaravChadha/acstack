@@ -47,9 +47,10 @@ here so the rule stays true everywhere else.
 1. **State.** Working tree clean; current branch is not the default (on
    default → offer to cut `<branch-prefix><slug>`, don't ship from it);
    the branch is ahead of the default by the commits being shipped.
-2. **Tests.** Run the project's suite if one exists (detected, or named
-   in config); record the summary numbers verbatim. No suite → say so
-   plainly; a missing suite is never a silent pass.
+2. **Tests.** Run the project's suite — the `test-command` config key if
+   set, otherwise auto-detected — and record the summary numbers verbatim.
+   No suite and no `test-command` → say so plainly; a missing suite is
+   never a silent pass.
 3. **Eval.** If `eval/spec.md` exists, run the eval by its own run
    command and compare headline vs target. Below target BLOCKS the ship
    (this is what makes "the eval is the spec" bite at release time). No

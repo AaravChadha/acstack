@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # acstack pack guard — run before committing pack changes (CI runs it too).
 # Checks: principles-block byte-identity, banned personal/client names,
+# frontmatter safety (description YAML hazards, name vs directory),
 # SKILL.md line budgets, shell syntax.
 set -euo pipefail
 
