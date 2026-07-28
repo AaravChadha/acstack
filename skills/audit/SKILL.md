@@ -9,6 +9,10 @@ argument-hint: "code|docs|eval [path | PR# | diff range]"
 Three targets, one stance: verdicts backed by evidence, misses logged rather
 than massaged, and scope stated so the reader knows what was NOT checked.
 
+`Adjacent skills:` /secure (security-only findings with exploit scenarios) ·
+/qa (probes the running system; /audit reads code and docs) · /investigate
+(root-causes one failure; /audit sweeps for many).
+
 <!-- acstack:principles -->
 ## Operating principles
 

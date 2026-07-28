@@ -42,7 +42,7 @@ Config: `stale-days` from a `## triage` section in `.claude/acstack.md`
 
 ## Tickets mode (`tracking: tickets`)
 
-Preconditions per the pack rule (gh, auth, remote). The sweep:
+Preconditions per README's tickets-mode section (gh, auth, remote). The sweep:
 
 1. **Stale.** Open issues with no activity in `stale-days` days → propose
    close-with-reason (`superseded by #M` / `no longer planned — <reason>`)

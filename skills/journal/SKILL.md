@@ -11,6 +11,10 @@ future-you) opens the repo and resumes in five minutes without re-deriving a
 single decision. It records reality, not intentions — the plan says what
 should happen; the journal says what did.
 
+`Adjacent skills:` /retro (trends across many sessions; /journal records
+one) · /learn (one durable lesson; /journal the whole session) · /resume
+(reads what /journal wrote).
+
 <!-- acstack:principles -->
 ## Operating principles
 

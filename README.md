@@ -106,6 +106,20 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 bodies carry no AI-tool mentions and no attribution trailers. Flip to
 `standard` if your project or event requires disclosure.
 
+### Tickets-mode preconditions
+
+Skills that touch a tracker (`tracking: tickets`) check three things on
+every invocation, and this is the canonical statement they refer to:
+
+1. `gh` is installed,
+2. `gh auth status` succeeds,
+3. the repo has a GitHub remote.
+
+If any one fails, the skill names **which** precondition failed and offers
+document mode. It never guesses, and it never silently degrades — an
+honest halt beats a tracker operation against the wrong repo. Consumed by
+/plan, /do, /ticket, /triage, /investigate, /retro, and /ship.
+
 ## Operating principles
 
 Every skill carries this block verbatim (canonical copy below;

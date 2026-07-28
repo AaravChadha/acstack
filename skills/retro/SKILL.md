@@ -76,5 +76,5 @@ via `/plan replan` — /retro writes the journal, not the plan.
 Velocity becomes closed issues + milestone burn via
 `gh issue list --state closed` and the milestone API; failure classes
 are additionally mined from issue labels and closing comments.
-Preconditions per the pack rule (gh, auth, remote — name what's missing,
+Preconditions per README's tickets-mode section (gh, auth, remote — name what's missing,
 offer document mode).

@@ -50,7 +50,7 @@ gave up on filing.
 
 ## Tickets mode (`tracking: tickets`)
 
-Preconditions per the pack rule (gh, auth, remote — name what's missing,
+Preconditions per README's tickets-mode section (gh, auth, remote — name what's missing,
 offer document mode). Then `gh issue create`:
 
 - Body follows `.github/ISSUE_TEMPLATE/task.md` (acceptance / files /

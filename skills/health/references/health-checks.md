@@ -61,7 +61,7 @@ command -v gh && gh auth status && git remote get-url origin
 git ls-files | grep -E '(^|/)\.env(\.|$)'             # tracked .env-class
 grep -n '^!' .gitignore 2>/dev/null                   # negation trap
 git log --all --oneline -- '*.env' | head -5          # .env in history
-git grep -nE '(sk[-_][A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY)' \
+git grep -nE '(sk[-_][A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|-----BEGIN [A-Z ]*PRIVATE KEY)' \
   -- . ':!*.md' | head -10                            # obvious key shapes
 # sk[-_] with a hyphen/underscore class catches sk-proj-…, sk_live_…,
 # sk-live-… — a plain sk-[alnum]{20,} misses every prefixed variant.

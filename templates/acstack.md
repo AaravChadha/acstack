@@ -49,3 +49,19 @@ context belongs — never inside the pack's skills.
 
 <!-- Per-skill overrides. Example:
 - stale-days: 30              # days without activity before an item counts as stale -->
+
+## qa
+
+<!-- Per-skill overrides. Example:
+- base-url: http://localhost:3000   # http probe target; a URL argument overrides it -->
+
+## design-audit
+
+<!-- Per-skill overrides. Examples:
+- palette: #0f172a, #f8fafc, #3b82f6, #64748b   # allowed hex values; anything else is a finding
+- product-names: Acme, AcmeCloud               # exact required casings -->
+
+## ship
+
+<!-- Per-skill overrides. Example:
+- test-command: npm test      # overrides auto-detection for the test gate -->

@@ -10,6 +10,10 @@ disable-model-invocation: true
 Planning docs are deliberate artifacts. This skill is user-invoked only and
 never regenerates a plan spontaneously.
 
+`Adjacent skills:` /challenge (interrogates the BRIEF this creates) ·
+/plan-review (locks the PLAN this creates before code) · /eval-spec (sets
+the score targets a phase exit criterion cites) · /do (executes the tasks).
+
 <!-- acstack:principles -->
 ## Operating principles
 

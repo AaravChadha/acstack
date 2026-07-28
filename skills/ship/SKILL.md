@@ -63,7 +63,7 @@ with a report-shaped body: what-and-why lede, a per-gate evidence table
 
 - **Tickets mode:** the PR carries `Fixes #N` for each issue the branch
   completes (from the commits' `#N` refs and the milestone) and is tied
-  to that milestone. Preconditions per the pack rule (gh, auth, remote).
+  to that milestone. Preconditions per README's tickets-mode section (gh, auth, remote).
 - **Document mode:** the body names the PLAN task IDs shipped; a phase
   exit criterion that passed in gate 4 is ticked per /do's convention —
   committed to the branch (`completed <phase> exit criterion`) BEFORE the
