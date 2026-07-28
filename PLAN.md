@@ -11,9 +11,14 @@
 > and CONDUCT.md.
 >
 > **Cross-cutting constraints (apply to every wave):**
-> - Plain markdown skills; zero runtime dependencies beyond git + POSIX shell.
-> - All pack memory is repo-owned; machine-local state is limited to a usage
->   log and an update-check stamp (wave 4).
+> - Plain markdown skills; zero runtime dependencies beyond git + bash 3.2+
+>   (the version macOS ships). Stated as POSIX until 2026-07-29; both `setup`
+>   and `check.sh` use `BASH_SOURCE` and process substitution, so the claim
+>   was false — corrected rather than the scripts rewritten, since bash 3.2
+>   is present everywhere the pack targets.
+> - All pack memory is repo-owned; machine-local state is limited to an
+>   update-check stamp (4.2, wave 4) and, once telemetry ships, a usage log
+>   (4.3, wave 4.5).
 > - No client/company/collaborator names in pack content (guard-enforced).
 > - `scripts/check.sh` clean before every commit.
 > - Public launch only after the wave-4 checklist passes.
@@ -32,7 +37,7 @@
 >   and /migrate-check, and to every wave-6 lens — carrier task **4.15**.
 > - **Resolve one document set, and say which (NEW 2026-07-29).** Every
 >   document-reading skill (/plan, /do, /resume, /journal, /retro, /ship,
->   /audit docs, /health, /ticket, /triage, /learn, and wave-4's /why)
+>   /audit docs, /health, /ticket, /triage, /learn, and /why (4.11))
 >   resolves exactly ONE BRIEF/PLAN/JOURNAL set and names its path in the
 >   scope line. If more than one candidate set exists, list the candidates
 >   and STOP — never pick one silently. Ambiguity is a reason to stop, not
@@ -213,7 +218,8 @@ below fully green; repo flipped public.
 - [ ] **4.1** VERSION + CHANGELOG.md; issue template requiring VERSION.
 - [ ] **4.2** Slim per-invocation preamble (≤12 lines, hand-maintained,
   budget enforced by check.sh) + `bin/` helpers (config resolve,
-  update-check, recall) — POSIX sh only; `runtime: off` degrades cleanly.
+  update-check, recall) — bash 3.2+, matching `setup` and `check.sh`;
+  `runtime: off` degrades cleanly.
 - [ ] **4.5** CI: GitHub Action running check.sh + shellcheck on every PR.
 - [ ] **4.6** PRINCIPLES.md, docs/ARCHITECTURE.md (every preamble line
   documented), CONTRIBUTING.md; README v2 with a see-it-work walkthrough
@@ -331,7 +337,8 @@ below fully green; repo flipped public.
   the carrier for "grow check.sh, not the prose", and the higher-value
   half of the 2026-07-29 process review (the four AGENTS.md verification
   rules are the lesser half). Six of that day's ten defects were
-  mechanically detectable and none was guarded. Add to `scripts/check.sh`:
+  mechanically detectable and only one (frontmatter safety) was guarded by
+  day's end. Add to `scripts/check.sh`:
   1. **Routing line present** — every `skills/*/SKILL.md` carries
      `Adjacent skills:` (five wave-1 skills lacked it for two waves).
   2. **Cross-references resolve** — every `/skill-name` referenced in a
@@ -352,8 +359,50 @@ below fully green; repo flipped public.
   **Acceptance:** each of the six fires against a seeded defect and is
   silent on the clean tree — demonstrated, per 4.15.
 
-> **Process note (2026-07-29):** 4.14, 4.15, 4.16, 4.17, and 4.18 all
-> exist because cross-cutting rules were written as decisions with no task
+- [ ] **4.20** Canonicalize the duplicated snippets that have already
+  drifted — carrier for findings the 2026-07-29 audits raised and this
+  session did not fix inline. The six eval failure buckets appear in
+  `audit/SKILL.md`, `journal/SKILL.md`, `eval-review-rules.md`, and
+  `retro-sections.md`; the adversarial-input bank appears in
+  `qa/references/adversarial-inputs.md` plus restatements in `audit`,
+  `eval-spec`, and `qa` **that have already diverged** — audit alone has
+  "empty query", eval-spec alone has "prompt-injection-shaped", and
+  neither carries the bank's HTML-fragment or Unicode cases. Pick one
+  canonical home per snippet, make the others cite it, and extend 4.17.4's
+  byte-identity guard to cover them. **Acceptance:** editing a canonical
+  snippet without updating its citations fails check.sh.
+- [ ] **4.21** Generalize `/do`'s degradation pattern to its peers —
+  carrier for the audit finding that the fix landed in one skill only.
+  `/ticket` and `/triage` document mode assume PLAN.md exists; `/retro`
+  degrades for missing eval history but not a missing JOURNAL or PLAN;
+  `/journal`'s PLAN-sync step has no missing-PLAN path; `/do` step 2 has
+  no path for a task group with no `**Acceptance:**` line — it would
+  declare done unverified, the exact rot `/triage` and `/plan-review` are
+  built to flag. Also: `/journal` never says which files its commit
+  stages, so it could sweep unrelated work. **Acceptance:** each named
+  skill, run against a repo missing its input, names what is missing and
+  stops rather than proceeding.
+- [ ] **4.22** Fix `setup --dry-run` reporting work it did not do. It
+  prints per-item "linked <skill>" and a "19 linked, 0 skipped" summary
+  while creating nothing; `--uninstall --dry-run` prints "removed <skill>"
+  with the symlink still present. A dry run's output is exactly what a
+  user trusts before running it for real. **Acceptance:** every dry-run
+  line reads "would link"/"would remove" and the summary counts intended
+  actions, verified against a scratch `CLAUDE_SKILLS_DIR`.
+- [ ] **4.23** Resolve CONDUCT rule 10's self-contradiction before 4.16
+  implements it. The rule's body says `T4: …` / `#42: …` are both tickets
+  mode with document mode keeping `completed task 3.2.1 (…)`; the
+  condensed block four lines later says "`T4: …` / `#42: …` **per tracking
+  mode**", making T4 the document form — and `T4:` is emitted by no skill
+  and appears in no config default. AGENTS.md carries the same condensed
+  wording, so this repo's binding instruction is currently wrong. 4.16's
+  acceptance never names `T4:`, so implementing it as written would leave
+  the contradiction standing. **Acceptance:** `T4:` appears nowhere as a
+  live format, and the body and condensed block agree.
+
+> **Process note (2026-07-29):** 4.14, 4.15, 4.17, 4.20–4.23 (this wave)
+> and 4.16,
+> 4.18 (wave 4.5) all exist because cross-cutting rules were written as decisions with no task
 > owning the work — the multi-product rule, the positive-control rule, the
 > commit-format verdict, and the audit findings left loose. Recording a
 > decision is not scheduling it. Any future cross-cutting rule added to
@@ -405,14 +454,27 @@ below fully green; repo flipped public.
 > denominator: wave 4 was 7 items when they were pulled in and 18 when the
 > split was made.
 
-> **Risk (2026-07-29):** wave 4 now carries 11 items, six of them
-> infrastructure. If it still slips, the cut order is 4.8 (`allowed-tools`
-> — then soften README v2's trust claim to match), then 4.9 (referral
-> block — costs discoverability, and adopters can still read the README).
-> **Do not cut 4.7, 4.12, 4.14, 4.15, or 4.17.** 4.7 is the gate itself;
-> 4.12 protects the headline claim; 4.14 stops confidently wrong answers;
-> 4.15 and 4.17 are what make the other checks trustworthy — this repo has
-> produced two documented cases of a check that ran and did not work.
+> **Risk (2026-07-29, revised same day):** the split left wave 4 at 11
+> items; the second audit round added 4.20–4.23 as carriers, taking it to
+> **15**. Those four are cleanup of defects already found, not new
+> ambition — but the wave is heavy again and that should be watched rather
+> than discovered late.
+>
+> Cut order if it slips: 4.22 (`--dry-run` output — cosmetic and rarely
+> hit), then 4.20 (snippet canonicalization — the drift is documented and
+> the guard can follow later), then 4.8 (`allowed-tools`, and soften README
+> v2's trust claim to match), then 4.9 (referral block — costs
+> discoverability, but the README still explains the typed-only skills).
+>
+> **Do not cut 4.7, 4.12, 4.14, 4.15, 4.17, 4.21, or 4.23.** 4.7 is the
+> gate itself; 4.12 protects the headline claim; 4.14 stops confidently
+> wrong answers; 4.15 and 4.17 are what make every other check
+> trustworthy — this repo has produced three documented cases of a check
+> that ran and did not work (the `sk-live` regex, the description guard's
+> first control, and /ship's gate 1 blocking every release); 4.21 stops
+> skills guessing when their inputs are missing; and 4.23 must land before
+> 4.16, since implementing the commit format without resolving rule 10's
+> self-contradiction would cement a format nothing emits.
 
 ## [ ] Wave 4.5 — Post-launch hardening and capability
 
@@ -433,10 +495,17 @@ reordered, if any.
 
 - [ ] **4.3** Local-only telemetry (`~/.acstack/usage.jsonl`) + /retro
   usage section + human-approved aggregate share flow.
+  **Acceptance:** with `telemetry: off` nothing is written under
+  `~/.acstack/`; with it on, exactly one JSON line per invocation and no
+  network call anywhere in the path — verified by running the full flow
+  offline. Nothing transmits without the user's own hand.
 - [ ] **4.4** `setup --global` (conduct block into `~/.claude/CLAUDE.md`)
   and `--hook` (SessionStart recall).
+  **Acceptance:** `--global` is idempotent and never clobbers hand-written
+  content in `~/.claude/CLAUDE.md`; `--hook` is a no-op outside acstack
+  projects; both are reversible by `--uninstall`.
 - [ ] **4.10** /audit tests — fourth target on the existing skill
-  (*pulled forward from wave 5, 2026-07-29*). Sweeps an existing suite
+  (*originally wave 5; pulled into wave 4 then settled in 4.5 by the split, all 2026-07-29*). Sweeps an existing suite
   for tests that pass without catching: assertion-free and tautological
   tests, mocks stubbing the unit under test, unread snapshots,
   accumulating skips, plus a mutation spot-check — break the production
@@ -448,8 +517,7 @@ reordered, if any.
   tautological assert, and a test that passes against deliberately broken
   code, `/audit tests` names all three; on a clean suite it returns no
   findings. (That seeded suite is this target's positive control, 4.15.)
-- [ ] **4.11** /why — decision archaeology (*pulled forward from wave 5,
-  2026-07-29*). Answers "why is this code like this" from BRIEF
+- [ ] **4.11** /why — decision archaeology (*originally wave 5; settled here by the 2026-07-29 split*). Answers "why is this code like this" from BRIEF
   constraints → dated PLAN decision blocks → JOURNAL entries → git blame,
   in that order, stopping at the first real answer and stating "no
   recorded rationale" when there is none. The payoff for three waves of
@@ -501,6 +569,21 @@ reordered, if any.
   **Acceptance:** for each, the precondition is removed and the skill
   names what is missing and stops, rather than proceeding on a guess.
 
+- [ ] **4.19** /refactor — behavior-preserving cleanup with proof. The rule
+  is that the test suite is run and green BEFORE the refactor and green
+  again after, with the same test count — a suite that shrinks during a
+  refactor is the finding, not a detail. Scope stated up front, no
+  behavior changes smuggled in, and a stop if the suite is too thin to
+  detect a behavior change at all (in which case it names what to test
+  first). Pairs with 4.10 `/audit tests`, which is what tells you whether
+  the green is worth anything — both sit in this wave for that reason.
+  **Placed here, not in wave 5:** that wave's exit criterion is "none of
+  them can write", and a refactor skill writes code by definition. Caught
+  on the same day as the /retro read-only misclassification, and the same
+  error — asserting a property of a set without checking each member. **Acceptance:** on a repo with a passing
+  suite, a refactor that silently drops a test or changes behavior is
+  caught and reported rather than committed.
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
@@ -538,11 +621,20 @@ scratch project; none of them can write (enforced by `allowed-tools`, per
   `/ship` (five gates), and `/triage` (checked boxes that now fail). The
   genuine gap is auditing a claim made by *someone else* — another
   session, another agent, a teammate — against a running system.
-
+- [ ] **5.5** /upgrade — dependency *upgrade* pre-flight, distinct from
+  5.1's *addition* review. Upgrading is a breaking-change problem, not a
+  justification problem: read the changelog between the pinned and target
+  versions, classify each change additive vs breaking against the call
+  sites this repo actually has, flag transitive bumps, and end in GO/NO-GO
+  with the rollback pin named. Same shape as `/migrate-check`, applied to
+  the supply chain. **Acceptance:** on a repo pinned to an older major of
+  a dependency with a known breaking change, names that change and the
+  call sites it affects, and returns NO-GO without a migration note.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
-> keeping this wave at a single item. Its two companions (/audit tests, /why) moved
-> to wave 4, and "honest measurement" as a theme moved with them; what
-> remains is a gate, which is what this wave is. Tradeoff: the wave now
+> leaving /verify alone under a theme that had departed. Its two companions
+> (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
+> split — and "honest measurement" went with them; what remains here is a
+> gate, which is what this wave is. Tradeoff: the wave now
 > mixes pre-change gates with a post-change one. Revisit if /verify grows
 > enough to stand alone.
 
@@ -575,8 +667,14 @@ without averaging dissent away.
   `/plan-review` covers structure *before* code and BRIEF carries the
   `## Architecture Decision: X, NOT Y` line; nothing revisits it after,
   which is exactly where drift accumulates when agents write fast.
-- [ ] **6.2** /a11y — keyboard navigation, focus order, labels and roles,
-  contrast, motion and reduced-motion, form-error association.
+- [ ] **6.2** /a11y — **static tier only** (see B.3). Reliably checkable
+  without rendering: missing alt text, absent or unassociated form labels,
+  ARIA misuse, heading-order breaks, positive tabindex, and
+  reduced-motion handling declared in CSS. **Focus order, computed roles,
+  and real contrast ratios require a rendered DOM and are OUT of scope
+  here** — the skill's scope line must say so rather than implying full
+  WCAG coverage. Shipping an accessibility check that overstates its
+  reach is worse than shipping none.
   `/design-audit` covers palette, honest labels, slop, and client-facing
   language — all a different axis. Absent from all four surveyed packs.
 - [ ] **6.3** /devex — the cold-start experience: clone → install → run on
@@ -692,9 +790,11 @@ existing contract — not a redesign.
   needs a stated policy on where images live (repo-owned memory says the
   repo; image bloat says otherwise — decide at trigger time).
 
-> **Constraint check (2026-07-29):** the browser layer is the first thing
-> in the roadmap that breaks "zero runtime dependencies beyond git + POSIX
-> shell." When the trigger fires, that cross-cutting constraint needs an
+> **Constraint check (2026-07-29):** the browser layer is the largest
+> break with "zero runtime dependencies beyond git + bash" — though not the
+> first: tickets mode already requires `gh` (shipped in wave 2), and 4.12's
+> eval runner requires calling a model API. The pattern each time is that
+> the dependency is OPTIONAL and the skill degrades honestly without it. When the trigger fires, that cross-cutting constraint needs an
 > explicit amendment — most likely "the browser layer is optional and
 > every skill degrades to its static/http tier without it," which is what
 > `/qa`'s honest-decline path already models. Do not let it land by

@@ -5,7 +5,7 @@
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
 > **Last update**: 2026-07-29. Waves 1–3 built and shakedown-passed (19
 > skills). Since then: the roadmap extended to waves 4/4.5/5/6/7 plus a
-> deferred browser layer (34 skills at the end), two independent audits
+> deferred browser layer (38 skills at the end), two independent audits
 > that found a shipped bug in /ship, and four verification rules added to
 > AGENTS.md. Wave 4 (11 launch-blocking items) is next; nothing built yet.
 
@@ -23,8 +23,8 @@
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
   public flip waits on the wave-4 launch checklist.
-- Roadmap runs to 34 skills: wave 4 (launch, 11 items) → 4.5 (post-launch
-  hardening, 7) → 5 (pre-flight gates) → 6 (review board) → 7 (operate),
+- Roadmap runs to 38 skills: wave 4 (launch, 11 items) → 4.5 (post-launch
+  hardening, 8) → 5 (pre-flight gates) → 6 (review board) → 7 (operate),
   plus an unscheduled browser layer. Full detail in PLAN.md.
 - Next: wave 4. Specs get written at wave start, per the standing process.
 
@@ -34,7 +34,7 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard — must be clean before any commit
-# then start a new Claude Code session; the twelve skills load at start
+# then start a new Claude Code session; the nineteen skills load at start
 ```
 
 ## What's been built
@@ -45,17 +45,17 @@ scripts/check.sh   # pack guard — must be clean before any commit
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ⬜ | 11 launch-blocking items: runtime, CI, README v2, discoverability, eval runner, guards, the 9-point demonstrated launch checklist |
-| 4.5 — Post-launch hardening | ⬜ | 7 items split out 2026-07-29: telemetry, `setup --global`, /audit tests, /why, remaining degradation paths |
-| 5 / 6 / 7 — Gates, review board, operate | ⬜ | 15 skills: pre-flight family, the lens board, post-merge coverage |
+| 4.5 — Post-launch hardening | ⬜ | 8 items split out 2026-07-29: telemetry, `setup --global`, /audit tests, /why, /refactor, remaining degradation paths |
+| 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family, the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
 
-### Roadmap to 34 skills, and an audit that found a shipped bug (2026-07-29)
+### Roadmap to 38 skills, and an audit that found a shipped bug (2026-07-29)
 
 Starting state: 19 skills, wave 3 closed, PLAN.md at 182 lines covering
 waves 1–4, four open decisions. Ending state: same 19 skills, PLAN.md at
-769 lines covering waves 1–7 plus a deferred browser layer, 34 open tasks,
+809 lines covering waves 1–7 plus a deferred browser layer, 36 open tasks
 zero open decisions, and one live bug fixed. 10 commits, no skills built —
 this was a planning and correction session, deliberately.
 
@@ -78,13 +78,13 @@ Auditor subagent), and acstack's tickets mode is *deeper* than spec-kit's,
 whose issue export has no labels, milestones, or write-back.
 
 **Size philosophy is a real fork.** gstack's SKILL.md files average ~1,054
-lines and top out at 2,359; acstack's average 87, largest 149. Invoking
-gstack's /ship loads 1,417 lines at once against acstack's 74 plus
+lines and top out at 2,359; acstack's average 93, largest 149. Invoking
+gstack's /ship loads 1,417 lines at once against acstack's 98 plus
 references on demand. Anthropic's authoring guidance favours the smaller
 number — one place where the bigger pack is the worse pattern.
 
-**Waves 5–7 designed, then split into 5–7 plus 4.5.** Roster ends at 34
-skills, two-thirds of gstack's. The team-of-perspectives goal is met by
+**Waves 5–7 designed, then split into 5–7 plus 4.5.** Roster ends at 38
+skills, about 70% of gstack's 53. The team-of-perspectives goal is met by
 **lenses, not personas**: each reviewer reads a named artifact and returns
 a verdict, no roleplay, no first names — which keeps "gstack simulates the
 team; acstack encodes the discipline" true while still convening a board.
@@ -274,7 +274,7 @@ proven end-to-end by /do in the wave-2 scratch repo and was not re-run
 against a live remote this wave (stated, not a gap).
 
 Validation close: `check.sh` clean on every wave-3 commit; skills 12 →
-19; SKILL.md files 12 → 19 (largest still /plan at 145 of 500 budget);
+19; SKILL.md files 12 → 19 (largest /plan at 149 of the 500 budget);
 reference files 14 → 21; setup round-trip 19 linked, 0 skipped; the seven
 new skills registered in the model-facing list mid-session (no restart
 needed for model-invocable skills — confirms wave 2's incidental find).
@@ -359,7 +359,7 @@ commits; skills 5 → 12; SKILL.md lines 403 → 1080 (largest file 145 of
 500 budget); reference files 9 → 14; setup round-trip 12 linked, 0
 skipped.
 
-Starting state: repo had 2 commits (init + CONDUCT.md) and no skills;
+Starting state: repo had 3 commits (init, CONDUCT.md, CONDUCT rule 10) and no skills;
 `~/.claude/skills/` did not exist on this machine.
 
 Built and committed in sequence: `setup` (installer), config template,

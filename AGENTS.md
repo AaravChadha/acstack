@@ -15,7 +15,10 @@ Binding rules for this repo:
 - Skills stay under 500 lines and plain markdown — no bash preambles until
   the wave-4 runtime lands, and none beyond its documented budget after.
 - Commit style: lowercase `<verb> <object> (<detail>)` subject + a brief
-  what-and-why body, no attribution trailers (CONDUCT rule 10).
+  what-and-why body, no attribution trailers. This is a deliberate
+  **exception** to CONDUCT rule 10's work-item-referenced subject, not a
+  derivation from it — the pack itself has no ticket or task ID per commit.
+  Rule 10's no-attribution half still binds.
 
 Verification rules (added 2026-07-29, each from a defect this repo shipped):
 
@@ -30,10 +33,16 @@ Verification rules (added 2026-07-29, each from a defect this repo shipped):
   `sk-[A-Za-z0-9]{20,}` secret regex that reported clean on a planted key, and
   the description guard whose first positive control passed misleadingly
   because the text it tested had already been fixed.
-- **A cross-cutting rule names its carrier task in the same edit.** Recording
-  a decision is not scheduling it. Three rules — multi-product detection,
-  positive controls, and the commit-subject format — were binding with nobody
-  owning the work until an audit found them orphaned.
+- **Anything named as needed work gets a carrier task in the same edit.**
+  Recording it is not scheduling it. This covers cross-cutting rules,
+  proposed skills, deferred fixes — anything a future reader would expect to
+  happen. Three rules (multi-product detection, positive controls, the
+  commit-subject format) were binding with nobody owning the work until an
+  audit found them orphaned; then two proposed skills (refactor safety,
+  dependency upgrade) were named in analysis and never scheduled, slipping
+  past the first version of this rule because it said "cross-cutting rule"
+  and they were skills. If you write that something is needed, either open
+  the task or write down that it was deliberately declined.
 - **A claim about a set enumerates the set.** "The six read-only skills" was
   written without opening six files, and `/retro` — which appends to
   JOURNAL.md and commits — was in the list. Count it, list it, or don't claim

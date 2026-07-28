@@ -3,8 +3,16 @@
 > **What this file is.** Per-skill designs for wave 3, written at wave
 > start per PLAN.md's process, at the same fidelity as waves 1–2. Build
 > follows approval, one increment at a time, in the build order at the
-> end. **Drafted:** 2026-07-27. **Status:** awaiting approval — nothing
-> below is built yet.
+> end. **Drafted:** 2026-07-27. ~~**Status:** awaiting approval — nothing
+> below is built yet.~~
+> **Status (2026-07-29):** all seven built, independently reviewed, and
+> shakedown-passed; wave 3 ticked in PLAN.md. This document is now the
+> as-built record. **Divergences from the spec as written, recorded rather
+> than edited:** the shakedown used a local scratch directory, not the
+> `acstack-w3-shakedown` GitHub repo named in the verification section
+> below — nothing in wave 3 needed tickets mode — and the tickets-mode
+> `Fixes #N` spot check was therefore NOT run, since the wave-2 shakedown
+> had already proven that path end to end.
 > **Standing verdicts applied:** 3.7 ships as **/health**, not /doctor
 > (2026-07-27 shadowing decision); the /qa browser probe is **deferred**
 > to first real need (2026-07-27 decision — http now, seam designed for
