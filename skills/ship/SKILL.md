@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Branch-level release with five gates before the act - clean-state, tests, eval-vs-target, docs drift, and attribution sweep; any failing gate stops the release with its output. Then push and open a report-shaped PR, wiring Fixes #N in tickets mode or PLAN task IDs in document mode. Use when the user asks to ship, release, cut, or open the PR for a feature or branch.
+description: "Branch-level release with five gates before the act - clean-state, tests, eval-vs-target, docs drift, and attribution sweep; any failing gate stops the release with its output. Then push and open a report-shaped PR, wiring the issue-closing reference in tickets mode or PLAN task IDs in document mode. Use when the user asks to ship, release, cut, or open the PR for a feature or branch."
 argument-hint: "[branch | notes]"
 ---
 

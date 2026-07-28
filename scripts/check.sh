@@ -36,7 +36,26 @@ if hits="$(grep -riEnw "$BANNED" skills/ templates/ docs/ CONDUCT.md README.md A
   fail=1
 fi
 
-# 3. SKILL.md line budget (< 500 per Claude Code guidance).
+# 3. Frontmatter description safety. An unquoted YAML scalar ends at " #"
+#    (comment) and is ambiguous at ": ". /ship shipped truncated at
+#    "wiring Fixes #N" — losing its whole trigger sentence — so this is
+#    guarded, not trusted to review.
+for f in skills/*/SKILL.md; do
+  desc="$(sed -n 's/^description: //p' "$f")"
+  case "$desc" in
+    '"'*|"'"*) continue ;;   # quoted: safe
+  esac
+  if printf '%s' "$desc" | grep -q ' #'; then
+    echo "FAIL description: $f has an unquoted ' #' — YAML truncates it into a comment"
+    fail=1
+  fi
+  if printf '%s' "$desc" | grep -q ': '; then
+    echo "FAIL description: $f has an unquoted ': ' — quote the description"
+    fail=1
+  fi
+done
+
+# 4. SKILL.md line budget (< 500 per Claude Code guidance).
 for f in skills/*/SKILL.md; do
   lines="$(wc -l < "$f" | tr -d ' ')"
   if [ "$lines" -ge 500 ]; then
@@ -45,7 +64,7 @@ for f in skills/*/SKILL.md; do
   fi
 done
 
-# 4. Shell syntax (+ shellcheck when available).
+# 5. Shell syntax (+ shellcheck when available).
 for s in setup scripts/check.sh; do
   bash -n "$s" || { echo "FAIL syntax: $s"; fail=1; }
 done
