@@ -264,6 +264,18 @@ below fully green; repo flipped public.
      anywhere in the history (not just the working tree).
   9. Every wave-4 acceptance line actually run, with its output pasted
      into the wave's journal entry.
+  10. **The two skills that have never faced their real case.** `/resume`
+     has never been run as a genuine cold start (a session with no prior
+     context reading only the three documents), and `/investigate` has
+     never chased a real failure — flagged as their "true shakedown" in
+     the wave-2 journal entry, 2026-07-27, and carried nowhere until now.
+     Both are launch-facing: `/resume` is the first skill a returning
+     adopter runs, and a five-minute catch-up that doesn't catch up is a
+     visible failure. **Acceptance:** a context-free session runs
+     `/resume` and correctly states the current wave, the divergence
+     flags, and three genuinely unblocked tasks; `/investigate` roots a
+     real failure to a `file:line` cause. Note the cold start cannot be
+     faked from inside a session that already knows the answer.
 
   Only then flip public. **Acceptance:** the launch commit's journal entry
   carries evidence for all nine — a command and its output, or a named
