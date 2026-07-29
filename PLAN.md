@@ -68,6 +68,15 @@
 > - **Absence is nearly invisible to diff-scoped review.** A missing auth
 >   check in an untouched file produces no diff lines. Whole-surface runs
 >   of /secure and /qa are the counterweight to review-time-only checking.
+> - **Process prerequisites in prose are invisible to `/resume`.** Its
+>   "unblocked" is defined by checkboxes and `## Open items` only, so a
+>   prerequisite recorded in prose — like this header's
+>   specs-at-wave-start rule — never blocks a task. Found by the 4.7
+>   item 10 cold start (2026-07-29), which named 4.1 as next when the
+>   true next unit was `docs/wave-4-specs.md`. **Deliberately declined,
+>   not carried:** the fix would mean parsing prose for constraints,
+>   which is out of proportion; the mitigation is keeping such rules in
+>   this header, which the skill's PLAN read does surface.
 
 ## Index of waves
 
@@ -613,6 +622,15 @@ reordered, if any.
     JOURNAL.md, and a path containing no UI files.
   - `/investigate` — state the verdict up front; root cause currently
     lands at step 5 with no lede.
+  - `/resume` — two gaps from its first real cold start (2026-07-29, the
+    4.7 item 10 test, run on this repo). (a) The unjournaled-range step
+    matches the literal `Journal <date>: <summary>` subject, so a
+    multi-entry day (`Journal 2026-07-29 (3rd): …`) makes it count
+    journal commits as unjournaled — six instead of the true one on this
+    repo; prefix-match the subject or document the suffix convention.
+    (b) A next-task with no `**Acceptance:**` line has no stated path —
+    the sibling of `/do`'s gap above, and true of 4.1, 4.2, and 4.5
+    today, so it is the first thing a wave-4 `/resume` hits.
   - Config: README lists `journal-commit-format` for /journal and /retro,
     but /resume also reads it and /retro hardcodes the format instead;
     `test-command` is listed for /ship, which never names it (only
