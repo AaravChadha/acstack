@@ -270,7 +270,10 @@ below fully green; repo flipped public.
   7. Demo transcript recorded against a real project, deliberately
      curated — never a promoted shakedown leftover.
   8. Credits line verified; no personal, client, or collaborator data
-     anywhere in the history (not just the working tree).
+     ~~anywhere in the history (not just the working tree)~~ in the
+     working tree. *(History scope removed 2026-07-30: the 4.24 purge
+     was declined by verdict — the historical roster is accepted as
+     public. The working-tree sweep stands.)*
   9. Every wave-4 acceptance line actually run, with its output pasted
      into the wave's journal entry.
   10. **The two skills that have never faced their real case.** `/resume`
@@ -412,15 +415,16 @@ below fully green; repo flipped public.
   the contradiction standing. **Acceptance:** `T4:` appears nowhere as a
   live format, and the body and condensed block agree.
 
-- [ ] **4.24** Purge the banned-name roster from git history before the
-  public flip. `883d729` moved the list out of the tracked tree, but the
-  names remain in history — `git log -S'<token>' --all` finds them in
-  `92e9779` (added) and `883d729` (removed). A private repo makes this
-  latent; flipping public makes it a disclosure. Options: rewrite history
-  (`git filter-repo`), or squash to a single root commit before the flip.
-  **Acceptance:** `git log -p --all | grep -iE '<roster>'` returns nothing
-  on the repo that goes public. **This blocks 4.7's public flip** — it is
-  the one launch item that cannot be fixed after the fact.
+- [x] **4.24** ~~Purge the banned-name roster from git history before the
+  public flip.~~ **Verdict (2026-07-30):** purge **declined** — user call,
+  made after reviewing the exact roster in history (`92e9779` added it
+  inside check.sh, `883d729` removed it). The twelve tokens are company
+  names whose association is not sensitive, bare first names, and project
+  names that are already public repos. History exposure accepted; no
+  rewrite, no repo recreation. **This no longer blocks 4.7's flip.**
+  The working-tree ban and the `.acstack-banned` guard stay unchanged —
+  their rationale is keeping pack content generic for adopters, not
+  secrecy, and that holds regardless of history.
 - [x] **4.25** ~~Decide and document `/do`'s push default.~~ **Verdict
   (2026-07-29):** `/do` no longer pushes at all. It completes the subtask,
   verifies acceptance, ticks the box, commits **locally**, and reports
@@ -519,7 +523,10 @@ below fully green; repo flipped public.
 > v2's trust claim to match), then 4.9 (referral block — costs
 > discoverability, but the README still explains the typed-only skills).
 >
-> **Do not cut 4.7, 4.12, 4.14, 4.15, 4.17, 4.23, or 4.24.** 4.7 is the
+> **Do not cut 4.7, 4.12, 4.14, 4.15, 4.17, 4.23, ~~or 4.24~~.**
+> *(4.24 declined 2026-07-30 — see its verdict; the clause below about it
+> being unfixable after the flip was true but is moot now that the purge
+> is declined rather than deferred.)* 4.7 is the
 > gate itself; 4.12 protects the headline claim; 4.14 stops confidently
 > wrong answers; 4.15 and 4.17 are what make every other check
 > trustworthy — this repo has produced **three false passes** (the

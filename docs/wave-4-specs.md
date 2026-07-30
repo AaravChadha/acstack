@@ -449,7 +449,14 @@ files.
 
 ## 4.24 Purge the roster from history — before the flip
 
-**Recommendation (user rules; this is destructive and owner: user):**
+> **Superseded (2026-07-30), the day after drafting:** the purge is
+> **declined** by user verdict — the roster is company names with
+> non-sensitive association, bare first names, and already-public
+> project names. The section below is kept as the record of what was
+> evaluated and how it would have been done; none of it is built, and
+> build-order step 14 is retired. 4.7 item 8 is now working-tree-only.
+
+**Recommendation as drafted (superseded above):**
 `git filter-repo --replace-text` over squash-to-root. The repo's own
 history is the pack's evidence — the journal cites commits by hash as
 proof — and a single-root squash destroys that story while *still*
@@ -489,8 +496,9 @@ multi-agent audit runs as **2–4 focused, budgeted subagents** (the
 standing fan-out cap), context-free, over PLAN + all skills; (6) the
 main-thread pass follows; every finding resolved or declined in
 writing. (7) demo transcript: curated, real project, never a shakedown
-leftover (the scratch-repo policy). (8) credits line verified; 4.24's
-grep is the history half. (9) every wave-4 acceptance command re-run
+leftover (the scratch-repo policy). (8) credits line verified;
+working-tree sweep only — the history half was retired with 4.24's
+2026-07-30 decline. (9) every wave-4 acceptance command re-run
 with output pasted. (10) /resume's cold start is already evidenced
 (2026-07-29 session: correct wave, divergence flags, three unblocked
 tasks, plus three findings — cite the journal entry); /investigate
@@ -520,7 +528,8 @@ thing they check.
 11. `add eval-run skill (runner scaffold, results contract)` — 4.12.
 12. `correct readme requirements and footprint claims` — 4.26.
 13. `add principles, architecture, contributing, readme v2` — 4.6.
-14. 4.24 (user-gated; commits per its procedure).
+14. ~~4.24 (user-gated; commits per its procedure).~~ Declined
+    2026-07-30 — see the superseded 4.24 section.
 15. 4.7 execution + flip.
 
 The PLAN risk note's cut order (4.22 → 4.26 → 4.8 → 4.9) and
