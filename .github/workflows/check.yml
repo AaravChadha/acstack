@@ -1,0 +1,22 @@
+name: check
+# The pack guard on every push and PR. One honest gap, by design: the
+# banned-names list is untracked (it names the very clients it protects),
+# so that section prints SKIP here and the run reports "no failures, but
+# 1 check(s) SKIPPED" — the local pre-commit run is the enforcement point
+# for names. Everything else runs at full strength.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: pack guard (12 sections, includes positive controls)
+        run: bash scripts/check.sh
+      - name: guard matrix (every guard shown firing on seeded defects)
+        run: bash docs/guard-matrix.sh "$PWD"
+      - name: shellcheck
+        run: shellcheck -S warning setup scripts/check.sh scripts/controls.sh bin/acstack-config bin/acstack-update-check bin/acstack-recall

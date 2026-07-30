@@ -261,6 +261,12 @@ below fully green; repo flipped public.
   empty; check.sh fails on a seeded one-skill preamble drift and on a
   13-line preamble (both matrix-demonstrated).
 - [ ] **4.5** CI: GitHub Action running check.sh + shellcheck on every PR.
+  *(Built 2026-07-30: `.github/workflows/check.yml` — check.sh, the
+  guard matrix, and shellcheck on push-to-main and every PR; the
+  banned-names SKIP gap stated in the workflow's own comment. Box stays
+  OPEN deliberately: the acceptance below needs a live run — a clean
+  push showing the SKIP line, and a seeded-violation PR failing — which
+  cannot be demonstrated locally. Evidence lands with the next push.)*
   **Acceptance (added 2026-07-30, from docs/wave-4-specs.md):** a PR
   carrying a seeded guard violation fails CI; a clean PR passes with
   the banned-names SKIP line visible in the log (CI has no
