@@ -45,11 +45,41 @@ Start a new Claude Code session; the twenty skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 
-Requirements: git and bash 3.2+ (the version macOS ships). Nothing else —
-no runtime, no package manager, no build step. macOS/Linux; on Windows,
-copy the `skills/*`
-directories into `~/.claude/skills/` manually (symlink support is a roadmap
-item).
+**To install and run the core:** git and bash 3.2+ (the version macOS
+ships). No runtime, no package manager, no build step. macOS/Linux; on
+Windows, copy the `skills/*` directories into `~/.claude/skills/`
+manually (symlink support is a roadmap item).
+
+**Optional, per capability.** Each degrades honestly — the skill names
+the missing binary and stops, or falls back to a documented tier. None
+is needed to install:
+
+| You want | You also need |
+|---|---|
+| Tickets mode (`tracking: tickets`) | `gh`, authenticated, with a GitHub remote — used by /plan, /do, /ticket, /triage, /investigate, /resume, /retro, /health, /ship |
+| `/qa` | `curl` (http probe). Browser mode is deferred — it declines with the dated verdict |
+| `/migrate-check` under `db: shared-prod` | `pg_dump` for the backup path (or your own `backup-command`) |
+| `/eval-run` | Your project's own stack (`python3` or `node`) — and a model API if *your system under test* calls one. The pack never calls one |
+| Contributing | `shellcheck` (CI runs it; local runs skip it if absent) |
+
+### What the pack writes
+
+Everything it touches, so you can predict it before installing:
+
+| Path | Written by | When |
+|---|---|---|
+| `~/.claude/skills/<skill>` | `./setup` | Install — symlinks only; `--uninstall` removes exactly these |
+| `BRIEF.md`, `PLAN.md`, `JOURNAL.md` | /plan, /do, /journal, /retro | On use |
+| `LEARNINGS.md` | /plan seed (empty), /learn | On use |
+| `CLAUDE.md` | /plan seed | Rewritten to the one-line `@AGENTS.md` pointer — flagged first if it has content, never silently |
+| `AGENTS.md` | /plan seed | Conduct + referral blocks, between markers only |
+| `.claude/acstack.md` | /plan seed | **Offered**, not created |
+| `eval/` | /eval-spec, /eval-run | Only when you ask for an eval |
+| `~/.acstack/update-stamp` | the runtime | One line, the last update-check date. The only machine-local state; `runtime: off` writes nothing |
+
+Nothing leaves your machine except `git fetch` in the once-a-day update
+check, and `gh` calls you initiate in tickets mode. There is no
+telemetry — the `telemetry` key is reserved and unimplemented.
 
 ## The three documents
 

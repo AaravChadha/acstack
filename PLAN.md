@@ -732,7 +732,17 @@ below fully green; repo flipped public.
   step in that sequence that cannot be undone quietly. Tradeoff: the user
   now runs one extra command to publish. Revisit if that friction turns
   out to bite in practice.
-- [ ] **4.26** Correct README's requirements and footprint claims.
+- [x] **4.26** *(Done 2026-07-30: requirements split into install-core
+  (git + bash 3.2+) and a per-capability optional table naming gh for
+  the nine tickets-aware skills, curl for /qa, pg_dump for
+  /migrate-check under shared-prod, the project's own stack plus its own
+  model API for /eval-run, and shellcheck for contributors — each with
+  its honest degradation. A "What the pack writes" table lists every
+  path the pack touches, who writes it, and when, including the
+  CLAUDE.md rewrite, the AGENTS.md marker blocks, the OFFERED config
+  file, and the single machine-local stamp. Closes with what leaves the
+  machine: git fetch, gh calls the user initiates, and nothing else.)*
+  Correct README's requirements and footprint claims.
   "git and bash 3.2+. Nothing else" is true of install only: tickets mode
   needs `gh` (nine skills), `/qa` needs `curl`, `/migrate-check` defaults
   to `pg_dump` under `db: shared-prod`, and 4.12's eval runner needs a

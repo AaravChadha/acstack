@@ -243,7 +243,10 @@ fi
 
 # 9. Config-key reachability: every key in README's config table appears in
 #    templates/acstack.md AND is read by each /skill the table names.
-rows="$(grep -E '^\|[[:space:]]*`[^/]' README.md || true)"
+# Scope to THE config table, located by its header — README has other
+# tables with backticked first cells (the footprint table), and matching
+# on formatting alone made every path in them look like a config key.
+rows="$(awk '/^\| Key \| Values/{f=1; next} f && !/^\|/{exit} f' README.md | grep -E '^\|[[:space:]]*`[^/]' || true)"
 while IFS= read -r row; do
   [ -n "$row" ] || continue
   c1="$(printf '%s' "$row" | awk -F'|' '{print $2}')"
