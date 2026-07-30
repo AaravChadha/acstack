@@ -1,0 +1,3 @@
+# FIXTURE — the gitignore-negation trap /secure's sweep must flag
+.env
+!.env

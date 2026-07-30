@@ -9,7 +9,7 @@
 #   4  SKILL.md line budgets                5  shell syntax + shellcheck
 #   6  VERSION/CHANGELOG agreement          7  routing lines present
 #   8  cross-references + citations resolve 9  config-key reachability
-#   10 verdict-first stance present
+#   10 verdict-first stance present         11 positive controls (fixtures)
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -55,7 +55,7 @@ else
     echo "SKIP banned names: $BANNED_FILE has no entries — nothing was checked."
     skipped=$((skipped + 1))
   elif hits="$(grep -riEnw "$BANNED" \
-        skills/ templates/ docs/ scripts/ setup \
+        skills/ templates/ docs/ scripts/ setup fixtures/ \
         CONDUCT.md README.md AGENTS.md PLAN.md JOURNAL.md 2>/dev/null)"; then
     echo "FAIL banned names:"
     printf '%s\n' "$hits"
@@ -138,11 +138,11 @@ for f in skills/*/SKILL.md; do
 done
 
 # 5. Shell syntax (+ shellcheck when available).
-for s in setup scripts/check.sh; do
+for s in setup scripts/check.sh scripts/controls.sh; do
   bash -n "$s" || { echo "FAIL syntax: $s"; fail=1; }
 done
 if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck -S warning setup scripts/check.sh || fail=1
+  shellcheck -S warning setup scripts/check.sh scripts/controls.sh || fail=1
 fi
 
 # 6. VERSION / CHANGELOG agreement. VERSION is one bare semver line and must
@@ -238,6 +238,18 @@ for s in $REPORT_SKILLS; do
   grep -qi 'verdict' "skills/$s/SKILL.md" \
     || { echo "FAIL verdict: skills/$s/SKILL.md never states its verdict stance"; fail=1; }
 done
+
+# 11. Positive controls: every check-shaped skill's documented detection
+#     command is re-run against a seeded fixture (scripts/controls.sh).
+#     A pattern edit that stops catching its plant fails HERE, before it
+#     ships as a false pass.
+if [ -d fixtures ]; then
+  if ! ctrl_out="$(bash scripts/controls.sh 2>&1)"; then
+    echo "FAIL controls: a documented check missed its seeded plant:"
+    printf '%s\n' "$ctrl_out" | grep 'FAIL control'
+    fail=1
+  fi
+fi
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then

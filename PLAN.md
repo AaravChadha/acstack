@@ -381,7 +381,17 @@ below fully green; repo flipped public.
   **Acceptance:** on a seeded two-product repo, `/health` names both
   document sets and `/resume` halts with the candidates listed instead of
   picking one. That seeded repo is also this task's positive control.
-- [ ] **4.15** Positive controls for the shipped check-shaped skills —
+- [x] **4.15** *(Done 2026-07-30: `fixtures/` seeded for secure,
+  design-audit, health, audit, migrate-check + a live-server qa fixture
+  whose control runs at shakedown; `scripts/controls.sh` re-runs each
+  documented detection command — extracted from the reference file at
+  run time, so a pattern edit is what gets tested — wired in as check.sh
+  section 11. Demonstrated both directions: all plants caught on the
+  clean tree, and three matrix cases regress a pattern or delete a plant
+  and watch the control fail; the control also caught a real defect on
+  its first run — the audit fixture's NBSP plant was a plain space.
+  Matrix 28 → 31.)*
+  Positive controls for the shipped check-shaped skills —
   the carrier for the cross-cutting rule above, which was binding with
   nobody owning it. Each of /qa, /secure, /design-audit, /health,
   /audit, and /migrate-check gets a fixture containing a known instance
