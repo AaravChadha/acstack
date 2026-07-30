@@ -144,6 +144,26 @@
 > emil's Before/After/Why + review-vs-improve split, taste dials,
 > frontend-design two-pass → 4.30; a11y statics → 6.2; one-rule-list
 > across static and rendered → Wave B; scoring models → declined.
+> **Ledger correction (2026-07-30, second pass).** The first ledger was
+> incomplete for one repo: emilkowalski/skills has **eight** skills and
+> the reader detailed three, summarizing the rest by their motion rules.
+> Unsurfaced and now carried: **`apple-design`** (282 lines — response,
+> interruptibility, springs, velocity handoff, momentum projection,
+> materials/translucency, multimodal, reduced-*) → 4.27's
+> interaction-feel block and 4.30's `interaction-feel.md`;
+> **`animation-vocabulary`** (173 — a reverse-lookup glossary turning
+> "the bouncy thing when a popover opens" into *Pop in*) → 4.30, as the
+> naming layer for design conversations, which is the problem a user
+> hits when they reach for a material name to describe a behavior;
+> **`find-animation-opportunities`** (132) → 4.30's method, where
+> motion is proposed rather than sprinkled; **`prototype`** + PICKER
+> (197 + 90) and **`pick-ui-library`** (77) → declined, both are
+> stack-selection advice that dates fast and duplicates judgment the
+> adopter's own repo already encodes. **Process note:** this is the
+> summarize-instead-of-enumerate failure the set rule exists to catch,
+> committed by a subagent this time — a report that says "eight skills"
+> and details three is an unenumerated set claim, and the reviewer
+> (me) accepted the count without listing the members.
 > **Measured, no action:** SKILL.md average is 108.7 lines across 19
 > (range 84–176) against 93 at the wave-3 close — the delta is the
 > 4.2 runtime block (~12 lines × 19), not scope creep, and every file
@@ -849,6 +869,21 @@ reordered, if any.
   sources. **Acceptance:** `fixtures/design-audit/` gains one seed per
   new rule class and every documented grep catches its seed
   (controls.sh, per 4.15); clean tree stays quiet.
+  **Interaction-feel additions (2026-07-30, second pass — the first
+  ledger MISSED emil's `apple-design` skill, 282 lines, because the
+  reader summarized the repo by its motion rules and never opened it).**
+  These are findable violations of *feel*, not looks: a click handler
+  with no `:active`/pressed state (feedback owed on pointer-DOWN, not
+  release); `transition:`/`@keyframes` driving a draggable or
+  gesture-driven element (neither can be grabbed and reversed mid-flight
+  — the interruptibility rule); animation starting from a target rather
+  than the current presentation value (visible jump on interrupt);
+  `backdrop-filter` with no `prefers-reduced-transparency` fallback;
+  two nested `backdrop-filter` surfaces (stacked translucency destroys
+  legibility); a hard 1px divider under sticky chrome where a scroll
+  edge effect belongs; enter/exit paths that disagree (in-from-right,
+  out-the-bottom); popovers with `transform-origin: center` instead of
+  their trigger.
   **Edits:** NEW `skills/design-audit/references/ai-tells.md`;
   `skills/design-audit/SKILL.md` (cite it, severity ordering);
   `skills/design-audit/references/design-conventions.md` (point at it,
@@ -914,7 +949,38 @@ reordered, if any.
   claiming four while sweeping five — the exact set-assertion class
   AGENTS.md names. All four sites change together, and the description
   is re-checked in its PARSED form, not re-read.
-- [ ] **4.30** /design — the generative design lane (roster 38 → 39;
+- [ ] **4.30** /design — the generative lane, scoped to
+  **production-grade, not style-matching** (user ruling 2026-07-30: it
+  must be able to produce any production-level UI, not a copy of one
+  house style). The four surveyed design skills are almost entirely
+  about *looks* — palette, type, anti-slop — and that is not where
+  AI-generated UI actually fails. It fails on everything past the happy
+  path, which is exactly acstack's territory. So the skill's spine is a
+  **production-readiness set that every interactive surface must
+  answer**, each item a thing a demo skips and a shipped product cannot:
+  1. **States, all of them** — default, hover, focus-visible, active,
+     disabled, loading, empty, error, success, and the optimistic/
+     rollback path where a write can fail. An interface with only its
+     happy state is a mockup.
+  2. **Real content** — longest and shortest plausible values, missing
+     avatars, unbounded strings, zero/one/many rows, RTL if claimed.
+     Lorem hides every layout bug that matters.
+  3. **Responsive behavior** — what reflows, what truncates, what
+     scrolls; touch targets ≥44px; no horizontal body scroll.
+  4. **Accessibility floor** — keyboard path through every flow, visible
+     focus, contrast 4.5:1 body / 3:1 large, labels associated,
+     reduced-motion honored.
+  5. **Interaction feel** — `references/interaction-feel.md` below.
+  6. **Theming** — light and dark both designed, not inverted; tokens,
+     not raw hex.
+  7. **Performance-shaped choices** — compositor-friendly properties,
+     no layout thrash on interaction.
+  8. **UX writing** — button verbs, error messages that say what to do
+     next, empty states that teach (frontend-design's section).
+  A design that cannot answer all eight is reported as incomplete with
+  the gaps named — the honest-scope discipline applied to UI. Style
+  (which look) stays the user's call via the dials; production-readiness
+  is not optional. Roster 38 → 39;
   NEW skill, the one place the 2026-07-30 survey showed demand acstack
   answers nowhere: four repos, ~★250k combined). Token-system-first
   two-pass process (4–6 named values, ≥2 type roles, wireframe before
@@ -927,9 +993,45 @@ reordered, if any.
   review/improve pair splits detective from generative — /design-audit
   stays pure detective. **Acceptance:** on a seeded generic page,
   /design produces a token system and a critique naming which
-  AI-default look it avoided, and /design-audit + ai-tells (4.27) run on
-  /design's output returns no findings — the pairing is this skill's
-  positive control.
+  AI-default look it avoided; **every one of the eight
+  production-readiness items above is answered or explicitly named as a
+  gap** (a surface with no error state is reported, never silently
+  omitted); and /design-audit + ai-tells (4.27) run on /design's output
+  returns no findings — the pairing is this skill's positive control.
+  Second control, the one that proves production-grade rather than
+  pretty: a seeded flow whose write can fail must come back with its
+  error and rollback states designed, unprompted.
+  **`references/interaction-feel.md` (2026-07-30, second pass).** The
+  generative half of the same miss, and the part with no acstack
+  equivalent anywhere: *how an interface behaves under the hand*, which
+  is what people mean by "feels like magic" and by naming a material
+  ("liquid glass") to describe a behavior. Sourced from emil's
+  `apple-design` (itself distilled from Apple's *Designing Fluid
+  Interfaces*), re-expressed and credited:
+  **response** (feedback on pointer-down, never on release; continuous
+  during the gesture, not only at its end); **direct manipulation**
+  (1:1 tracking, respect the grab offset, `setPointerCapture`);
+  **interruptibility** — named there as the single most important
+  principle (animate from the presentation value, never lock input,
+  blend velocity on reversal, decompose 2D into independent X/Y
+  springs); **springs over durations** for anything touchable, in
+  damping/response terms with the shipped values (move 1.0/0.4,
+  rotation 0.8/0.4, drawer 0.8/0.3) and bounce ONLY after a
+  momentum-carrying gesture; **velocity handoff** at gesture end;
+  **momentum projection** using the exponential-decay form Apple ships,
+  explicitly NOT the textbook `v²/2a`; **spatial consistency**
+  (symmetric enter/exit, `transform-origin` on the trigger);
+  **rubber-banding** at boundaries; **materials** (translucency encodes
+  hierarchy, never stack light on light, bigger surfaces read thicker,
+  vibrancy for legibility, scroll edge effects over hard dividers,
+  "materialize don't just fade" — animate blur radius and scale
+  together); **multimodal** (visual/sound/haptic on the same frame);
+  and **reduced-motion/transparency/contrast** as three independent
+  signals. Framework-agnostic: CSS, Pointer Events, and
+  `requestAnimationFrame` are the vocabulary; a spring library is named
+  as an option, never a dependency. Its detective counterpart is 4.27's
+  interaction-feel block — same rule list, both directions, per the
+  Wave B one-source principle.
   **Edits:** NEW `skills/design/SKILL.md` (+ references); README skills
   table row and `templates/acstack.md` `## design` section (dials);
   `skills/design-audit/SKILL.md` adjacency line (they are a pair);
