@@ -2,7 +2,8 @@
 
 > **Purpose of this document.** The operative roadmap for the pack itself:
 > what ships in each wave and how we know a wave is done. Waves 1–3 are
-> built (19 skills); detailed per-skill specs for later waves get written
+> built (19 skills; wave 4 added /eval-run for **20**); detailed
+> per-skill specs for later waves get written
 > at wave start, at the same fidelity as waves 1–3's (`docs/wave-2-specs.md`,
 > `docs/wave-3-specs.md`). The founding design discussion — wave-1 specs,
 > skill-roster rationale, infra tradeoffs, telemetry stance, and the
