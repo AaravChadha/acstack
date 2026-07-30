@@ -379,7 +379,20 @@ below fully green; repo flipped public.
   run exits 0 silently; recall output is capped at ~6KB and degrades to
   empty; check.sh fails on a seeded one-skill preamble drift and on a
   13-line preamble (both matrix-demonstrated).
-- [ ] **4.5** CI: GitHub Action running check.sh + shellcheck on every PR.
+- [x] **4.5** *(Closed 2026-07-31 — both acceptance halves demonstrated.
+  **Clean push:** run `30562185603` green on `main`, log carrying the
+  honest `check.sh: no failures, but 1 check(s) SKIPPED — coverage is
+  incomplete` line (banned-name list is untracked by design) and
+  `passed=58 failed=0` from the matrix. **Seeded violation:** PR #1 on
+  branch `test/ci-seeded-violation` removed /do's `Adjacent skills:`
+  line; run `30581653375`, event `pull_request`, **conclusion failure**,
+  log `FAIL routing: skills/do/SKILL.md has no 'Adjacent skills:' line`,
+  exit code 1, and `gh pr checks` reporting `check  fail`. PR closed
+  unmerged and the branch deleted from both remotes — only `main`
+  remains. CI has now caught two real defects this machine structurally
+  could not, both shellcheck findings (SC2164, SC2222), since shellcheck
+  is not installed locally.)*
+  CI: GitHub Action running check.sh + shellcheck on every PR.
   *(Built 2026-07-30: `.github/workflows/check.yml` — check.sh, the
   guard matrix, and shellcheck on push-to-main and every PR; the
   banned-names SKIP gap stated in the workflow's own comment. Box stays

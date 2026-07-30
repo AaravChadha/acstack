@@ -30,11 +30,11 @@
   `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**58**
   cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
-- Wave 4 is at **3 open items**: 4.5 (CI green on real pushes; box open
-  until a seeded-violation PR is shown failing), 4.7 (the launch
-  checklist), and 4.31 (/secure's vulnerability-class coverage, promoted
-  from wave 4.5 on 2026-07-31 — it ships covering ~3 of 25 classes,
-  which is a confidently-wrong answer rather than a missing feature). Everything else — versioning, guards,
+- Wave 4 is at **1 open item: 4.7, the launch checklist.** 4.31 closed
+  2026-07-31 (/secure grew a fifth surface — deserialization, crypto,
+  transport — with nine controls demonstrated failing first); 4.5 closed
+  the same day with both halves evidenced, including PR #1 shown failing
+  CI on a seeded routing violation and then closed unmerged. Everything else — versioning, guards,
   controls, runtime, dry-run, allowed-tools, referrals, multi-product,
   /eval-run, the launch docs — is done with evidence.
 - 4.24 history purge **declined** by verdict 2026-07-30 (roster reviewed:
@@ -45,7 +45,7 @@
 - Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
   public flip waits on the wave-4 launch checklist.
 - Roadmap runs to 39 skills, **37 open tasks** (re-counted 2026-07-30
-  after batch D): wave 4 (**3**) → 4.5 (post-launch hardening, **13** —
+  after batch D): wave 4 (**1**) → 4.5 (post-launch hardening, **13** —
   grew by the eight-repo survey, which also added /design as the 39th
   skill) → 5 (5) → 6 (7) → 7 (4), plus 5 unscheduled browser-layer
   items. Full detail in PLAN.md.
