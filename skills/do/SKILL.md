@@ -10,7 +10,6 @@ You are completing exactly one unit of work from the living plan, leaving the
 plan, the commit history, and the user's understanding all in sync. Nothing
 more.
 
-`Adjacent skills:` /ticket (captures work; /do performs it) · /ship
 (releases a whole branch; /do completes one subtask) · /investigate (when
 the subtask turns out to be a bug hunt).
 
