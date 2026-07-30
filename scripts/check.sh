@@ -71,8 +71,9 @@ else
       fail=1
     else
       rc=0; hits="$(grep -riEnw "$BANNED" \
-            skills/ templates/ docs/ scripts/ setup fixtures/ .github/ \
-            CONDUCT.md README.md AGENTS.md PLAN.md JOURNAL.md CHANGELOG.md 2>&1)" || rc=$?
+            skills/ templates/ docs/ scripts/ setup bin/ fixtures/ .github/ \
+            CONDUCT.md README.md AGENTS.md PLAN.md JOURNAL.md CHANGELOG.md \
+            PRINCIPLES.md CONTRIBUTING.md 2>&1)" || rc=$?
       if [ "$rc" -eq 0 ]; then
         echo "FAIL banned names:"
         printf '%s\n' "$hits"
@@ -161,7 +162,7 @@ for f in skills/*/SKILL.md; do
 done
 
 # 5. Shell syntax (+ shellcheck when available).
-for s in setup scripts/check.sh scripts/controls.sh bin/acstack-config bin/acstack-update-check bin/acstack-recall; do
+for s in setup scripts/check.sh scripts/controls.sh docs/guard-matrix.sh bin/acstack-config bin/acstack-update-check bin/acstack-recall; do
   bash -n "$s" || { echo "FAIL syntax: $s"; fail=1; }
 done
 if command -v shellcheck >/dev/null 2>&1; then
@@ -246,7 +247,15 @@ fi
 # Scope to THE config table, located by its header — README has other
 # tables with backticked first cells (the footprint table), and matching
 # on formatting alone made every path in them look like a config key.
-rows="$(awk '/^\| Key \| Values/{f=1; next} f && !/^\|/{exit} f' README.md | grep -E '^\|[[:space:]]*`[^/]' || true)"
+if ! grep -q '^| Key | Values' README.md; then
+  echo "FAIL config: README has no '| Key | Values' config-table header — the reachability check cannot run"
+  fail=1
+fi
+rows="$({ awk '/^\| Key \| Values/{f=1; next} f && !/^\|/{exit} f' README.md | grep -E '^\|[[:space:]]*`[^/]'; } || true)"
+if [ -z "$rows" ] && grep -q '^| Key | Values' README.md; then
+  echo "FAIL config: config table found but no key rows parsed — the check would pass vacuously"
+  fail=1
+fi
 while IFS= read -r row; do
   [ -n "$row" ] || continue
   c1="$(printf '%s' "$row" | awk -F'|' '{print $2}')"
@@ -336,8 +345,15 @@ fi
 #     excluded (network shape) and /retro is NOT read-only — it appends to
 #     JOURNAL.md and commits (the 2026-07-29 correction).
 READONLY_SKILLS="secure health design-audit audit resume migrate-check"
+# Commands that write, delete, or publish. A scoped Bash() grant is not
+# automatically safe: Bash(rm:*) is every bit as write-capable as Write.
+WRITE_CMDS='rm|mv|cp|tee|touch|mkdir|sed -i|git commit|git add|git push|git checkout|git reset|git rm|gh issue create|gh issue edit|gh pr create|>'
 for s in $READONLY_SKILLS; do
   f="skills/$s/SKILL.md"
+  if [ ! -f "$f" ]; then
+    echo "FAIL readonly: $f is listed as read-only but does not exist"
+    fail=1; continue
+  fi
   tools="$(sed -n 's/^allowed-tools:[[:space:]]*//p' "$f" | head -1)"
   if [ -z "$tools" ]; then
     echo "FAIL readonly: $f declares no allowed-tools — its read-only promise is prose"
@@ -347,19 +363,26 @@ for s in $READONLY_SKILLS; do
     *Write*|*Edit*|*NotebookEdit*)
       echo "FAIL readonly: $f grants a write tool: $tools"; fail=1 ;;
   esac
-  # bare Bash (no parenthesised scope) is an unbounded grant
+  # bare Bash, and Bash(*) which is the same grant wearing parentheses
   printf '%s' "$tools" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
-    | grep -qx 'Bash' && { echo "FAIL readonly: $f grants unscoped Bash: $tools"; fail=1; }
+    | grep -qxE 'Bash|Bash\(\*\)' && { echo "FAIL readonly: $f grants unscoped Bash: $tools"; fail=1; }
+  # a scoped grant that still writes
+  if printf '%s' "$tools" | grep -qE "Bash\((${WRITE_CMDS})"; then
+    echo "FAIL readonly: $f grants a write-capable Bash scope: $tools"
+    fail=1
+  fi
 done
 
 # 14. Referral roster: the acstack-referrals table in AGENTS.md must name
 #     EXACTLY the skills carrying disable-model-invocation: true. An agent
 #     cannot see those skills, so a stale roster is the difference between
 #     a discoverable skill and one nobody finds.
-roster="$(awk '/BEGIN:acstack-referrals/,/END:acstack-referrals/' AGENTS.md \
-  | grep -oE '^\| `/[a-z-]+`' | grep -oE '/[a-z-]+' | sed 's|/||' | sort -u)"
-typed_only="$(grep -l '^disable-model-invocation:[[:space:]]*true' skills/*/SKILL.md 2>/dev/null \
-  | sed -E 's|skills/([^/]+)/SKILL.md|\1|' | sort -u)"
+# both pipelines end in grep: a no-match exits 1 and, under pipefail,
+# would kill the script with ZERO output. The `|| true` is load-bearing.
+roster="$({ awk '/BEGIN:acstack-referrals/,/END:acstack-referrals/' AGENTS.md \
+  | grep -oE '^\| `/[a-z-]+`' | grep -oE '/[a-z-]+' | sed 's|/||' | sort -u; } || true)"
+typed_only="$({ grep -l '^disable-model-invocation:[[:space:]]*true' skills/*/SKILL.md 2>/dev/null \
+  | sed -E 's|skills/([^/]+)/SKILL.md|\1|' | sort -u; } || true)"
 if [ -z "$roster" ]; then
   echo "FAIL referral: AGENTS.md has no acstack-referrals roster (or it lists no skills)"
   fail=1

@@ -20,8 +20,12 @@ $(cat "$KB")
 "
 fi
 [ -n "$full" ] || exit 0
-if [ "${#full}" -gt "$CAP" ]; then
-  printf '%s\n[recall truncated at 6KB]\n' "${full:0:$CAP}"
+# ${#var} counts CHARACTERS; the cap is a BYTE budget, so multibyte text
+# would blow past it silently. Measure bytes, cut bytes.
+bytes="$(printf '%s' "$full" | wc -c | tr -d ' ')"
+if [ "$bytes" -gt "$CAP" ]; then
+  printf '%s' "$full" | dd bs=1 count="$CAP" 2>/dev/null
+  printf '\n[recall truncated at 6KB]\n' 
 else
   printf '%s' "$full"
 fi

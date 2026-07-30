@@ -11,7 +11,7 @@
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
 > CONTRIBUTING, README v2). check.sh 6 → **14 sections**; guard-matrix
-> 15 → **49 cases**; **20 skills**. Three review rounds ran across the
+> 15 → **55 cases**; **20 skills**. Three review rounds ran across the
 > day; the last found three broken defects in /eval-run's own runner.
 > /resume passed its true cold start (4.7 item 10, first half).
 
@@ -26,7 +26,7 @@
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean (**14** numbered
   guard sections plus 3b, including positive controls over seeded
-  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**49**
+  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**55**
   cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - Wave 4 is at **2 open items**: 4.5 (CI built and green on a real
@@ -56,7 +56,7 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard (14 sections, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 49 seeded-defect cases proving the guards fire
+bash docs/guard-matrix.sh "$PWD"   # 55 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty skills load at start
 ```
 

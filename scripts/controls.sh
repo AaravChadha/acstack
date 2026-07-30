@@ -12,6 +12,7 @@
 set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 1
 fail=0
+skipped=0
 ok()  { printf '  ok   %s\n' "$1"; }
 bad() { printf '  FAIL control: %s\n' "$1"; fail=1; }
 
@@ -84,7 +85,10 @@ if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; t
     || bad "/eval-run silently dropped the needs-data case from the report"
   rm -rf fixtures/eval-run/eval/results
 else
-  ok "/eval-run control skipped (no python3) - run it at shakedown"
+  # a skipped control is NOT a pass — check.sh section 2 already learned
+  # this lesson about a missing banned list. Say so and count it.
+  printf '  SKIP /eval-run control: python3 absent or fixture missing — NOT verified\n'
+  skipped=$((skipped + 1))
 fi
 
 # --- /migrate-check: destructive classification vs planted statements ---
@@ -98,5 +102,7 @@ for stmt in "DROP TABLE" "RENAME COLUMN"; do
 done
 
 echo
-if [ "$fail" -eq 0 ]; then echo "controls.sh: all plants caught"
+if [ "$fail" -eq 0 ] && [ "$skipped" -gt 0 ]; then
+  echo "controls.sh: no failures, but $skipped control(s) SKIPPED — coverage is incomplete"
+elif [ "$fail" -eq 0 ]; then echo "controls.sh: all plants caught"
 else echo "controls.sh: a documented check MISSED its plant — a false-pass in the making"; exit 1; fi

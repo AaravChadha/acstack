@@ -116,6 +116,13 @@ fullcase "read-only skill granted bare Bash"   FAIL 'readonly' bash -c "sed -e '
 fullcase "filesystem path is not a skill ref" PASS 'crossref' bash -c "printf '%s\n' '#!/usr/bin/env python3' 'read /etc/hosts and /var/log' >> skills/do/SKILL.md"
 fullcase "referral roster missing a skill"    FAIL 'referral' bash -c "grep -v '^| \`/eval-spec\`' AGENTS.md > t && mv t AGENTS.md"
 fullcase "referral roster names a model-invocable skill" FAIL 'referral' bash -c "awk '/END:acstack-referrals/{print \"| \`/ship\` | releases a branch | never |\"} {print}' AGENTS.md > t && mv t AGENTS.md"
+# recheck A.2 — silent-death and evasion classes found 2026-07-30 (round 3)
+fullcase "empty referral roster fails loudly"  FAIL 'referral' bash -c "grep -v '^| .\/' AGENTS.md > t && mv t AGENTS.md"
+fullcase "config table header renamed"        FAIL 'config'   bash -c "sed -e 's/^| Key | Values.*/| Key | Allowed | Consumed by |/' README.md > t && mv t README.md"
+fullcase "read-only granted Bash(rm)"         FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(rm:*), Read/' skills/audit/SKILL.md > t && mv t skills/audit/SKILL.md"
+fullcase "read-only granted Bash(*)"          FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(*), Read/' skills/health/SKILL.md > t && mv t skills/health/SKILL.md"
+fullcase "read-only skill file missing"       FAIL 'readonly' rm skills/resume/SKILL.md
+fullcase "guard-matrix syntax error caught"   FAIL 'syntax'   bash -c "printf 'if [ ; then\n' >> docs/guard-matrix.sh"
 
 echo
 echo "passed=$pass failed=$failed"
