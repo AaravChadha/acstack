@@ -774,6 +774,48 @@ below fully green; repo flipped public.
   reader can predict every file the pack will touch and every binary it
   may invoke, before installing.
 
+- [ ] **4.31** /secure's injection surface is a third of a surface —
+  measured 2026-07-30 against security-guidance's 25 frozen rule IDs
+  (`plugins/security-guidance/hooks/patterns.py:264`). /secure's
+  `references/security-surfaces.md` names `innerHTML`,
+  `dangerouslySetInnerHTML`, and `subprocess`; it has **zero** patterns
+  for: unsafe deserialization (`pickle`/`cPickle`/`cloudpickle`/`dill`/
+  `marshal`/`shelve`/`joblib`/`pandas.read_pickle`/numpy
+  `allow_pickle=True`), `yaml.load`/`unsafe_load`, `torch.load`
+  (defaults to `weights_only=False`), crypto misuse (AES-ECB,
+  `createCipher` without IV), disabled TLS verification
+  (`verify=False`, `NODE_TLS_REJECT_UNAUTHORIZED=0`), unsafe XML parse
+  (XXE), `document.write`/`outerHTML`/`insertAdjacentHTML` sinks,
+  `<script src>` without SRI, `eval`/`new Function` injection,
+  `child_process` exec, and GitHub Actions workflow injection via
+  `${{ github.event.* }}` in `run:`. Every one is a `git grep` line,
+  which is the point: this is the cheapest large increase in real
+  coverage available to the pack, and a security skill that reports
+  clean while missing `pickle.load` on untrusted input is the false-pass
+  class in its most expensive form. Deserialization, TLS, and crypto
+  become their own numbered surface (5); the missing sinks join surface
+  3. **Acceptance:** `fixtures/secure/` gains a seed per class and
+  controls.sh proves every new grep catches it (per 4.15) — and each
+  pattern is written in POSIX ERE and checked by section 3b, since `\b`
+  and `\s` are exactly how this file broke before.
+  **Edits:** `skills/secure/references/security-surfaces.md` (surface 5
+  + additions to 3), `fixtures/secure/`, and — **the set-claim trap,
+  verified 2026-07-30** — `skills/secure/SKILL.md` says "four surfaces"
+  in BOTH its body heading (`:68`) and its **frontmatter description**
+  (`:3`), which is the form that ships into the live skill listing; plus
+  README's /secure row enumerates the four without counting them. A
+  fifth surface that updates only the reference file leaves the pack
+  claiming four while sweeping five — the exact set-assertion class
+  AGENTS.md names. All four sites change together, and the description
+  is re-checked in its PARSED form, not re-read.
+
+> **Moved into wave 4 (2026-07-31, user verdict).** Filed in wave 4.5;
+> promoted because it fails wave 4's own dividing line — an adopter who
+> runs `/secure` over a codebase using `pickle.load` on untrusted input
+> gets a clean report. That is a confidently wrong answer from the
+> pack's security skill, not a missing feature, and wrong beats absent.
+> Cheap, too: every gap is one `git grep` line plus a fixture seed.
+
 > **Process note (2026-07-29):** 4.14, 4.15, 4.17, 4.22–4.26 (this wave)
 > and 4.16, 4.18 (wave 4.5) all exist because cross-cutting rules were written as decisions with no task
 > owning the work — the multi-product rule, the positive-control rule, the
@@ -829,8 +871,10 @@ below fully green; repo flipped public.
 > denominator: wave 4 was 7 items when they were pulled in and 18 when the
 > split was made.
 
-> **Risk (2026-07-29, revised same day):** the split left wave 4 at 11
-> items; two further audit rounds added carriers, taking it to **16**. Those four are cleanup of defects already found, not new
+> **Risk (2026-07-29, revised; updated 2026-07-31):** the split left wave
+> 4 at 11 items; two audit rounds took it to **16**, and 4.31 was promoted
+> from wave 4.5 on 2026-07-31, making **17** — of which 14 are done and
+> **3 remain** (4.5, 4.7, 4.31). Those four are cleanup of defects already found, not new
 > ambition — but the wave is heavy again and that should be watched rather
 > than discovered late.
 >
@@ -840,7 +884,9 @@ below fully green; repo flipped public.
 > v2's trust claim to match), then 4.9 (referral block — costs
 > discoverability, but the README still explains the typed-only skills).
 >
-> **Do not cut 4.7, 4.12, 4.14, 4.15, 4.17, 4.23, ~~or 4.24~~.**
+> **Do not cut 4.7, 4.12, 4.14, 4.15, 4.17, 4.23, 4.31, ~~or 4.24~~.**
+> *(4.31 added 2026-07-31: a security skill that reports clean on
+> `pickle.load` is the confidently-wrong class, same reason as 4.14.)*
 > *(4.24 declined 2026-07-30 — see its verdict; the clause below about it
 > being unfixable after the flip was true but is moot now that the purge
 > is declined rather than deferred.)* 4.7 is the
@@ -1077,40 +1123,6 @@ reordered, if any.
   this rule. Noted, not carried: it needs tree-sitter, a dependency the
   pack declines; the portable half is "search structurally, read
   selectively", which those skills already imply and this task states.
-- [ ] **4.31** /secure's injection surface is a third of a surface —
-  measured 2026-07-30 against security-guidance's 25 frozen rule IDs
-  (`plugins/security-guidance/hooks/patterns.py:264`). /secure's
-  `references/security-surfaces.md` names `innerHTML`,
-  `dangerouslySetInnerHTML`, and `subprocess`; it has **zero** patterns
-  for: unsafe deserialization (`pickle`/`cPickle`/`cloudpickle`/`dill`/
-  `marshal`/`shelve`/`joblib`/`pandas.read_pickle`/numpy
-  `allow_pickle=True`), `yaml.load`/`unsafe_load`, `torch.load`
-  (defaults to `weights_only=False`), crypto misuse (AES-ECB,
-  `createCipher` without IV), disabled TLS verification
-  (`verify=False`, `NODE_TLS_REJECT_UNAUTHORIZED=0`), unsafe XML parse
-  (XXE), `document.write`/`outerHTML`/`insertAdjacentHTML` sinks,
-  `<script src>` without SRI, `eval`/`new Function` injection,
-  `child_process` exec, and GitHub Actions workflow injection via
-  `${{ github.event.* }}` in `run:`. Every one is a `git grep` line,
-  which is the point: this is the cheapest large increase in real
-  coverage available to the pack, and a security skill that reports
-  clean while missing `pickle.load` on untrusted input is the false-pass
-  class in its most expensive form. Deserialization, TLS, and crypto
-  become their own numbered surface (5); the missing sinks join surface
-  3. **Acceptance:** `fixtures/secure/` gains a seed per class and
-  controls.sh proves every new grep catches it (per 4.15) — and each
-  pattern is written in POSIX ERE and checked by section 3b, since `\b`
-  and `\s` are exactly how this file broke before.
-  **Edits:** `skills/secure/references/security-surfaces.md` (surface 5
-  + additions to 3), `fixtures/secure/`, and — **the set-claim trap,
-  verified 2026-07-30** — `skills/secure/SKILL.md` says "four surfaces"
-  in BOTH its body heading (`:68`) and its **frontmatter description**
-  (`:3`), which is the form that ships into the live skill listing; plus
-  README's /secure row enumerates the four without counting them. A
-  fifth surface that updates only the reference file leaves the pack
-  claiming four while sweeping five — the exact set-assertion class
-  AGENTS.md names. All four sites change together, and the description
-  is re-checked in its PARSED form, not re-read.
 - [ ] **4.30** /design — the generative lane, scoped to
   **production-grade, not style-matching** (user ruling 2026-07-30: it
   must be able to produce any production-level UI, not a copy of one
