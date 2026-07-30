@@ -42,24 +42,45 @@ fi
 #    collaborators being protected, so committing it publishes exactly what it
 #    guards. Until 2026-07-29 this script hardcoded a real roster AND excluded
 #    scripts/ from its own sweep, so it could never catch itself.
-BANNED_FILE="${ACSTACK_BANNED_FILE:-.acstack-banned}"
-[ -f "$BANNED_FILE" ] || BANNED_FILE="$HOME/.claude/acstack-banned"
+# ACSTACK_BANNED_FILE, when set, is authoritative — set-but-missing is a
+# SKIP, never a fallback — so harnesses can pin the sweep deterministically.
+if [ -n "${ACSTACK_BANNED_FILE:-}" ]; then
+  BANNED_FILE="$ACSTACK_BANNED_FILE"
+else
+  BANNED_FILE=".acstack-banned"
+  [ -f "$BANNED_FILE" ] || BANNED_FILE="$HOME/.claude/acstack-banned"
+fi
 if [ ! -f "$BANNED_FILE" ]; then
   echo "SKIP banned names: no list found (.acstack-banned or ~/.claude/acstack-banned)."
   echo "     Copy .acstack-banned.example and edit it. A missing list is NOT a pass —"
   echo "     nothing was checked."
   skipped=$((skipped + 1))
 else
-  BANNED="$(grep -vE '^\s*(#|$)' "$BANNED_FILE" | paste -sd'|' -)"
+  BANNED="$({ grep -vE '^[[:space:]]*(#|$)' "$BANNED_FILE" || true; } | paste -sd'|' -)"
   if [ -z "$BANNED" ]; then
     echo "SKIP banned names: $BANNED_FILE has no entries — nothing was checked."
     skipped=$((skipped + 1))
-  elif hits="$(grep -riEnw "$BANNED" \
-        skills/ templates/ docs/ scripts/ setup fixtures/ \
-        CONDUCT.md README.md AGENTS.md PLAN.md JOURNAL.md 2>/dev/null)"; then
-    echo "FAIL banned names:"
-    printf '%s\n' "$hits"
-    fail=1
+  else
+    # a malformed entry must fail LOUDLY: grep exit 2 (bad pattern) used to
+    # be conflated with exit 1 (clean) and silently disabled the whole sweep.
+    rc=0; printf '' | grep -qEi "$BANNED" 2>/dev/null || rc=$?
+    if [ "$rc" -ge 2 ]; then
+      echo "FAIL banned: $BANNED_FILE contains an invalid regex entry — the sweep CANNOT run"
+      fail=1
+    else
+      rc=0; hits="$(grep -riEnw "$BANNED" \
+            skills/ templates/ docs/ scripts/ setup fixtures/ .github/ \
+            CONDUCT.md README.md AGENTS.md PLAN.md JOURNAL.md CHANGELOG.md 2>&1)" || rc=$?
+      if [ "$rc" -eq 0 ]; then
+        echo "FAIL banned names:"
+        printf '%s\n' "$hits"
+        fail=1
+      elif [ "$rc" -ge 2 ]; then
+        echo "FAIL banned: sweep errored rather than matching (rc=$rc):"
+        printf '%s\n' "$hits" | head -3
+        fail=1
+      fi
+    fi
   fi
 fi
 
@@ -122,7 +143,7 @@ done
 #     support \b (matches nothing, silently) or \s (parses as literal 's').
 #     Both shipped in reference files and made /design-audit's and /secure's
 #     primary checks report clean on dirty input.
-if hits="$(grep -rnE '^[[:space:]]*git grep' skills/*/references/*.md 2>/dev/null | grep -E '\\b|\\s')"; then
+if hits="$(grep -rnE '^[[:space:]]*(\$[[:space:]]*)?git grep' skills/*/references/*.md 2>/dev/null | grep -E '\\b|\\s')"; then
   echo "FAIL regex: \\b or \\s in a git grep -E command (POSIX ERE lacks both; use -w and [[:space:]])"
   printf '%s\n' "$hits"
   fail=1
@@ -130,7 +151,7 @@ fi
 
 # 4. SKILL.md line budget (< 500 per Claude Code guidance).
 for f in skills/*/SKILL.md; do
-  lines="$(wc -l < "$f" | tr -d ' ')"
+  lines="$(grep -c '' "$f" || true)"   # counts a final unterminated line too; wc -l does not
   if [ "$lines" -ge 500 ]; then
     echo "FAIL budget: $f is $lines lines (limit 500)"
     fail=1
@@ -155,7 +176,7 @@ elif [ ! -f CHANGELOG.md ]; then
   fail=1
 else
   ver="$(tr -d '[:space:]' < VERSION)"
-  head_ver="$(grep -m1 -E '^## [0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | awk '{print $2}')"
+  head_ver="$(grep -m1 -E '^## [0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | awk '{print $2}' || true)"
   if [ "$ver" != "$head_ver" ]; then
     echo "FAIL version: VERSION is $ver but CHANGELOG.md's first versioned heading is ${head_ver:-absent}"
     fail=1
@@ -176,18 +197,23 @@ done
 #        so ../../<skill>/references/… resolves there too);
 #    plus: repo-root-relative skills/<x>/references/ citations are
 #    themselves a failure — they resolve in this repo but not on installs.
-XREF_EXCEPTIONS='doctor|script|api|dev'
-#   doctor — Claude Code's built-in diagnostic, named in /health's lineage note
-#   script — the </script> HTML fragment in /qa's adversarial bank
-#   api    — URL path in /secure's exploit-scenario example
-#   dev    — /dev/null in documented commands
+XREF_EXCEPTIONS='doctor|script|api|dev|acstack|sandbox'
+#   doctor  — Claude Code's built-in diagnostic, named in /health's lineage note
+#   script  — the </script> HTML fragment in /qa's adversarial bank
+#   api     — URL path in /secure's exploit-scenario example
+#   dev     — /dev/null in documented commands
+#   acstack — block-marker close tags (<!-- /acstack:principles -->)
+#   sandbox — URL path in /audit's report-template example
 for f in skills/*/SKILL.md skills/*/references/*.md; do
   d="$(dirname "$f")"
   case "$d" in */references) sdir="$(dirname "$d")" ;; *) sdir="$d" ;; esac
-  toks="$(grep -oE '(^|[^A-Za-z0-9_/.`])/[a-z][a-z-]+:?' "$f" | sed -E 's|^[^/]*/|/|' | sort -u || true)"
+  # two extraction passes: plain refs (backtick still excluded as a preceding
+  # char — `x`/word is a prose separator, not a ref) and code-span refs like
+  # `/name`, which the first pass structurally cannot see.
+  toks="$({ grep -oE '(^|[^A-Za-z0-9_/.`])/[a-z][a-z-]+:?' "$f" || true; grep -oE '`/[a-z][a-z-]+`' "$f" | tr -d '`' || true; } | sed -E 's|^[^/]*/|/|' | sort -u)"
   while IFS= read -r t; do
     [ -n "$t" ] || continue
-    case "$t" in *:) continue ;; esac   # HTML markers like <!-- /acstack:principles -->
+    t="${t%:}"   # a colon-suffixed ref is still a ref (only /acstack markers are exempt, via the list)
     name="${t#/}"
     printf '%s' "$name" | grep -qE "^($XREF_EXCEPTIONS)$" && continue
     [ -d "skills/$name" ] || { echo "FAIL crossref: $f references $t but skills/$name/ does not exist"; fail=1; }
@@ -214,16 +240,29 @@ while IFS= read -r row; do
   [ -n "$row" ] || continue
   c1="$(printf '%s' "$row" | awk -F'|' '{print $2}')"
   c3="$(printf '%s' "$row" | awk -F'|' '{print $(NF-1)}')"
-  keys="$(printf '%s' "$c1" | grep -oE '`[^`]+`' | tr -d '`')"
+  keys="$(printf '%s' "$c1" | grep -oE '`[^`]+`' | tr -d '`' || true)"
+  if [ -z "$keys" ]; then
+    echo "FAIL config: unparseable key cell in README config row: $row"
+    fail=1; continue
+  fi
   for k in $keys; do
     case "$k" in '##') continue ;; esac   # section-form rows (## Collaborators)
-    grep -q -- "$k" templates/acstack.md \
-      || { echo "FAIL config: README documents '$k' but templates/acstack.md never mentions it"; fail=1; }
+    if [ "$k" = "Collaborators" ]; then
+      grep -q '^## Collaborators' templates/acstack.md \
+        || { echo "FAIL config: templates/acstack.md lost its '## Collaborators' section"; fail=1; }
+      grep -rq 'Collaborators' skills/plan/ \
+        || { echo "FAIL config: /plan never mentions Collaborators"; fail=1; }
+      continue
+    fi
+    # key-shaped matches only — a bare substring was satisfied by prose
+    # ("pushes" matched the key push), making the guard vacuous.
+    grep -qE "(^|[[:space:]])${k}:" templates/acstack.md \
+      || { echo "FAIL config: README documents '$k' but templates/acstack.md has no '${k}:' line"; fail=1; }
     for c in $(printf '%s' "$c3" | grep -oE '/[a-z-]+' || true); do
       sdir="skills/${c#/}"
       [ -d "$sdir" ] || { echo "FAIL config: README names consumer $c for '$k' but $sdir/ does not exist"; fail=1; continue; }
-      grep -rq -- "$k" "$sdir" \
-        || { echo "FAIL config: README says $c consumes '$k' but nothing in $sdir/ mentions it"; fail=1; }
+      grep -rqE "\`${k}\`|${k}:|<${k}>" "$sdir" \
+        || { echo "FAIL config: README says $c consumes '$k' but $sdir/ never names it as \`$k\`, ${k}:, or <${k}>"; fail=1; }
     done
   done
 done <<EOF
@@ -249,6 +288,9 @@ if [ -d fixtures ]; then
     printf '%s\n' "$ctrl_out" | grep 'FAIL control'
     fail=1
   fi
+else
+  echo "FAIL controls: fixtures/ directory missing — the positive-control layer is gone"
+  fail=1
 fi
 
 if [ "$fail" -eq 0 ]; then

@@ -54,7 +54,7 @@ else bad "/health .env plant missing"; fi
 if grep -rq "$(printf '\xe2\x80\x93')" fixtures/audit/ && grep -rq "$(printf '\xc2\xa0')" fixtures/audit/; then
   ok "/audit fixture carries the lookalike bytes (en dash, NBSP)"
 else bad "/audit fixture lost its Unicode-lookalike plant"; fi
-if grep -rqE ' in |\.includes\(' fixtures/audit/; then
+if grep -rqE 'if .* in .*:|\.includes\(' fixtures/audit/; then
   ok "/audit raw-compare pattern (known-bug-classes) fires on the fixture"
 else bad "/audit raw-compare pattern missed the fixture"; fi
 

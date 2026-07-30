@@ -54,11 +54,24 @@ FULL="$WORK/full"
 fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
   local n="$1" exp="$2" cls="$3"; shift 3
   rm -rf "$FULL"; cp -R "$REPO" "$FULL"; rm -rf "$FULL/.git"
+  rm -f "$FULL/.acstack-banned"   # never carry the private roster into /tmp copies
   ( cd "$FULL" && "$@" ) >/dev/null 2>&1
   out="$(cd "$FULL" && ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
   if printf '%s' "$out" | grep -qE "FAIL ($cls)"; then got=FAIL; else got=PASS; fi
   if [ "$got" = "$exp" ]; then printf '  ok   %-42s %s\n' "$n" "$got"; pass=$((pass+1))
   else printf '  BAD  %-42s got=%s want=%s\n' "$n" "$got" "$exp"; failed=$((failed+1)); fi
+}
+
+# bespoke: run check.sh on a clean full copy with a crafted banned list; assert
+# on the OUTPUT TEXT (these cases are about the sweep's own error handling).
+bannedcase() { # name listfile-content required-regex [second-required-regex]
+  local n="$1" content="$2" want="$3" want2="${4:-}"
+  rm -rf "$FULL"; cp -R "$REPO" "$FULL"; rm -rf "$FULL/.git" "$FULL/.acstack-banned"
+  printf '%s\n' "$content" > "$WORK/blist"
+  out="$(cd "$FULL" && ACSTACK_BANNED_FILE="$WORK/blist" bash scripts/check.sh 2>&1)" || true
+  if printf '%s' "$out" | grep -qE "$want" && { [ -z "$want2" ] || printf '%s' "$out" | grep -qE "$want2"; }; then
+    printf '  ok   %-42s matched\n' "$n"; pass=$((pass+1))
+  else printf '  BAD  %-42s output lacked /%s/%s\n' "$n" "$want" "${want2:+ or /$want2/}"; failed=$((failed+1)); fi
 }
 
 # clean copy of the real tree must not fail ANY class
@@ -80,6 +93,17 @@ fullcase "verdict stance removed"     FAIL 'verdict' bash -c "grep -iv 'verdict'
 fullcase "regressed secret pattern caught"  FAIL 'controls' bash -c "sed -e 's/sk\[-_\]\[A-Za-z0-9_-\]/sk-[A-Za-z0-9]/' skills/secure/references/security-surfaces.md > t && mv t skills/secure/references/security-surfaces.md"
 fullcase "gutted mock-data pattern caught"  FAIL 'controls' bash -c "sed -e 's/mockData|//' skills/design-audit/references/design-conventions.md > t && mv t skills/design-audit/references/design-conventions.md"
 fullcase "lost fixture plant caught"        FAIL 'controls' rm fixtures/secure/config.js
+# recheck A.1 — silent-disable and evasion classes found 2026-07-30
+bannedcase "invalid banned entry fails loudly"  'acstack
+broken(' 'FAIL banned'
+bannedcase "comments-only list SKIPs, runs on"  '# just a comment' 'SKIP banned' 'no failures, but'
+fullcase "fixtures dir removed"             FAIL 'controls' rm -rf fixtures
+fullcase "colon-suffixed dangling ref"      FAIL 'crossref' bash -c "printf 'Run /ghost-first: it cleans up.\n' >> skills/do/SKILL.md"
+fullcase "backtick-quoted dangling ref"     FAIL 'crossref' bash -c "printf 'Pair with \`/ghost-second\` next.\n' >> skills/do/SKILL.md"
+fullcase "template key line gone, prose left" FAIL 'config' bash -c "sed -e '/^- push:/d' templates/acstack.md > t && mv t templates/acstack.md"
+fullcase "audit plant reduced to prose"     FAIL 'controls' bash -c "printf 'the en dash \xe2\x80\x93 and nbsp \xc2\xa0 sit in prose\n' > fixtures/audit/compare.py"
+fullcase "dollar-prefixed git grep hazard"  FAIL 'regex'   bash -c "printf '%s\n' '\$ git grep -E '\''\\bfoo'\''' >> skills/qa/references/probe-layer.md"
+fullcase "headingless changelog fails, not dies" FAIL 'version' bash -c "printf '# Changelog\nno versioned headings here\n' > CHANGELOG.md"
 
 echo
 echo "passed=$pass failed=$failed"
