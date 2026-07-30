@@ -24,6 +24,10 @@ for arg in "$@"; do
 done
 
 run() { if [ "$DRYRUN" -eq 1 ]; then echo "  would: $*"; else "$@"; fi; }
+# Every reported action is phrased as intent under --dry-run. A dry run's
+# output is exactly what a user trusts before running it for real, so it
+# must never claim work it did not do.
+act() { if [ "$DRYRUN" -eq 1 ]; then printf 'would %s' "$1"; else printf '%s' "$2"; fi; }
 
 linked=0
 skipped=0
@@ -45,7 +49,7 @@ if [ "$MODE" = "install" ]; then
       elif [ "$FORCE" -eq 1 ]; then
         run rm "$dst"
         run ln -s "$src" "$dst"
-        echo "relink  $name (was -> $target)"
+        printf '%-13s%s (was -> %s)\n' "$(act relink relink)" "$name" "$target"
         linked=$((linked+1))
       else
         echo "skip    $name (symlink to $target; use --force to replace)"
@@ -56,13 +60,17 @@ if [ "$MODE" = "install" ]; then
       skipped=$((skipped+1))
     else
       run ln -s "$src" "$dst"
-      echo "linked  $name"
+      printf '%-13s%s\n' "$(act link linked)" "$name"
       linked=$((linked+1))
     fi
   done
   echo
-  echo "$linked linked, $skipped skipped."
-  echo "Start a new Claude Code session to load the skills."
+  if [ "$DRYRUN" -eq 1 ]; then
+    echo "$linked would be linked, $skipped would be skipped. Nothing was changed."
+  else
+    echo "$linked linked, $skipped skipped."
+    echo "Start a new Claude Code session to load the skills."
+  fi
 else
   for dst in "$SKILLS_DST"/*; do
     [ -L "$dst" ] || continue
@@ -70,11 +78,15 @@ else
     case "$target" in
       "$SKILLS_SRC"/*)
         run rm "$dst"
-        echo "removed $(basename "$dst")"
+        printf '%-13s%s\n' "$(act remove removed)" "$(basename "$dst")"
         removed=$((removed+1))
         ;;
     esac
   done
   echo
-  echo "$removed removed."
+  if [ "$DRYRUN" -eq 1 ]; then
+    echo "$removed would be removed. Nothing was changed."
+  else
+    echo "$removed removed."
+  fi
 fi

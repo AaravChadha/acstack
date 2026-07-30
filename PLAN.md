@@ -615,7 +615,15 @@ below fully green; repo flipped public.
   **Acceptance:** each of the six fires against a seeded defect and is
   silent on the clean tree — demonstrated, per 4.15.
 
-- [ ] **4.22** Fix `setup --dry-run` reporting work it did not do. It
+- [x] **4.22** *(Done 2026-07-30: an `act()` helper phrases every
+  reported action as intent under `--dry-run` — `would link` /
+  `would relink` / `would remove` against `linked` / `relink` /
+  `removed` — summaries became "N would be linked, M would be skipped.
+  Nothing was changed." and the start-a-new-session hint is suppressed.
+  Verified against a scratch `CLAUDE_SKILLS_DIR`: dry install left the
+  directory at 1 entry, dry uninstall left 20 before and 20 after, and
+  the real paths still print past tense with 19 linked / 19 removed.)*
+  Fix `setup --dry-run` reporting work it did not do. It
   prints per-item "linked <skill>" and a "19 linked, 0 skipped" summary
   while creating nothing; `--uninstall --dry-run` prints "removed <skill>"
   with the symlink still present. A dry run's output is exactly what a
