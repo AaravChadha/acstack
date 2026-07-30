@@ -10,7 +10,7 @@
 # extracting. /qa's control needs a live server and lives in
 # fixtures/qa/README.md as a shakedown procedure instead.
 set -uo pipefail
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
+cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 1
 fail=0
 ok()  { printf '  ok   %s\n' "$1"; }
 bad() { printf '  FAIL control: %s\n' "$1"; fail=1; }
