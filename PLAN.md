@@ -352,7 +352,8 @@ below fully green; repo flipped public.
   issue template's version field is `required: true`; the
   VERSION/CHANGELOG mismatch guard demonstrated firing on a seed.
 - [x] **4.2** *(Done 2026-07-30: 11-line marker-fenced `acstack:runtime`
-  block, canonical in README, byte-identical across all 19 skills,
+  block, canonical in README, byte-identical across all skills (19 at
+  the time, 20 once /eval-run landed),
   enforced by check.sh section 12 with `PREAMBLE_BUDGET=12`; three
   matrix cases — drift, missing, over-budget — shown failing first
   (matrix 40 → 43). `bin/acstack-config` (4-level precedence with
@@ -385,7 +386,7 @@ below fully green; repo flipped public.
   the banned-names SKIP line visible in the log (CI has no
   `.acstack-banned` by design; local pre-commit stays the enforcement
   point for names).
-- [x] **4.6** *(Done 2026-07-30: PRINCIPLES.md — nine principles, each
+- [x] **4.6** *(Done 2026-07-30: PRINCIPLES.md — ten principles, each
   with the defect that produced it and the numbers where they exist;
   docs/ARCHITECTURE.md — four layers, all 11 preamble lines documented
   individually (verified: preamble line count == documented count), the
@@ -588,9 +589,13 @@ below fully green; repo flipped public.
 - [x] **4.14** *(Done 2026-07-30: /health check 3c detects the shape by
   the three signal classes and reports it as INFO — unsupported, not
   broken — naming every set found; the resolve-one-document-set rule
-  added to all **13** built document-reading skills (enumerated: plan,
-  do, resume, journal, retro, ship, audit, health, ticket, triage,
-  learn, plan-review, challenge — the 14th, /why, is unbuilt task 4.11),
+  added to every built document-reading skill — **16** after the
+  same-day review, which caught that /eval-spec and /investigate both
+  read AND write the set (enumerated: audit, challenge, do, eval-run,
+  eval-spec, health, investigate, journal, learn, plan, plan-review,
+  resume, retro, ship, ticket, triage; /why is unbuilt task 4.11.
+  /design-audit, /migrate-check, /qa and /secure correctly lack it —
+  they resolve no document set),
   each standalone-readable rather than pointing at a README the adopter
   does not have; README states the constraint before install;
   `fixtures/multi-product/` seeds two document sets under `apps/*` plus

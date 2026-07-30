@@ -33,14 +33,16 @@ context belongs — never inside the pack's skills.
 ## Conduct
 
 <!-- Project- or user-specific conduct rules, applied IN ADDITION to the ten
-     defaults in the pack's CONDUCT.md. /learn promotes repeated corrections
-     here. Example:
+     defaults in the pack's CONDUCT.md. Prose, not parsed keys. Example:
 - Never touch files under legacy/ without asking. -->
 
 ## Notes for skills
 
-<!-- Free-form project context skills read verbatim: client naming rules,
-     deploy cadence, review expectations, domain landmines. -->
+<!-- Free-form project context. Skills read this file before acting (the
+     principles block), so anything here is available to them: client
+     naming rules, deploy cadence, review expectations, domain landmines.
+     Unlike the keys above, nothing parses this section — it is prose for
+     the agent, not configuration. -->
 
 ## migrate-check
 

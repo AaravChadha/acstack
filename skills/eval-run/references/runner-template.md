@@ -13,16 +13,27 @@ Whatever the language, a runner MUST:
 1. Read `eval/golden.jsonl`, one JSON object per line.
 2. **Skip** `status: "needs-data"` (report as skipped, never as passed).
    **Exclude** `status: "superseded"` from the file and the denominator.
+   **Exclude `rubric:` cases from the headline too** — they are not
+   machine-gradeable — and NAME every exclusion in the output. A case
+   that leaves the denominator silently changes no percentage, which is
+   exactly why it is invisible.
 3. Grade each case by its own `grade_rule` — `exact`, `concept`,
    `numeric-tolerance:<x>`, `rubric:<name>` — normalizing Unicode
-   (NFKC) and whitespace before any string compare. The lookalike trio
-   (U+202F, U+00A0, U+2013) is why: a grader that fails on invisible
-   characters reports a subject failure that never happened.
+   (NFKC), case, and whitespace before any string compare. NFKC folds
+   U+202F and U+00A0 to spaces on its own; U+2013 needs an explicit
+   fold. A grader that fails on invisible characters reports a subject
+   failure that never happened.
 4. Apply `acceptable_failure` ONLY when the case carries a `reason`
-   string, and record every application.
-5. Write `eval/results/<UTC-timestamp>.jsonl`, one record per case:
-   `id`, `category`, `pass`, `expected`, `actual`, `grade_rule`,
-   `acceptable_failure_applied`.
+   string — accepting BOTH shapes in the wild, a bool with a sibling
+   `reason` and an object carrying its own — and record every
+   application. Never apply it to an ungraded case.
+5. Write `eval/results/<UTC-timestamp>.jsonl`, one record per case —
+   including skipped and ungraded ones, each carrying a `status`
+   (`scored` / `skipped-needs-data` / `needs-rubric-review` / `error`)
+   so `/audit eval` can see everything the run saw: `id`, `category`,
+   `pass`, `status`, `expected`, `actual`, `grade_rule`,
+   `acceptable_failure_applied`. Sub-second timestamp precision, so two
+   runs in one second cannot overwrite each other's evidence.
 6. Print the headline **computed from the records it just wrote** —
    overall %, per-category %, refusal % — never accumulated in a
    variable along the way. Reading back the file is what makes the
@@ -42,8 +53,10 @@ GOLDEN = ROOT / "golden.jsonl"
 RESULTS_DIR = ROOT / "results"
 
 def norm(s):
-    s = unicodedata.normalize("NFKC", str(s))
-    s = s.replace("–", "-").replace(" ", " ").replace(" ", " ")
+    """NFKC folds NBSP and narrow-NBSP to spaces on its own; the en-dash
+    needs an explicit fold. Case is folded too — `exact` means the same
+    answer, not the same keystrokes."""
+    s = unicodedata.normalize("NFKC", str(s)).replace("\u2013", "-")
     return re.sub(r"\s+", " ", s).strip().lower()
 
 def run_subject(case):
@@ -55,16 +68,32 @@ def run_subject(case):
       import:   from myapp import answer; return answer(case["input"])
 
     A model API call belongs here. It is the only place that spends money,
-    and it is deliberately left empty so a scaffold can never quietly bill.
+    and it is deliberately left unwired so a scaffold can never quietly bill.
     """
     raise NotImplementedError("wire run_subject to the system under test")
 
+def accepted(case):
+    """acceptable_failure is written two ways in the wild: a bool with a
+    sibling `reason`, or an object carrying its own. Both are honored; a
+    declaration with NO written reason is ignored, per /eval-spec."""
+    af = case.get("acceptable_failure")
+    if af is True:
+        return bool(str(case.get("reason", "")).strip())
+    if isinstance(af, dict):
+        return bool(str(af.get("reason", "")).strip())
+    return False
+
 def grade(case, actual):
+    """True / False, or None when the rule cannot be machine-graded."""
     rule = case.get("grade_rule", "exact")
     expected = case.get("expected", "")
     if rule == "exact":
         return norm(actual) == norm(expected)
     if rule == "concept":
+        # Substring containment is the floor, not the ideal: it is literal
+        # enough to produce grader brittleness. When a case fails here but
+        # the answer is right, fix the GRADER (widen to the concept), never
+        # the case — /audit eval calls that bucket "grader brittleness".
         return norm(expected) in norm(actual)
     if rule.startswith("numeric-tolerance:"):
         tol = float(rule.split(":", 1)[1])
@@ -72,52 +101,63 @@ def grade(case, actual):
         a, e = nums(actual), nums(expected)
         return bool(a and e and abs(a[0] - e[0]) <= tol)
     if rule.startswith("rubric:"):
-        # Rubric grading is human or model-judged; the runner records the
-        # answer and marks it for review rather than inventing a verdict.
-        return None
+        return None          # judged by a human or a model, never invented here
     raise ValueError(f"unknown grade_rule: {rule}")
 
 def main():
     cases = [json.loads(l) for l in GOLDEN.read_text().splitlines() if l.strip()]
     cases = [c for c in cases if c.get("status") != "superseded"]
-    records, skipped = [], 0
+    records, errors = [], 0
     for c in cases:
+        rec = {"id": c["id"], "category": c.get("category", "uncategorized"),
+               "grade_rule": c.get("grade_rule", "exact"),
+               "expected": c.get("expected"), "actual": None,
+               "pass": None, "status": "scored",
+               "acceptable_failure_applied": False}
         if c.get("status") == "needs-data":
-            skipped += 1
-            continue
+            rec["status"] = "skipped-needs-data"
+            records.append(rec); continue
         try:
-            actual = run_subject(c)
-            passed = grade(c, actual)
-        except Exception as exc:                # a crash is a failure, never a skip
-            actual, passed = f"ERROR: {exc}", False
-        af = c.get("acceptable_failure")
-        applied = bool(af and af.get("reason") and not passed)
-        records.append({
-            "id": c["id"], "category": c.get("category", "uncategorized"),
-            "pass": passed, "expected": c.get("expected"), "actual": actual,
-            "grade_rule": c.get("grade_rule", "exact"),
-            "acceptable_failure_applied": applied,
-        })
+            rec["actual"] = run_subject(c)
+            rec["pass"] = grade(c, rec["actual"])
+        except Exception as exc:              # a crash is a failure, never a skip
+            rec["actual"], rec["pass"], rec["status"] = f"ERROR: {exc}", False, "error"
+            errors += 1
+        if rec["pass"] is None and rec["status"] == "scored":
+            rec["status"] = "needs-rubric-review"
+        elif rec["pass"] is False and accepted(c):
+            rec["acceptable_failure_applied"] = True
+        records.append(rec)
+
     RESULTS_DIR.mkdir(exist_ok=True)
-    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
     out = RESULTS_DIR / f"{ts}.jsonl"
     out.write_text("".join(json.dumps(r) + "\n" for r in records))
 
     # headline recomputed FROM THE FILE — the whole point
     written = [json.loads(l) for l in out.read_text().splitlines() if l.strip()]
-    scored = [r for r in written if r["pass"] is not None]
+    scored = [r for r in written if r["status"] in ("scored", "error")]
     ok = sum(1 for r in scored if r["pass"] or r["acceptable_failure_applied"])
     print(f"results: {out}")
-    print(f"overall: {ok}/{len(scored)} ({100*ok/len(scored):.1f}%)" if scored else "overall: no scored cases")
+    print(f"overall: {ok}/{len(scored)} ({100*ok/len(scored):.1f}%)" if scored
+          else "overall: no scored cases")
     by = {}
     for r in scored:
         d = by.setdefault(r["category"], [0, 0]); d[1] += 1
         if r["pass"] or r["acceptable_failure_applied"]: d[0] += 1
     for cat, (p, n) in sorted(by.items()):
         print(f"  {cat}: {p}/{n} ({100*p/n:.1f}%)")
-    if skipped:
-        print(f"skipped (needs-data): {skipped}")
-    return 0
+
+    # every case excluded from the denominator is named — silence here is
+    # how a headline lies. Each of these has a record in the file too.
+    for label, st in (("skipped (needs-data)", "skipped-needs-data"),
+                      ("needs rubric review", "needs-rubric-review")):
+        n = sum(1 for r in written if r["status"] == st)
+        if n:
+            print(f"{label}: {n} (excluded from the headline)")
+    if errors:
+        print(f"errors: {errors} — run did not complete cleanly")
+    return 1 if errors else 0
 
 if __name__ == "__main__":
     sys.exit(main())

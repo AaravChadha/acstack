@@ -33,10 +33,12 @@ Verification rules (added 2026-07-29, each from a defect this repo shipped):
   entire trigger sentence, because it was re-read instead of parsed.
 - **Prove a new check fails before trusting that it passes.** Seed the defect
   the check exists to catch and watch it fire. A green check with no
-  demonstrated failure mode is decoration. This repo has produced two: the
-  `sk-[A-Za-z0-9]{20,}` secret regex that reported clean on a planted key, and
+  demonstrated failure mode is decoration. This repo has produced three: the
+  `sk-[A-Za-z0-9]{20,}` secret regex that reported clean on a planted key,
   the description guard whose first positive control passed misleadingly
-  because the text it tested had already been fixed.
+  because the text it tested had already been fixed, and /design-audit's
+  palette check, whose `\b` matched nothing at all because `git grep -E`
+  is POSIX ERE (now guarded by check.sh section 3b).
 - **Anything named as needed work gets a carrier task in the same edit.**
   Recording it is not scheduling it. This covers cross-cutting rules,
   proposed skills, deferred fixes — anything a future reader would expect to

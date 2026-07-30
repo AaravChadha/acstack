@@ -266,9 +266,10 @@ CONTRIBUTING.md       # how to add to it (matrix-first, positive controls)
 docs/ARCHITECTURE.md  # how skills, config, runtime, and guards fit
 VERSION, CHANGELOG.md # release record; check.sh enforces their agreement
 setup                 # symlink installer / uninstaller
+bin/                  # three runtime helpers: config, update-check, recall
 scripts/check.sh      # pack guard — its header enumerates every section
 scripts/controls.sh   # positive controls: documented checks vs seeded fixtures
-fixtures/<skill>/     # one known planted defect per check-shaped skill
+fixtures/<name>/      # one planted defect per check-shaped skill (+ multi-product)
 docs/guard-matrix.sh  # seeded-defect cases proving each guard fires
 templates/acstack.md  # per-project config template
 skills/<name>/        # one directory per skill: SKILL.md (+ references/ where needed)

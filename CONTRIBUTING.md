@@ -9,12 +9,14 @@ principles applied. `docs/ARCHITECTURE.md` explains the layers.
 guard blocks the commit. Fix the drift; do not skip the check.
 
 ```bash
-scripts/check.sh                    # 14 sections, includes positive controls
+scripts/check.sh                    # 14 numbered sections (plus 3b), includes positive controls
 bash docs/guard-matrix.sh "$PWD"    # every guard shown firing on a seeded defect
 ./setup && ./setup --uninstall      # installer round-trip
 ```
 
-CI runs the same three on every PR, plus `shellcheck`. One honest gap:
+CI runs the first two plus `shellcheck` on every PR — the installer
+round-trip is local-only, since it writes outside the repo. One honest
+gap:
 CI has no `.acstack-banned` (that list is untracked by design), so the
 banned-name section prints SKIP there and **local pre-commit is the
 enforcement point for names**.

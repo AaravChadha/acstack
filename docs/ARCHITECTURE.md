@@ -1,15 +1,17 @@
 # ARCHITECTURE — how the pieces fit
 
 Four layers, each with one job: **skills** (the instructions), **config**
-(what varies per project), **runtime** (the twelve lines that run before
-a skill's steps), and **guards** (what makes the claims mechanical).
+(what varies per project), **runtime** (the eleven lines that run before
+a skill's steps, under a budget of twelve), and **guards** (what makes the claims mechanical).
 Nothing here is generated; every file is hand-maintained markdown or
 bash, and that is a deliberate constraint — see PRINCIPLES.md.
 
 ## Layout
 
 ```
+AGENTS.md             this repo's binding rules + the conduct and referral blocks
 CONDUCT.md            the interaction contract (10 rules) — ships into adopter repos
+CONTRIBUTING.md       how to add to the pack
 PRINCIPLES.md         why the discipline is shaped this way
 VERSION, CHANGELOG.md release record; check.sh enforces their agreement
 setup                 symlink installer / uninstaller
@@ -122,7 +124,7 @@ against the repo and all shellcheck'd by check.sh:
 Three layers, each answering a different question.
 
 **`scripts/check.sh` — is the pack internally consistent?** Fourteen
-sections; the header comment is their single enumeration, updated in the
+numbered sections plus 3b; the header comment is their single enumeration, updated in the
 same commit as any new section (that list went stale twice when copies
 lived elsewhere). It covers principles-block byte-identity, banned
 names, frontmatter parsing and description safety, POSIX-ERE hazards in
@@ -138,15 +140,17 @@ reference file at run time* and runs it against a fixture carrying a
 known plant. Editing a documented pattern therefore edits what gets
 tested: a regressed regex fails here rather than silently in the field.
 `/eval-run`'s control is the sharpest — a seeded failing case must
-produce 4/5 (80.0%), so a runner that reports 100% is caught.
+produce 5/6 (83.3%), and it also asserts that every case excluded
+from the denominator is NAMED — silent exclusion moves no percentage,
+so it is invisible in the number alone.
 
-**`docs/guard-matrix.sh` — does each guard fire?** ~49 cases, each
+**`docs/guard-matrix.sh` — does each guard fire?** 49 cases, each
 seeding one defect into a copy of the real tree and asserting the
 expected failure class, plus must-pass cases so a guard cannot pass by
 failing everything. **Extend the matrix first, watch the case fail, then
-write the guard.** Two live-server controls (`/qa`) are documented
-shakedown procedures instead, stated rather than pretended into
-per-commit checks.
+write the guard.** `/qa`'s control needs a live server, so it is a documented shakedown
+procedure (`fixtures/qa/README.md`) instead — stated rather than
+pretended into a per-commit check.
 
 **What the guards cannot do,** stated because a green run should not be
 mistaken for more than it is: check.sh proves *declarations* — that a

@@ -68,13 +68,20 @@ else bad "/health multi-product fixture lost its workspace marker"; fi
 
 # --- /eval-run: the false-pass control (a runner that reports 100% is broken) ---
 if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; then
-  head="$( (cd fixtures/eval-run && python3 eval/run.py 2>&1) | grep '^overall:' || true)"
+  out="$( (cd fixtures/eval-run && python3 eval/run.py 2>&1) || true)"
+  head="$(printf '%s' "$out" | grep '^overall:' || true)"
   case "$head" in
-    *"4/5 (80.0%)"*) ok "/eval-run control: seeded failure lands at 4/5 (80.0%)" ;;
+    *"5/6 (83.3%)"*) ok "/eval-run control: seeded failure lands at 5/6 (83.3%)" ;;
     *100.0%*)        bad "/eval-run reported 100% with a seeded failing case - false pass" ;;
     "")              bad "/eval-run control produced no headline (runner did not complete)" ;;
-    *)               bad "/eval-run headline changed: $head (expected 4/5 (80.0%))" ;;
+    *)               bad "/eval-run headline changed: $head (expected 5/6 (83.3%))" ;;
   esac
+  # a case excluded from the denominator MUST be named. Silent exclusion is
+  # how a headline lies, and it is invisible in the percentage itself.
+  printf '%s' "$out" | grep -q 'needs rubric review: 1' \
+    || bad "/eval-run silently dropped the rubric case from the report"
+  printf '%s' "$out" | grep -q 'skipped (needs-data): 1' \
+    || bad "/eval-run silently dropped the needs-data case from the report"
   rm -rf fixtures/eval-run/eval/results
 else
   ok "/eval-run control skipped (no python3) - run it at shakedown"

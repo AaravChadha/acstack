@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: pack guard (12 sections, includes positive controls)
+      - name: pack guard (14 sections, includes positive controls)
         run: bash scripts/check.sh
       - name: guard matrix (every guard shown firing on seeded defects)
         run: bash docs/guard-matrix.sh "$PWD"

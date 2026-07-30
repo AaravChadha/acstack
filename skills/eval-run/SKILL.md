@@ -89,22 +89,34 @@ about the wrong product is worse than no answer (conduct rule 8).
 Per case, from its `grade_rule`, aligned with the canonical grader rules
 in `../eval-spec/references/grader-rules.md` and with `/audit eval`:
 
-- `exact` — normalized string equality (trim, collapse whitespace,
-  Unicode NFKC).
-- `concept` — the expected concept is present; assert the concept, not
-  the literal wording. Phrasing varies across runs; brittleness here is
-  a grader bug, not a subject failure.
+- `exact` — normalized equality: trim, collapse whitespace, NFKC, and
+  fold case. Same answer, not same keystrokes.
+- `concept` — the expected concept is present. The scaffold implements
+  this as normalized substring containment, which is the FLOOR, not the
+  ideal: it is literal enough to produce brittleness. When a case fails
+  here and the answer was right, widen the grader — never touch the
+  case (/audit eval's "grader brittleness" bucket).
 - `numeric-tolerance:<x>` — parse both sides, compare within ±x.
-- `rubric:<name>` — the rubric's named dimensions, each scored and
-  reported; a rubric with unnamed dimensions is a spec defect, not a
-  pass.
+- `rubric:<name>` — not machine-gradeable. The runner records the
+  answer, marks the case `needs-rubric-review`, and **excludes it from
+  the headline while naming it**. A human or a judge model scores the
+  rubric's named dimensions; a rubric with unnamed dimensions is a spec
+  defect, not a pass.
 
 Denominator discipline, because a headline is only as honest as what it
-counts: cases marked `"status": "needs-data"` are **skipped and
-reported as skipped**, never counted as passes; `"status":
-"superseded"` cases are excluded entirely; `acceptable_failure` applies
-only when the case carries a written `reason`, and every application is
-listed in the report.
+counts: cases marked `"status": "needs-data"` are **skipped and reported
+as skipped**, never counted as passes; `"status": "superseded"` cases
+are excluded entirely; `rubric:` cases are excluded from the headline
+because no machine graded them, and are reported for review;
+`acceptable_failure` applies only when the case carries a written
+`reason` (in either shape it is written — a bool with a sibling
+`reason`, or an object), never to an ungraded case, and every
+application is listed.
+
+**Every exclusion is named in the report.** A case that leaves the
+denominator quietly moves no percentage at all, so it cannot be caught
+by looking at the number — which makes silent exclusion the most
+dangerous of the false-pass family.
 
 ## Hard rules
 
