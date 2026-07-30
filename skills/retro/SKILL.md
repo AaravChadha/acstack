@@ -58,9 +58,10 @@ question sets and honest-degradation lines. Lead with a verdict:
 
 ## Not in wave 3
 
-No skill-usage / telemetry section — it arrives in wave 4 with the local
-telemetry it reads (PLAN 4.3). Don't emit a placeholder for it; its
-absence is correct, not a gap.
+No skill-usage / telemetry section — it arrives with the local
+telemetry it reads (PLAN task 4.3, moved to wave 4.5 post-launch by the
+2026-07-29 split). Don't emit a placeholder for it; its absence is
+correct, not a gap.
 
 ## Output
 

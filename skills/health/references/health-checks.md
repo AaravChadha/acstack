@@ -48,8 +48,11 @@ edit as the fix.
 cat .claude/acstack.md 2>/dev/null || cat "$HOME/.claude/acstack.md" 2>/dev/null
 ```
 
-Known keys are the README config table; anything else = info (extension
-hook). Consistency: `tracking: tickets` requires all three of
+Known keys are the config table in the pack's own README — resolve the
+pack root through the symlink exactly as in §3 and read
+`$pack_root/README.md` (the project's README is a different file and
+has no such table). Anything else = info (extension hook). Consistency:
+`tracking: tickets` requires all three of
 
 ```bash
 command -v gh && gh auth status && git remote get-url origin
@@ -57,18 +60,14 @@ command -v gh && gh auth status && git remote get-url origin
 
 ## 5. Secrets
 
-```bash
-git ls-files | grep -E '(^|/)\.env(\.|$)'             # tracked .env-class
-grep -n '^!' .gitignore 2>/dev/null                   # negation trap
-git log --all --oneline -- '*.env' | head -5          # .env in history
-```
-
-Key-shape and assignment-pattern greps: run the two `git grep` commands
-from the canonical secrets section, `../../secure/references/security-surfaces.md`
-§2 Secrets hygiene, appending `| head -10` for checkup brevity. The
-`sk[-_]` prefix-class rationale is documented there — the pattern is NOT
-duplicated here because the two copies had already drifted once (`ghp_`
-present in one, absent in the other).
+Run ALL commands from the canonical secrets section,
+`../../secure/references/security-surfaces.md` §2 Secrets hygiene —
+tracked .env-class files, the `!.env` negation trap, the history sweep,
+and the two key-shape/assignment greps — appending `| head` where the
+checkup wants brevity. Nothing is duplicated here: the copies had
+already drifted twice before canonicalization (`ghp_` present in one
+copy and absent in the other; a history sweep narrowed to `'*.env'`
+while the canonical one also covers `'*secret*'` and `'*credential*'`).
 
 Any hit in history means the secret is burned regardless of the working
 tree: the fix line says "rotate the key", not just "remove the file".

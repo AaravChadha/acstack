@@ -3,8 +3,15 @@
 > **What this file is.** Per-item designs for wave 4, written at wave
 > start per PLAN.md's process, at the same fidelity as waves 1–3. Build
 > follows approval, one increment at a time, in the build order at the
-> end. **Drafted:** 2026-07-30. **Status:** awaiting approval — nothing
-> below is built yet.
+> end. **Drafted:** 2026-07-30. ~~**Status:** awaiting approval — nothing
+> below is built yet.~~ **Status (2026-07-30, later):** approved; build
+> in progress in four batches. Batch A (4.23, 4.1, 4.17, 4.15) is built
+> and ticked in PLAN.md, then hardened by a three-agent recheck (A.1)
+> that fixed seven silent-disable classes in the new guards themselves.
+> Divergence from 4.1 as specced, recorded not silent: CHANGELOG's top
+> heading is `## 0.4.0 — unreleased` (naming the version in progress)
+> rather than the literal `## Unreleased`, so the agreement guard can
+> compare VERSION against it exactly.
 > **Standing verdicts applied:** the wave-4 / 4.5 split (2026-07-29) —
 > telemetry (4.3), `setup --global`/`--hook` (4.4), /audit tests (4.10),
 > /why (4.11), commit-format implementation (4.16), and degradation

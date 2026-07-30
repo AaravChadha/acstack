@@ -88,6 +88,6 @@ regressions).
 | ID | Bucket | Result | Read |
 |---|---|---|---|
 | Q08 | grader brittleness | FAIL → fixed | Bot wrote "1-Year Return"; assertion required literal "1Y". Grader fixed — asserts the concept, not the wording. NOT a bot failure. |
-| Q09 | real miss | FAIL → fix landed | Over-refusal: filtered too strictly on 3Y metrics (NULL for funds <3yr) and refused. New no-perfect-fit rule in SYSTEM_PROMPT. |
+| Q09 | prompt issue | FAIL → fix landed | Over-refusal: filtered too strictly on 3Y metrics (NULL for funds <3yr) and refused. New no-perfect-fit rule in SYSTEM_PROMPT. |
 | Q20 | provider flake | FAIL | Malformed tool call, reproduces across providers. Tracked as deferred item 3. |
 ```

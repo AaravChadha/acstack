@@ -152,10 +152,14 @@ Every skill carries this block verbatim (canonical copy below;
 
 ```
 CONDUCT.md            # the agent interaction contract (10 rules)
+VERSION, CHANGELOG.md # release record; check.sh enforces their agreement
 setup                 # symlink installer / uninstaller
-scripts/check.sh      # pack guard: principles, names, frontmatter, budgets, syntax
+scripts/check.sh      # pack guard — its header enumerates every section
+scripts/controls.sh   # positive controls: documented checks vs seeded fixtures
+fixtures/<skill>/     # one known planted defect per check-shaped skill
+docs/guard-matrix.sh  # seeded-defect cases proving each guard fires
 templates/acstack.md  # per-project config template
-skills/<name>/        # one directory per skill: SKILL.md + references/
+skills/<name>/        # one directory per skill: SKILL.md (+ references/ where needed)
 ```
 
 ## Development

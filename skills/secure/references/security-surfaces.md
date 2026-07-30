@@ -4,10 +4,12 @@ Every finding still needs an exploit scenario and a confidence rating
 (SKILL.md). These patterns FIND candidates; they don't rate them.
 
 > **Regex note.** `git grep -E` is POSIX ERE — `\s` parses as a literal
-> `s`, so `\s*` means "zero or more letter s". Until 2026-07-29 that made
-> the secret sweep below miss every assignment written with spaces around
-> `=`. Use `[[:space:]]`; use `-w` for word boundaries, never `\b` — a
-grep hit is a lead, not a finding. Record the exact command run under
+> `s`, so `\s*` means "zero or more letter s", and `\b` matches nothing
+> at all. Until 2026-07-29 that made the secret sweep below miss every
+> assignment written with spaces around `=`. Use `[[:space:]]` for
+> whitespace and `-w` for word boundaries.
+
+A grep hit is a lead, not a finding. Record the exact command run under
 `Safety checks:`.
 
 ## 1. Auth gates

@@ -32,9 +32,10 @@ grooms the many existing ones).
 
 The report opens with a one-line verdict — `backlog healthy` or
 `<N> findings across <M> categories` — before any finding. Then the
-numbered findings, each with its evidence and its proposed action, then
-the applied-actions list. Then the user picks; only approved
-actions are executed, and each applied action is confirmed by name.
+numbered findings, each with its evidence and its proposed action.
+Then the user picks; only approved actions are executed, and the
+report closes with the applied-actions list — each action confirmed
+by name.
 Nothing is ever silently deleted or closed: every close carries a written
 reason. Supersede-don't-delete applies to backlogs exactly as it applies
 to decisions.
