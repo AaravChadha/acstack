@@ -774,7 +774,24 @@ below fully green; repo flipped public.
   reader can predict every file the pack will touch and every binary it
   may invoke, before installing.
 
-- [ ] **4.31** /secure's injection surface is a third of a surface —
+- [x] **4.31** *(Done 2026-07-31: surface 4 added — unsafe
+  deserialization (pickle family, cloudpickle/dill/marshal/shelve/joblib,
+  read_pickle, numpy allow_pickle, yaml.load/unsafe_load, torch.load),
+  crypto misuse (ECB, createCipher without IV), disabled transport
+  verification (verify=False, rejectUnauthorized, NODE_TLS_REJECT_
+  UNAUTHORIZED, CURLOPT_SSL_VERIFYPEER, _create_unverified), and XXE;
+  surface 3 gained document.write/outerHTML/insertAdjacentHTML, dynamic
+  eval, the exec family, missing SRI, and GitHub Actions run: injection.
+  Nine fixture files with nine controls in scripts/controls.sh, all
+  demonstrated FAILING before the patterns existed. Each finding carries
+  a trust-boundary caveat so a repo-shipped pickle load is not inflated
+  into a finding. **The set-claim trap was real and all three sites
+  changed together:** the body heading, the frontmatter description (the
+  consumed form — re-parsed, not re-read), and README's row all said
+  four surfaces. Two extraction bugs surfaced en route, both from quotes
+  inside documented patterns; the eval pattern was rewritten quote-free
+  rather than working around it.)*
+  /secure's injection surface is a third of a surface —
   measured 2026-07-30 against security-guidance's 25 frozen rule IDs
   (`plugins/security-guidance/hooks/patterns.py:264`). /secure's
   `references/security-surfaces.md` names `innerHTML`,

@@ -25,6 +25,32 @@ else bad "/secure key-shape grep MISSED the planted keys (pattern: $pat)"; fi
 if grep -q '^!' fixtures/secure/.gitignore; then ok "/secure negation-trap grep catches !.env"
 else bad "/secure negation-trap grep missed the !.env plant"; fi
 
+# --- /secure surface 5 + sinks: every documented pattern vs its plant ---
+# Each entry: a label, the grep -F anchor that locates the documented
+# command, and the fixture that must match. Extracted at run time, so a
+# regressed pattern fails HERE (PLAN 4.31).
+sec_check() { # label anchor fixture-path
+  local label="$1" anchor="$2" target="$3" line pat
+  line="$(grep -F "$anchor" skills/secure/references/security-surfaces.md | head -1 || true)"
+  pat="${line#*\'}"; pat="${pat%%\'*}"
+  if [ -z "$pat" ] || [ "$pat" = "$line" ]; then
+    bad "/secure $label pattern not extractable (anchor: $anchor)"
+  elif grep -rqE "$pat" "$target"; then
+    ok "/secure $label grep catches its plant"
+  else
+    bad "/secure $label grep MISSED $target (pattern: $pat)"
+  fi
+}
+sec_check "deserialization" "git grep -nE '(pickle|cPickle" fixtures/secure/deserialization.py
+sec_check "yaml-load"       "git grep -nE '(yaml\.(load|unsafe_load)" fixtures/secure/deserialization.py
+sec_check "crypto-misuse"   "git grep -nE '(createCipher\(" fixtures/secure/crypto-tls.js
+sec_check "tls-disabled"    "git grep -nE '(verify[[:space:]]*=[[:space:]]*False" fixtures/secure/
+sec_check "xxe"             "git grep -nE '(resolve_entities[[:space:]]*=[[:space:]]*True" fixtures/secure/xxe.py
+sec_check "xss-sinks"       "git grep -nE '(document\.write\(" fixtures/secure/sinks.js
+sec_check "dynamic-eval"    "git grep -nE '(new[[:space:]]+Function" fixtures/secure/sinks.js
+sec_check "sri-missing"     "git grep -nE '<script[^>]+src=" fixtures/secure/sri.html
+sec_check "actions-inject"  "git grep -nE 'run:" fixtures/secure/workflow-sample.yml
+
 # --- /design-audit: palette, mock-data, slop (all extracted) ---
 line="$(grep -F "git grep -nE '#[0-9a-fA-F]" skills/design-audit/references/design-conventions.md | head -1 || true)"
 pat="${line#*\'}"; pat="${pat%%\'*}"

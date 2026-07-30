@@ -1,0 +1,7 @@
+# FIXTURE — GitHub Actions injection. NOT under .github/, so it never runs.
+on: [issues]
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "${{ github.event.issue.title }}"

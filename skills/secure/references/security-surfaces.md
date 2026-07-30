@@ -69,8 +69,17 @@ git grep -nE '\$queryRawUnsafe|\.raw\(|executeRawUnsafe'
 git grep -nE '(exec|execSync|spawn|os\.system|subprocess).*(\$\{|\+ |%s|f["'"'"'])'
 # path built from user input
 git grep -nE '(readFile|open|sendFile|join)\([^)]*(req\.|params|query|input)'
-# unsanitized HTML sinks
+# unsanitized HTML sinks — innerHTML is the famous one, not the only one
 git grep -nE '(innerHTML|dangerouslySetInnerHTML|v-html|render_template_string)'
+git grep -nE '(document\.write\(|\.outerHTML[[:space:]]*=|insertAdjacentHTML\()'
+# dynamic evaluation of a string
+git grep -nE '(new[[:space:]]+Function\(|[^a-zA-Z_]eval\(|setTimeout\([[:space:]]*[^,)]*[+$])'
+# shell execution helpers (the exec family, not just interpolation)
+git grep -nE '(child_process|execSync\(|execFile\(|spawnSync\()'
+# third-party script with no subresource integrity
+git grep -nE '<script[^>]+src=' -- '*.html' '*.jsx' '*.tsx' | grep -v integrity=
+# CI injection: untrusted event text expanded straight into a run: block
+git grep -nE 'run:.*\$\{\{[[:space:]]*github\.event' -- '.github/**'
 ```
 
 - Parameterized queries / ORM bindings for anything touching user
@@ -80,7 +89,42 @@ git grep -nE '(innerHTML|dangerouslySetInnerHTML|v-html|render_template_string)'
 - Path operations resolve and confirm the result stays inside the
   intended root (the traversal check).
 
-## 4. LLM tool-use trust boundaries
+## 4. Unsafe deserialization, crypto, and transport
+
+Added 2026-07-31 (PLAN 4.31). These are the classes a security sweep is
+expected to catch and this skill did not: measured against 25 frozen
+rule IDs in another pack's scanner, /secure covered three.
+
+```bash
+# deserialization = arbitrary code execution when the blob is untrusted
+git grep -nE '(pickle|cPickle|cloudpickle|dill|marshal|shelve|joblib)\.(load|loads|open)'
+git grep -nE '(read_pickle\(|allow_pickle[[:space:]]*=[[:space:]]*True)'
+git grep -nE '(yaml\.(load|unsafe_load)\(|Loader[[:space:]]*=[[:space:]]*yaml\.Loader)'
+git grep -nE '(torch\.load\()'
+# crypto misuse: ECB reveals structure; createCipher derives a key with no IV
+git grep -nE '(createCipher\(|aes-[0-9]+-ecb|MODE_ECB|ECBMode)'
+# transport: verification switched off
+git grep -nE '(verify[[:space:]]*=[[:space:]]*False|rejectUnauthorized[[:space:]]*:[[:space:]]*false|NODE_TLS_REJECT_UNAUTHORIZED)'
+git grep -nE '(CURLOPT_SSL_VERIFYPEER|InsecureRequestWarning|ssl\._create_unverified)'
+# XML external entities
+git grep -nE '(resolve_entities[[:space:]]*=[[:space:]]*True|XMLParser\(|etree\.fromstring\(|ET\.parse\()'
+```
+
+- `yaml.load` without `Loader=SafeLoader`, and every `pickle`-family
+  load, are RCE **whenever the input crosses a trust boundary** — the
+  exploit scenario names where the blob comes from (an upload, a cache,
+  a queue), and a load of a file the repo itself ships is not a finding.
+- `torch.load` defaults to `weights_only=False`, so a downloaded
+  checkpoint is executable code. Confidence is `high` when the path is
+  user- or network-supplied.
+- Disabled TLS verification is `high` on any path carrying credentials
+  or PII, `medium` on a local-only dev helper — say which, and quote the
+  line, because "it's only for dev" is what every shipped instance said.
+- XML parsers vary by library and version; report the parser and its
+  settings rather than the bare call, and check whether entity
+  resolution is actually on before rating above `low`.
+
+## 5. LLM tool-use trust boundaries
 
 The surface with no OWASP muscle-memory, so check it explicitly:
 

@@ -1,6 +1,6 @@
 ---
 name: secure
-description: "Security review with a confidence gate - a finding exists only with a concrete exploit scenario and a high/medium/low confidence rating; everything else goes to a worth-hardening list, never inflated. Sweeps four surfaces: auth gates, secrets hygiene, injection, and LLM tool-use trust boundaries. Reports only, never fixes. Use when the user asks for a security review or to check vulnerabilities, secrets, or auth."
+description: "Security review with a confidence gate - a finding exists only with a concrete exploit scenario and a high/medium/low confidence rating; everything else goes to a worth-hardening list, never inflated. Sweeps five surfaces: auth gates, secrets hygiene, injection and unsafe sinks, unsafe deserialization/crypto/transport, and LLM tool-use trust boundaries. Reports only, never fixes. Use when the user asks for a security review or to check vulnerabilities, secrets, or auth."
 argument-hint: "[path | surface | notes]"
 allowed-tools: Read, Grep, Glob, Bash(git grep:*), Bash(git log:*), Bash(git ls-files:*), Bash(git status:*), Bash(grep:*), Bash(ls:*)
 ---
@@ -67,7 +67,7 @@ separate list, honestly labeled. Promoting a maybe into a finding is
 the security version of inflating an eval score; the never-inflate rule
 applies verbatim.
 
-## The four surfaces
+## The five surfaces
 
 Checklists and grep patterns per surface live in
 `references/security-surfaces.md`. Sweep every surface the stack has;

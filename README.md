@@ -28,7 +28,7 @@ machine state.
 | `/learn` | Capture a durable lesson to LEARNINGS.md (symptom → cause → fix, seen-count); recurring lessons promoted into the pack's known-bug-classes | `/learn "…"` |
 | `/health` | Read-only project checkup: docs, pointer, conduct block, config, secrets, attribution, learnings, tickets prerequisites — every ✗ with its exact fix command | `/health` |
 | `/qa` | Exercise the running app through the probe layer: happy-path flows, adversarial inputs, auth-gate probing; PASS/FAIL report with exact repro commands (http now; browser deferred) | `/qa http://localhost:3000` |
-| `/secure` | Confidence-gated security review: findings need an exploit scenario + high/medium/low rating; sweeps auth gates, secrets, injection, LLM tool-use; reports only | `/secure src/` |
+| `/secure` | Confidence-gated security review: findings need an exploit scenario + high/medium/low rating; sweeps auth gates, secrets, injection and unsafe sinks, deserialization/crypto/TLS, LLM tool-use; reports only | `/secure src/` |
 | `/design-audit` | Static UI convention check: off-palette colors, wrong name casing, dishonest data labels, AI-slop, leaked internal language — file:line findings with fixes | `/design-audit src/ui/` |
 | `/retro` | Trend across sessions: velocity vs plan dates, eval-score trend, failure-category trends, open-risk status — written into JOURNAL.md | `/retro week` |
 | `/eval-run` | Execute the eval: scaffold a runner for the project's stack when none exists, grade every case by its rule, write per-case results, and compute the headline from that file — never by hand | `/eval-run` |
