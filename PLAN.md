@@ -99,7 +99,8 @@
 > everywhere or an existing acstack shape pointed at a new target.
 
 > **Second survey (2026-07-30) — eight repos, cloned and counted, three
-> context-free readers.** obra/superpowers (still exactly 14 skills; its
+> context-free readers.** Source record, counted facts, and the exact
+> file paths each carrier cites: `docs/survey-2026-07-30.md`. obra/superpowers (still exactly 14 skills; its
 > ★264k growth is seven harness packagings + test suites),
 > thedotmack/claude-mem (66k-line TS memory daemon — the opposite memory
 > bet), anthropics/skills + the claude-code code-review and
