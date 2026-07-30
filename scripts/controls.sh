@@ -66,6 +66,20 @@ if ls fixtures/multi-product/pnpm-workspace.yaml >/dev/null 2>&1; then
   ok "/health workspace-marker signal present in the fixture"
 else bad "/health multi-product fixture lost its workspace marker"; fi
 
+# --- /eval-run: the false-pass control (a runner that reports 100% is broken) ---
+if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; then
+  head="$( (cd fixtures/eval-run && python3 eval/run.py 2>&1) | grep '^overall:' || true)"
+  case "$head" in
+    *"4/5 (80.0%)"*) ok "/eval-run control: seeded failure lands at 4/5 (80.0%)" ;;
+    *100.0%*)        bad "/eval-run reported 100% with a seeded failing case - false pass" ;;
+    "")              bad "/eval-run control produced no headline (runner did not complete)" ;;
+    *)               bad "/eval-run headline changed: $head (expected 4/5 (80.0%))" ;;
+  esac
+  rm -rf fixtures/eval-run/eval/results
+else
+  ok "/eval-run control skipped (no python3) - run it at shakedown"
+fi
+
 # --- /migrate-check: destructive classification vs planted statements ---
 tbl="$(awk '/## Destructive/,/## Not SQL/' skills/migrate-check/references/sql-classification.md)"
 for stmt in "DROP TABLE" "RENAME COLUMN"; do

@@ -31,6 +31,7 @@ machine state.
 | `/secure` | Confidence-gated security review: findings need an exploit scenario + high/medium/low rating; sweeps auth gates, secrets, injection, LLM tool-use; reports only | `/secure src/` |
 | `/design-audit` | Static UI convention check: off-palette colors, wrong name casing, dishonest data labels, AI-slop, leaked internal language — file:line findings with fixes | `/design-audit src/ui/` |
 | `/retro` | Trend across sessions: velocity vs plan dates, eval-score trend, failure-category trends, open-risk status — written into JOURNAL.md | `/retro week` |
+| `/eval-run` | Execute the eval: scaffold a runner for the project's stack when none exists, grade every case by its rule, write per-case results, and compute the headline from that file — never by hand | `/eval-run` |
 | `/ship` | Branch-level release: five gates (clean state, tests, eval-vs-target, docs drift, attribution) then a report-shaped PR wiring `Fixes #N` or PLAN task IDs | `/ship` |
 
 ## Install
@@ -40,7 +41,7 @@ git clone https://github.com/AaravChadha/acstack.git ~/Documents/acstack
 cd ~/Documents/acstack && ./setup
 ```
 
-Start a new Claude Code session; the nineteen skills above load as slash
+Start a new Claude Code session; the twenty skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 

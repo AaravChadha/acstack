@@ -540,7 +540,24 @@ below fully green; repo flipped public.
   > `skills/plan/SKILL.md` (seed installs the block),
   > `skills/health/references/health-checks.md` + SKILL.md (the row),
   > `scripts/check.sh` (roster-vs-flag guard).
-- [ ] **4.12** /eval-run — close the loop on the flagship methodology.
+- [x] **4.12** *(Done 2026-07-30: `skills/eval-run/` — 20th skill,
+  model-invocable, cost disclosed before the run rather than asked as
+  permission. Prefers an existing runner, scaffolds only when none
+  exists, stops rather than guessing a stack. Denominator discipline is
+  explicit: needs-data skipped and reported as skipped, superseded
+  excluded, `acceptable_failure` only with a written reason. The
+  headline is recomputed FROM the results file — the template's Python
+  is executable and was run, not just written.
+  **Positive control proven both directions:** `fixtures/eval-run/`
+  seeds a failing case and a needs-data case; a correct runner reports
+  **4/5 (80.0%)**, and a runner seeded to swallow errors and count
+  skips as passes reports 100% and is caught by controls.sh. No network,
+  no API key, no dependencies. Guard fix earned en route: the crossref
+  extractor read `#!/usr/bin/env` as a skill reference — a skill ref is
+  never followed by `/` — and the fix's own `grep -v` reintroduced the
+  pipefail early-death class, caught by the matrix and fixed with a
+  load-bearing `|| true`. Matrix 48 → 49; setup links 20.)*
+  /eval-run — close the loop on the flagship methodology.
   Today `/eval-spec` writes the spec and golden set, `/ship`'s eval gate
   *runs the eval per its run command*, and `/audit eval` reviews a
   report — all three assume a runner that no skill produces. Wave 2's own

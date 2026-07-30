@@ -212,7 +212,13 @@ for f in skills/*/SKILL.md skills/*/references/*.md; do
   # two extraction passes: plain refs (backtick still excluded as a preceding
   # char — `x`/word is a prose separator, not a ref) and code-span refs like
   # `/name`, which the first pass structurally cannot see.
-  toks="$({ grep -oE '(^|[^A-Za-z0-9_/.`])/[a-z][a-z-]+:?' "$f" || true; grep -oE '`/[a-z][a-z-]+`' "$f" | tr -d '`' || true; } | sed -E 's|^[^/]*/|/|' | sort -u)"
+  # A skill reference is /name — never followed by another '/', which is
+  # what a filesystem path looks like (#!/usr/bin/env, /etc/hosts). Capture
+  # the following character so path-shaped tokens can be dropped.
+  # NOTE: `grep -v` exits 1 on no output, and pipefail would kill the whole
+  # script silently — the early-death class. The `|| true` is load-bearing.
+  toks="$({ { grep -oE '(^|[^A-Za-z0-9_/.`])/[a-z][a-z-]+[/:]?' "$f" || true; grep -oE '`/[a-z][a-z-]+`' "$f" | tr -d '`' || true; } \
+    | sed -E 's|^[^/]*/|/|' | grep -v '/$' | sort -u; } || true)"
   while IFS= read -r t; do
     [ -n "$t" ] || continue
     t="${t%:}"   # a colon-suffixed ref is still a ref (only /acstack markers are exempt, via the list)
