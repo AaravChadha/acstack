@@ -453,7 +453,21 @@ below fully green; repo flipped public.
   Only then flip public. **Acceptance:** the launch commit's journal entry
   carries evidence for all nine — a command and its output, or a named
   artifact — with no line resting on "looks right".
-- [ ] **4.8** `allowed-tools` on the **five** structurally read-only
+- [x] **4.8** *(Done 2026-07-30: all five declare tool sets derived from
+  the commands their own text documents — /secure git grep/log/ls-files/
+  status, /design-audit git grep only, /audit +check-ignore/ls, /resume
+  +gh issue list, /health +cat/command -v/gh auth status/label list. No
+  entry is bare `Bash`. check.sh section 13 asserts the six read-only
+  skills (the five + /migrate-check, their template) declare
+  allowed-tools with no Write/Edit/NotebookEdit and no unscoped Bash;
+  three matrix cases — declaration removed, Write granted, bare Bash
+  granted — were shown failing first (matrix 43 → 46). Consumed form
+  verified: all five re-registered in the live skill listing with
+  descriptions intact after the frontmatter change.
+  **Honest scope, unchanged:** the guard proves the DECLARATION;
+  enforcement is Claude Code's permission layer, so the seeded
+  write-attempt probe stays 4.7 evidence, not a check.sh line.)*
+  `allowed-tools` on the **five** structurally read-only
   skills — /secure, /health, /design-audit, /audit, /resume. Their
   never-writes promise is prose today; this makes it mechanical. README
   v2 claims "audit what you're trusting in five minutes" — this is what

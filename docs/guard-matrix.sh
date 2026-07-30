@@ -108,6 +108,10 @@ fullcase "headingless changelog fails, not dies" FAIL 'version' bash -c "printf 
 fullcase "runtime block drifts in one skill"  FAIL 'runtime' bash -c "sed -e 's/proceeding without recall/proceeding sans recall/' skills/do/SKILL.md > t && mv t skills/do/SKILL.md"
 fullcase "runtime block missing from a skill" FAIL 'runtime' bash -c "awk '/<!-- acstack:runtime -->/{f=1} !f{print} /<!-- \\/acstack:runtime -->/{f=0}' skills/do/SKILL.md > t && mv t skills/do/SKILL.md"
 fullcase "preamble grown past its budget"     FAIL 'runtime' bash -c "awk '{print} /<!-- acstack:runtime -->/{print \"pad line one\"; print \"pad line two\"}' README.md > t && mv t README.md"
+# 4.8 read-only tool declarations
+fullcase "read-only skill loses allowed-tools" FAIL 'readonly' bash -c "grep -v '^allowed-tools:' skills/resume/SKILL.md > t && mv t skills/resume/SKILL.md"
+fullcase "read-only skill granted Write"       FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Write, Read/' skills/secure/SKILL.md > t && mv t skills/secure/SKILL.md"
+fullcase "read-only skill granted bare Bash"   FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash, Read/' skills/audit/SKILL.md > t && mv t skills/audit/SKILL.md"
 
 echo
 echo "passed=$pass failed=$failed"

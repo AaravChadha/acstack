@@ -10,7 +10,7 @@
 #   6  VERSION/CHANGELOG agreement          7  routing lines present
 #   8  cross-references + citations resolve 9  config-key reachability
 #   10 verdict-first stance present         11 positive controls (fixtures)
-#   12 runtime preamble identity + budget
+#   12 runtime preamble identity + budget  13 read-only tool declarations
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -319,6 +319,28 @@ else
     fi
   done
 fi
+
+# 13. Structurally read-only skills declare a no-write tool set. Their
+#     never-writes promise was prose until 2026-07-30; this makes it
+#     mechanical. /migrate-check is the template these five copy. /qa is
+#     excluded (network shape) and /retro is NOT read-only — it appends to
+#     JOURNAL.md and commits (the 2026-07-29 correction).
+READONLY_SKILLS="secure health design-audit audit resume migrate-check"
+for s in $READONLY_SKILLS; do
+  f="skills/$s/SKILL.md"
+  tools="$(sed -n 's/^allowed-tools:[[:space:]]*//p' "$f" | head -1)"
+  if [ -z "$tools" ]; then
+    echo "FAIL readonly: $f declares no allowed-tools — its read-only promise is prose"
+    fail=1; continue
+  fi
+  case "$tools" in
+    *Write*|*Edit*|*NotebookEdit*)
+      echo "FAIL readonly: $f grants a write tool: $tools"; fail=1 ;;
+  esac
+  # bare Bash (no parenthesised scope) is an unbounded grant
+  printf '%s' "$tools" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
+    | grep -qx 'Bash' && { echo "FAIL readonly: $f grants unscoped Bash: $tools"; fail=1; }
+done
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then

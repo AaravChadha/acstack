@@ -2,6 +2,7 @@
 name: health
 description: Read-only project checkup - three docs present and fresh, CLAUDE.md pointer intact, conduct block current, config valid, secrets clean, attribution honored, learnings alive, tickets-mode prerequisites met. Every failed check comes with its exact fix command, never applied. Use when the user asks for a health check, a project checkup, or whether the project setup is sane.
 argument-hint: "[notes]"
+allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git ls-files:*), Bash(ls:*), Bash(cat:*), Bash(command -v:*), Bash(gh auth status:*), Bash(gh issue list:*), Bash(gh label list:*)
 ---
 
 # /health — the five-minute project checkup

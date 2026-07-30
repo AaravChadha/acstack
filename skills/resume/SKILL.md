@@ -2,6 +2,7 @@
 name: resume
 description: Resume a project in five minutes - read BRIEF/PLAN/JOURNAL plus git state, deliver a short where-we-are brief, divergence flags (uncommitted work, unjournaled commits, acceptance drift), and the next three unblocked tasks. Use at session start or when the user asks where were we, what's next, or to catch up on a project.
 argument-hint: "[notes]"
+allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git status:*), Bash(ls:*), Bash(gh issue list:*)
 ---
 
 # /resume — resume in five minutes

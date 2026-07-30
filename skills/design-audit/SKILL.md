@@ -2,6 +2,7 @@
 name: design-audit
 description: Static UI convention check - off-palette colors and wrong product-name casing, dishonest data labels (AI-generated or mock data shown as real), AI-slop (lorem remnants, hedge copy, emoji headings, uniform gradient grids), and client-facing language leaks. Reports file:line findings with fixes; conventions come from config layered over pack defaults. Use when the user asks to design-audit or check UI conventions, polish, or copy.
 argument-hint: "[path | notes]"
+allowed-tools: Read, Grep, Glob, Bash(git grep:*)
 ---
 
 # /design-audit — conventions, honesty, and slop
