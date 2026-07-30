@@ -1074,6 +1074,33 @@ reordered, if any.
   sources. **Acceptance:** `fixtures/design-audit/` gains one seed per
   new rule class and every documented grep catches its seed
   (controls.sh, per 4.15); clean tree stays quiet.
+  **Translucency/materials block (2026-07-31, third survey).** From
+  `ngocanhnckh/liquid-glass-frontend-skill` — the only net-new material
+  in that round, and all of it CSS-level and grep-able: `backdrop-filter`
+  on an ancestor creates a **stacking context that traps z-index**, so a
+  popover inside a glass shell clips — it must render at the shell root;
+  nested `backdrop-filter` breaks GPU compositing (4.27 already bans the
+  nesting for legibility — this adds the performance reason and makes it
+  a two-signal finding); translucency over a flat fill reads as a grey
+  box rather than glass; a popover over live content needs ~94% opacity
+  before small text is readable; and ambient background loops need
+  mismatched durations (22/27/31s) or they visibly re-sync. Light theme
+  needs the INVERSE tuning — thinner mix, higher saturation — which
+  belongs to 4.30's theming item, not here.
+
+  **Three anti-slop tells from `jiji262/claude-design-skill`
+  (2026-07-31)**, kept only after diffing against this task's existing
+  list: a gradient orb used as the visual signifier for "AI"; charts and
+  stat blocks used as decoration rather than data (distinct from the
+  dishonest-label rule — these are real-looking numbers that decorate);
+  and the rounded-card-plus-left-border-accent-stripe cliché. Its fourth
+  candidate — a CSS/SVG silhouette standing in for a product shot — is
+  **already covered** by the fake-div-screenshot tell taste-skill
+  supplied. Caveat on the diff: it was run against this task's written
+  list, not against impeccable's 47 rule IDs directly, since those
+  clones are gone; a duplicate surviving into `ai-tells.md` is possible
+  and cheap to spot at build.
+
   **Interaction-feel additions (2026-07-30, second pass — the first
   ledger MISSED emil's `apple-design` skill, 282 lines, because the
   reader summarized the repo by its motion rules and never opened it).**
@@ -1172,6 +1199,26 @@ reordered, if any.
   the gaps named — the honest-scope discipline applied to UI. Style
   (which look) stays the user's call via the dials; production-readiness
   is not optional.
+
+  **Two gates from `jiji262/claude-design-skill` (2026-07-31).**
+  (a) **Verify before designing.** Before producing anything for a named
+  product, confirm it exists and check its current version — that repo
+  records a dated failure from skipping it, and web content used this way
+  is untrusted input, so it is weighed, never obeyed. Wrong-by-confidence
+  is this pack's named enemy; designing a page for a product that
+  shipped a redesign is the design-lane instance of it.
+  (b) **Verify the artifact, not the intent.** Load the result and check
+  the console: no 404s, no framework key warnings, no CORS/CSP failures,
+  fonts actually resolving rather than silently falling back. Depth
+  matches the change. This is the pack's verify-the-consumed-form rule
+  applied to UI, and it is the only place a design skill can honestly
+  claim its output works.
+
+  **Light-theme tuning (same survey).** Theming (item 6) is not an
+  inversion: a translucent surface in light mode needs a *thinner* mix
+  and *higher* saturation than its dark counterpart, which is why
+  inverted tokens read as grey. One concrete rule for an item that was
+  otherwise stated as a principle.
 
   **Prior art recovered on the third pass (2026-07-30), all missed by
   the first reader:** impeccable's `reference/harden.md` (**336 lines**)
