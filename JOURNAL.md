@@ -11,7 +11,7 @@
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
 > CONTRIBUTING, README v2). check.sh 6 → **15 checks**; guard-matrix
-> 15 → **58 cases**; **20 skills**. Three review rounds ran; the last
+> 15 → **63 cases**; **20 skills**. Three review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -27,7 +27,7 @@
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean (**14** numbered
   sections plus 3b = 15 checks, including positive controls over seeded
-  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**58**
+  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**63**
   cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4's work is done.** 4.7's ten checklist items are all
@@ -62,7 +62,7 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard (15 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 58 seeded-defect cases proving the guards fire
+bash docs/guard-matrix.sh "$PWD"   # 63 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty skills load at start
 ```
 
@@ -82,44 +82,57 @@ bash docs/guard-matrix.sh "$PWD"   # 58 seeded-defect cases proving the guards f
 
 ### Launch checklist executed — 4.7's evidence ledger (2026-07-31)
 
-Every line of 4.7 demonstrated, not asserted. This is the ledger its own
-acceptance demands: item → the command or artifact that proves it →
-result. **The public flip is deliberately NOT done — it is the user's
-call and the only remaining action.**
+**This ledger was itself audited and found overstated.** A context-free
+agent was told to disprove it and returned *2 rows false, 4 overstated*.
+Both false rows and every overstatement are corrected below; the
+original wording is not preserved because it was wrong, but what it
+claimed and why it failed is recorded in each row. That audit is the
+most useful thing on this page.
 
 | # | Item | Evidence | Result |
 |---|---|---|---|
-| 1 | check.sh green, every guard shown firing | `bash docs/guard-matrix.sh "$PWD"` | **58/58**, each case seeding one defect into a copy of the real tree; six added retroactively were re-run against the pre-fix guard and reported BAD first |
-| 2 | Frontmatter parses; descriptions survive into the live listing | parsed all 20 `description:` values; cross-checked against the model-facing listing | 20/20 parsed, **0 problems**; every description ends in its full `Use when…` sentence |
-| 3 | Cross-references resolve | `scripts/check.sh` sections 8–9 | clean; guard also rejects repo-root-relative citations that dangle on installs |
-| 4 | `./setup` round-trips on a fresh machine | fresh `git clone` from the **published remote** (HEAD `2dece52`, 104 files) into a clean `HOME` | install 20/0 → idempotent re-run 20 `ok` → **uninstall removed exactly 20, leaving a planted foreign file and foreign symlink untouched** → reinstall 20. `check.sh` on that clone: clean with the honest banned-name SKIP; matrix 58/58 |
-| 5 | Context-free multi-agent audit | three rounds, **11 subagents**, no prior conversation context | 27 + 12 + 56 findings; every one resolved or declined in writing |
-| 6 | Main-thread pass over the same ground | own passes each round | found what agents missed (stale `4/5` control figure, count drift) and **verified agent claims** — one, the `head -c 12` pointer bug, did not survive checking |
-| 7 | Demo transcript, curated, never a promoted leftover | purpose-built word-frequency project; README "See it work" | every command and output executed; leads with `/do` closing a task **without writing code** because its acceptance already passed |
-| 8 | Credits line; no personal/client data in the working tree | README §Credits; `check.sh` §2 with the real list | credits present; sweep clean. History scope struck by the 2026-07-30 verdict |
-| 9 | Every wave-4 acceptance line run, output recorded | this table | — |
-| 10 | `/resume` cold start · `/investigate` a real failure | 2026-07-29 session · this session | /resume named the wave, divergence flags, and three unblocked tasks, **plus three findings** now carried on 4.18. /investigate rooted the /qa fixture's inert stale-server guard to two causes: `fixtures/qa/README.md:7` (`pkill -f` substring never matching the path the next line supplies) and `fixtures/qa/server.js:13` (uncaught `JSON.parse` killing the process, so the documented "5xx" is really `http_code=000`, curl exit 52) |
+| 1 | Every guard shown firing | `bash docs/guard-matrix.sh "$PWD"` → `passed=63 failed=0` | **Corrected.** The first ledger said 58/58 and implied full coverage. The audit found **4 of check.sh's 15 guards had no case at all** (principles, banned-token detection, line budget, shell syntax) and that the preamble-budget case was **vacuous** — its mutation tripped byte-identity, not the budget. Five cases added, matrix 58 → 63, and the budget case now grows the block in README *and* all 20 skills so identity still matches |
+| 2 | Frontmatter parses; descriptions survive | own parser over 20 files; live listing | 20/20 parse, names match dirs, none truncated. **Corrected:** the first ledger claimed every description ends in `Use when…` — false for 5 of 20 (two say "Use at", three have no use-clause). And the live listing can cover at most **18**: /plan and /eval-spec are `disable-model-invocation: true` and structurally cannot appear |
+| 3 | Cross-references resolve | `scripts/check.sh` §8–9 | clean; holds |
+| 4 | `./setup` round-trips | fresh clone into clean `HOME` | install 20/0 → idempotent 20 `ok` → uninstall removed exactly 20, **4 planted foreign entries survived by inode** → reinstall 20. Holds, and the auditor tested it harder than I did. **Two caveats it added:** the clone was 4 commits stale, and the "honest SKIP" exits 0 — `.acstack-banned` is gitignored, so on *every* fresh clone and in CI the banned-name sweep scans nothing |
+| 5 | Context-free multi-agent audit | three rounds | **Corrected:** the first ledger said "11 subagents" and could not source it. Counted: 3 (post-batch-A) + 3 (batch D) + 4 (final) = **10**, plus 3 in this falsification round = 13 total. Every finding resolved or declined in writing |
+| 6 | Main-thread pass | own passes each round | holds — found what agents missed (a stale control figure, count drift) and **rejected one agent claim that did not survive checking** (`head -c 12`) |
+| 7 | Demo transcript | README "See it work" | **Was FALSE, now true.** The audit found three of seven printed commands could not execute as printed (a 4-space indent inside `python3 -c` → `IndentationError`; two containing a literal `…`), an `AssertionError` shown where Python emits a traceback, a PLAN.md excerpt silently re-wrapped, and a demo repo whose history never showed the narrated sequence. Rebuilt from scratch: three commits (`dfd3459`, `fa331d6`, `f054971`), every command copy-pasteable, every output verbatim, the traceback line piped through `tail -1` so the command matches its output |
+| 8 | Credits; no personal/client data in the tree | README §Credits; `check.sh` §2 with the live roster | credits present; sweep clean; holds |
+| 9 | Every wave-4 acceptance run, **output pasted** | see the block below | **Was FALSE — circular.** The first ledger's evidence column said "this table" and its result was "—", while 4.7 demands output pasted into the journal entry. There were **zero** code blocks in it. Actual output now pasted |
+| 10 | `/resume` cold start · `/investigate` a real failure | 2026-07-29 · this session | /resume named the wave, divergence flags, three unblocked tasks, plus three findings now on 4.18. /investigate rooted the /qa fixture guard to `fixtures/qa/README.md` (a `pkill -f` pattern that could never match) and `fixtures/qa/server.js:13` (uncaught `JSON.parse` killing the process). **Disclosure the first ledger omitted:** that fixture was written by me ~10h earlier, so this is a real defect found by an independent auditor, not one authored by a third party |
 
-**What the checklist caught that nothing else had.** Item 4's uninstall
-precision test — planting a foreign file and symlink before uninstalling
-— is the only check that proves `setup` removes *exactly* what it owns;
-every earlier run only counted what disappeared. Item 7 produced the
-day's best demonstration by accident: the first task's acceptance passed
-before any work, so `/do` closed it without writing code. That is the
-argument for runnable acceptance lines in one screenshot, and no
-hand-written walkthrough would have produced it.
+**Item 9 — pasted output, run at ledger time:**
 
-**Honest limits of this ledger.** Item 4 ran on macOS against a clean
-`HOME` and a fresh clone, not a different physical machine or OS; the
-Linux side is covered only by CI running check.sh and the matrix on
-ubuntu. Item 5's agents read the tree, not a live Claude Code session —
-no item here proves a *model* obeys a skill, only that the instructions
-and machinery are sound. Item 2 verifies descriptions parse and appear;
-it cannot prove the listing is identical on another client version.
+```
+$ scripts/check.sh
+check.sh: all clean
 
-Validation close: 4 commits; `check.sh` clean on each; matrix 58/58;
-controls all plants caught; 20 skills; fresh-clone round-trip 20 linked
-/ 20 removed / 20 relinked with 2 foreign entries preserved.
+$ bash docs/guard-matrix.sh "$PWD" | tail -2
+passed=63 failed=0
+
+$ bash scripts/controls.sh | tail -1
+controls.sh: all plants caught
+
+$ ./setup | tail -2
+20 linked, 0 skipped.
+Start a new Claude Code session to load the skills.
+```
+
+**Honest limits.** Item 4 ran on macOS against a clean `HOME` and a fresh
+clone — not another machine or OS; CI covers Linux for check.sh and the
+matrix only. The audit agents read the tree and ran shell; **none drove a
+live Claude Code session**, so nothing here proves a *model* obeys a
+skill — only that the instructions and machinery are sound. Item 2
+verifies descriptions parse and appear; it cannot prove the listing is
+identical on another client version. And the banned-name sweep is
+skipped on any clone without a local `.acstack-banned`, CI included.
+
+**The lesson, which outranks the checklist.** A launch gate written by
+the person being gated is worth exactly as much as its independent
+falsification. Two rows were false and four overstated — and the errors
+were all in the same direction. Nothing else in this session caught
+them.
 
 ### Wave 4 nearly closed: batches B–D, a second survey, and an RCE I argued myself out of (2026-07-30 → 31)
 

@@ -29,27 +29,36 @@ else bad "/secure negation-trap grep missed the !.env plant"; fi
 # Each entry: a label, the grep -F anchor that locates the documented
 # command, and the fixture that must match. Extracted at run time, so a
 # regressed pattern fails HERE (PLAN 4.31).
-sec_check() { # label anchor fixture-path
-  local label="$1" anchor="$2" target="$3" line pat
+sec_check() { # label anchor fixture-path expected-hits
+  # expected-hits is the NUMBER of distinct lines the pattern must match.
+  # Asserting only "matches the file somewhere" is a vacuous control: an
+  # alternation of five branches passes when one fires, so a broken branch
+  # is invisible. That exact flaw hid an `eval(` pattern that could not
+  # match column 1, on 2026-07-31, in a control that printed ok.
+  local label="$1" anchor="$2" target="$3" want="$4" line pat got
   line="$(grep -F "$anchor" skills/secure/references/security-surfaces.md | head -1 || true)"
   pat="${line#*\'}"; pat="${pat%%\'*}"
   if [ -z "$pat" ] || [ "$pat" = "$line" ]; then
     bad "/secure $label pattern not extractable (anchor: $anchor)"
-  elif grep -rqE "$pat" "$target"; then
-    ok "/secure $label grep catches its plant"
+    return
+  fi
+  got="$(grep -rhE "$pat" "$target" 2>/dev/null | grep -vc '^[[:space:]]*[#/]' || true)"
+  if [ "${got:-0}" -ge "$want" ]; then
+    ok "/secure $label grep catches $got/$want planted line(s)"
   else
-    bad "/secure $label grep MISSED $target (pattern: $pat)"
+    bad "/secure $label grep caught only $got of $want planted lines (pattern: $pat)"
   fi
 }
-sec_check "deserialization" "git grep -nE '(pickle|cPickle" fixtures/secure/deserialization.py
-sec_check "yaml-load"       "git grep -nE '(yaml\.(load|unsafe_load)" fixtures/secure/deserialization.py
-sec_check "crypto-misuse"   "git grep -nE '(createCipher\(" fixtures/secure/crypto-tls.js
-sec_check "tls-disabled"    "git grep -nE '(verify[[:space:]]*=[[:space:]]*False" fixtures/secure/
-sec_check "xxe"             "git grep -nE '(resolve_entities[[:space:]]*=[[:space:]]*True" fixtures/secure/xxe.py
-sec_check "xss-sinks"       "git grep -nE '(document\.write\(" fixtures/secure/sinks.js
-sec_check "dynamic-eval"    "git grep -nE '(new[[:space:]]+Function" fixtures/secure/sinks.js
-sec_check "sri-missing"     "git grep -nE '<script[^>]+src=" fixtures/secure/sri.html
-sec_check "actions-inject"  "git grep -nE 'run:" fixtures/secure/workflow-sample.yml
+sec_check "deserialization" "git grep -nE '(pickle|cPickle" fixtures/secure/deserialization.py 4
+sec_check "pickle-wrappers" "git grep -nE '(read_pickle\(" fixtures/secure/deserialization.py 2
+sec_check "yaml-load"       "git grep -nE '(yaml\.(load|unsafe_load)" fixtures/secure/deserialization.py 1
+sec_check "crypto-misuse"   "git grep -nE '(createCipher\(" fixtures/secure/crypto-tls.js 1
+sec_check "tls-disabled"    "git grep -nE '(verify[[:space:]]*=[[:space:]]*False" fixtures/secure/ 3
+sec_check "xxe"             "git grep -nE '(resolve_entities[[:space:]]*=[[:space:]]*True" fixtures/secure/xxe.py 2
+sec_check "xss-sinks"       "git grep -nE '(document\.write\(" fixtures/secure/sinks.js 3
+sec_check "dynamic-eval"    "git grep -nE '(new[[:space:]]+Function" fixtures/secure/sinks.js 2
+sec_check "sri-missing"     "git grep -nE '<script[^>]+src=" fixtures/secure/sri.html 1
+sec_check "actions-inject"  "git grep -nE 'run:" fixtures/secure/workflow-sample.yml 1
 
 # --- /design-audit: palette, mock-data, slop (all extracted) ---
 line="$(grep -F "git grep -nE '#[0-9a-fA-F]" skills/design-audit/references/design-conventions.md | head -1 || true)"
@@ -101,13 +110,15 @@ if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; t
   out="$( (cd fixtures/eval-run && python3 eval/run.py 2>&1) || true)"
   head="$(printf '%s' "$out" | grep '^overall:' || true)"
   case "$head" in
-    *"5/6 (83.3%)"*) ok "/eval-run control: seeded failure lands at 5/6 (83.3%)" ;;
+    *"6/7 (85.7%)"*) ok "/eval-run control: seeded failure lands at 6/7 (85.7%)" ;;
     *100.0%*)        bad "/eval-run reported 100% with a seeded failing case - false pass" ;;
     "")              bad "/eval-run control produced no headline (runner did not complete)" ;;
-    *)               bad "/eval-run headline changed: $head (expected 5/6 (83.3%))" ;;
+    *)               bad "/eval-run headline changed: $head (expected 6/7 (85.7%))" ;;
   esac
   # a case excluded from the denominator MUST be named. Silent exclusion is
   # how a headline lies, and it is invisible in the percentage itself.
+  printf '%s' "$out" | grep -q 'acceptable_failure applied to 2' \
+    || bad "/eval-run did not name both forgiven failures with reasons"
   printf '%s' "$out" | grep -q 'needs rubric review: 1' \
     || bad "/eval-run silently dropped the rubric case from the report"
   printf '%s' "$out" | grep -q 'skipped (needs-data): 1' \

@@ -28,18 +28,20 @@ Consequences of living in the tree, all intended:
 
 - Controls EXTRACT non-trivial patterns from the reference files at
   run time, so editing a documented command edits what the control
-  tests. **Six** trivial checks are restated inline instead, having no
-  drift surface worth extracting: the `^!` negation grep, the CLAUDE.md
-  pointer comparison, the `.env` presence test, the multi-product
-  `find`, the workspace-marker `ls`, and /audit's raw-compare pattern.
-  (Counted 2026-07-31 — this said "two" while naming two of six, the
-  set rule broken inside the fixture index itself.)
+  tests. **Eight** trivial checks are restated inline instead, having
+  no drift surface worth extracting: the `^!` negation grep, the
+  CLAUDE.md pointer comparison, the `.env` presence test, /audit's
+  Unicode-lookalike byte check, /audit's raw-compare pattern, the
+  multi-product `find`, the workspace-marker `ls`, and /eval-run's
+  `5/6 (83.3%)` headline. (Counted twice on 2026-07-31: this said "two",
+  then "six" — both times by naming rather than counting, which is the
+  set rule broken inside the fixture index, twice.)
 
 ## What each directory plants
 
 The eight fixture directories: `secure/` (planted keys, `!.env`
-negation, unauth route, and the surface-4 classes — deserialization,
-crypto, TLS, XXE, sinks, SRI, Actions injection), `design-audit/`
+negation, unauth route, surface-4's deserialization/crypto/TLS/XXE,
+and surface-3's sinks, SRI, and Actions injection), `design-audit/`
 (off-palette hex, unlabeled mockData, hedge copy), `health/`
 (non-pointer CLAUDE.md, tracked `.env`), `audit/` (Unicode lookalikes
 with verified bytes), `migrate-check/` (DROP TABLE, RENAME COLUMN),

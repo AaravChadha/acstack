@@ -125,7 +125,16 @@ fullcase "read-only skill file missing"       FAIL 'readonly' rm skills/resume/S
 fullcase "guard-matrix syntax error caught"   FAIL 'syntax'   bash -c "printf 'if [ ; then\n' >> docs/guard-matrix.sh"
 fullcase "conduct block drifts from canon" FAIL 'conduct' bash -c "sed -e 's/^4\. Be direct\./4. Be direct and blunt./' AGENTS.md > t && mv t AGENTS.md"
 fullcase "conduct block missing entirely"  FAIL 'conduct' bash -c "awk '/BEGIN:acstack-conduct/{f=1} !f{print} /END:acstack-conduct/{f=0}' CONDUCT.md > t && mv t CONDUCT.md"
-fullcase "preamble fails open on unresolved pack" FAIL 'runtime' bash -c "sed -e 's/^if \[ -n \"\$link\" \] && /if /' README.md > t && mv t README.md"
+# guards that had NO matrix case until 2026-07-31 — found by an audit that
+# checked 4.7's bar ("every guard shown firing") against the matrix itself
+fullcase "principles block drifts"        FAIL 'principles' bash -c "sed -e 's/^- Be direct\./- Be direct and terse./' skills/do/SKILL.md > t && mv t skills/do/SKILL.md"
+fullcase "SKILL.md over line budget"      FAIL 'budget'  bash -c "for i in \$(seq 1 500); do echo 'pad line'; done >> skills/do/SKILL.md"
+fullcase "shell syntax error in setup"    FAIL 'syntax'  bash -c "printf 'if [ ; then\n' >> setup"
+bannedcase "a planted banned token is caught" 'zzqqplanted' 'FAIL banned names'
+# the budget case must trip the BUDGET, not byte-identity: grow the block
+# in README *and* every skill so the diff still matches
+fullcase "preamble over budget, identity intact" FAIL 'runtime' bash -c "for f in README.md skills/*/SKILL.md; do awk '/<!-- \\/acstack:runtime -->/{print \"pad1\"; print \"pad2\"} {print}' \$f > t && mv t \$f; done"
+fullcase "preamble fails open on unresolved pack" FAIL 'runtime' bash -c "sed -e 's|if \[ \"\${link#/}\" != \"\$link\" \] && |if |' README.md > t && mv t README.md"
 
 echo
 echo "passed=$pass failed=$failed"

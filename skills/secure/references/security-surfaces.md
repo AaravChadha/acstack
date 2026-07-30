@@ -73,7 +73,7 @@ git grep -nE '(readFile|open|sendFile|join)\([^)]*(req\.|params|query|input)'
 git grep -nE '(innerHTML|dangerouslySetInnerHTML|v-html|render_template_string)'
 git grep -nE '(document\.write\(|\.outerHTML[[:space:]]*=|insertAdjacentHTML\()'
 # dynamic evaluation of a string
-git grep -nE '(new[[:space:]]+Function\(|[^a-zA-Z_]eval\(|setTimeout\([[:space:]]*[^,)]*[+$])'
+git grep -nE '(new[[:space:]]+Function\(|(^|[^a-zA-Z_.])eval\(|setTimeout\([[:space:]]*[^,)]*[+$])'
 # shell execution helpers (the exec family, not just interpolation)
 git grep -nE '(child_process|execSync\(|execFile\(|spawnSync\()'
 # third-party script with no subresource integrity

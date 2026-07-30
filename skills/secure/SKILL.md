@@ -83,7 +83,14 @@ an argument can narrow to one path or surface.
 3. **Injection surface.** String-built SQL and raw-query escapes out of
    the ORM; shell interpolation of user input; path traversal into file
    operations; unsanitized HTML sinks.
-4. **LLM tool-use trust boundaries.** Untrusted content flowing into
+4. **Unsafe deserialization, crypto, and transport.** The `pickle`
+   family, `yaml.load`, and `torch.load` are arbitrary code execution
+   whenever the blob crosses a trust boundary; ECB and `createCipher`
+   are key-handling defects; `verify=False` and its cousins switch off
+   the only thing making TLS meaningful; unsafe XML parsing is XXE. Each
+   finding names where the input comes from — a load of a file the repo
+   itself ships is not a finding.
+5. **LLM tool-use trust boundaries.** Untrusted content flowing into
    tool calls or system prompts; over-scoped tool permissions;
    prompt-injection paths from user-supplied documents; model output
    executed or rendered without checks.

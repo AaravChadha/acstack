@@ -85,66 +85,57 @@ telemetry — the `telemetry` key is reserved and unimplemented.
 
 ## See it work
 
-Real output from a real session on a small Python project — captured,
-not written by hand. The tool counts word frequencies; the plan says
-what "correct" means.
+A real session on a small Python project. Every command below was run and
+every output pasted verbatim — copy any line and it executes.
 
-**`/do 1.1.1` — the interesting case, first.** `/do` runs a task's
-acceptance line *before* doing the work:
+The project counts word frequencies. The plan says what "correct" means.
 
-```
-$ python3 -c "from wordfreq import top_words;
-    assert top_words(\"don't don't stop\")[0] == (\"don't\", 2)"
-$ echo $?
-0
-```
-
-It already passes. The regex `[a-z']+` handles apostrophes, so the task
-was written against a bug that does not exist. `/do` closes it and
-writes no code:
-
-```markdown
-- [x] **1.1.1** ~~Contractions count as one word.~~ **Verdict:** already
-  correct — the acceptance passed before any work. Closed without a
-  code change.
-```
-
-That is the whole point of a runnable acceptance line: it can tell you
-the work is unnecessary, which prose criteria never do.
-
-**`/do 1.1.2` — real work.** A genuine defect: quoted words count
-separately.
+**Task 1.1.1 — `/do` runs the acceptance line before doing the work:**
 
 ```
-$ python3 -c "from wordfreq import top_words; print(top_words(\"'the' the the\"))"
-[('the', 2), ("'the'", 1)]          # two entries for one word
-
-$ python3 -c "... assert top_words(\"'the' the the\") == [('the', 3)]"
-AssertionError                       # acceptance fails BEFORE the change
+$ python3 -c 'from wordfreq import top_words; assert top_words("don't don't stop")[0] == ("don't", 2); print("acceptance PASSES before any work")'
+acceptance PASSES before any work
 ```
 
-After the fix — strip surrounding quotes, keep internal apostrophes:
+It already passes — `[a-z']+` includes the apostrophe, so the task was
+written against a bug that does not exist. The box is ticked with a
+verdict and **no code is written**. A runnable acceptance line can tell
+you the work is unnecessary; prose criteria never do.
+
+**Task 1.1.2 — real work.** Quoted words count separately:
 
 ```
-$ python3 -c "... assert top_words(\"'the' the the\") == [('the', 3)]" && echo PASS
+$ python3 -c 'from wordfreq import top_words; print(top_words("'the' the the"))'
+[('the', 2), ("'the'", 1)]
+
+$ python3 -c 'from wordfreq import top_words; assert top_words("'the' the the") == [("the", 3)]' 2>&1 | tail -1
+AssertionError
+```
+
+Fix: strip surrounding quotes, keep internal ones. Then both acceptances:
+
+```
+$ python3 -c 'from wordfreq import top_words; assert top_words("'the' the the") == [("the", 3)]; print("PASS")'
 PASS
-$ python3 -c "... assert top_words(\"don't don't stop\")[0] == (\"don't\", 2)" && echo PASS
-PASS                                 # 1.1.1 still passes — no regression
+$ python3 -c 'from wordfreq import top_words; assert top_words("don't don't stop")[0] == ("don't", 2); print("PASS")'
+PASS
 ```
 
-Then it ticks the exact box and commits plan and code together, locally:
+The second is 1.1.1 re-run — the earlier task still holds. Then plan and
+code commit together, locally:
 
 ```
 $ git log --oneline
-22bc5dd completed task 1.1.2 (strip surrounding quotes from words)
-61bd3db add wordfreq
+f054971 completed task 1.1.2 (strip surrounding quotes from words)
+fa331d6 add plan
+dfd3459 add wordfreq
 ```
 
 `/do` never pushes — publishing is `/ship`'s job, behind five gates.
 
-Later, on any day: `/resume` for a five-minute catch-up, `/investigate`
-when something breaks, `/audit code` before you trust a change,
-`/secure` before you ship it. Nothing runs on its own — you type it.
+Later: `/resume` to catch up, `/investigate` when something breaks,
+`/audit code` before you trust a change, `/secure` before you ship it.
+Nothing runs on its own — you type it.
 
 ### Two commands are shadowed, deliberately
 

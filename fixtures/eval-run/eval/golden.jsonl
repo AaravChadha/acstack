@@ -6,3 +6,4 @@
 {"id":"q6","category":"edge","input":"","expected":"unknown","grade_rule":"concept","status":"needs-data"}
 {"id":"q7","category":"rubric","input":"capital of france","expected":"names the city and the country","grade_rule":"rubric:completeness"}
 {"id":"q8","category":"edge","input":"capital of atlantis","expected":"atlantis city","grade_rule":"exact","acceptable_failure":true,"reason":"fictional place; the lookup table has no entry and is not expected to"}
+{"id":"q9","category":"edge","input":"capital of narnia","expected":"narnia city","grade_rule":"exact","acceptable_failure":{"reason":"fictional place; object form of the schema, which used to crash the runner"}}
