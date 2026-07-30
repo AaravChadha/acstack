@@ -124,7 +124,31 @@
 > payloads, machine-local stores, and prose-pressure enforcement
 > (`<EXTREMELY_IMPORTANT>` tags — prose decay is why check.sh exists);
 > frontend-design's generative persona (4.30 takes its process, not its
-> persona). The
+> persona).
+>
+> **Completeness ledger (2026-07-30).** Every steal-list item from the
+> three reader reports, enumerated rather than asserted — the set rule
+> applied to the survey itself. *superpowers:* skill RED-GREEN → 6.7;
+> test harness → 6.7; session-start hook → 4.4; porting doc → declined;
+> claim/requires/not-sufficient table → 4.28. *claude-mem:*
+> search→filter→fetch → 4.29; Stop-hook reminder → 4.4; standup +
+> timeline → declined (folded into `/retro week`); `what-the` →
+> **already covered, no carrier** — `/investigate` reads LEARNINGS.md
+> and known-bug-classes before hypotheses (`skills/investigate/SKILL.md`
+> lines 61–62). *Anthropic:* false-positive blocklist, triage gate,
+> inline-justification demotion, one-comment-per-issue → 4.28; config
+> truncation priority → 4.6; with/baseline eval runs → 6.7; per-finding
+> validation → 6.6; doc-coauthoring → 7.3; webapp-testing → B.1.
+> *Design four:* impeccable's 47 rule IDs, craft floor, taste-skill §9 +
+> banned hex, emil motion bounds, ui-ux-pro-max severity columns → 4.27;
+> emil's Before/After/Why + review-vs-improve split, taste dials,
+> frontend-design two-pass → 4.30; a11y statics → 6.2; one-rule-list
+> across static and rendered → Wave B; scoring models → declined.
+> **Measured, no action:** SKILL.md average is 108.7 lines across 19
+> (range 84–176) against 93 at the wave-3 close — the delta is the
+> 4.2 runtime block (~12 lines × 19), not scope creep, and every file
+> remains far inside the 500 budget. Journal entries keep their
+> as-written numbers. The
 > team-of-perspectives goal is met by **lenses, not personas** — each
 > reviewer reads a named artifact and returns a verdict; no roleplay, no
 > first names. That keeps the "gstack simulates the team; acstack encodes
@@ -425,6 +449,11 @@ below fully green; repo flipped public.
   > naming concrete options; a single-line fix in the same repo produces
   > no offer at all; a second build request in the same session produces
   > no second offer.
+  > **Edits:** `AGENTS.md` (referral table + conduct block clause),
+  > `CONDUCT.md` (rule 9 clause — both blocks, byte-identical),
+  > `skills/plan/SKILL.md` (seed installs the block),
+  > `skills/health/references/health-checks.md` + SKILL.md (the row),
+  > `scripts/check.sh` (roster-vs-flag guard).
 - [ ] **4.12** /eval-run — close the loop on the flagship methodology.
   Today `/eval-spec` writes the spec and golden set, `/ship`'s eval gate
   *runs the eval per its run command*, and `/audit eval` reviews a
@@ -820,6 +849,11 @@ reordered, if any.
   sources. **Acceptance:** `fixtures/design-audit/` gains one seed per
   new rule class and every documented grep catches its seed
   (controls.sh, per 4.15); clean tree stays quiet.
+  **Edits:** NEW `skills/design-audit/references/ai-tells.md`;
+  `skills/design-audit/SKILL.md` (cite it, severity ordering);
+  `skills/design-audit/references/design-conventions.md` (point at it,
+  no duplication — 4.17.4's citation rule); `templates/acstack.md` +
+  README config table (`banned-palette`); `fixtures/design-audit/`.
 - [ ] **4.28** Skill-hygiene rules from the 2026-07-30 survey — five
   small skill edits, one carrier: /audit gains an explicit do-NOT-flag
   blocklist (pre-existing issues, correct-but-looks-wrong, pedantic
@@ -833,12 +867,19 @@ reordered, if any.
   rule present in its skill's consumed text; /audit run on a diff whose
   only issues are pre-existing names the blocklist reason instead of
   reporting findings.
+  **Edits:** `skills/audit/SKILL.md` (+ `references/code-report-template.md`
+  for the blocklist), `skills/qa/SKILL.md`, `skills/secure/SKILL.md`,
+  `skills/ship/references/ship-gates.md`, `skills/do/SKILL.md`. Five
+  skills, one commit — they are one rule set, and splitting them makes
+  the pack inconsistent between commits.
 - [ ] **4.29** Journal-retrieval discipline for /resume and /retro —
   claude-mem's search→filter→fetch rule applied to repo-owned markdown:
   read headings and the TL;DR first, filter entries by the window or
   question, fetch full entry text only for matches; never a whole-file
   read once JOURNAL.md exceeds a stated size. **Acceptance:** both
   skills document the rule and /resume's read step names it.
+  **Edits:** `skills/resume/SKILL.md`, `skills/retro/SKILL.md`
+  (+ `references/retro-sections.md` if the window logic moves there).
 - [ ] **4.31** /secure's injection surface is a third of a surface —
   measured 2026-07-30 against security-guidance's 25 frozen rule IDs
   (`plugins/security-guidance/hooks/patterns.py:264`). /secure's
@@ -863,6 +904,16 @@ reordered, if any.
   controls.sh proves every new grep catches it (per 4.15) — and each
   pattern is written in POSIX ERE and checked by section 3b, since `\b`
   and `\s` are exactly how this file broke before.
+  **Edits:** `skills/secure/references/security-surfaces.md` (surface 5
+  + additions to 3), `fixtures/secure/`, and — **the set-claim trap,
+  verified 2026-07-30** — `skills/secure/SKILL.md` says "four surfaces"
+  in BOTH its body heading (`:68`) and its **frontmatter description**
+  (`:3`), which is the form that ships into the live skill listing; plus
+  README's /secure row enumerates the four without counting them. A
+  fifth surface that updates only the reference file leaves the pack
+  claiming four while sweeping five — the exact set-assertion class
+  AGENTS.md names. All four sites change together, and the description
+  is re-checked in its PARSED form, not re-read.
 - [ ] **4.30** /design — the generative design lane (roster 38 → 39;
   NEW skill, the one place the 2026-07-30 survey showed demand acstack
   answers nowhere: four repos, ~★250k combined). Token-system-first
@@ -879,6 +930,12 @@ reordered, if any.
   AI-default look it avoided, and /design-audit + ai-tells (4.27) run on
   /design's output returns no findings — the pairing is this skill's
   positive control.
+  **Edits:** NEW `skills/design/SKILL.md` (+ references); README skills
+  table row and `templates/acstack.md` `## design` section (dials);
+  `skills/design-audit/SKILL.md` adjacency line (they are a pair);
+  `./setup` needs no change (it globs `skills/*/`). **Depends on 4.27**
+  — its acceptance runs ai-tells against /design's output, so 4.27
+  lands first.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 

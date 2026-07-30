@@ -36,10 +36,11 @@
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
   public flip waits on the wave-4 launch checklist.
-- Roadmap runs to 38 skills, 39 open tasks: wave 4 (launch, 10 of 16
-  open) → 4.5 (post-launch hardening, 8) → 5 (pre-flight gates) → 6
-  (review board) → 7 (operate), plus 5 unscheduled browser-layer items.
-  Full detail in PLAN.md.
+- Roadmap runs to 39 skills, **43 open tasks** (counted 2026-07-30, not
+  estimated): wave 4 (launch, 9 of 16 open) → 4.5 (post-launch
+  hardening, 13 — grew by the eight-repo survey, which also added
+  /design as the 39th skill) → 5 (5) → 6 (7) → 7 (4), plus 5 unscheduled
+  browser-layer items. Full detail in PLAN.md.
 - Next: wave-4 batch B — 4.2 (runtime preamble + `bin/`) then 4.5 (CI) —
   per the approved build order in `docs/wave-4-specs.md`.
 
