@@ -16,8 +16,18 @@ Consequences of living in the tree, all intended:
   content stays generic.
 - /qa's fixture needs a live process, so its control is NOT in
   controls.sh — `fixtures/qa/README.md` documents the shakedown
-  procedure (kill stale servers first; a held port made a wave-3 fix
-  look broken).
+  procedure. Its stale-server guard was itself broken until 2026-07-31
+  (the `pkill` pattern could never match), found by /investigate.
+
+The eight fixture directories: `secure/` (planted keys, `!.env`
+negation, unauth route, and the surface-4 classes — deserialization,
+crypto, TLS, XXE, sinks, SRI, Actions injection), `design-audit/`
+(off-palette hex, unlabeled mockData, hedge copy), `health/`
+(non-pointer CLAUDE.md, tracked `.env`), `audit/` (Unicode lookalikes
+with verified bytes), `migrate-check/` (DROP TABLE, RENAME COLUMN),
+`qa/` (live server, auth gap, uncaught crash), `multi-product/` (two
+document sets plus a workspace marker), `eval-run/` (a golden set whose
+seeded failure must produce 5/6, not 100%).
 - Controls EXTRACT non-trivial patterns from the reference files at
   run time, so editing a documented command edits what the control
   tests. Trivial patterns (`^!`, the pointer equality test) are

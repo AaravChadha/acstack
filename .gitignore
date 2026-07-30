@@ -8,3 +8,7 @@ scratch/
 
 # local banned-name list — must never be committed
 .acstack-banned
+
+# python bytecode from fixture runs
+__pycache__/
+*.pyc
