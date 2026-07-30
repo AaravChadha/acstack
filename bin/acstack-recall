@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# acstack-recall — print the project's LEARNINGS.md plus the pack's
+# known-bug-classes.md, jointly capped at 6KB with an honest truncation
+# marker. Missing files degrade to empty output. Bash 3.2+; exits 0.
+set -uo pipefail
+
+PACK="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+KB="$PACK/skills/audit/references/known-bug-classes.md"
+CAP=6144
+
+full=""
+if [ -f LEARNINGS.md ]; then
+  full="## Recall: LEARNINGS.md (project)
+$(cat LEARNINGS.md)
+"
+fi
+if [ -f "$KB" ]; then
+  full="$full## Recall: known-bug-classes (pack)
+$(cat "$KB")
+"
+fi
+[ -n "$full" ] || exit 0
+if [ "${#full}" -gt "$CAP" ]; then
+  printf '%s\n[recall truncated at 6KB]\n' "${full:0:$CAP}"
+else
+  printf '%s' "$full"
+fi
+exit 0

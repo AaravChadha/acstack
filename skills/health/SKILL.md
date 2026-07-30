@@ -16,6 +16,20 @@ your tooling (naming verdict 2026-07-27).
 /health is whether the setup is broken) · /triage (grooms the backlog;
 /health checks the scaffolding around it).
 
+<!-- acstack:runtime -->
+Run once before the skill's steps; any failure degrades to pure markdown:
+```bash
+pack="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)")")"
+if [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
+  "$pack/bin/acstack-config" || true          # resolved keys, with sources
+  "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
+  "$pack/bin/acstack-recall" || true          # LEARNINGS.md + pack known-bug-classes, capped 6KB
+else
+  echo "runtime off — proceeding without recall/update-check"
+fi
+```
+<!-- /acstack:runtime -->
+
 <!-- acstack:principles -->
 ## Operating principles
 

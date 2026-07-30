@@ -96,6 +96,7 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 | `test-command` | (auto-detected; set to override) | /ship |
 | `db` | `shared-prod` \| `local` \| `none` | /migrate-check |
 | `attribution` | `none` \| `standard` | all skills |
+| `runtime` | `on` \| `off` — `off` degrades every skill to pure markdown (no recall, no update-check) | the runtime preamble (every skill) |
 | `telemetry` | `off` \| `on` — local-only either way; **not implemented yet** | runtime (4.3) |
 | `stale-days` | `30` (days; set in a `## triage` section) | /triage, /health |
 | `base-url` | (unset; set in a `## qa` section) | /qa |
@@ -147,6 +148,32 @@ Every skill carries this block verbatim (canonical copy below;
 - Recall: if `LEARNINGS.md` exists at the project root, read it before starting.
 - Conduct: follow the `acstack-conduct` block in this repo's AGENTS.md — the word is the mode; the user sets the pace.
 <!-- /acstack:principles -->
+
+## Runtime block
+
+Every SKILL.md opens with this block verbatim (canonical copy below;
+`scripts/check.sh` enforces byte-identity and a hard 12-line budget —
+growing it is a deliberate, visible edit). It is the pack's entire
+per-invocation runtime: config echo, a once-a-day update check that
+never pulls, and capped recall of LEARNINGS.md plus the pack's
+known-bug-classes. `runtime: off`, a copy install, or a missing pack
+root all degrade every skill to pure markdown — the block's own else
+branch says so honestly. Machine-local state is exactly one file,
+`~/.acstack/update-stamp`; nothing phones home.
+
+<!-- acstack:runtime -->
+Run once before the skill's steps; any failure degrades to pure markdown:
+```bash
+pack="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)")")"
+if [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
+  "$pack/bin/acstack-config" || true          # resolved keys, with sources
+  "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
+  "$pack/bin/acstack-recall" || true          # LEARNINGS.md + pack known-bug-classes, capped 6KB
+else
+  echo "runtime off — proceeding without recall/update-check"
+fi
+```
+<!-- /acstack:runtime -->
 
 ## Repo layout
 

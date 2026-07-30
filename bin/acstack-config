@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# acstack-config [key [skill]] — resolve config through the precedence chain:
+# pack default → ~/.claude/acstack.md → project .claude/acstack.md ## Settings
+# → project ## <skill> section (when a skill is named). Prints
+# `key=value (source)` per key; read-only, exits 0 always.
+# Bash 3.2+; no dependencies beyond sed/awk/grep.
+set -uo pipefail
+
+GLOBAL_CFG="${ACSTACK_GLOBAL_CONFIG:-$HOME/.claude/acstack.md}"
+PROJECT_CFG=".claude/acstack.md"
+
+# pack defaults — mirror README's config table; update both together (the
+# config-reachability guard keys off README, and this list feeds `all`).
+KEYS='mode tracking push branch-prefix test-command db attribution telemetry runtime stale-days base-url palette product-names backup-command subtask-commit-format journal-commit-format'
+default_for() {
+  case "$1" in
+    mode) echo "standard" ;;
+    tracking) echo "document" ;;
+    push) echo "direct" ;;
+    branch-prefix) echo "feature/" ;;
+    db) echo "shared-prod" ;;
+    attribution) echo "none" ;;
+    telemetry) echo "off" ;;
+    runtime) echo "on" ;;
+    stale-days) echo "30" ;;
+    subtask-commit-format) echo "completed task <number> (<description>)" ;;
+    journal-commit-format) echo "Journal <date>: <summary>" ;;
+    *) echo "" ;;   # test-command, base-url, palette, product-names, backup-command: unset
+  esac
+}
+
+# print the `- key: value` lines of one `## section` of one file
+section_of() { # file section-name
+  [ -f "$1" ] || return 0
+  awk -v s="## $2" '$0 == s {f=1; next} /^## / {f=0} f' "$1"
+}
+
+# value of key from a section dump on stdin; strips inline comments/space
+value_from() { # key
+  sed -n "s/^-[[:space:]]*$1:[[:space:]]*//p" | head -1 | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//'
+}
+
+resolve() { # key [skill] -> sets VAL and SRC
+  local k="$1" skill="${2:-}" v
+  VAL="$(default_for "$k")"; SRC="default"
+  v="$(section_of "$GLOBAL_CFG" "Settings" | value_from "$k")"
+  [ -n "$v" ] && { VAL="$v"; SRC="global"; }
+  v="$(section_of "$PROJECT_CFG" "Settings" | value_from "$k")"
+  [ -n "$v" ] && { VAL="$v"; SRC="project"; }
+  if [ -n "$skill" ]; then
+    v="$(section_of "$PROJECT_CFG" "$skill" | value_from "$k")"
+    [ -n "$v" ] && { VAL="$v"; SRC="project:$skill"; }
+  fi
+}
+
+if [ "$#" -ge 1 ]; then
+  resolve "$1" "${2:-}"
+  printf '%s=%s (%s)\n' "$1" "$VAL" "$SRC"
+else
+  for k in $KEYS; do
+    resolve "$k"
+    [ -n "$VAL" ] && printf '%s=%s (%s)\n' "$k" "$VAL" "$SRC"
+  done
+fi
+exit 0

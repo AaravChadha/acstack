@@ -10,6 +10,7 @@
 #   6  VERSION/CHANGELOG agreement          7  routing lines present
 #   8  cross-references + citations resolve 9  config-key reachability
 #   10 verdict-first stance present         11 positive controls (fixtures)
+#   12 runtime preamble identity + budget
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -159,11 +160,11 @@ for f in skills/*/SKILL.md; do
 done
 
 # 5. Shell syntax (+ shellcheck when available).
-for s in setup scripts/check.sh scripts/controls.sh; do
+for s in setup scripts/check.sh scripts/controls.sh bin/acstack-config bin/acstack-update-check bin/acstack-recall; do
   bash -n "$s" || { echo "FAIL syntax: $s"; fail=1; }
 done
 if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck -S warning setup scripts/check.sh scripts/controls.sh || fail=1
+  shellcheck -S warning setup scripts/check.sh scripts/controls.sh bin/acstack-config bin/acstack-update-check bin/acstack-recall || fail=1
 fi
 
 # 6. VERSION / CHANGELOG agreement. VERSION is one bare semver line and must
@@ -291,6 +292,32 @@ if [ -d fixtures ]; then
 else
   echo "FAIL controls: fixtures/ directory missing — the positive-control layer is gone"
   fail=1
+fi
+
+# 12. Runtime preamble: marker-fenced block present in every SKILL.md,
+#     byte-identical to README's canonical copy, and within the hard line
+#     budget. Raising the budget means editing this constant in a visible
+#     commit (founding doc trust item 9).
+PREAMBLE_BUDGET=12
+extract_runtime() {
+  awk '/<!-- acstack:runtime -->/{f=1} f{print} /<!-- \/acstack:runtime -->/{f=0}' "$1"
+}
+rcanon="$(extract_runtime README.md)"
+if [ -z "$rcanon" ]; then
+  echo "FAIL runtime: README.md has no acstack:runtime block (canonical copy required)"
+  fail=1
+else
+  inner="$(printf '%s\n' "$rcanon" | grep -vc 'acstack:runtime' || true)"
+  if [ "${inner:-0}" -gt "$PREAMBLE_BUDGET" ]; then
+    echo "FAIL runtime: preamble is $inner lines (budget $PREAMBLE_BUDGET) — raising the budget is a deliberate, visible edit"
+    fail=1
+  fi
+  for f in skills/*/SKILL.md; do
+    if ! diff <(printf '%s\n' "$rcanon") <(extract_runtime "$f") >/dev/null; then
+      echo "FAIL runtime: $f drifts from (or lacks) README's canonical runtime block"
+      fail=1
+    fi
+  done
 fi
 
 if [ "$fail" -eq 0 ]; then

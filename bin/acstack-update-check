@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# acstack-update-check — at most one `git fetch` per day, offline-safe,
+# never pulls. When the pack is behind its upstream, prints the exact
+# pull command and nothing else. Machine-local state: ONE stamp file
+# (override the directory with ACSTACK_STATE_DIR for tests).
+# Bash 3.2+; exits 0 always.
+set -uo pipefail
+
+PACK="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+STATE="${ACSTACK_STATE_DIR:-$HOME/.acstack}"
+STAMP="$STATE/update-stamp"
+today="$(date +%Y-%m-%d)"
+
+# stamp first, fetch second: an offline day still counts as checked, so a
+# broken network never causes a fetch storm.
+[ -f "$STAMP" ] && [ "$(cat "$STAMP" 2>/dev/null)" = "$today" ] && exit 0
+mkdir -p "$STATE" 2>/dev/null || exit 0
+printf '%s\n' "$today" > "$STAMP" 2>/dev/null || exit 0
+
+git -C "$PACK" fetch --quiet 2>/dev/null || exit 0
+behind="$(git -C "$PACK" rev-list --count 'HEAD..@{u}' 2>/dev/null || echo 0)"
+if [ "${behind:-0}" -gt 0 ] 2>/dev/null; then
+  printf 'acstack: %s update(s) behind — run: git -C %s pull\n' "$behind" "$PACK"
+fi
+exit 0

@@ -238,7 +238,18 @@ below fully green; repo flipped public.
   parses semver and equals CHANGELOG.md's first versioned heading; the
   issue template's version field is `required: true`; the
   VERSION/CHANGELOG mismatch guard demonstrated firing on a seed.
-- [ ] **4.2** Slim per-invocation preamble (≤12 lines, hand-maintained,
+- [x] **4.2** *(Done 2026-07-30: 11-line marker-fenced `acstack:runtime`
+  block, canonical in README, byte-identical across all 19 skills,
+  enforced by check.sh section 12 with `PREAMBLE_BUDGET=12`; three
+  matrix cases — drift, missing, over-budget — shown failing first
+  (matrix 40 → 43). `bin/acstack-config` (4-level precedence with
+  sources), `bin/acstack-update-check` (stamp-first daily throttle,
+  offline exits 0 silently, prints the pull command when behind, never
+  pulls), `bin/acstack-recall` (6KB cap with honest truncation marker,
+  empty degradation) — all demonstrated against scratch fixtures, all
+  shellcheck'd. `runtime` config key added to README + template.
+  Machine-local state: exactly `~/.acstack/update-stamp`.)*
+  Slim per-invocation preamble (≤12 lines, hand-maintained,
   budget enforced by check.sh) + `bin/` helpers (config resolve,
   update-check, recall) — bash 3.2+, matching `setup` and `check.sh`;
   `runtime: off` degrades cleanly.
