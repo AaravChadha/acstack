@@ -69,6 +69,13 @@ different mutability rule — that difference is the whole design:
 
 Repos that already use the legacy names (`PLANNING_PROMPT.md` /
 `PLANNING.md` / `STATUS.md`) are detected and respected — no renames forced.
+
+**One product per repository.** Every skill assumes a single
+BRIEF/PLAN/JOURNAL set. Monorepos and multi-product repos are *not*
+supported: a skill that finds more than one candidate set names the
+candidates and stops rather than guessing, and `/health` reports the
+shape as info. Know this before installing — the alternative would be a
+`/retro` confidently reporting on the wrong product.
 Project `CLAUDE.md` stays a one-line `@AGENTS.md` pointer; agent rules and
 the conduct block live in `AGENTS.md`.
 

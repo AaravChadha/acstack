@@ -556,7 +556,20 @@ below fully green; repo flipped public.
   `/audit eval` already expects. **Acceptance:** on a scratch project
   with a golden set, produces a results file and a headline that
   `/audit eval` can read and `/ship`'s eval gate can compare to target.
-- [ ] **4.14** Multi-product detection — make the one-repo assumption
+- [x] **4.14** *(Done 2026-07-30: /health check 3c detects the shape by
+  the three signal classes and reports it as INFO — unsupported, not
+  broken — naming every set found; the resolve-one-document-set rule
+  added to all **13** built document-reading skills (enumerated: plan,
+  do, resume, journal, retro, ship, audit, health, ticket, triage,
+  learn, plan-review, challenge — the 14th, /why, is unbuilt task 4.11),
+  each standalone-readable rather than pointing at a README the adopter
+  does not have; README states the constraint before install;
+  `fixtures/multi-product/` seeds two document sets under `apps/*` plus
+  a pnpm workspace marker, with a controls.sh check demonstrated both
+  directions — clean on the seeded fixture, FAIL when a set is removed.
+  The behavioral half — /health and /resume actually halting on this
+  fixture — is 4.7 shakedown evidence, not a mechanical check.)*
+  Multi-product detection — make the one-repo assumption
   visible instead of silent. Three parts:
   1. **`/health` row.** Flags a repo that violates the assumption.
      Signals, strongest first: more than one BRIEF.md / PLAN.md /

@@ -58,6 +58,14 @@ if grep -rqE 'if .* in .*:|\.includes\(' fixtures/audit/; then
   ok "/audit raw-compare pattern (known-bug-classes) fires on the fixture"
 else bad "/audit raw-compare pattern missed the fixture"; fi
 
+# --- multi-product: the detection command must find BOTH document sets ---
+sets="$(find fixtures/multi-product -name PLAN.md | wc -l | tr -d ' ')"
+if [ "$sets" -ge 2 ]; then ok "/health multi-product fixture carries $sets document sets"
+else bad "/health multi-product fixture lost a document set (found $sets, need 2+)"; fi
+if ls fixtures/multi-product/pnpm-workspace.yaml >/dev/null 2>&1; then
+  ok "/health workspace-marker signal present in the fixture"
+else bad "/health multi-product fixture lost its workspace marker"; fi
+
 # --- /migrate-check: destructive classification vs planted statements ---
 tbl="$(awk '/## Destructive/,/## Not SQL/' skills/migrate-check/references/sql-classification.md)"
 for stmt in "DROP TABLE" "RENAME COLUMN"; do

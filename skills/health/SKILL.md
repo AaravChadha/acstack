@@ -45,6 +45,12 @@ fi
 - Conduct: follow the `acstack-conduct` block in this repo's AGENTS.md — the word is the mode; the user sets the pace.
 <!-- /acstack:principles -->
 
+**One document set.** Resolve exactly ONE BRIEF/PLAN/JOURNAL set and name
+its path in the report's scope line. If more than one candidate set exists
+— a monorepo, nested products, an `apps/*` tree each with its own docs —
+list the candidates and STOP. Never pick one silently: a confident answer
+about the wrong product is worse than no answer (conduct rule 8).
+
 ## Stance
 
 Read-only, always. Every ✗ finding names the exact command or edit that
@@ -69,6 +75,11 @@ install instead of symlinks) is reported as `skipped — <why>`.
    the pack's. It rosters the skills an agent cannot see
    (`disable-model-invocation: true`), so its absence costs the user
    every typed-only skill silently — fix is `/plan seed`, idempotent.
+   **One product per repo.** More than one document set below the root,
+   or a workspace marker, is reported as **info** — unsupported, not
+   broken — naming every set found. The pack models one product per
+   repository; with two, a document-reading skill would report on the
+   wrong one with full confidence.
 4. **Config.** `.claude/acstack.md` readable; keys outside the README
    table listed as info (the extension hook, not an error); mode
    prerequisites consistent — `tracking: tickets` with no gh, no auth,

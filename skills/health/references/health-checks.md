@@ -55,6 +55,26 @@ lists the skills carrying `disable-model-invocation: true`, which an
 agent cannot see or invoke — a missing roster silently costs the user
 every typed-only skill.
 
+## 3c. One product per repo (info, never a failure)
+
+```bash
+find . -name PLAN.md -not -path './.git/*' -not -path './node_modules/*' | head
+ls pnpm-workspace.yaml lerna.json turbo.json go.work 2>/dev/null
+grep -l '"workspaces"' package.json 2>/dev/null
+grep -l '^\[workspace\]' Cargo.toml 2>/dev/null
+ls -d apps packages services 2>/dev/null
+```
+
+Signals, strongest first: more than one BRIEF/PLAN/JOURNAL below the
+root; a workspace marker; `apps/`, `packages/`, or `services/` each
+carrying their own manifest.
+
+Report as **info**, worded as unsupported rather than broken — a
+monorepo is not misconfigured, it is outside what the pack models. Name
+every document set found and say which one the skills would read.
+Every acstack skill assumes ONE product per repository; with two, a
+`/retro` or `/resume` would confidently report on the wrong one.
+
 ## 4. Config
 
 ```bash

@@ -42,6 +42,12 @@ fi
 - Conduct: follow the `acstack-conduct` block in this repo's AGENTS.md — the word is the mode; the user sets the pace.
 <!-- /acstack:principles -->
 
+**One document set.** Resolve exactly ONE BRIEF/PLAN/JOURNAL set and name
+its path in the report's scope line. If more than one candidate set exists
+— a monorepo, nested products, an `apps/*` tree each with its own docs —
+list the candidates and STOP. Never pick one silently: a confident answer
+about the wrong product is worse than no answer (conduct rule 8).
+
 ## Before starting
 
 1. Read the config (per the principles block). If `tracking: tickets` is

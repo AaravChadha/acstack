@@ -1,0 +1,3 @@
+# JOURNAL — web (FIXTURE)
+
+Seeded.

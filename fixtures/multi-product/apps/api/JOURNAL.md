@@ -1,0 +1,3 @@
+# JOURNAL — api (FIXTURE)
+
+Seeded.
