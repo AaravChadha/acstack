@@ -1,0 +1,26 @@
+name: Bug report
+description: Something in the pack is broken, missing, or lying
+labels: []
+body:
+  - type: input
+    id: version
+    attributes:
+      label: acstack version
+      description: "Paste the output of: cat VERSION; git -C <pack-dir> rev-parse --short HEAD"
+      placeholder: "0.4.0 abc1234"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The skill or script involved, the exact invocation, expected vs observed.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal repro
+      description: Smallest sequence that shows it. Include `scripts/check.sh` output when relevant.
+    validations:
+      required: false

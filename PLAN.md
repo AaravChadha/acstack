@@ -227,7 +227,13 @@ trusting in 5 minutes, and never silently run a stale pack.
 **Exit criterion:** Fresh-machine install test passes; launch checklist
 below fully green; repo flipped public.
 
-- [ ] **4.1** VERSION + CHANGELOG.md; issue template requiring VERSION.
+- [x] **4.1** VERSION + CHANGELOG.md; issue template requiring VERSION.
+  *(Done 2026-07-30: VERSION `0.4.0`; CHANGELOG with 0.1–0.3 distilled
+  retroactively and `0.4.0 — unreleased` on top; `.github/ISSUE_TEMPLATE/
+  bug.yml` with `required: true` version field; check.sh section 6
+  enforces agreement, demonstrated by three guard-matrix full-tree cases
+  that reported BAD before the guard existed and ok after — matrix
+  15 → 19 cases, 19 passing.)*
   **Acceptance (added 2026-07-30, from docs/wave-4-specs.md):** VERSION
   parses semver and equals CHANGELOG.md's first versioned heading; the
   issue template's version field is `required: true`; the

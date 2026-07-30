@@ -130,6 +130,23 @@ if command -v shellcheck >/dev/null 2>&1; then
   shellcheck -S warning setup scripts/check.sh || fail=1
 fi
 
+# 6. VERSION / CHANGELOG agreement. VERSION is one bare semver line and must
+#    equal the first versioned heading in CHANGELOG.md (dated or "unreleased").
+if [ ! -f VERSION ] || ! grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' VERSION; then
+  echo "FAIL version: VERSION missing or not a single bare semver line"
+  fail=1
+elif [ ! -f CHANGELOG.md ]; then
+  echo "FAIL version: CHANGELOG.md missing (VERSION exists without its record)"
+  fail=1
+else
+  ver="$(tr -d '[:space:]' < VERSION)"
+  head_ver="$(grep -m1 -E '^## [0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | awk '{print $2}')"
+  if [ "$ver" != "$head_ver" ]; then
+    echo "FAIL version: VERSION is $ver but CHANGELOG.md's first versioned heading is ${head_ver:-absent}"
+    fail=1
+  fi
+fi
+
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
     echo "check.sh: no failures, but $skipped check(s) SKIPPED — coverage is incomplete"

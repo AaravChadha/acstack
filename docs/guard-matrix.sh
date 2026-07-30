@@ -43,5 +43,30 @@ check "hazard on 2nd desc line" FAIL $'---\nname: tc\ndescription: fine here.\nd
 check "CRLF line endings"      PASS "$(printf -- '---\r\nname: tc\r\ndescription: Does a thing. Use when asked.\r\n---\r\n')"
 
 echo
+echo "=== full-tree seeded-defect matrix ==="
+# Cases here copy the REAL tree (minus .git), seed exactly one defect via a
+# mutation command, and expect check.sh to emit "FAIL <class>". This tests
+# each guard against the tree shape it actually polices; the section above
+# tests frontmatter parsing in isolation.
+FULL="$WORK/full"
+
+fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
+  local n="$1" exp="$2" cls="$3"; shift 3
+  rm -rf "$FULL"; cp -R "$REPO" "$FULL"; rm -rf "$FULL/.git"
+  ( cd "$FULL" && "$@" ) >/dev/null 2>&1
+  out="$(cd "$FULL" && ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
+  if printf '%s' "$out" | grep -qE "FAIL ($cls)"; then got=FAIL; else got=PASS; fi
+  if [ "$got" = "$exp" ]; then printf '  ok   %-42s %s\n' "$n" "$got"; pass=$((pass+1))
+  else printf '  BAD  %-42s got=%s want=%s\n' "$n" "$got" "$exp"; failed=$((failed+1)); fi
+}
+
+# clean copy of the real tree must not fail ANY class
+fullcase "clean tree stays clean"     PASS '.*' true
+# 4.1 version/changelog agreement
+fullcase "version mismatch"           FAIL 'version' bash -c 'echo 9.9.9 > VERSION'
+fullcase "version malformed"          FAIL 'version' bash -c 'echo banana > VERSION'
+fullcase "changelog missing"          FAIL 'version' rm CHANGELOG.md
+
+echo
 echo "passed=$pass failed=$failed"
 [ "$failed" -eq 0 ]
