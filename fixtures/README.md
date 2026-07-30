@@ -19,6 +19,18 @@ Consequences of living in the tree, all intended:
   procedure. Its stale-server guard was itself broken until 2026-07-31
   (the `pkill` pattern could never match), found by /investigate.
 
+
+- Controls EXTRACT non-trivial patterns from the reference files at
+  run time, so editing a documented command edits what the control
+  tests. **Six** trivial checks are restated inline instead, having no
+  drift surface worth extracting: the `^!` negation grep, the CLAUDE.md
+  pointer comparison, the `.env` presence test, the multi-product
+  `find`, the workspace-marker `ls`, and /audit's raw-compare pattern.
+  (Counted 2026-07-31 — this said "two" while naming two of six, the
+  set rule broken inside the fixture index itself.)
+
+## What each directory plants
+
 The eight fixture directories: `secure/` (planted keys, `!.env`
 negation, unauth route, and the surface-4 classes — deserialization,
 crypto, TLS, XXE, sinks, SRI, Actions injection), `design-audit/`
@@ -28,7 +40,3 @@ with verified bytes), `migrate-check/` (DROP TABLE, RENAME COLUMN),
 `qa/` (live server, auth gap, uncaught crash), `multi-product/` (two
 document sets plus a workspace marker), `eval-run/` (a golden set whose
 seeded failure must produce 5/6, not 100%).
-- Controls EXTRACT non-trivial patterns from the reference files at
-  run time, so editing a documented command edits what the control
-  tests. Trivial patterns (`^!`, the pointer equality test) are
-  restated inline — they have no drift surface worth extracting.

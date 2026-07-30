@@ -430,7 +430,10 @@ below fully green; repo flipped public.
   truncation priority for layered config (user-wide kept, project next,
   local dropped first — security-guidance's model); CONTRIBUTING states
   the skill RED-GREEN rule carried on 6.7.
-- [ ] **4.7** Launch checklist — every line must be *demonstrated*, not
+- [ ] **4.7** *(Nine of ten demonstrated 2026-07-31 — evidence ledger in
+  the JOURNAL entry of the same date. Remaining: nothing. **The flip
+  itself is the only open action and is the user's call.**)*
+  Launch checklist — every line must be *demonstrated*, not
   asserted. Nothing here is checkable by re-reading a file (AGENTS.md's
   verify-the-consumed-form rule); each item names the artifact that
   proves it.

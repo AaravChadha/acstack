@@ -85,30 +85,66 @@ telemetry — the `telemetry` key is reserved and unimplemented.
 
 ## See it work
 
-A first session on a new project, start to finish:
+Real output from a real session on a small Python project — captured,
+not written by hand. The tool counts word frequencies; the plan says
+what "correct" means.
+
+**`/do 1.1.1` — the interesting case, first.** `/do` runs a task's
+acceptance line *before* doing the work:
 
 ```
-you    /plan seed
-       → interviews you, writes BRIEF.md (frozen), rewrites CLAUDE.md to
-         the @AGENTS.md pointer, installs the conduct block, creates
-         LEARNINGS.md, offers .claude/acstack.md
-you    /plan build
-       → refuses until it has delivered written architecture pushback and
-         you have answered it; then writes PLAN.md with phases whose exit
-         criteria are runnable commands
-you    /plan-review
-       → LOCKED, or CHANGES REQUIRED with the gap named
-you    /do 1.2.1
-       → does exactly that subtask, runs its acceptance line, ticks the
-         box, commits plan + code together, and stops. It never pushes.
-you    /journal
-       → dated entry with real numbers, PLAN checkboxes synced to reality
+$ python3 -c "from wordfreq import top_words;
+    assert top_words(\"don't don't stop\")[0] == (\"don't\", 2)"
+$ echo $?
+0
 ```
+
+It already passes. The regex `[a-z']+` handles apostrophes, so the task
+was written against a bug that does not exist. `/do` closes it and
+writes no code:
+
+```markdown
+- [x] **1.1.1** ~~Contractions count as one word.~~ **Verdict:** already
+  correct — the acceptance passed before any work. Closed without a
+  code change.
+```
+
+That is the whole point of a runnable acceptance line: it can tell you
+the work is unnecessary, which prose criteria never do.
+
+**`/do 1.1.2` — real work.** A genuine defect: quoted words count
+separately.
+
+```
+$ python3 -c "from wordfreq import top_words; print(top_words(\"'the' the the\"))"
+[('the', 2), ("'the'", 1)]          # two entries for one word
+
+$ python3 -c "... assert top_words(\"'the' the the\") == [('the', 3)]"
+AssertionError                       # acceptance fails BEFORE the change
+```
+
+After the fix — strip surrounding quotes, keep internal apostrophes:
+
+```
+$ python3 -c "... assert top_words(\"'the' the the\") == [('the', 3)]" && echo PASS
+PASS
+$ python3 -c "... assert top_words(\"don't don't stop\")[0] == (\"don't\", 2)" && echo PASS
+PASS                                 # 1.1.1 still passes — no regression
+```
+
+Then it ticks the exact box and commits plan and code together, locally:
+
+```
+$ git log --oneline
+22bc5dd completed task 1.1.2 (strip surrounding quotes from words)
+61bd3db add wordfreq
+```
+
+`/do` never pushes — publishing is `/ship`'s job, behind five gates.
 
 Later, on any day: `/resume` for a five-minute catch-up, `/investigate`
 when something breaks, `/audit code` before you trust a change,
-`/secure` before you ship it, `/ship` to cut the release behind five
-gates. Nothing in that list runs on its own — you type it.
+`/secure` before you ship it. Nothing runs on its own — you type it.
 
 ### Two commands are shadowed, deliberately
 
