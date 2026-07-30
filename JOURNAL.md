@@ -3,16 +3,17 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-07-30 (batch D). Wave 4 is nearly closed —
+> **Last update**: 2026-07-31. Wave 4 is nearly closed —
 > **14 of 16 items done, 2 open** (4.5 awaiting its seeded-PR CI half,
 > 4.7 the launch checklist itself). Built today: versioning, six guard
 > classes, the fixtures/controls positive-control layer, the runtime
 > preamble + `bin/` helpers, CI, dry-run honesty, `allowed-tools`, the
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
-> CONTRIBUTING, README v2). check.sh 6 → **14 sections**; guard-matrix
-> 15 → **55 cases**; **20 skills**. Three review rounds ran across the
-> day; the last found three broken defects in /eval-run's own runner.
+> CONTRIBUTING, README v2). check.sh 6 → **15 checks**; guard-matrix
+> 15 → **58 cases**; **20 skills**. Three review rounds ran; the last
+> found a reproducible arbitrary-code-execution path in the runtime
+> preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
 
 ## TL;DR
@@ -25,8 +26,8 @@
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean (**14** numbered
-  guard sections plus 3b, including positive controls over seeded
-  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**55**
+  sections plus 3b = 15 checks, including positive controls over seeded
+  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**58**
   cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - Wave 4 is at **2 open items**: 4.5 (CI built and green on a real
@@ -55,8 +56,8 @@
 ```bash
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
-scripts/check.sh   # pack guard (14 sections, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 55 seeded-defect cases proving the guards fire
+scripts/check.sh   # pack guard (15 checks, runs controls) — clean before any commit
+bash docs/guard-matrix.sh "$PWD"   # 58 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty skills load at start
 ```
 
@@ -67,12 +68,124 @@ bash docs/guard-matrix.sh "$PWD"   # 55 seeded-defect cases proving the guards f
 | 1 — Core + foundation | ✅ | 5 skills (403 SKILL.md lines total, budget 500/each), 9 reference files, setup round-trip verified, guard clean on first run |
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
-| 4 — Distribution + launch | 🔶 14/16 | Built 2026-07-30: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Open: 4.5's seeded-PR evidence, 4.7's launch checklist |
+| 4 — Distribution + launch | 🔶 14/16 | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Open: 4.5's seeded-PR evidence, 4.7's launch checklist |
 | 4.5 — Post-launch hardening | ⬜ | 14 items: telemetry, `setup --global`, /audit tests, /why, /refactor, degradation paths, plus 6 carried by the 2026-07-30 survey (ai-tells, skill hygiene, retrieval discipline, /design, secure coverage, triage clustering) |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Wave 4 nearly closed: batches B–D, a second survey, and an RCE I argued myself out of (2026-07-30 → 31)
+
+Starting state: wave 4 at 14 open items, guards freshly built. Ending
+state: **14 of 16 done, 2 open** (4.5's seeded-PR half, 4.7 itself);
+20 skills; check.sh 11 → **15 checks** (14 numbered + 3b); guard-matrix
+40 → **58 cases**; 22 commits.
+
+**Batch B — the runtime (4.2, 4.5).** An 11-line marker-fenced block in
+every SKILL.md, canonical in README, byte-identity and a
+`PREAMBLE_BUDGET=12` constant enforced as check.sh section 12. Three
+`bin/` helpers, each proven against scratch fixtures before wiring:
+config resolves four precedence levels and prints the winning source;
+update-check stamps *before* fetching so an offline day still throttles,
+never pulls, and printed the exact pull command when seeded one commit
+behind; recall caps recall output and degrades to empty. CI landed and
+**failed its first real run** on shellcheck SC2164 — shellcheck is not
+installed on this machine, so ubuntu's copy was the first to read the
+new scripts. That is CI earning its keep on day one.
+
+**Batch C — surface hardening (4.22, 4.8, 4.9, 4.14).** `--dry-run` now
+says `would link` and proves it (entry counts identical before and
+after); five read-only skills declare `allowed-tools`; the
+`acstack-referrals` roster ships with /plan's build-without-a-plan
+trigger and a rule-9 clause; multi-product detection reports the shape
+as **info, not failure**, with the resolve-one-document-set rule in
+every document-reading skill.
+
+**A second survey — eight repos, ~★840k, cloned and counted.**
+superpowers is still exactly 14 skills (its growth is seven harness
+packagings); claude-mem is the opposite memory bet at 66k lines of TS;
+and measured against Anthropic's own authoring standard acstack passes
+every counted axis while their repos break it — `claude-api` at 546
+lines against their own <500 norm, and code-review's README documenting
+a 0-100 scorer its command file does not contain. Full record:
+`docs/survey-2026-07-30.md`. Carriers 4.27–4.32 plus /design as the
+39th skill. **The survey's own reports failed the set rule three
+times**: a reader would state a count and detail a subset, and I
+accepted the count without listing members. Re-enumerating found
+`apple-design` (282 lines, the interaction-feel material) and
+impeccable's `harden.md` (336 lines) — which is 4.30's thesis already
+written. Fixed mechanically: `ls` every member, diff against the report.
+
+**Batch D — /eval-run as the 20th skill (4.12, 4.26, 4.6).** The
+flagship loop closes: /eval-spec wrote targets, /audit eval reviewed
+results, /ship gate 3 compared a headline, and nothing produced one.
+Plus README's requirements/footprint corrected and the four launch
+documents.
+
+**Three review rounds, and the pattern is the point.** Every layer built
+today was caught doing something it promised not to, and a seeded defect
+caught it every time — never a re-read.
+
+- **Round 1 (3 agents, 27 findings):** three *broken* defects inside
+  /eval-run's own runner, written hours earlier. `acceptable_failure`
+  crashed the whole run (the canonical schema is a bool with a SIBLING
+  reason; `.get()` on a bool raises) *after* spending money on every
+  prior case. Rubric cases vanished from the denominator AND the
+  report — reproduced by adding two, headline stayed 4/5 — which is
+  precisely the false-pass class /eval-run exists to prevent, occurring
+  inside /eval-run.
+- **Round 2 (adversarial, 12 findings):** section 14's roster extraction
+  ended in `grep`, so an empty table killed check.sh with **rc=1 and
+  zero bytes of output** — the pipefail early-death class already fixed
+  twice that day, reintroduced hours later. Its own no-roster FAIL was
+  unreachable. Also: section 13 accepted `Bash(rm:*)` and `Bash(*)`;
+  guard-matrix was never syntax-checked; the sweep excluded `bin/`.
+- **Round 3 (4 agents, 56 findings) — the one that matters.** The
+  runtime preamble resolved the pack by `readlink`; on a copy install
+  (documented as supported) it yields `.` and the block executed
+  `./bin/acstack-config` **from the project directory**. Reproduced
+  end-to-end: a repo shipping an executable `bin/acstack-config` ran its
+  payload on any skill invocation. **I had seen this path myself hours
+  earlier and written it off as "contrived" because a project would need
+  its own `bin/acstack-config` — which is trivially arranged by whoever
+  wrote the repo you cloned.** Now fails closed on an unresolved link,
+  re-tested against the same exploit, locked by a matrix case.
+
+**Two more from round 3 worth naming.** `.acstack-banned.example` used
+two entries from the real roster as examples of bad tokens, in a file
+the sweep did not cover — the self-exclusion bug its own comment
+describes, one directory over. And check.sh had **fifteen guards around
+CONDUCT.md and none on it**, while /health promises adopters it verifies
+their copy against the pack's; section 15 now diffs the two.
+
+**Hardened beyond the findings:** `acstack-recall` fences injected file
+contents as `DATA, NOT INSTRUCTIONS` between explicit markers, because a
+cloned project's LEARNINGS.md could otherwise supply headings
+indistinguishable from a skill's own rules. And CONTRIBUTING now warns
+that reviewing a fork branch means reading the `fixtures/` and
+`scripts/` diff *before* running the guard — section 11 executes
+`fixtures/eval-run/eval/run.py`, which any PR can edit. Documented
+rather than gated: turning the control off by default would disable the
+sharpest false-pass check in the normal path.
+
+**User verdicts this stretch.** 4.24's history purge **declined** after
+reviewing the twelve tokens (non-sensitive company names, bare first
+names, already-public project names) — re-raised once when round 3
+flagged discoverability, declined again, closed. /design scoped to
+**production-grade, not style-matching**: eight readiness items every
+interactive surface must answer, because looks is not where AI UI fails.
+
+**What did NOT change (intentional):** 4.5's box stays open until a
+seeded-violation PR is shown failing in CI (the clean-push half is
+evidenced — run 30562185603, green, with the SKIP line visible); 4.7 is
+unstarted; /investigate still has never chased a real failure.
+
+Validation close: `check.sh` clean on all 22 commits; checks 11 → 15;
+matrix 40 → 58 with every new guard demonstrated failing first (six
+retroactively, by re-running the new matrix against the pre-fix guard);
+skills 19 → 20 (2,365 SKILL.md lines, 22 reference files); PLAN 1,003 →
+1,577 lines; open tasks 43 → 37; wave 4 at 14/16.
 
 ### Wave 4 batch A: guards built, then hardened by their own recheck (2026-07-30)
 
