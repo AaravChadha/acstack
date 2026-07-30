@@ -81,6 +81,50 @@ Nothing leaves your machine except `git fetch` in the once-a-day update
 check, and `gh` calls you initiate in tickets mode. There is no
 telemetry — the `telemetry` key is reserved and unimplemented.
 
+## See it work
+
+A first session on a new project, start to finish:
+
+```
+you    /plan seed
+       → interviews you, writes BRIEF.md (frozen), rewrites CLAUDE.md to
+         the @AGENTS.md pointer, installs the conduct block, creates
+         LEARNINGS.md, offers .claude/acstack.md
+you    /plan build
+       → refuses until it has delivered written architecture pushback and
+         you have answered it; then writes PLAN.md with phases whose exit
+         criteria are runnable commands
+you    /plan-review
+       → LOCKED, or CHANGES REQUIRED with the gap named
+you    /do 1.2.1
+       → does exactly that subtask, runs its acceptance line, ticks the
+         box, commits plan + code together, and stops. It never pushes.
+you    /journal
+       → dated entry with real numbers, PLAN checkboxes synced to reality
+```
+
+Later, on any day: `/resume` for a five-minute catch-up, `/investigate`
+when something breaks, `/audit code` before you trust a change,
+`/secure` before you ship it, `/ship` to cut the release behind five
+gates. Nothing in that list runs on its own — you type it.
+
+### Two commands are shadowed, deliberately
+
+Skills override built-ins, and two of these collide:
+
+- **`/plan`** shadows built-in plan mode. Shift+Tab still enters it.
+- **`/resume`** shadows built-in session resume. `claude -r` still works.
+
+Both were kept because the names are correct for what they do. If a
+shadow bites in practice, tell us — it's a documented tradeoff, not a
+settled one.
+
+Separately: `/plan` and `/eval-spec` are typed-only
+(`disable-model-invocation: true`), so they never appear in the
+model-facing skill list, and the VS Code extension's autocomplete shows
+only a subset of commands — the CLI menu shows all. Both are cosmetic;
+typing the command always works.
+
 ## The three documents
 
 acstack skills create and maintain three files in each project, each with a
@@ -217,6 +261,9 @@ fi
 
 ```
 CONDUCT.md            # the agent interaction contract (10 rules)
+PRINCIPLES.md         # why the discipline is shaped this way
+CONTRIBUTING.md       # how to add to it (matrix-first, positive controls)
+docs/ARCHITECTURE.md  # how skills, config, runtime, and guards fit
 VERSION, CHANGELOG.md # release record; check.sh enforces their agreement
 setup                 # symlink installer / uninstaller
 scripts/check.sh      # pack guard — its header enumerates every section

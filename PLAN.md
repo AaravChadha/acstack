@@ -385,7 +385,19 @@ below fully green; repo flipped public.
   the banned-names SKIP line visible in the log (CI has no
   `.acstack-banned` by design; local pre-commit stays the enforcement
   point for names).
-- [ ] **4.6** PRINCIPLES.md, docs/ARCHITECTURE.md (every preamble line
+- [x] **4.6** *(Done 2026-07-30: PRINCIPLES.md — nine principles, each
+  with the defect that produced it and the numbers where they exist;
+  docs/ARCHITECTURE.md — four layers, all 11 preamble lines documented
+  individually (verified: preamble line count == documented count), the
+  bin/ contracts, the three guard layers AND an explicit statement of
+  what guards cannot prove; CONTRIBUTING.md — matrix-first rule with the
+  0/25/60% convergence numbers as its reason, the eight-point skill
+  checklist, behavioral red-green, and the four verification rules;
+  README v2 — a see-it-work walkthrough, both shadowing disclosures
+  (/plan vs plan mode with Shift+Tab, /resume vs session resume with
+  claude -r, plus the typed-only and VS Code autocomplete notes), and
+  the new documents in the layout block.)*
+  PRINCIPLES.md, docs/ARCHITECTURE.md (every preamble line
   documented), CONTRIBUTING.md; README v2 with a see-it-work walkthrough
   and the built-in shadowing disclosure (/plan, /resume — per the
   2026-07-27 decision; also why user-only skills miss the VS Code
