@@ -1106,6 +1106,12 @@ reordered, if any.
   which is what keeps item 5 from becoming decoration. ui-ux-pro-max's
   `design-system` skill (244) supplies the token architecture for the
   token-first step: three layers, primitive → semantic → component.
+  **Emit tokens in DTCG** (Design Tokens Community Group format) rather
+  than inventing a shape — found 2026-07-30 via `uxKero/anydesign`,
+  which uses it. The standard is the steal, not that skill (148 stars,
+  and its Figma/image ingestion is a different job); DTCG costs nothing,
+  is machine-readable by real tooling, and means /design's output can
+  leave the pack without a translation step.
   Roster 38 → 39;
   NEW skill, the one place the 2026-07-30 survey showed demand acstack
   answers nowhere: four repos, ~★250k combined). Token-system-first
@@ -1356,6 +1362,13 @@ error already produced two bugs this wave-planning round.
   ships with its behavioral control; CONTRIBUTING (4.6) states the rule
   for pack contributions. This is the prove-the-check-fails rule
   pointed at skills themselves.
+  *Second note (2026-07-30, directory sweep):* `yusufkaraaslan/Skill_Seekers`
+  (★14.6k) generates skills from documentation sites, repos, and PDFs.
+  The **idea** is worth /skill's consideration — a skill scaffolded from
+  a project's own docs beats one written from memory — but the
+  implementation is declined: a Python package on PyPI with a 40-tool
+  MCP server is the opposite of this pack's constitution. If /skill ever
+  ingests docs, it does so by reading files that already exist.
 
 ## [ ] Wave 7 — Operate
 
