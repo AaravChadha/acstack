@@ -83,7 +83,8 @@ acstack pack.
    unanswered; silence or a pivot is not consent; offered work waits for
    explicit uptake; never repeat the question.
 10. Commits: short subject starting with the work-item reference
-    (`T4: …` / `#42: …` per tracking mode), a brief what-and-why body,
-    and no attribution trailers — no Co-Authored-By bots, no
-    "Generated with" footers (per the `attribution` config, default none).
+    (`#42: …` in tickets mode; `completed task 3.2.1 (…)` in document
+    mode), a brief what-and-why body, and no attribution trailers — no
+    Co-Authored-By bots, no "Generated with" footers (per the
+    `attribution` config, default none).
 <!-- END:acstack-conduct -->

@@ -228,16 +228,37 @@ trusting in 5 minutes, and never silently run a stale pack.
 below fully green; repo flipped public.
 
 - [ ] **4.1** VERSION + CHANGELOG.md; issue template requiring VERSION.
+  **Acceptance (added 2026-07-30, from docs/wave-4-specs.md):** VERSION
+  parses semver and equals CHANGELOG.md's first versioned heading; the
+  issue template's version field is `required: true`; the
+  VERSION/CHANGELOG mismatch guard demonstrated firing on a seed.
 - [ ] **4.2** Slim per-invocation preamble (≤12 lines, hand-maintained,
   budget enforced by check.sh) + `bin/` helpers (config resolve,
   update-check, recall) — bash 3.2+, matching `setup` and `check.sh`;
   `runtime: off` degrades cleanly.
+  **Acceptance (added 2026-07-30, from docs/wave-4-specs.md):** with
+  `runtime: off`, a skill invocation runs no pack command and creates
+  nothing under `~/.acstack/`; with defaults, the first run creates the
+  update stamp and a second same-day run does not fetch; a no-network
+  run exits 0 silently; recall output is capped at ~6KB and degrades to
+  empty; check.sh fails on a seeded one-skill preamble drift and on a
+  13-line preamble (both matrix-demonstrated).
 - [ ] **4.5** CI: GitHub Action running check.sh + shellcheck on every PR.
+  **Acceptance (added 2026-07-30, from docs/wave-4-specs.md):** a PR
+  carrying a seeded guard violation fails CI; a clean PR passes with
+  the banned-names SKIP line visible in the log (CI has no
+  `.acstack-banned` by design; local pre-commit stays the enforcement
+  point for names).
 - [ ] **4.6** PRINCIPLES.md, docs/ARCHITECTURE.md (every preamble line
   documented), CONTRIBUTING.md; README v2 with a see-it-work walkthrough
   and the built-in shadowing disclosure (/plan, /resume — per the
   2026-07-27 decision; also why user-only skills miss the VS Code
   autocomplete).
+  **Acceptance (added 2026-07-30, from docs/wave-4-specs.md):**
+  ARCHITECTURE.md documents exactly as many preamble lines as the
+  preamble block contains; README v2 carries the walkthrough and both
+  shadowing disclosures; the 4.17 cross-reference and
+  config-reachability guards pass over all four documents.
 - [ ] **4.7** Launch checklist — every line must be *demonstrated*, not
   asserted. Nothing here is checkable by re-reading a file (AGENTS.md's
   verify-the-consumed-form rule); each item names the artifact that
@@ -404,7 +425,11 @@ below fully green; repo flipped public.
   user trusts before running it for real. **Acceptance:** every dry-run
   line reads "would link"/"would remove" and the summary counts intended
   actions, verified against a scratch `CLAUDE_SKILLS_DIR`.
-- [ ] **4.23** Resolve CONDUCT rule 10's self-contradiction before 4.16
+- [x] **4.23** *(Done 2026-07-30: `T4:` removed from rule 10's body,
+  Good example, and both condensed blocks; verified by
+  `git grep -nw 'T4:'` clean outside JOURNAL/PLAN/docs history and a
+  byte-diff of the CONDUCT.md and AGENTS.md blocks.)*
+  Resolve CONDUCT rule 10's self-contradiction before 4.16
   implements it. The rule's body says `T4: …` / `#42: …` are both tickets
   mode with document mode keeping `completed task 3.2.1 (…)`; the
   condensed block four lines later says "`T4: …` / `#42: …` **per tracking
