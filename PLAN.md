@@ -144,6 +144,46 @@
 > emil's Before/After/Why + review-vs-improve split, taste dials,
 > frontend-design two-pass → 4.30; a11y statics → 6.2; one-rule-list
 > across static and rendered → Wave B; scoring models → declined.
+> **Audit of the survey itself (2026-07-30, third pass).** After the
+> emil miss, every multi-member set in all three reader reports was
+> re-enumerated against the clones. **The failure was systematic: 5 of
+> 8 repos had unenumerated sets** — a reader counts the set correctly,
+> details the interesting subset, and the count reads as coverage.
+> Clean: obra/superpowers (all 14 skills named), and the two
+> single-skill targets. Incomplete: emilkowalski 8 skills / 3 detailed
+> (fixed, second pass); **thedotmack/claude-mem 18 / 8** — unnamed:
+> babysit, cloud-sync, design-is, how-it-works, knowledge-agent,
+> oh-my-issues, pathfinder, smart-explore, version-bump, wowerpoint;
+> **nextlevelbuilder/ui-ux-pro-max 7 / 2** — unnamed: banner-design,
+> brand, design, design-system, slides; **Leonxlnx/taste-skill 13 / 2**
+> — the rest are style variants (brutalist, soft, minimalist, stitch,
+> brandkit, output, gpt-tasteskill…), which is itself the evidence that
+> its "dials" are the generalization; **pbakaus/impeccable 22
+> sub-commands / ~6** — unnamed included `harden.md` (336 lines),
+> `delight.md`, `critique.md` (788), and a whole `reference/degraded/`
+> tree. **anthropics/skills 17 / 3 detailed** (+5 checked by hand);
+> unexamined remainder is the document-format family (docx, pdf, pptx,
+> xlsx, slack-gif-creator, algorithmic-art, canvas-design, mcp-builder,
+> internal-comms) — reviewed by name and declined: artifact-generation
+> for end users, orthogonal to an engineering-discipline pack.
+> **Recovered and carried:** harden/delight/design-system → 4.30;
+> degraded/ → 4.18; oh-my-issues → NEW **4.32**; smart-explore → 4.29
+> (noted, dependency declined); critique.md's two-independent-
+> assessments → 6.6 below. **Also declined by name:** babysit (PR
+> watching — real gap, but wave 7 operate territory and /ship
+> deliberately stops at the PR), version-bump (4.1 already ships
+> VERSION/CHANGELOG with a guard), cloud-sync + knowledge-agent +
+> pathfinder + wowerpoint + design-is + how-it-works (memory-daemon
+> surface or presentation generation), and ui-ux's banner/brand/slides
+> (marketing asset generation).
+> **Process finding, recorded because it recurred:** a subagent report
+> that states a count and details a subset is an unenumerated set claim,
+> and the reviewer accepting the count without listing members is how it
+> ships. AGENTS.md's set rule already binds this — it was applied to the
+> pack's own claims and not to inbound reports. The fix that worked was
+> mechanical: `ls` every member directory, diff against names appearing
+> in the report.
+>
 > **Ledger correction (2026-07-30, second pass).** The first ledger was
 > incomplete for one repo: emilkowalski/skills has **eight** skills and
 > the reader detailed three, summarizing the rest by their motion rules.
@@ -815,6 +855,12 @@ reordered, if any.
     JOURNAL.md, and a path containing no UI files.
   - `/investigate` — state the verdict up front; root cause currently
     lands at step 5 with no lede.
+  - *Prior art (2026-07-30, third pass):* impeccable ships a
+    `reference/degraded/` directory — separate documented paths for
+    asset-producer, documenter, finish-reviewer, and manual-edit-applier
+    — i.e. degradation treated as its own first-class surface rather
+    than a clause inside each skill. Worth reading before writing this
+    item's paths; the shape may be better than what this task assumes.
   - `/resume` — two gaps from its first real cold start (2026-07-29, the
     4.7 item 10 test, run on this repo). (a) The unjournaled-range step
     matches the literal `Journal <date>: <summary>` subject, so a
@@ -907,6 +953,20 @@ reordered, if any.
   `skills/ship/references/ship-gates.md`, `skills/do/SKILL.md`. Five
   skills, one commit — they are one rule set, and splitting them makes
   the pack inconsistent between commits.
+- [ ] **4.32** Backlog root-cause clustering for /triage (third pass,
+  2026-07-30). claude-mem's `oh-my-issues` does something /triage does
+  not and no surveyed pack does either: cluster an issue backlog **by
+  root cause** into a small set of parent items, redirect the children
+  with a standardized comment, and leave the tree navigable. /triage
+  today finds stale items, duplicate PAIRS, and missing acceptance —
+  all local comparisons. Clustering is the global one: twelve issues
+  that are one cause is a finding no pairwise dupe check can see.
+  Report-first and approval-gated like the rest of /triage; document
+  mode clusters PLAN tasks under a parent instead of filing issues.
+  **Acceptance:** on a seeded backlog carrying eight issues with three
+  underlying causes, /triage names the three clusters with their
+  evidence and proposes parents — and proposes nothing when every item
+  is genuinely independent.
 - [ ] **4.29** Journal-retrieval discipline for /resume and /retro —
   claude-mem's search→filter→fetch rule applied to repo-owned markdown:
   read headings and the TL;DR first, filter entries by the window or
@@ -915,6 +975,12 @@ reordered, if any.
   skills document the rule and /resume's read step names it.
   **Edits:** `skills/resume/SKILL.md`, `skills/retro/SKILL.md`
   (+ `references/retro-sections.md` if the window logic moves there).
+  *Prior art (2026-07-30, third pass):* claude-mem's `smart-explore`
+  applies the same principle to CODE — structural/AST search instead of
+  reading whole files — which is the /investigate and /audit analogue of
+  this rule. Noted, not carried: it needs tree-sitter, a dependency the
+  pack declines; the portable half is "search structurally, read
+  selectively", which those skills already imply and this task states.
 - [ ] **4.31** /secure's injection surface is a third of a surface —
   measured 2026-07-30 against security-guidance's 25 frozen rule IDs
   (`plugins/security-guidance/hooks/patterns.py:264`). /secure's
@@ -980,7 +1046,20 @@ reordered, if any.
   A design that cannot answer all eight is reported as incomplete with
   the gaps named — the honest-scope discipline applied to UI. Style
   (which look) stays the user's call via the dials; production-readiness
-  is not optional. Roster 38 → 39;
+  is not optional.
+
+  **Prior art recovered on the third pass (2026-07-30), all missed by
+  the first reader:** impeccable's `reference/harden.md` (**336 lines**)
+  is this item's spine already written — "designs that only work with
+  perfect data aren't production-ready", worked against inputs, errors,
+  languages, and network conditions; read it before drafting items 1–3
+  rather than re-deriving them. `reference/delight.md` (70) draws the
+  line this task needs on "magic": delight is product character revealed
+  through a useful interaction, **not a layer of generic whimsy** —
+  which is what keeps item 5 from becoming decoration. ui-ux-pro-max's
+  `design-system` skill (244) supplies the token architecture for the
+  token-first step: three layers, primitive → semantic → component.
+  Roster 38 → 39;
   NEW skill, the one place the 2026-07-30 survey showed demand acstack
   answers nowhere: four repos, ~★250k combined). Token-system-first
   two-pass process (4–6 named values, ≥2 type roles, wireframe before
@@ -1203,6 +1282,17 @@ error already produced two bugs this wave-planning round.
   > choreography (haiku/sonnet/opus by name couples the skill to a model
   > lineup). Their false-positive blocklist rides 4.28 into /audit and
   > applies here too. Fan-out stays inside the 2–4 agent budget.
+
+  > **Second prior art (2026-07-30, third pass).** impeccable's
+  > `reference/critique.md` (788 lines) runs **two independent
+  > assessments of one resolved target, then synthesizes** — the board
+  > pattern applied to design, and evidence the shape generalizes past
+  > code review. Two useful specifics: it resolves ONE stable target
+  > first (this wave's resolve-one-document-set rule, applied to a
+  > review subject), and it separates the chat deliverable from a
+  > persisted snapshot used as a backlog — worth considering for
+  > /board's output, where a consolidated verdict and a durable
+  > findings record are genuinely different artifacts.
 - [ ] **6.7** /skill — turn a repeated workflow into a compliant
   SKILL.md: principles block verbatim, `Adjacent skills:` routing line,
   description scoped to explicit intent, under the line budget, passing
