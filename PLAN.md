@@ -394,6 +394,37 @@ below fully green; repo flipped public.
   conduct block; `/health` gains a row verifying it is present and
   current. **Acceptance:** check.sh fails when the table's skill set
   differs from the set carrying `disable-model-invocation: true`.
+
+  > **Sharpened (2026-07-30, user-approved).** `/plan`'s `suggest-when`
+  > gains the build-without-a-plan trigger, and the offer's shape is
+  > specified so it cannot become nagging.
+  > **Trigger (bright line, deliberately narrow):** a *build* request in
+  > a repo with no PLAN.md (or legacy equivalent) AND the work is not a
+  > bounded single-file change — new files, new surface, or multi-file
+  > work. A one-line fix NEVER triggers it. A trigger that fires on typo
+  > fixes gets disabled within a day, which costs more than it saves.
+  > **Timing:** the work happens first, and the offer rides the
+  > end-of-increment status statement (rule 2's boundary, rule 9's slot).
+  > Never a precondition — that is superpowers' hard gate, which this
+  > repo rejected 2026-07-30 for violating rules 1 and 5 (it converts
+  > "build" into plan mode regardless of the user's word, asks
+  > permission for already-requested work, and commits a design doc
+  > nobody asked for).
+  > **Shape:** name concrete options with a recommendation — "spec first
+  > in docs/ / a short design sketch / keep building as-is; I'd suggest
+  > X because Y" — never a bare "want to plan?". One clause of reason,
+  > borrowed from superpowers' genuinely correct anti-pattern note:
+  > simple-looking work is where unexamined assumptions cost most.
+  > **Bound:** once per session per repo. **No state file** — a recorded
+  > decline would be exactly the hidden machine-local state the pack
+  > rejects, so a later session may ask once more; PLAN.md appearing is
+  > itself the signal to stop asking. Silence or a pivot is not consent
+  > (rule 9, unchanged).
+  > **Acceptance addition:** on a seeded repo with no PLAN.md, a
+  > multi-file build request produces the work plus exactly ONE offer
+  > naming concrete options; a single-line fix in the same repo produces
+  > no offer at all; a second build request in the same session produces
+  > no second offer.
 - [ ] **4.12** /eval-run — close the loop on the flagship methodology.
   Today `/eval-spec` writes the spec and golden set, `/ship`'s eval gate
   *runs the eval per its run command*, and `/audit eval` reviews a
@@ -997,6 +1028,22 @@ error already produced two bugs this wave-planning round.
   > golden set, in review clothing. The report MUST state which lenses
   > ran, which did not, and why. (d) **Volume defeats attention** — apply
   > /secure's confidence-gate discipline to the consolidated report.
+
+  > **Prior art for warning (a) — consolidation (2026-07-30, survey).**
+  > Anthropic's code-review plugin ships a working answer to the problem
+  > this item calls hardest: after the review agents return, **each
+  > finding gets its own validation subagent, and findings that fail
+  > validation are dropped** rather than merged
+  > (`plugins/code-review/commands/code-review.md`, steps 5–6). That
+  > inverts the naive design — consolidation stops being "merge N
+  > reports" (which loses the single sharp dissent) and becomes
+  > "validate each finding independently, keep what survives". A lone
+  > dissent that validates survives on its own merits; a
+  > confidently-repeated finding that fails validation dies despite
+  > repetition. Adopt the mechanism, NOT its per-step model
+  > choreography (haiku/sonnet/opus by name couples the skill to a model
+  > lineup). Their false-positive blocklist rides 4.28 into /audit and
+  > applies here too. Fan-out stays inside the 2–4 agent budget.
 - [ ] **6.7** /skill — turn a repeated workflow into a compliant
   SKILL.md: principles block verbatim, `Adjacent skills:` routing line,
   description scoped to explicit intent, under the line budget, passing
