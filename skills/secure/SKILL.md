@@ -2,7 +2,7 @@
 name: secure
 description: "Security review with a confidence gate - a finding exists only with a concrete exploit scenario and a high/medium/low confidence rating; everything else goes to a worth-hardening list, never inflated. Sweeps four surfaces: auth gates, secrets hygiene, injection, and LLM tool-use trust boundaries. Reports only, never fixes. Use when the user asks for a security review or to check vulnerabilities, secrets, or auth."
 argument-hint: "[path | surface | notes]"
-allowed-tools: Read, Grep, Glob, Bash(git grep:*), Bash(git log:*), Bash(git ls-files:*), Bash(git status:*)
+allowed-tools: Read, Grep, Glob, Bash(git grep:*), Bash(git log:*), Bash(git ls-files:*), Bash(git status:*), Bash(grep:*), Bash(ls:*)
 ---
 
 # /secure — findings you can exploit, not vibes you can fear
@@ -20,8 +20,9 @@ safety; shares the structurally-read-only stance).
 <!-- acstack:runtime -->
 Run once before the skill's steps; any failure degrades to pure markdown:
 ```bash
-pack="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)")")"
-if [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
+link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"   # empty = not symlinked
+pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non-empty
+if [ -n "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
   "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
   "$pack/bin/acstack-recall" || true          # LEARNINGS.md + pack known-bug-classes, capped 6KB

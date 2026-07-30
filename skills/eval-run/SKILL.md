@@ -24,8 +24,9 @@ this headline against the spec's target).
 <!-- acstack:runtime -->
 Run once before the skill's steps; any failure degrades to pure markdown:
 ```bash
-pack="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)")")"
-if [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
+link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"   # empty = not symlinked
+pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non-empty
+if [ -n "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
   "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
   "$pack/bin/acstack-recall" || true          # LEARNINGS.md + pack known-bug-classes, capped 6KB
@@ -96,7 +97,9 @@ in `../eval-spec/references/grader-rules.md` and with `/audit eval`:
   ideal: it is literal enough to produce brittleness. When a case fails
   here and the answer was right, widen the grader — never touch the
   case (/audit eval's "grader brittleness" bucket).
-- `numeric-tolerance:<x>` — parse both sides, compare within ±x.
+- `numeric-tolerance:<x>` — parse both sides, compare within ±x
+  absolute, or ±x% relative to the expected value when the suffix is
+  `%` (both forms are documented by /eval-spec's template).
 - `rubric:<name>` — not machine-gradeable. The runner records the
   answer, marks the case `needs-rubric-review`, and **excludes it from
   the headline while naming it**. A human or a judge model scores the

@@ -123,6 +123,9 @@ fullcase "read-only granted Bash(rm)"         FAIL 'readonly' bash -c "sed -e 's
 fullcase "read-only granted Bash(*)"          FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(*), Read/' skills/health/SKILL.md > t && mv t skills/health/SKILL.md"
 fullcase "read-only skill file missing"       FAIL 'readonly' rm skills/resume/SKILL.md
 fullcase "guard-matrix syntax error caught"   FAIL 'syntax'   bash -c "printf 'if [ ; then\n' >> docs/guard-matrix.sh"
+fullcase "conduct block drifts from canon" FAIL 'conduct' bash -c "sed -e 's/^4\. Be direct\./4. Be direct and blunt./' AGENTS.md > t && mv t AGENTS.md"
+fullcase "conduct block missing entirely"  FAIL 'conduct' bash -c "awk '/BEGIN:acstack-conduct/{f=1} !f{print} /END:acstack-conduct/{f=0}' CONDUCT.md > t && mv t CONDUCT.md"
+fullcase "preamble fails open on unresolved pack" FAIL 'runtime' bash -c "sed -e 's/^if \[ -n \"\$link\" \] && /if /' README.md > t && mv t README.md"
 
 echo
 echo "passed=$pass failed=$failed"

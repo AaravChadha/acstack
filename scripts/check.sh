@@ -11,7 +11,7 @@
 #   8  cross-references + citations resolve 9  config-key reachability
 #   10 verdict-first stance present         11 positive controls (fixtures)
 #   12 runtime preamble identity + budget  13 read-only tool declarations
-#   14 referral roster == typed-only set
+#   14 referral roster == typed-only set        15 conduct block identity
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -73,7 +73,7 @@ else
       rc=0; hits="$(grep -riEnw "$BANNED" \
             skills/ templates/ docs/ scripts/ setup bin/ fixtures/ .github/ \
             CONDUCT.md README.md AGENTS.md PLAN.md JOURNAL.md CHANGELOG.md \
-            PRINCIPLES.md CONTRIBUTING.md 2>&1)" || rc=$?
+            PRINCIPLES.md CONTRIBUTING.md .acstack-banned.example 2>&1)" || rc=$?
       if [ "$rc" -eq 0 ]; then
         echo "FAIL banned names:"
         printf '%s\n' "$hits"
@@ -390,6 +390,23 @@ elif [ "$roster" != "$typed_only" ]; then
   echo "FAIL referral: roster does not match the typed-only skill set"
   echo "     roster:     $(printf '%s' "$roster" | tr '\n' ' ')"
   echo "     typed-only: $(printf '%s' "$typed_only" | tr '\n' ' ')"
+  fail=1
+fi
+
+# 15. Conduct block identity. CONDUCT.md is the canonical copy; AGENTS.md
+#     embeds it, and /plan seed installs it into adopter repos. /health
+#     promises adopters it verifies their copy against the pack's — so the
+#     pack's own two copies must agree, or that promise is built on sand.
+#     Fifteen guards existed around this file before one guarded the file.
+extract_conduct() {
+  awk '/<!-- BEGIN:acstack-conduct -->/{f=1} f{print} /<!-- END:acstack-conduct -->/{f=0}' "$1"
+}
+ccanon="$(extract_conduct CONDUCT.md)"
+if [ -z "$ccanon" ]; then
+  echo "FAIL conduct: CONDUCT.md has no marker-fenced acstack-conduct block"
+  fail=1
+elif ! diff <(printf '%s\n' "$ccanon") <(extract_conduct AGENTS.md) >/dev/null; then
+  echo "FAIL conduct: AGENTS.md's conduct block drifts from CONDUCT.md's canonical copy"
   fail=1
 fi
 

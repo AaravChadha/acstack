@@ -53,6 +53,11 @@
 >   to the user's judgment, never a permission slip.
 >
 > **Known limitations (recorded 2026-07-29, not defects):**
+> - **Windows is copy-install only.** `setup` symlinks; on Windows the
+>   `skills/*` directories are copied by hand, so pack edits need a
+>   re-copy. Native symlink support is **not scheduled** — recorded as a
+>   declined item rather than a roadmap promise (README said "roadmap
+>   item" with no task owning it until 2026-07-31).
 > - **One repo = one BRIEF/PLAN/JOURNAL.** Every skill assumes a single
 >   product per repository. Monorepos and multi-product repos break this
 >   silently — `/resume` and `/retro` would confidently report on the
@@ -464,7 +469,7 @@ below fully green; repo flipped public.
      faked from inside a session that already knows the answer.
 
   Only then flip public. **Acceptance:** the launch commit's journal entry
-  carries evidence for all nine — a command and its output, or a named
+  carries evidence for all **ten** — a command and its output, or a named
   artifact — with no line resting on "looks right".
 - [x] **4.8** *(Done 2026-07-30: all five declare tool sets derived from
   the commands their own text documents — /secure git grep/log/ls-files/

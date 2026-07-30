@@ -2,7 +2,7 @@
 name: resume
 description: Resume a project in five minutes - read BRIEF/PLAN/JOURNAL plus git state, deliver a short where-we-are brief, divergence flags (uncommitted work, unjournaled commits, acceptance drift), and the next three unblocked tasks. Use at session start or when the user asks where were we, what's next, or to catch up on a project.
 argument-hint: "[notes]"
-allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git status:*), Bash(ls:*), Bash(gh issue list:*)
+allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git status:*), Bash(git rev-parse:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(gh issue list:*)
 ---
 
 # /resume — resume in five minutes
@@ -18,8 +18,9 @@ only what it trips over while reading).
 <!-- acstack:runtime -->
 Run once before the skill's steps; any failure degrades to pure markdown:
 ```bash
-pack="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)")")"
-if [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
+link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"   # empty = not symlinked
+pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non-empty
+if [ -n "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
   "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
   "$pack/bin/acstack-recall" || true          # LEARNINGS.md + pack known-bug-classes, capped 6KB

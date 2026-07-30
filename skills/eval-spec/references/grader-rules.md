@@ -11,7 +11,7 @@ answer fail, the case belongs in `rubric`, not `concept`.
 
 ## Normalize before comparing
 
-Unicode NFC first; then trim, collapse internal whitespace. The classic
+Unicode NFKC first (NFC does NOT fold U+202F or U+00A0 — NFKC does); then trim, collapse internal whitespace. The classic
 silent killers: U+202F narrow no-break space (thousands separators in
 some locales), en-dash vs hyphen in ranges, curly vs straight quotes.
 A grader that misses these reports subject failures that are actually

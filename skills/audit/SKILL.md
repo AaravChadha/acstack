@@ -2,7 +2,7 @@
 name: audit
 description: Audit one of three targets. code - defect hunt producing a report with safety checks and adversarial verification evidence; docs - drift check of README/PLAN/JOURNAL against the actual tree, counts, and checkbox reality; eval - failure classification with the never-inflate rule. Use when the user asks to audit or review code, a PR, project docs, or an eval report.
 argument-hint: "code|docs|eval [path | PR# | diff range]"
-allowed-tools: Read, Grep, Glob, Bash(git grep:*), Bash(git log:*), Bash(git check-ignore:*), Bash(ls:*)
+allowed-tools: Read, Grep, Glob, Bash(git grep:*), Bash(git log:*), Bash(git diff:*), Bash(git check-ignore:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(gh pr view:*), Bash(gh pr diff:*)
 ---
 
 # /audit — find what's wrong and report it honestly
@@ -17,8 +17,9 @@ than massaged, and scope stated so the reader knows what was NOT checked.
 <!-- acstack:runtime -->
 Run once before the skill's steps; any failure degrades to pure markdown:
 ```bash
-pack="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)")")"
-if [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
+link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"   # empty = not symlinked
+pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non-empty
+if [ -n "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
   "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
   "$pack/bin/acstack-recall" || true          # LEARNINGS.md + pack known-bug-classes, capped 6KB

@@ -47,6 +47,13 @@ git grep -nE '(sk[-_][A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|---
 git grep -niE '(api[_-]?key|secret|token|password)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}' -- . ':!*.md'
 ```
 
+**Scope caveat, stated because it is not obvious:** both key greps end
+`':!*.md'` to keep documentation prose out of the results. That also
+excludes JOURNAL.md and LEARNINGS.md, which this pack writes exact
+literal values into by design. Sweep markdown separately when a report
+claims whole-repo coverage:
+`git grep -nE '(sk[-_][A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16})' -- '*.md'`.
+
 A secret anywhere in history is compromised regardless of the current
 tree — the fix direction is "rotate the key", and only then "purge
 history". This is the `!.env` known-bug-class; cross-reference

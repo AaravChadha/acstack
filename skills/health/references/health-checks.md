@@ -35,8 +35,15 @@ Locate the installed pack root through the symlink (skip with
 `skipped — copy install` when not symlinked):
 
 ```bash
-pack_root="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/health")")")"
+link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"
+pack_root="$(dirname "$(dirname "$link")")"
+[ -n "$link" ] && [ -f "$pack_root/CONDUCT.md" ] || pack_root=""
 ```
+
+An unresolved `$pack_root` is reported `skipped — copy install`, never
+substituted with `.`: `dirname` of an empty string is `.`, which would
+compare the project's AGENTS.md against the project's own CONDUCT.md and
+call a foreign block current.
 
 Compare the AGENTS.md block against the same block in
 `$pack_root/CONDUCT.md`; a diff means stale → show the exact replacement
@@ -108,7 +115,7 @@ tree: the fix line says "rotate the key", not just "remove the file".
 ## 6. Attribution
 
 ```bash
-git log -20 --format='%B' | grep -inE 'co-authored-by|generated with'
+git log -20 --format='%B' | grep -inE 'co-authored-by|generated with|🤖'
 ```
 
 Hits while `attribution: none` (the default) → ✗, listing the offending

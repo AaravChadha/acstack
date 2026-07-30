@@ -20,8 +20,9 @@ it; /ship does not re-run them).
 <!-- acstack:runtime -->
 Run once before the skill's steps; any failure degrades to pure markdown:
 ```bash
-pack="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)")")"
-if [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
+link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"   # empty = not symlinked
+pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non-empty
+if [ -n "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
   "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
   "$pack/bin/acstack-recall" || true          # LEARNINGS.md + pack known-bug-classes, capped 6KB
@@ -92,10 +93,12 @@ under `push: branch-pr`.
 **Under `push: direct` there is no PR to open.** Say so plainly, push the
 branch, and report the gate evidence as the release record — do not
 invent a PR step the config disabled. If the user wants a PR anyway,
-they ask; `/ship` never flips the config on their behalf. Opening a PR
-also requires `gh` installed and authenticated in *both* modes: check
-before the act, and on failure name which precondition failed and stop
-with the branch pushed.
+they ask; `/ship` never flips the config on their behalf. **`gh` is
+required only where a PR is actually opened** — that is `push:
+branch-pr`, and tickets mode's issue-closing links. Under `push:
+direct` a missing `gh` blocks nothing: check the precondition where it
+applies, and on failure name which one failed and stop with the branch
+pushed.
 
 Under `push: branch-pr`, the PR body is report-shaped: what-and-why lede,
 a per-gate evidence table (the test/eval numbers, the doc checks), and an

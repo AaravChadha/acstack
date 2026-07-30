@@ -37,8 +37,8 @@ machine state.
 ## Install
 
 ```bash
-git clone https://github.com/AaravChadha/acstack.git ~/Documents/acstack
-cd ~/Documents/acstack && ./setup
+git clone https://github.com/AaravChadha/acstack.git acstack
+cd acstack && ./setup      # clone anywhere; setup links from where it lives
 ```
 
 Start a new Claude Code session; the twenty skills above load as slash
@@ -48,7 +48,9 @@ that point into this repo.
 **To install and run the core:** git and bash 3.2+ (the version macOS
 ships). No runtime, no package manager, no build step. macOS/Linux; on
 Windows, copy the `skills/*` directories into `~/.claude/skills/`
-manually (symlink support is a roadmap item).
+manually. Native symlink support is **not scheduled** — with a copy
+install, pack updates need a re-copy, and the per-invocation runtime
+stays off (it resolves the pack through the symlink).
 
 **Optional, per capability.** Each degrades honestly — the skill names
 the missing binary and stops, or falls back to a documented tier. None
@@ -246,8 +248,9 @@ branch says so honestly. Machine-local state is exactly one file,
 <!-- acstack:runtime -->
 Run once before the skill's steps; any failure degrades to pure markdown:
 ```bash
-pack="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)")")"
-if [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
+link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"   # empty = not symlinked
+pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non-empty
+if [ -n "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
   "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
   "$pack/bin/acstack-recall" || true          # LEARNINGS.md + pack known-bug-classes, capped 6KB

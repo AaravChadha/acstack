@@ -11,8 +11,11 @@
 # check.sh, which also did not scan its own directory and so could never
 # catch itself. Keep your real list untracked.
 #
-# Pick tokens that are distinctive. Short common words (a first name like
-# "neil", a fragment like "nuv") will false-positive on ordinary prose.
+# Pick tokens that are distinctive. Short common words — a bare first
+# name, a three-letter fragment — will false-positive on ordinary prose,
+# so prefer a full surname or a distinctive codename. (This file once
+# used two entries from a real roster to illustrate that point, which is
+# the same mistake one directory over.)
 
 acmecorp
 initech

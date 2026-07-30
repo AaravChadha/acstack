@@ -17,8 +17,9 @@ the score targets a phase exit criterion cites) · /do (executes the tasks).
 <!-- acstack:runtime -->
 Run once before the skill's steps; any failure degrades to pure markdown:
 ```bash
-pack="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)")")"
-if [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
+link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"   # empty = not symlinked
+pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non-empty
+if [ -n "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
   "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
   "$pack/bin/acstack-recall" || true          # LEARNINGS.md + pack known-bug-classes, capped 6KB
@@ -87,8 +88,17 @@ Seed housekeeping (same invocation):
   and `templates/` are NOT on any path relative to the user's project:
 
   ```bash
-  pack_root="$(dirname "$(dirname "$(readlink "$HOME/.claude/skills/plan")")")"
+  link="$(readlink "$HOME/.claude/skills/plan" 2>/dev/null || true)"
+  pack_root="$(dirname "$(dirname "$link")")"
+  # An empty $link makes dirname return "." — which would read the USER'S
+  # OWN ./CONDUCT.md and install a foreign block as if it were the pack's.
+  # Verify before trusting it:
+  [ -n "$link" ] && [ -f "$pack_root/CONDUCT.md" ] || echo "PACK ROOT NOT RESOLVED"
   ```
+
+  If that prints `PACK ROOT NOT RESOLVED` (a copy install rather than
+  symlinks, or the skill invoked from elsewhere), **stop and ask the user
+  for the pack path.** Do not fall back to a relative path.
 
   Read the marker-fenced block from `$pack_root/CONDUCT.md` and copy it
   **verbatim**. If the readlink fails (a copy install rather than

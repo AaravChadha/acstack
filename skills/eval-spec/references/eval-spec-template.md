@@ -29,7 +29,7 @@ alone.
 
 | grade_rule | How it's judged |
 |---|---|
-| exact | normalized string equality (Unicode NFC, trimmed, case per case's `case_sensitive` flag) |
+| exact | normalized string equality (Unicode NFKC, trimmed, case per case's `case_sensitive` flag) |
 | concept | expected lists concept keywords; pass = all present in any phrasing (normalized substring) |
 | numeric-tolerance:<x> | parsed number within ±x (absolute) or ±x% (suffix `%`) of expected |
 | rubric:<name> | LLM-graded against the named rubric below; grader model + prompt pinned here |

@@ -96,10 +96,15 @@ def grade(case, actual):
         # the case — /audit eval calls that bucket "grader brittleness".
         return norm(expected) in norm(actual)
     if rule.startswith("numeric-tolerance:"):
-        tol = float(rule.split(":", 1)[1])
+        raw = rule.split(":", 1)[1].strip()
+        relative = raw.endswith("%")           # the spec allows ±x and ±x%
+        tol = float(raw.rstrip("%"))
         nums = lambda s: [float(x) for x in re.findall(r"-?\d+\.?\d*", str(s))]
         a, e = nums(actual), nums(expected)
-        return bool(a and e and abs(a[0] - e[0]) <= tol)
+        if not (a and e):
+            return False
+        limit = abs(e[0]) * tol / 100 if relative else tol
+        return abs(a[0] - e[0]) <= limit
     if rule.startswith("rubric:"):
         return None          # judged by a human or a model, never invented here
     raise ValueError(f"unknown grade_rule: {rule}")
@@ -113,7 +118,8 @@ def main():
                "grade_rule": c.get("grade_rule", "exact"),
                "expected": c.get("expected"), "actual": None,
                "pass": None, "status": "scored",
-               "acceptable_failure_applied": False}
+               "acceptable_failure_applied": False,
+               "acceptable_failure_reason": None}
         if c.get("status") == "needs-data":
             rec["status"] = "skipped-needs-data"
             records.append(rec); continue
@@ -127,6 +133,9 @@ def main():
             rec["status"] = "needs-rubric-review"
         elif rec["pass"] is False and accepted(c):
             rec["acceptable_failure_applied"] = True
+            af = c.get("acceptable_failure")
+            rec["acceptable_failure_reason"] = (af.get("reason") if isinstance(af, dict)
+                                                else c.get("reason"))
         records.append(rec)
 
     RESULTS_DIR.mkdir(exist_ok=True)
@@ -143,10 +152,15 @@ def main():
           else "overall: no scored cases")
     by = {}
     for r in scored:
-        d = by.setdefault(r["category"], [0, 0]); d[1] += 1
-        if r["pass"] or r["acceptable_failure_applied"]: d[0] += 1
-    for cat, (p, n) in sorted(by.items()):
-        print(f"  {cat}: {p}/{n} ({100*p/n:.1f}%)")
+        d = by.setdefault(r["category"], [0, 0, 0]); d[1] += 1
+        if r["pass"]: d[0] += 1
+        elif r["acceptable_failure_applied"]: d[2] += 1
+    for cat, (p, n, af) in sorted(by.items()):
+        # a forgiven failure is shown, never folded silently into the pass
+        # count — "2/2 (100.0%)" hiding a failure moves the number UP
+        # without naming anything, which is inflation, not rounding.
+        note = f"  [{af} acceptable_failure]" if af else ""
+        print(f"  {cat}: {p + af}/{n} ({100*(p+af)/n:.1f}%){note}")
 
     # every case excluded from the denominator is named — silence here is
     # how a headline lies. Each of these has a record in the file too.
@@ -155,6 +169,13 @@ def main():
         n = sum(1 for r in written if r["status"] == st)
         if n:
             print(f"{label}: {n} (excluded from the headline)")
+    # every forgiven failure is named with its reason — an unlisted
+    # acceptable_failure is a failure silently converted into a pass.
+    forgiven = [r for r in written if r["acceptable_failure_applied"]]
+    if forgiven:
+        print(f"acceptable_failure applied to {len(forgiven)} case(s), each counted as ok:")
+        for r in forgiven:
+            print(f"  {r['id']} ({r['category']}): {r.get('acceptable_failure_reason') or '(no reason recorded)'}")
     if errors:
         print(f"errors: {errors} — run did not complete cleanly")
     return 1 if errors else 0

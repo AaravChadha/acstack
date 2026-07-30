@@ -40,7 +40,7 @@ real rate; writing the test first is what broke that curve.
 
 ## Adding a skill
 
-1. `skills/<name>/SKILL.md`, under 500 lines (typical is ~110). Detail
+1. `skills/<name>/SKILL.md`, under 500 lines (typical is ~117). Detail
    that is not needed every time goes in `references/`, cited from
    SKILL.md with a note on when to read it.
 2. Copy the `acstack:principles` and `acstack:runtime` blocks
