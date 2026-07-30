@@ -16,10 +16,20 @@ bash docs/guard-matrix.sh "$PWD"    # every guard shown firing on a seeded defec
 
 CI runs the first two plus `shellcheck` on every PR — the installer
 round-trip is local-only, since it writes outside the repo. One honest
-gap:
-CI has no `.acstack-banned` (that list is untracked by design), so the
-banned-name section prints SKIP there and **local pre-commit is the
+gap: CI has no `.acstack-banned` (that list is untracked by design), so
+the banned-name section prints SKIP there and **local pre-commit is the
 enforcement point for names**.
+
+> **Reviewing someone else's branch: read the diff before you run the
+> guard.** `check.sh` section 11 runs `scripts/controls.sh`, which
+> executes `fixtures/eval-run/eval/run.py` — a tracked file any pull
+> request can edit. Checking out an untrusted branch and running the
+> guard first would execute the contributor's Python on your machine.
+> Read the diff to `fixtures/` and `scripts/` first; the rest of the
+> guard is worth nothing if the thing you ran to get it was theirs.
+> (CI is not this vector: the workflow triggers on `pull_request`, not
+> `pull_request_target`, so a fork's run gets a read-only token and no
+> secrets.)
 
 ## Adding or changing a guard: matrix first
 

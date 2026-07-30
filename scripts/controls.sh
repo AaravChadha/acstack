@@ -68,6 +68,9 @@ if ls fixtures/multi-product/pnpm-workspace.yaml >/dev/null 2>&1; then
 else bad "/health multi-product fixture lost its workspace marker"; fi
 
 # --- /eval-run: the false-pass control (a runner that reports 100% is broken) ---
+# NOTE: this executes eval/run.py, a tracked file a pull request can edit.
+# Reviewing a fork branch? Read the fixtures/ and scripts/ diff BEFORE
+# running the guard — see CONTRIBUTING.md.
 if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; then
   out="$( (cd fixtures/eval-run && python3 eval/run.py 2>&1) || true)"
   head="$(printf '%s' "$out" | grep '^overall:' || true)"
