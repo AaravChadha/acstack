@@ -360,7 +360,8 @@ for s in $READONLY_SKILLS; do
     fail=1; continue
   fi
   case "$tools" in
-    *Write*|*Edit*|*NotebookEdit*)
+    *Write*|*Edit*)   # *Edit* already covers NotebookEdit — listing both
+                      # is dead code, which shellcheck (SC2222) catches
       echo "FAIL readonly: $f grants a write tool: $tools"; fail=1 ;;
   esac
   # bare Bash, and Bash(*) which is the same grant wearing parentheses
