@@ -30,7 +30,10 @@
   `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**58**
   cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
-- Wave 4 is at **1 open item: 4.7, the launch checklist.** 4.31 closed
+- **Wave 4's work is done.** 4.7's ten checklist items are all
+  demonstrated (evidence ledger, 2026-07-31 entry); its box stays open
+  because its final clause is "only then flip public", and **the flip is
+  the user's call and has not been made.** 4.31 closed
   2026-07-31 (/secure grew a fifth surface — deserialization, crypto,
   transport — with nine controls demonstrated failing first); 4.5 closed
   the same day with both halves evidenced, including PR #1 shown failing
@@ -76,6 +79,47 @@ bash docs/guard-matrix.sh "$PWD"   # 58 seeded-defect cases proving the guards f
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Launch checklist executed — 4.7's evidence ledger (2026-07-31)
+
+Every line of 4.7 demonstrated, not asserted. This is the ledger its own
+acceptance demands: item → the command or artifact that proves it →
+result. **The public flip is deliberately NOT done — it is the user's
+call and the only remaining action.**
+
+| # | Item | Evidence | Result |
+|---|---|---|---|
+| 1 | check.sh green, every guard shown firing | `bash docs/guard-matrix.sh "$PWD"` | **58/58**, each case seeding one defect into a copy of the real tree; six added retroactively were re-run against the pre-fix guard and reported BAD first |
+| 2 | Frontmatter parses; descriptions survive into the live listing | parsed all 20 `description:` values; cross-checked against the model-facing listing | 20/20 parsed, **0 problems**; every description ends in its full `Use when…` sentence |
+| 3 | Cross-references resolve | `scripts/check.sh` sections 8–9 | clean; guard also rejects repo-root-relative citations that dangle on installs |
+| 4 | `./setup` round-trips on a fresh machine | fresh `git clone` from the **published remote** (HEAD `2dece52`, 104 files) into a clean `HOME` | install 20/0 → idempotent re-run 20 `ok` → **uninstall removed exactly 20, leaving a planted foreign file and foreign symlink untouched** → reinstall 20. `check.sh` on that clone: clean with the honest banned-name SKIP; matrix 58/58 |
+| 5 | Context-free multi-agent audit | three rounds, **11 subagents**, no prior conversation context | 27 + 12 + 56 findings; every one resolved or declined in writing |
+| 6 | Main-thread pass over the same ground | own passes each round | found what agents missed (stale `4/5` control figure, count drift) and **verified agent claims** — one, the `head -c 12` pointer bug, did not survive checking |
+| 7 | Demo transcript, curated, never a promoted leftover | purpose-built word-frequency project; README "See it work" | every command and output executed; leads with `/do` closing a task **without writing code** because its acceptance already passed |
+| 8 | Credits line; no personal/client data in the working tree | README §Credits; `check.sh` §2 with the real list | credits present; sweep clean. History scope struck by the 2026-07-30 verdict |
+| 9 | Every wave-4 acceptance line run, output recorded | this table | — |
+| 10 | `/resume` cold start · `/investigate` a real failure | 2026-07-29 session · this session | /resume named the wave, divergence flags, and three unblocked tasks, **plus three findings** now carried on 4.18. /investigate rooted the /qa fixture's inert stale-server guard to two causes: `fixtures/qa/README.md:7` (`pkill -f` substring never matching the path the next line supplies) and `fixtures/qa/server.js:13` (uncaught `JSON.parse` killing the process, so the documented "5xx" is really `http_code=000`, curl exit 52) |
+
+**What the checklist caught that nothing else had.** Item 4's uninstall
+precision test — planting a foreign file and symlink before uninstalling
+— is the only check that proves `setup` removes *exactly* what it owns;
+every earlier run only counted what disappeared. Item 7 produced the
+day's best demonstration by accident: the first task's acceptance passed
+before any work, so `/do` closed it without writing code. That is the
+argument for runnable acceptance lines in one screenshot, and no
+hand-written walkthrough would have produced it.
+
+**Honest limits of this ledger.** Item 4 ran on macOS against a clean
+`HOME` and a fresh clone, not a different physical machine or OS; the
+Linux side is covered only by CI running check.sh and the matrix on
+ubuntu. Item 5's agents read the tree, not a live Claude Code session —
+no item here proves a *model* obeys a skill, only that the instructions
+and machinery are sound. Item 2 verifies descriptions parse and appear;
+it cannot prove the listing is identical on another client version.
+
+Validation close: 4 commits; `check.sh` clean on each; matrix 58/58;
+controls all plants caught; 20 skills; fresh-clone round-trip 20 linked
+/ 20 removed / 20 relinked with 2 foreign entries preserved.
 
 ### Wave 4 nearly closed: batches B–D, a second survey, and an RCE I argued myself out of (2026-07-30 → 31)
 
