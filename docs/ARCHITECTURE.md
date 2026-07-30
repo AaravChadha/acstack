@@ -1,8 +1,8 @@
 # ARCHITECTURE — how the pieces fit
 
 Four layers, each with one job: **skills** (the instructions), **config**
-(what varies per project), **runtime** (the eleven lines that run before
-a skill's steps, under a budget of twelve), and **guards** (what makes the claims mechanical).
+(what varies per project), **runtime** (the twelve lines that run before
+a skill's steps, at a budget of twelve), and **guards** (what makes the claims mechanical).
 Nothing here is generated; every file is hand-maintained markdown or
 bash, and that is a deliberate constraint — see PRINCIPLES.md.
 
@@ -16,7 +16,7 @@ PRINCIPLES.md         why the discipline is shaped this way
 VERSION, CHANGELOG.md release record; check.sh enforces their agreement
 setup                 symlink installer / uninstaller
 bin/                  three runtime helpers (bash 3.2+)
-scripts/check.sh      the guard — its header enumerates all 14 sections
+scripts/check.sh      the guard — its header enumerates all 15 sections
 scripts/controls.sh   positive controls: documented checks vs seeded fixtures
 fixtures/<skill>/     one known planted defect per check-shaped skill
 docs/guard-matrix.sh  seeded-defect cases proving each guard fires
@@ -32,7 +32,7 @@ only when the skill needs them. Frontmatter carries `name`,
 `disable-model-invocation`.
 
 Two size rules, both guarded: SKILL.md stays under 500 lines (the pack
-averages 117, range 90–189), and detail that is not needed on every invocation
+averages 118, range 91–199), and detail that is not needed on every invocation
 lives in `references/`. This is progressive disclosure — the description
 is always in context, the body loads on invocation, the references load
 on demand.
@@ -70,36 +70,47 @@ across all of them, canonical copy in README.md. Budget: **12 lines**,
 enforced by `PREAMBLE_BUDGET` in check.sh. Raising it requires editing
 that constant in a visible commit — the budget is the accretion brake.
 
-Line by line (the block is 11 lines inside the markers, one under
-budget):
+Line by line — the block is **12** lines inside the markers, exactly at
+budget, so the next addition must raise `PREAMBLE_BUDGET` in a visible
+commit:
 
 1. **`Run once before the skill's steps; any failure degrades to pure markdown:`**
    — states the contract to the reading agent: this is best-effort, and
    failure is not an error.
 2. **` ```bash `** — opens the block.
-3. **`pack="$(dirname "$(dirname "$(readlink …/skills/health …)")")"`**
-   — resolves the pack root through an installed symlink. `setup` links
-   only `skills/*/`, so `bin/`, `CONDUCT.md`, and `templates/` are on no
-   path relative to the user's project; this is the only way to find
-   them. `2>/dev/null || true` means a copy install (no symlink) yields
-   an empty string instead of an error.
-4. **`if [ -x "$pack/bin/acstack-config" ] && ! … runtime | grep -q '=off'; then`**
-   — two conditions in one line: the helpers must exist and be
-   executable (false on a copy install or a partial clone), and
-   `runtime` must not resolve to `off`. Testing the resolved value
-   rather than reading the file honors the whole precedence chain.
-5. **`"$pack/bin/acstack-config" || true`** — echoes resolved keys with
+3. **`link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"`**
+   — reads the symlink and nothing else. `setup` links only `skills/*/`,
+   so `bin/`, `CONDUCT.md`, and `templates/` are on no path relative to
+   the user's project; this is the only way to find them. `|| true`
+   means a copy install (no symlink) yields an empty string, not an
+   error.
+4. **`pack="$(dirname "$(dirname "$link")")"`** — derived, and
+   **deliberately not trusted yet.** `dirname` of an empty string is
+   `.`, so on a copy install this silently becomes the user's current
+   directory. That is not hypothetical: until 2026-07-31 the next line
+   tested only `-x "$pack/bin/acstack-config"`, so a cloned repo
+   shipping an executable `bin/acstack-config` had it run on any skill
+   invocation. Reproduced, then closed.
+5. **`if [ "${link#/}" != "$link" ] && [ -x … ] && ! … | grep -q '=off'; then`**
+   — the guard, three conditions. First: `$link` must be an **absolute**
+   path — this is the fix above, and it rejects both the empty string
+   and a hand-made relative symlink, which resolves to `.` the same way.
+   Then the helper must exist and be executable, and `runtime` must not
+   resolve to `off` — testing the resolved value rather than reading the
+   file honors the whole precedence chain. `docs/guard-matrix.sh`
+   regression-tests the fail-open case.
+6. **`"$pack/bin/acstack-config" || true`** — echoes resolved keys with
    their sources, so a skill's behavior traces to a setting.
-6. **`"$pack/bin/acstack-update-check" || true`** — at most one
+7. **`"$pack/bin/acstack-update-check" || true`** — at most one
    `git fetch` per day; prints the pull command when behind; never pulls.
-7. **`"$pack/bin/acstack-recall" || true`** — LEARNINGS.md plus the
+8. **`"$pack/bin/acstack-recall" || true`** — LEARNINGS.md plus the
    pack's known-bug-classes, capped at 6KB. Every one of these three
    carries `|| true`: a broken helper must never block the actual work.
-8. **`else`** — the degradation branch.
-9. **`echo "runtime off — proceeding without recall/update-check"`** —
+9. **`else`** — the degradation branch.
+10. **`echo "runtime off — proceeding without recall/update-check"`** —
    one honest line. The skill still runs; it just runs as pure markdown.
-10. **`fi`** — closes.
-11. **`` ``` ``** — closes the block.
+11. **`fi`** — closes.
+12. **`` ``` ``** — closes the block.
 
 ### bin/
 
@@ -132,7 +143,7 @@ rule `/secure` applies to any untrusted-in-trusted-position path.
 
 Three layers, each answering a different question.
 
-**`scripts/check.sh` — is the pack internally consistent?** Fourteen
+**`scripts/check.sh` — is the pack internally consistent?** Fifteen
 numbered sections plus 3b; the header comment is their single enumeration, updated in the
 same commit as any new section (that list went stale twice when copies
 lived elsewhere). It covers principles-block byte-identity, banned
@@ -140,8 +151,9 @@ names, frontmatter parsing and description safety, POSIX-ERE hazards in
 documented greps, line budgets, shell syntax and shellcheck,
 VERSION/CHANGELOG agreement, routing lines, cross-reference resolution,
 config-key reachability, verdict-first stance, positive controls,
-runtime-block identity and budget, read-only tool declarations, and the
-referral roster.
+runtime-block identity and budget, read-only tool declarations, the
+referral roster, and conduct-block identity between CONDUCT.md and
+AGENTS.md — fifteen, matching the header.
 
 **`scripts/controls.sh` — do the documented checks actually work?** For
 each check-shaped skill it extracts the detection command *from the
@@ -153,7 +165,7 @@ produce 5/6 (83.3%), and it also asserts that every case excluded
 from the denominator is NAMED — silent exclusion moves no percentage,
 so it is invisible in the number alone.
 
-**`docs/guard-matrix.sh` — does each guard fire?** 55 cases, each
+**`docs/guard-matrix.sh` — does each guard fire?** 58 cases, each
 seeding one defect into a copy of the real tree and asserting the
 expected failure class, plus must-pass cases so a guard cannot pass by
 failing everything. **Extend the matrix first, watch the case fail, then

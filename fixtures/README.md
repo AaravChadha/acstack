@@ -14,6 +14,12 @@ Consequences of living in the tree, all intended:
   the honest scope line for self-runs.
 - The banned-name guard sweeps `fixtures/` like everything else; all
   content stays generic.
+- **Third-party scanners will see these.** `fixtures/secure/config.js`
+  carries an `AKIA`-shaped string that matches GitHub's AWS partner
+  pattern, and `fixtures/health/.env` is a tracked `.env`. Both are
+  intentional. `.github/secret_scanning.yml` excludes `fixtures/` so
+  alerts point at real findings; a scanner without that config will
+  flag them, and that is expected rather than a defect.
 - /qa's fixture needs a live process, so its control is NOT in
   controls.sh — `fixtures/qa/README.md` documents the shakedown
   procedure. Its stale-server guard was itself broken until 2026-07-31
