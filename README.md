@@ -160,14 +160,14 @@ skills/<name>/        # one directory per skill: SKILL.md + references/
 
 ## Development
 
-Run `scripts/check.sh` before committing pack changes. It fails on
-principles-block drift, personal/client names in pack content (from your
-own untracked `.acstack-banned` list — copy `.acstack-banned.example`; the
-list is deliberately NOT committed, since it names the very clients it
-protects), unsafe or
-mismatched frontmatter (a description YAML would truncate, a `name:` that
-disagrees with its directory), oversized SKILL.md files, and shell syntax
-errors.
+Run `scripts/check.sh` before committing pack changes. Its header
+comment is the single enumeration of everything it guards — the list
+lives beside the code because copies of it kept here went stale twice.
+Banned-name checking reads your own untracked `.acstack-banned` list
+(copy `.acstack-banned.example`; the list is deliberately NOT committed,
+since it names the very clients it protects). `docs/guard-matrix.sh`
+holds the seeded-defect cases proving each guard fires — extend it
+BEFORE adding a guard.
 
 ## Credits
 

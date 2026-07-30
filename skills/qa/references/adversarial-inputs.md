@@ -17,6 +17,14 @@ silent wrong answer is always a finding, however absurd the input.
   U+2013 en-dash where a hyphen is expected.
 - An HTML/script fragment: `<b>x</b><script>1</script>` — expect it
   escaped or rejected, never rendered or executed.
+- Prompt-injection-shaped input for any field an LLM will read
+  ("ignore previous instructions and …") — expect it treated as data,
+  never obeyed.
+
+> **Canonical bank.** This file is the single home of the adversarial
+> input list; /eval-spec's adversarial category and /audit's
+> verification set cite it rather than keeping their own copies (the
+> three copies had already diverged before 2026-07-30).
 
 ## Numeric fields
 

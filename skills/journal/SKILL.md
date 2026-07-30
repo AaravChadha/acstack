@@ -40,9 +40,10 @@ one) · /learn (one durable lesson; /journal the whole session) · /resume
    heading `### <what changed> (YYYY-MM-DD[ morning/evening])`. Follow
    `references/worklog-rules.md` for granularity — exact bugs, exact
    numbers, why-X-not-Y, what did NOT change, validation close.
-3. **Classify any eval results.** Every failure gets a bucket: prompt issue /
-   grader brittleness / provider flake / data issue / parser issue /
-   genuinely ambiguous. Genuinely-ambiguous survives only as
+3. **Classify any eval results.** Every failure gets a bucket from the
+   canonical table in `../audit/references/eval-review-rules.md`: prompt
+   issue / grader brittleness / provider flake / data issue / parser
+   issue / genuinely ambiguous. Genuinely-ambiguous survives only as
    `acceptable_failure: <written reason>`. Use `FAIL → fixed` notation for
    resolved ones, and add a "Read" column giving the interpretation, not
    just the verdict. Never adjust a case to raise the number.

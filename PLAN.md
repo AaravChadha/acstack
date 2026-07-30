@@ -391,7 +391,18 @@ below fully green; repo flipped public.
   `sk-live-` key (a check that ran and did not work) and check.sh's own
   description guard on 2026-07-29, whose first control passed
   misleadingly and would have shipped unverified.
-- [ ] **4.17** Guard coverage for the mechanically-detectable classes —
+- [x] **4.17** *(Done 2026-07-30: check.sh sections 7–10 — routing
+  lines, cross-references/citations in four shapes, config-key
+  reachability against README's table, verdict-first presence — plus a
+  strict frontmatter parse in section 3. Snippet drift resolved by
+  citation: canonical homes are /secure §2 (secret patterns), /audit
+  eval-review-rules (six buckets), /qa adversarial-inputs (the bank,
+  which absorbed prompt-injection-shaped); the three root-relative
+  `skills/…` citations were caught by the new guard itself and converted
+  to portable `../` forms. check.sh's header is now the single guard
+  enumeration and README points at it. Matrix 19 → 28 cases, every new
+  guard shown failing before it existed.)*
+  Guard coverage for the mechanically-detectable classes —
   the carrier for "grow check.sh, not the prose", and the higher-value
   half of the 2026-07-29 process review (the four AGENTS.md verification
   rules are the lesser half). Six of that day's ten defects were

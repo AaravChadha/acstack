@@ -37,13 +37,18 @@ git ls-files | grep -E '(^|/)\.env(\.|$)'          # tracked secrets
 grep -nE '^!' .gitignore 2>/dev/null                # the !.env negation trap
 git log --all --oneline -- '*.env' '*secret*' '*credential*' | head
 git grep -nE '(sk[-_][A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|-----BEGIN [A-Z ]*PRIVATE KEY)' -- . ':!*.md'
+# sk[-_] with a hyphen/underscore class catches sk-proj-…, sk_live_…,
+# sk-live-… — a plain sk-[alnum]{20,} misses every prefixed variant.
+# CANONICAL COPY: /health's secrets check cites these two greps rather
+# than duplicating them (the ghp_ prefix had already drifted between
+# copies once).
 git grep -niE '(api[_-]?key|secret|token|password)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}' -- . ':!*.md'
 ```
 
 A secret anywhere in history is compromised regardless of the current
 tree — the fix direction is "rotate the key", and only then "purge
 history". This is the `!.env` known-bug-class; cross-reference
-`skills/audit/references/known-bug-classes.md`.
+`../../audit/references/known-bug-classes.md`.
 
 ## 3. Injection surface
 

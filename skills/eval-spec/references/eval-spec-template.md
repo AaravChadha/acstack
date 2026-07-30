@@ -18,6 +18,9 @@
 | refusal | <what MUST be declined and why> | 5 | 100% |
 | <domain-specific> | <from the BRIEF's landmines> | … | … |
 
+Adversarial and edge cases draw from the canonical input bank,
+`../../qa/references/adversarial-inputs.md` — do not restate it here.
+
 **Overall target: ≥ <n>%** — the number wired into PLAN.md's exit
 criterion for <phase>. Refusal is never averaged away: its target stands
 alone.

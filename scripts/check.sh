@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 # acstack pack guard — run before committing pack changes (CI runs it too).
-# Checks: principles-block byte-identity, banned personal/client names,
-# frontmatter safety (description YAML hazards, name vs directory),
-# SKILL.md line budgets, shell syntax.
+# The numbered sections below are the SINGLE enumeration of what this guard
+# covers; adding a section means updating this list in the same commit. (The
+# list went stale twice while copies lived in README and here separately —
+# README now points at this header instead of enumerating.)
+#   1  principles-block byte-identity       2  banned personal/client names
+#   3  frontmatter safety + strict parse    3b POSIX-ERE hazards in greps
+#   4  SKILL.md line budgets                5  shell syntax + shellcheck
+#   6  VERSION/CHANGELOG agreement          7  routing lines present
+#   8  cross-references + citations resolve 9  config-key reachability
+#   10 verdict-first stance present
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -101,6 +108,14 @@ for f in skills/*/SKILL.md; do
   done <<EOF
 $descs
 EOF
+
+  # strict parse: every frontmatter line is a known key (the whole block
+  # must survive into the live skill listing, not just the description).
+  unknown="$(printf '%s\n' "$fm" | grep -vE '^(name|description|argument-hint|allowed-tools|disable-model-invocation):' | grep -vE '^[[:space:]]*$' || true)"
+  if [ -n "$unknown" ]; then
+    echo "FAIL frontmatter: $f has unknown or malformed frontmatter line(s): $(printf '%s' "$unknown" | head -1)"
+    fail=1
+  fi
 done
 
 # 3b. POSIX-ERE hazards in documented grep commands. `git grep -E` does not
@@ -146,6 +161,83 @@ else
     fail=1
   fi
 fi
+
+# 7. Routing line: every skill names its neighbors (five wave-1 skills
+#    shipped without one for two waves).
+for f in skills/*/SKILL.md; do
+  grep -q 'Adjacent skills:' "$f" || { echo "FAIL routing: $f has no 'Adjacent skills:' line"; fail=1; }
+done
+
+# 8. Cross-references resolve. Three forms:
+#    8a  /skill-name tokens name real skills/ dirs (or the exception list);
+#    8b  bare references/<file> citations exist under the citing skill;
+#    8c  ../ citations resolve from the citing file (the ONLY portable
+#        cross-skill form — installs symlink every skill dir side by side,
+#        so ../../<skill>/references/… resolves there too);
+#    plus: repo-root-relative skills/<x>/references/ citations are
+#    themselves a failure — they resolve in this repo but not on installs.
+XREF_EXCEPTIONS='doctor|script|api|dev'
+#   doctor — Claude Code's built-in diagnostic, named in /health's lineage note
+#   script — the </script> HTML fragment in /qa's adversarial bank
+#   api    — URL path in /secure's exploit-scenario example
+#   dev    — /dev/null in documented commands
+for f in skills/*/SKILL.md skills/*/references/*.md; do
+  d="$(dirname "$f")"
+  case "$d" in */references) sdir="$(dirname "$d")" ;; *) sdir="$d" ;; esac
+  toks="$(grep -oE '(^|[^A-Za-z0-9_/.`])/[a-z][a-z-]+:?' "$f" | sed -E 's|^[^/]*/|/|' | sort -u || true)"
+  while IFS= read -r t; do
+    [ -n "$t" ] || continue
+    case "$t" in *:) continue ;; esac   # HTML markers like <!-- /acstack:principles -->
+    name="${t#/}"
+    printf '%s' "$name" | grep -qE "^($XREF_EXCEPTIONS)$" && continue
+    [ -d "skills/$name" ] || { echo "FAIL crossref: $f references $t but skills/$name/ does not exist"; fail=1; }
+  done <<EOF
+$toks
+EOF
+  for r in $(grep -ohE '(^|[^./])references/[A-Za-z0-9._-]+\.(md|sh)' "$f" | sed -E 's|^[^r]*r|r|' | grep -E '^references/' | sort -u); do
+    [ -f "$sdir/$r" ] || { echo "FAIL crossref: $f cites $r but $sdir/$r does not exist"; fail=1; }
+  done
+  for r in $(grep -ohE '\.\./[A-Za-z0-9._/-]+\.(md|sh)' "$f" | sort -u); do
+    [ -f "$d/$r" ] || { echo "FAIL crossref: $f cites $r but it does not resolve from $d/"; fail=1; }
+  done
+done
+if hits="$(grep -rnE 'skills/[a-z-]+/references/' skills/ 2>/dev/null)"; then
+  echo "FAIL crossref: repo-root-relative citation — use ../ or ../../ so installs resolve:"
+  printf '%s\n' "$hits"
+  fail=1
+fi
+
+# 9. Config-key reachability: every key in README's config table appears in
+#    templates/acstack.md AND is read by each /skill the table names.
+rows="$(grep -E '^\|[[:space:]]*`[^/]' README.md || true)"
+while IFS= read -r row; do
+  [ -n "$row" ] || continue
+  c1="$(printf '%s' "$row" | awk -F'|' '{print $2}')"
+  c3="$(printf '%s' "$row" | awk -F'|' '{print $(NF-1)}')"
+  keys="$(printf '%s' "$c1" | grep -oE '`[^`]+`' | tr -d '`')"
+  for k in $keys; do
+    case "$k" in '##') continue ;; esac   # section-form rows (## Collaborators)
+    grep -q -- "$k" templates/acstack.md \
+      || { echo "FAIL config: README documents '$k' but templates/acstack.md never mentions it"; fail=1; }
+    for c in $(printf '%s' "$c3" | grep -oE '/[a-z-]+' || true); do
+      sdir="skills/${c#/}"
+      [ -d "$sdir" ] || { echo "FAIL config: README names consumer $c for '$k' but $sdir/ does not exist"; fail=1; continue; }
+      grep -rq -- "$k" "$sdir" \
+        || { echo "FAIL config: README says $c consumes '$k' but nothing in $sdir/ mentions it"; fail=1; }
+    done
+  done
+done <<EOF
+$rows
+EOF
+
+# 10. Verdict-first stance present in every report-shaped skill (five of
+#     them violated the pack's own stance while it was documented nowhere
+#     mechanical). Enumerated list — update it when a report skill lands.
+REPORT_SKILLS="audit challenge design-audit health migrate-check plan-review qa resume retro secure triage"
+for s in $REPORT_SKILLS; do
+  grep -qi 'verdict' "skills/$s/SKILL.md" \
+    || { echo "FAIL verdict: skills/$s/SKILL.md never states its verdict stance"; fail=1; }
+done
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then

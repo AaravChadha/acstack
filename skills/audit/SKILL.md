@@ -39,8 +39,9 @@ stack. Report per `references/code-report-template.md`:
 - **Defects** with root cause, exact `file:line`, and the input that fails.
 - **`Safety checks:`** — the exact commands run and what they matched.
 - **`## Verification`** — concrete inputs → observed outputs, including
-  adversarial cases (garbage strings, oversized input, regex-special chars,
-  out-of-range values, empty query).
+  adversarial cases from the canonical bank in
+  `../qa/references/adversarial-inputs.md` (garbage strings, oversized
+  input, regex-special chars, out-of-range values, empty query).
 - **`Known gap:`** — what was not verified and why.
 - **Scope** — what was deliberately not touched.
 

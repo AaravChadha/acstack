@@ -44,7 +44,7 @@ Method details in `references/investigation-method.md`. The sequence:
    Can't reproduce → the investigation continues (narrow the conditions);
    a fix is not attempted against a failure you cannot summon.
 3. **Known classes first.** Check the pack's
-   `skills/audit/references/known-bug-classes.md` and the project's
+   `../audit/references/known-bug-classes.md` and the project's
    LEARNINGS.md before inventing hypotheses — most bugs are reruns.
 4. **Hypotheses vs evidence.** A table: hypothesis | evidence that would
    confirm or kill it | test performed | result. A hypothesis with no

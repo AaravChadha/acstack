@@ -69,7 +69,7 @@ signal that makes promotion honest.
 
 When an entry's `**Seen:**` reaches 2+, or the lesson is plainly
 project-independent, propose promoting it into the pack's
-`skills/audit/references/known-bug-classes.md`, outputting the exact
+`../audit/references/known-bug-classes.md`, outputting the exact
 entry in that file's format:
 
 ```markdown

@@ -70,8 +70,10 @@ adjust in the interview, never silently:
 
 - **happy-path** — representative real questions (≥10).
 - **edge** — boundary values, empty/sparse data, ambiguous phrasing (≥5).
-- **adversarial** — garbage strings, oversized input, regex-special
-  characters, out-of-range values, prompt-injection-shaped input (≥5).
+- **adversarial** — drawn from the canonical input bank in
+  `../qa/references/adversarial-inputs.md`: garbage strings, oversized
+  input, regex-special characters, out-of-range values,
+  prompt-injection-shaped input (≥5).
 - **refusal** — inputs where the CORRECT behavior is declining:
   out-of-domain, no-data-available, unsafe (≥5). A system that answers a
   refusal case fails that case — refusing well is a capability, not an
