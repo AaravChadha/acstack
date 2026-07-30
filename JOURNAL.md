@@ -3,13 +3,14 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-07-29 (third entry that day). Waves 1–3 built and
-> shakedown-passed (19 skills). Since then: the roadmap extended to waves
-> 4/4.5/5/6/7 plus a deferred browser layer (38 skills at the end), six
-> independent audits across three rounds, four verification rules added to
-> AGENTS.md, and six broken checks fixed — including a banned-name roster
-> that lived inside the guard meant to prevent it. Wave 4 (15 items) is
-> next; no skills built today.
+> **Last update**: 2026-07-30. Wave 4 is in flight: specs approved
+> (`docs/wave-4-specs.md`), batch A built and closed (4.23 conduct fix,
+> 4.1 versioning, 4.17 guard coverage, 4.15 positive controls), 4.24
+> history purge declined by user verdict, and the whole layer hardened by
+> a 26-finding three-agent recheck that fixed seven silent-disable
+> classes in the new guards themselves. check.sh 6 → 11 sections;
+> guard-matrix 15 → 40 cases; 10 of 16 wave-4 items open. /resume passed
+> its true cold start (4.7 item 10, first half).
 
 ## TL;DR
 
@@ -19,24 +20,36 @@
 - Tickets mode (`tracking: tickets`) is live in /plan and /do — bootstrap,
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
-- Working tree clean; `scripts/check.sh` all clean (6 guard sections);
-  `./setup` links 19. Banned-name list is untracked (`.acstack-banned`) —
-  copy `.acstack-banned.example`, or the guard reports SKIPPED.
+- Working tree clean; `scripts/check.sh` all clean (11 guard sections,
+  including positive controls over seeded `fixtures/`);
+  `docs/guard-matrix.sh` proves every guard fires (40 cases); `./setup`
+  links 19. Banned-name list is untracked (`.acstack-banned`) — copy
+  `.acstack-banned.example`, or the guard reports SKIPPED.
+- Wave 4 batch A shipped 2026-07-30: VERSION `0.4.0` + CHANGELOG
+  (guarded agreement), six new guard classes, the fixtures/controls
+  positive-control layer, `T4:` retired from CONDUCT rule 10. Batch B
+  (4.2 runtime, 4.5 CI) is next; 10 of 16 wave-4 items open.
+- 4.24 history purge **declined** by verdict 2026-07-30 (roster reviewed:
+  non-sensitive company names, first names, already-public project
+  names) — the public flip is gated on the 4.7 checklist only.
 - Conduct contract (10 rules) shipped in CONDUCT.md and embedded in this
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
   public flip waits on the wave-4 launch checklist.
-- Roadmap runs to 38 skills, 44 open tasks: wave 4 (launch, 15) → 4.5
-  (post-launch hardening, 8) → 5 (pre-flight gates) → 6 (review board) → 7 (operate),
-  plus an unscheduled browser layer. Full detail in PLAN.md.
-- Next: wave 4. Specs get written at wave start, per the standing process.
+- Roadmap runs to 38 skills, 39 open tasks: wave 4 (launch, 10 of 16
+  open) → 4.5 (post-launch hardening, 8) → 5 (pre-flight gates) → 6
+  (review board) → 7 (operate), plus 5 unscheduled browser-layer items.
+  Full detail in PLAN.md.
+- Next: wave-4 batch B — 4.2 (runtime preamble + `bin/`) then 4.5 (CI) —
+  per the approved build order in `docs/wave-4-specs.md`.
 
 ## How to run it right now
 
 ```bash
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
-scripts/check.sh   # pack guard — must be clean before any commit
+scripts/check.sh   # pack guard (11 sections, runs controls) — clean before any commit
+bash docs/guard-matrix.sh "$PWD"   # 40 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the nineteen skills load at start
 ```
 
@@ -47,12 +60,134 @@ scripts/check.sh   # pack guard — must be clean before any commit
 | 1 — Core + foundation | ✅ | 5 skills (403 SKILL.md lines total, budget 500/each), 9 reference files, setup round-trip verified, guard clean on first run |
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
-| 4 — Distribution + launch | ⬜ | 15 launch-blocking items: runtime, CI, README v2, discoverability, eval runner, guards, the 9-point demonstrated launch checklist |
+| 4 — Distribution + launch | 🔶 in progress | Batch A done (2026-07-30): versioning guarded, guard sections 7–11, fixtures + controls, conduct fix; 10 of 16 items open — runtime, CI, README v2, discoverability, eval runner, the 10-point demonstrated launch checklist |
 | 4.5 — Post-launch hardening | ⬜ | 8 items split out 2026-07-29: telemetry, `setup --global`, /audit tests, /why, /refactor, remaining degradation paths |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Wave 4 batch A: guards built, then hardened by their own recheck (2026-07-30)
+
+Starting state: wave 4 at 15 open items, specs unwritten, /resume never
+cold-started. Ending state: specs approved and built through batch A —
+4.23, 4.1, 4.17, 4.15 closed with evidence, 4.24 closed by decline —
+leaving 10 of 16 wave-4 items open; check.sh 6 → 11 sections (141 → 304
+lines); guard-matrix 15 → 40 cases; a permanent `fixtures/` +
+`scripts/controls.sh` positive-control layer; 10 work commits plus this
+entry.
+
+**/resume's true cold start (4.7 item 10, first half) — passed, with
+three findings.** Run before reading anything, per the wave-2 flag. It
+correctly named the wave, the single unjournaled commit, and the
+reconciling line count, and correctly said the next unit was
+spec-writing, not task 4.1. Findings: (a) the unjournaled-range step
+matches the literal `Journal <date>: <summary>` subject, so this repo's
+multi-entry days (`Journal 2026-07-29 (3rd): …`) would count SIX
+unjournaled commits instead of one; (b) no stated path for a task
+without an `**Acceptance:**` line — true of 4.1/4.2/4.5 at the time;
+(c) prose process-prerequisites (specs-at-wave-start lives in PLAN's
+header blockquote) are invisible to checkbox-unblocked logic. (a) and
+(b) now ride 4.18; (c) is a recorded known limitation — the fix would
+mean parsing prose, and the mitigation is keeping such rules in the
+header /resume does read.
+
+**4.24 declined, not deferred (user verdict, 2026-07-30).** The roster
+in history was reviewed verbatim before ruling: twelve tokens —
+company names with non-sensitive association, bare first names, and
+project names that are already public repos. History exposure accepted;
+no rewrite, no repo recreation; the flip is no longer history-blocked
+and 4.7 item 8 narrowed to the working tree. The working-tree ban and
+guard stay — their rationale is generic pack content, not secrecy. The
+evaluated `git filter-repo --replace-text` + fresh-repo procedure stays
+in the spec as the record of what was declined.
+
+**Specs at waves-2/3 fidelity** (`docs/wave-4-specs.md`, 553 lines at
+commit, 569 now with as-built status). Guard-first build order; the four
+missing PLAN acceptance lines supplied and landed with commit 1; snippet
+drift resolved by citation because cross-skill `../` paths resolve on
+every install where wave 2's README pointers did not; /eval-run specced
+to shake down against a deterministic toy so no API spend is required.
+Speccing itself found the THIRD stale-enumeration instance: check.sh's
+header and README each listed five guard checks while six existed.
+
+**Batch A build.** 4.23: `T4:` retired from CONDUCT rule 10's body,
+Good example, and both condensed blocks; verified by grep over live
+files plus a byte-diff of the CONDUCT/AGENTS blocks. 4.1: VERSION
+`0.4.0`, CHANGELOG with retroactive 0.1–0.3 entries and
+`## 0.4.0 — unreleased` on top (recorded divergence from the spec's
+literal `## Unreleased`, so the agreement guard compares exactly);
+required-version issue template; the matrix gained a full-tree
+seeded-defect section. 4.17: check.sh sections 7–10 (routing,
+cross-references in four shapes, config-key reachability parsed from
+README's table, verdict-first presence) plus strict frontmatter parse;
+canonical snippet homes are /secure §2 (secret patterns), /audit
+eval-review-rules (six buckets), /qa adversarial-inputs (the bank,
+absorbing prompt-injection-shaped); **the crossref guard's first live
+run caught three real repo-root-relative citations** (learn,
+investigate, secure — forms that resolve in this repo but dangle on
+every install), converted to portable `../` forms. 4.15: one planted
+defect per check-shaped skill; controls.sh EXTRACTS each documented
+detection command from its reference file at run time, so editing the
+pattern edits what gets tested; **the control's first run caught its
+own fixture lying** — the "NBSP" plant was a plain space. /qa's
+live-server control is a documented shakedown procedure, stated rather
+than pretended into a per-commit check.
+
+**The recheck (user-requested): "make sure nothing already built has
+errors or is stale."** Mechanical layer all green; three context-free
+agents (docs-vs-tree, all-19-skills content, adversarial shell;
+~290k tokens total) plus a main-thread pass returned 26 findings, none
+broken-in-operation. The two worst were live-verified before reporting:
+**one malformed banned-list entry (`broken(`) flipped the entire sweep
+from FAIL to `all clean`** — grep's exit 2 (bad pattern) conflated with
+exit 1 (no match), error eaten; and a comments-only list killed
+check.sh before its own SKIP branch, which was therefore dead code.
+
+**A.1 hardening — the guards' own false-pass class, fixed matrix-first
+(31 → 40).** Loud failure on invalid banned entries; three early-death
+sites now report instead of dying (comments-only list, headingless
+CHANGELOG, unparseable config row); missing `fixtures/` is FAIL, not
+silence; colon-suffixed and code-span dangling refs both extracted —
+with prose separators excluded, which the real tree immediately
+justified (`` `ls`/glob ``, `` `--amend`/rebase `` cleared, `/sandbox`
+documented as a URL-example exception); config reachability requires
+key-shaped matches (`` `k` ``, `k:`, or `<k>` — the placeholder form
+the real tree uses for branch-prefix); the /audit raw-compare control
+no longer matches bare English "in"; `ACSTACK_BANNED_FILE` is now
+authoritative (set-but-missing SKIPs, never falls back to the user's
+real roster) and matrix copies delete `.acstack-banned` before leaving
+the repo. Canonicalization completed: journal-template's example bucket
+`real miss` → `prompt issue`; /health's secrets section cites /secure
+wholesale after the plain-command copies were found ALREADY drifted
+(history glob `'*.env'` vs the canonical three); /health's config check
+resolves the pack README via the §3 readlink; /triage's report-order
+sentence untangled; /secure's truncated regex-note blockquote repaired.
+Declined with reason: /plan-review's title stays above its verdict —
+the stance governs the first content line and an H1 is not content.
+Residual, standing with its July reason: check.sh 3b still inspects
+only command-position `git grep` lines (now including `$`-prefixed).
+
+**Read on the process.** The 2026-07-29 curve held in miniature: the
+canonicalization pass itself introduced two defects (a worked example
+missed, a half-cite that left drifted copies), and they were caught the
+same day by the recheck instead of shipping — the guards-first
+discipline plus independent recheck is what "writing prose creates
+defects at a real rate" looks like when it is being managed rather than
+discovered. Every new guard was demonstrated failing before it existed;
+no exceptions.
+
+**What did NOT change (intentional):** no 4.2 runtime and no 4.5 CI
+(batch B, awaiting go); /investigate has still never chased a real
+failure (4.7 item 10, second half); README's requirements claim stays
+wrong until 4.26; the scratch-repo deletion stays owner: user.
+
+Validation close: `check.sh` clean on all 10 work commits; sections
+6 → 11; matrix 15 → 40 with every new guard shown failing first;
+controls all caught; PLAN 926 → 1003 lines; wave 4: 16 listed, 6
+closed, 10 open (a mid-session status message said 11 — miscounted,
+caught by re-counting for this entry); skills unchanged at 19, with
+content edits in 9 skill files.
 
 ### Third audit round: the guard was the leak, and my fixes were the bugs (2026-07-29, evening)
 
