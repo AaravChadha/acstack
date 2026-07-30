@@ -485,7 +485,18 @@ below fully green; repo flipped public.
   > set is narrower-than-write but not the same shape, and 4.15 groups it
   > with the check-shaped skills for positive controls, which is a
   > different question from whether it can write.
-- [ ] **4.9** Referral block — discoverability for typed-only skills, per
+- [x] **4.9** *(Done 2026-07-30: marker-fenced `acstack-referrals` roster
+  in AGENTS.md listing exactly /plan and /eval-spec, /plan's suggest-when
+  carrying the approved build-without-a-plan trigger verbatim (bright
+  line, work-first timing, concrete options, once-per-session, no state
+  file); the rule 9 clause added to CONDUCT.md and AGENTS.md, blocks
+  verified byte-identical; `/plan seed` installs the block by the same
+  pack-root readlink rules as the conduct block, never from memory;
+  `/health` gains check 3b plus its SKILL.md row. check.sh section 14
+  diffs the roster against the `disable-model-invocation: true` set —
+  two matrix cases (a dropped row, a model-invocable skill added) shown
+  failing first; matrix 46 → 48.)*
+  Referral block — discoverability for typed-only skills, per
   the 2026-07-29 verdict in Open items. Marker-fenced `acstack-referrals`
   roster in AGENTS.md (skill → one-line definition → suggest-when); a
   clause on CONDUCT rule 9 carrying the behavior (name it once, never

@@ -42,6 +42,19 @@ Compare the AGENTS.md block against the same block in
 `$pack_root/CONDUCT.md`; a diff means stale → show the exact replacement
 edit as the fix.
 
+## 3b. Referral roster
+
+```bash
+awk '/<!-- BEGIN:acstack-referrals -->/,/<!-- END:acstack-referrals -->/' AGENTS.md
+```
+
+Present and matching `$pack_root/AGENTS.md`'s block → ✓. Missing → ✗
+with the fix "re-run `/plan seed` (idempotent)". Stale (the pack's
+roster names a skill this copy lacks) → ✗ showing the diff. The roster
+lists the skills carrying `disable-model-invocation: true`, which an
+agent cannot see or invoke — a missing roster silently costs the user
+every typed-only skill.
+
 ## 4. Config
 
 ```bash

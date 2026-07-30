@@ -91,6 +91,13 @@ Seed housekeeping (same invocation):
   than none: it looks authoritative and binds the agent to rules the pack
   never wrote. Refresh only between the markers; never touch content
   outside them.
+- Ensure AGENTS.md also contains the `acstack-referrals` block, copied
+  verbatim from `$pack_root/AGENTS.md` by the same rules (resolve the
+  pack root, never reconstruct from memory, refresh only between its
+  markers). It rosters the skills an agent cannot see — without it,
+  `/plan` and `/eval-spec` are invisible to every session, which means a
+  user who never learns to type them has effectively installed a
+  smaller pack.
 - Create an empty `LEARNINGS.md` if none exists (a place for /learn later).
 - Offer to copy `$pack_root/templates/acstack.md` to `.claude/acstack.md`
   if absent — same resolution, same honest stop if it fails.

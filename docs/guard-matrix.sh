@@ -112,6 +112,9 @@ fullcase "preamble grown past its budget"     FAIL 'runtime' bash -c "awk '{prin
 fullcase "read-only skill loses allowed-tools" FAIL 'readonly' bash -c "grep -v '^allowed-tools:' skills/resume/SKILL.md > t && mv t skills/resume/SKILL.md"
 fullcase "read-only skill granted Write"       FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Write, Read/' skills/secure/SKILL.md > t && mv t skills/secure/SKILL.md"
 fullcase "read-only skill granted bare Bash"   FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash, Read/' skills/audit/SKILL.md > t && mv t skills/audit/SKILL.md"
+# 4.9 referral roster must match the typed-only skill set exactly
+fullcase "referral roster missing a skill"    FAIL 'referral' bash -c "grep -v '^| \`/eval-spec\`' AGENTS.md > t && mv t AGENTS.md"
+fullcase "referral roster names a model-invocable skill" FAIL 'referral' bash -c "awk '/END:acstack-referrals/{print \"| \`/ship\` | releases a branch | never |\"} {print}' AGENTS.md > t && mv t AGENTS.md"
 
 echo
 echo "passed=$pass failed=$failed"

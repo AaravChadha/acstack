@@ -158,7 +158,9 @@ acstack pack.
    guess-and-build.
 9. Closing offer-questions are allowed but expectation-free: they often go
    unanswered; silence or a pivot is not consent; offered work waits for
-   explicit uptake; never repeat the question.
+   explicit uptake; never repeat the question. Referrals to typed-only
+   skills (the `acstack-referrals` roster) are offers under this rule:
+   name one once, never repeat it, and do the requested work first.
 10. Commits: short subject starting with the work-item reference
     (`#42: …` in tickets mode; `completed task 3.2.1 (…)` in document
     mode), a brief what-and-why body, and no attribution trailers — no

@@ -65,6 +65,10 @@ install instead of symlinks) is reported as `skipped — <why>`.
 3. **Conduct.** The marker-fenced `acstack-conduct` block exists in
    AGENTS.md and matches the installed pack's CONDUCT.md block. Stale →
    show the refresh edit.
+   **Referrals.** The `acstack-referrals` block exists too and matches
+   the pack's. It rosters the skills an agent cannot see
+   (`disable-model-invocation: true`), so its absence costs the user
+   every typed-only skill silently — fix is `/plan seed`, idempotent.
 4. **Config.** `.claude/acstack.md` readable; keys outside the README
    table listed as info (the extension hook, not an error); mode
    prerequisites consistent — `tracking: tickets` with no gh, no auth,

@@ -57,6 +57,20 @@ These four are repo-binding, not part of the shipped conduct block. Promote
 one into CONDUCT.md only if it proves out across projects — the same bar
 `/learn` uses for promoting a lesson into known-bug-classes.
 
+<!-- BEGIN:acstack-referrals -->
+## Typed-only skills
+
+These skills carry `disable-model-invocation: true`, so an agent cannot
+see or invoke them — it can only mention them. Suggest one when its
+column-three condition is true, per conduct rule 9: name it once, never
+repeat it, and treat silence or a pivot as a no.
+
+| Skill | What it does | Suggest when |
+|---|---|---|
+| `/plan` | Frozen BRIEF → written architecture pushback → living PLAN.md with runnable exit criteria | The repo has no PLAN.md (or legacy equivalent) and the user is starting something new — **or** a build request lands in such a repo and the work is not a bounded single-file change (new files, new surface, or multi-file). Never for a one-line fix. Do the work first; make the offer with the end-of-increment status statement, naming concrete options and a recommendation ("spec first in docs/ / a short design sketch / keep building as-is — I'd suggest X because Y"), with one clause of reason: simple-looking work is where unexamined assumptions cost most. Once per session per repo; nothing is recorded, so a later session may ask once more. |
+| `/eval-spec` | The eval is the spec: golden set with category minimums, refusal cases, pinned grader — written before the system exists | An LLM-shaped feature is heading into build and no `eval/` exists |
+<!-- END:acstack-referrals -->
+
 <!-- BEGIN:acstack-conduct -->
 ## Agent conduct
 
@@ -81,7 +95,9 @@ acstack pack.
    guess-and-build.
 9. Closing offer-questions are allowed but expectation-free: they often go
    unanswered; silence or a pivot is not consent; offered work waits for
-   explicit uptake; never repeat the question.
+   explicit uptake; never repeat the question. Referrals to typed-only
+   skills (the `acstack-referrals` roster) are offers under this rule:
+   name one once, never repeat it, and do the requested work first.
 10. Commits: short subject starting with the work-item reference
     (`#42: …` in tickets mode; `completed task 3.2.1 (…)` in document
     mode), a brief what-and-why body, and no attribution trailers — no

@@ -11,6 +11,7 @@
 #   8  cross-references + citations resolve 9  config-key reachability
 #   10 verdict-first stance present         11 positive controls (fixtures)
 #   12 runtime preamble identity + budget  13 read-only tool declarations
+#   14 referral roster == typed-only set
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -341,6 +342,24 @@ for s in $READONLY_SKILLS; do
   printf '%s' "$tools" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
     | grep -qx 'Bash' && { echo "FAIL readonly: $f grants unscoped Bash: $tools"; fail=1; }
 done
+
+# 14. Referral roster: the acstack-referrals table in AGENTS.md must name
+#     EXACTLY the skills carrying disable-model-invocation: true. An agent
+#     cannot see those skills, so a stale roster is the difference between
+#     a discoverable skill and one nobody finds.
+roster="$(awk '/BEGIN:acstack-referrals/,/END:acstack-referrals/' AGENTS.md \
+  | grep -oE '^\| `/[a-z-]+`' | grep -oE '/[a-z-]+' | sed 's|/||' | sort -u)"
+typed_only="$(grep -l '^disable-model-invocation:[[:space:]]*true' skills/*/SKILL.md 2>/dev/null \
+  | sed -E 's|skills/([^/]+)/SKILL.md|\1|' | sort -u)"
+if [ -z "$roster" ]; then
+  echo "FAIL referral: AGENTS.md has no acstack-referrals roster (or it lists no skills)"
+  fail=1
+elif [ "$roster" != "$typed_only" ]; then
+  echo "FAIL referral: roster does not match the typed-only skill set"
+  echo "     roster:     $(printf '%s' "$roster" | tr '\n' ' ')"
+  echo "     typed-only: $(printf '%s' "$typed_only" | tr '\n' ' ')"
+  fail=1
+fi
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
