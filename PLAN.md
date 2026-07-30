@@ -808,6 +808,30 @@ reordered, if any.
   question, fetch full entry text only for matches; never a whole-file
   read once JOURNAL.md exceeds a stated size. **Acceptance:** both
   skills document the rule and /resume's read step names it.
+- [ ] **4.31** /secure's injection surface is a third of a surface —
+  measured 2026-07-30 against security-guidance's 25 frozen rule IDs
+  (`plugins/security-guidance/hooks/patterns.py:264`). /secure's
+  `references/security-surfaces.md` names `innerHTML`,
+  `dangerouslySetInnerHTML`, and `subprocess`; it has **zero** patterns
+  for: unsafe deserialization (`pickle`/`cPickle`/`cloudpickle`/`dill`/
+  `marshal`/`shelve`/`joblib`/`pandas.read_pickle`/numpy
+  `allow_pickle=True`), `yaml.load`/`unsafe_load`, `torch.load`
+  (defaults to `weights_only=False`), crypto misuse (AES-ECB,
+  `createCipher` without IV), disabled TLS verification
+  (`verify=False`, `NODE_TLS_REJECT_UNAUTHORIZED=0`), unsafe XML parse
+  (XXE), `document.write`/`outerHTML`/`insertAdjacentHTML` sinks,
+  `<script src>` without SRI, `eval`/`new Function` injection,
+  `child_process` exec, and GitHub Actions workflow injection via
+  `${{ github.event.* }}` in `run:`. Every one is a `git grep` line,
+  which is the point: this is the cheapest large increase in real
+  coverage available to the pack, and a security skill that reports
+  clean while missing `pickle.load` on untrusted input is the false-pass
+  class in its most expensive form. Deserialization, TLS, and crypto
+  become their own numbered surface (5); the missing sinks join surface
+  3. **Acceptance:** `fixtures/secure/` gains a seed per class and
+  controls.sh proves every new grep catches it (per 4.15) — and each
+  pattern is written in POSIX ERE and checked by section 3b, since `\b`
+  and `\s` are exactly how this file broke before.
 - [ ] **4.30** /design — the generative design lane (roster 38 → 39;
   NEW skill, the one place the 2026-07-30 survey showed demand acstack
   answers nowhere: four repos, ~★250k combined). Token-system-first
@@ -1008,6 +1032,13 @@ project; the incident path exercised once against a seeded outage.
 - [ ] **7.3** /document — authors documentation that does not exist yet
   (module purpose and invariants, API reference, runbook). `/audit docs`
   only *detects* drift; nothing in the pack writes.
+  *Note (2026-07-30, survey):* anthropics/skills `doc-coauthoring`
+  (375 lines) is the closest prior art found — its spine is
+  context-transfer-first (interview before drafting), iterate on
+  structure before prose, then **verify the doc works for a reader**
+  rather than declaring it done. That last step is the acstack-shaped
+  one: a doc's acceptance is a reader completing a task with it, which
+  is what makes /document gate-able instead of vibes.
 - [ ] **7.4** /cost — what a feature cost in tokens and infrastructure.
   Depends on 4.3's telemetry pipe.
 
@@ -1029,6 +1060,11 @@ existing contract — not a redesign.
   DOM / visible text / console errors). Only `references/probe-layer.md`
   grows; SKILL.md gains a mode name and nothing else. **This is the item
   that carries the runtime dependency** — everything below is gated on it.
+  *Note (2026-07-30, survey):* anthropics/skills `webapp-testing` (95
+  lines) is a working reference implementation of exactly this contract
+  on Playwright — page load, user action, screenshot, console logs — at
+  a line count that fits acstack's budget. Read it at trigger time
+  rather than designing the probe from scratch.
 - [ ] **B.2** /design-audit rendered mode — deferred with the same verdict
   in `docs/wave-3-specs.md`. Static analysis cannot see computed layout,
   actual contrast against rendered backgrounds, or overflow.
