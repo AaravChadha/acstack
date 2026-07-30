@@ -96,7 +96,35 @@
 > gstack (53 skills, inspected from a clone), obra/superpowers (14),
 > GitHub spec-kit (10 commands), and BMAD-METHOD. Every skill below was
 > checked against all four; the ones that survived are either absent
-> everywhere or an existing acstack shape pointed at a new target. The
+> everywhere or an existing acstack shape pointed at a new target.
+
+> **Second survey (2026-07-30) — eight repos, cloned and counted, three
+> context-free readers.** obra/superpowers (still exactly 14 skills; its
+> ★264k growth is seven harness packagings + test suites),
+> thedotmack/claude-mem (66k-line TS memory daemon — the opposite memory
+> bet), anthropics/skills + the claude-code code-review and
+> security-guidance plugins (acstack passes every counted axis of the
+> official authoring standard; their own repos break it — claude-api at
+> 546 lines vs their <500 norm, code-review's README documenting a 0-100
+> scorer and a git-blame agent its command file doesn't contain), and
+> four design/taste skills (emilkowalski/skills, pbakaus/impeccable,
+> Leonxlnx/taste-skill, ui-ux-pro-max — ~★250k combined) which converge
+> independently on one mechanical slop signature and craft floor.
+> Carriers from it: **4.27–4.30** below, plus dated notes on 4.4, 4.6,
+> 6.2, 6.7, and Wave B. **Declined, with reasons:** multi-harness
+> packaging (Claude-Code-only at launch is locked; superpowers'
+> porting doc is the recipe if demand appears); /standup and
+> /timeline-report as skills (folded — `/retro week` already covers the
+> shape); a search index derived from committed markdown (deferred until
+> JOURNAL-reading pain is real; 4.29 is the cheap first step); numeric
+> scoring models — impeccable's 0–4 dimensions and code-review's
+> documented-but-unimplemented 0–100 filter (score theater vs
+> verdict-first findings; their own README drift proves the hazard);
+> per-step model choreography, Python/Node hook engines, font/CSV
+> payloads, machine-local stores, and prose-pressure enforcement
+> (`<EXTREMELY_IMPORTANT>` tags — prose decay is why check.sh exists);
+> frontend-design's generative persona (4.30 takes its process, not its
+> persona). The
 > team-of-perspectives goal is met by **lenses, not personas** — each
 > reviewer reads a named artifact and returns a verdict; no roleplay, no
 > first names. That keeps the "gstack simulates the team; acstack encodes
@@ -282,6 +310,10 @@ below fully green; repo flipped public.
   preamble block contains; README v2 carries the walkthrough and both
   shadowing disclosures; the 4.17 cross-reference and
   config-reachability guards pass over all four documents.
+  *Note (2026-07-30, survey):* ARCHITECTURE also documents the config
+  truncation priority for layered config (user-wide kept, project next,
+  local dropped first — security-guidance's model); CONTRIBUTING states
+  the skill RED-GREEN rule carried on 6.7.
 - [ ] **4.7** Launch checklist — every line must be *demonstrated*, not
   asserted. Nothing here is checkable by re-reading a file (AGENTS.md's
   verify-the-consumed-form rule); each item names the artifact that
@@ -636,6 +668,11 @@ reordered, if any.
   **Acceptance:** `--global` is idempotent and never clobbers hand-written
   content in `~/.claude/CLAUDE.md`; `--hook` is a no-op outside acstack
   projects; both are reversible by `--uninstall`.
+  *Note (2026-07-30, survey):* superpowers' `hooks/session-start` — 49
+  lines of zero-dependency bash injecting one gateway skill — is the
+  working model for `--hook`. Scope question to settle at build: also a
+  Stop-hook reminder when the session ends with unjournaled commits
+  (claude-mem's Stop concept as a one-line reminder, never a daemon).
 - [ ] **4.10** /audit tests — fourth target on the existing skill
   (*originally wave 5; pulled into wave 4 then settled in 4.5 by the split, all 2026-07-29*). Sweeps an existing suite
   for tests that pass without catching: assertion-free and tautological
@@ -730,6 +767,63 @@ reordered, if any.
   error — asserting a property of a set without checking each member. **Acceptance:** on a repo with a passing
   suite, a refactor that silently drops a test or changes behavior is
   caught and reported rather than committed.
+- [ ] **4.27** `references/ai-tells.md` for /design-audit — the 2026-07-30
+  survey's biggest prize. One sub-500-line, zero-asset reference file
+  phrased entirely as findable violations: impeccable's 47 detector rule
+  IDs reduced to one-line grep signatures (purple/violet gradient
+  palettes incl. Tailwind `from-purple-*`, gradient text,
+  kicker/eyebrow-above-heading, numbered-section labels, nested cards,
+  icon-tile grids, em-dash overuse, gray-on-color, pulsing dots, skipped
+  headings); taste-skill §9's content tells (generic fake names,
+  `99.99%`-shaped numbers, Acme/Nexus brand filler, Elevate/Seamless
+  filler verbs, version-label eyebrows, scroll cues, fake
+  div-screenshots); emil's motion bounds as a short appendix (`ease-in`
+  on UI transitions, `transition: all`, `scale(0)` entrances, durations
+  >300ms, animating width/height/top/left, missing
+  `prefers-reduced-motion`); and the four-repo shared craft floor
+  (contrast 4.5:1 body / 3:1 large, no emoji-as-icons, no
+  placeholder-as-label). Findings severity-ordered, accessibility and
+  honesty first. Config: a pack-default `banned-palette:` hex list
+  (taste-skill's enumerated bans), overridable per project. Rule ideas
+  re-expressed, never text copied; a credits line names the three
+  sources. **Acceptance:** `fixtures/design-audit/` gains one seed per
+  new rule class and every documented grep catches its seed
+  (controls.sh, per 4.15); clean tree stays quiet.
+- [ ] **4.28** Skill-hygiene rules from the 2026-07-30 survey — five
+  small skill edits, one carrier: /audit gains an explicit do-NOT-flag
+  blocklist (pre-existing issues, correct-but-looks-wrong, pedantic
+  nitpicks, linter-catchable style, lint-silenced lines) and a
+  does-this-target-even-need-the-pass triage opener; /qa gains the same
+  triage opener; /secure treats an inline comment justifying a risk as
+  demoting the finding to worth-hardening (never silently dropping it);
+  /ship's PR body adopts one-comment-per-issue and
+  suggestion-only-when-it-fully-fixes; /do's acceptance step gains the
+  claim → requires → not-sufficient evidence table. **Acceptance:** each
+  rule present in its skill's consumed text; /audit run on a diff whose
+  only issues are pre-existing names the blocklist reason instead of
+  reporting findings.
+- [ ] **4.29** Journal-retrieval discipline for /resume and /retro —
+  claude-mem's search→filter→fetch rule applied to repo-owned markdown:
+  read headings and the TL;DR first, filter entries by the window or
+  question, fetch full entry text only for matches; never a whole-file
+  read once JOURNAL.md exceeds a stated size. **Acceptance:** both
+  skills document the rule and /resume's read step names it.
+- [ ] **4.30** /design — the generative design lane (roster 38 → 39;
+  NEW skill, the one place the 2026-07-30 survey showed demand acstack
+  answers nowhere: four repos, ~★250k combined). Token-system-first
+  two-pass process (4–6 named values, ≥2 type roles, wireframe before
+  code, one signature element per Anthropic's frontend-design);
+  self-critique against the named AI-default looks before coding;
+  variance/motion/density dials under a `## design` config section
+  (taste-skill's model, made config not prose); Before/After/Why output
+  table (emil's shape); quality floor: responsive, focus-visible,
+  reduced-motion. Complements /design-audit exactly as emil's
+  review/improve pair splits detective from generative — /design-audit
+  stays pure detective. **Acceptance:** on a seeded generic page,
+  /design produces a token system and a critique naming which
+  AI-default look it avoided, and /design-audit + ai-tells (4.27) run on
+  /design's output returns no findings — the pairing is this skill's
+  positive control.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
@@ -828,6 +922,10 @@ error already produced two bugs this wave-planning round.
   reach is worse than shipping none.
   `/design-audit` covers palette, honest labels, slop, and client-facing
   language — all a different axis. Absent from all four surveyed packs.
+  *Note (2026-07-30, survey):* spec inputs from ui-ux-pro-max's
+  guideline data, all statically findable: placeholder-only labels,
+  `user-scalable=no`, focus-ring removal without replacement, missing
+  viewport meta, sub-44px touch targets, base font below 16px.
 - [ ] **6.3** /devex — the cold-start experience: clone → install → run on
   a clean machine, whether errors are actionable, how much undocumented
   tribal knowledge the setup assumes. Today only one line of this exists
@@ -882,6 +980,15 @@ error already produced two bugs this wave-planning round.
   discipline should be written down and version-controlled; giving
   adopters no way to encode *theirs* is the difference between extending
   the pack and forking it. Prior art: obra/superpowers `writing-skills`.
+  *Note (2026-07-30, survey):* the spec adopts skill-behavior testing —
+  RED-GREEN for skills (run the scenario and document the agent's exact
+  rationalizations BEFORE the skill exists; superpowers
+  `writing-skills`), paired with-skill/baseline eval runs (anthropics
+  `skill-creator`), and an automated compliance harness modeled on
+  superpowers' `tests/run-skill-tests.sh`. A /skill-produced SKILL.md
+  ships with its behavioral control; CONTRIBUTING (4.6) states the rule
+  for pack contributions. This is the prove-the-check-fails rule
+  pointed at skills themselves.
 
 ## [ ] Wave 7 — Operate
 
@@ -940,6 +1047,15 @@ existing contract — not a redesign.
   runs. Cheapest capability to add once B.1 exists, and the one that most
   needs a stated policy on where images live (repo-owned memory says the
   repo; image bloat says otherwise — decide at trigger time).
+
+> **Evidence note (2026-07-30, survey):** pbakaus/impeccable runs ONE
+> shared rule list through both a static analysis path and a rendered
+> (bundled-browser) path — direct proof this wave's static-now/
+> rendered-later split works with a single rule source. When B fires,
+> 4.27's `ai-tells.md` is that source: the rendered tier re-checks the
+> same rules against computed styles rather than growing a second list.
+> Its PostToolUse run-the-detector-after-UI-edits hook is a candidate
+> trigger mechanism for this layer.
 
 > **Constraint check (2026-07-29):** the browser layer is the largest
 > break with "zero runtime dependencies beyond git + bash" — though not the
