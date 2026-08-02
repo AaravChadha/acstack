@@ -410,6 +410,30 @@ for s_ in $READONLY_SKILLS; do
   if [ -s "$WORKTMP_RO" ]; then cat "$WORKTMP_RO"; fail=1; fi
 done
 
+# 13a. Forcing function: any skill that declares a no-write allowed-tools set is
+#      claiming structural read-only capability and MUST be in READONLY_SKILLS,
+#      so the loop above checks its grants against the allowlist. Otherwise a new
+#      read-only skill silently escapes §13 — the denylist-can't-be-finished
+#      problem one level up, at skill enumeration instead of command names.
+#      Derive-and-diff, the same shape §14 uses for the referral roster.
+#      Skills with NO allowed-tools line (/qa, /plan, /challenge, …) default to
+#      all tools and make no structural claim — out of scope here; their conduct
+#      promises bind them instead. A writer that declares Write/Edit is likewise
+#      not a read-only declarer.
+declared_ro="$({ for f in skills/*/SKILL.md; do
+    at="$(sed -n 's/^allowed-tools:[[:space:]]*//p' "$f" | head -1)"
+    [ -n "$at" ] || continue
+    printf '%s' "$at" | grep -qwE 'Write|Edit|NotebookEdit' && continue
+    basename "$(dirname "$f")"
+  done | sort -u; } || true)"
+want_ro="$(printf '%s\n' $READONLY_SKILLS | sort -u)"
+if [ "$declared_ro" != "$want_ro" ]; then
+  echo "FAIL readonly: skills declaring a no-write allowed-tools set != READONLY_SKILLS"
+  echo "     declared no-write: $(printf '%s' "$declared_ro" | tr '\n' ' ')"
+  echo "     READONLY_SKILLS:   $(printf '%s' "$want_ro" | tr '\n' ' ')"
+  fail=1
+fi
+
 # 14. Referral roster: the acstack-referrals table in AGENTS.md must name
 #     EXACTLY the skills carrying disable-model-invocation: true. An agent
 #     cannot see those skills, so a stale roster is the difference between

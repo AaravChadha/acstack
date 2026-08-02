@@ -144,6 +144,10 @@ fullcase "read-only duplicate allowed-tools line"   FAIL 'readonly' bash -c "awk
 # the four skills apply patterns via the read-only Grep tool now). Granting it
 # back must be rejected — this passed clean while git grep was allowlisted.
 fullcase "read-only granted Bash(git grep)"    FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(git grep:*), Read/' skills/secure/SKILL.md > t && mv t skills/secure/SKILL.md"
+# 13a forcing function: a no-write allowed-tools set on a skill NOT in
+# READONLY_SKILLS is a structural read-only claim that escapes §13's allowlist
+# check. ticket is a writer with no allowed-tools; giving it one must fail.
+fullcase "no-write allowed-tools escapes READONLY_SKILLS" FAIL 'readonly' bash -c "awk '/^name: ticket/{print; print \"allowed-tools: Read, Grep, Glob\"; next} {print}' skills/ticket/SKILL.md > t && mv t skills/ticket/SKILL.md"
 fullcase "guard-matrix syntax error caught"   FAIL 'syntax'   bash -c "printf 'if [ ; then\n' >> docs/guard-matrix.sh"
 fullcase "conduct block drifts from canon" FAIL 'conduct' bash -c "sed -e 's/^4\. Be direct\./4. Be direct and blunt./' AGENTS.md > t && mv t AGENTS.md"
 fullcase "conduct block missing entirely"  FAIL 'conduct' bash -c "awk '/BEGIN:acstack-conduct/{f=1} !f{print} /END:acstack-conduct/{f=0}' CONDUCT.md > t && mv t CONDUCT.md"
