@@ -6,8 +6,12 @@
 > **Last update**: 2026-08-03. **Still private — the flip has not
 > happened.** Two pre-flip rechecks both returned NOT READY; the second
 > found the first's fix had reintroduced the bug it fixed, which forced
-> check.sh §13 from a denylist to an allowlist. One clean audit of that
-> allowlist — by a round that did not write it — is the remaining gate. Wave 4 is nearly closed —
+> check.sh §13 from a denylist to an allowlist. A third round (08-03
+> evening) then audited that allowlist by falsification and found the
+> allowlist itself defective — `git grep -O` ran arbitrary programs,
+> `git log`/`git diff --output` wrote files, and the guard never
+> validated each list's last token — all fixed (matrix 68 → 73); the flip
+> is still the user's call. Wave 4 is nearly closed —
 > **14 of 16 items done, 2 open** (4.5 awaiting its seeded-PR CI half,
 > 4.7 the launch checklist itself). Built today: versioning, six guard
 > classes, the fixtures/controls positive-control layer, the runtime
@@ -15,7 +19,7 @@
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
 > CONTRIBUTING, README v2). check.sh 6 → **16 checks** (15 numbered + 3b); guard-matrix
-> 15 → **68 cases**; **20 skills**. Five review rounds ran; the last
+> 15 → **73 cases**; **20 skills**. Five review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -31,7 +35,7 @@
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean (**15** numbered
   sections plus 3b = 16 checks, including positive controls over seeded
-  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**68**
+  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**73**
   cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4's work is done.** 4.7's ten checklist items are all
@@ -66,7 +70,7 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard (16 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 68 seeded-defect cases proving the guards fire
+bash docs/guard-matrix.sh "$PWD"   # 73 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty skills load at start
 ```
 
@@ -83,6 +87,92 @@ bash docs/guard-matrix.sh "$PWD"   # 68 seeded-defect cases proving the guards f
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### The allowlist audited itself and lost: git grep -O, a token the guard never read (2026-08-03 evening)
+
+The "one clean audit of the §13 allowlist by a round that did not write
+it" — the last named gate before the flip — ran, framed to DISPROVE (the
+falsification rule `df0b5e7` had just carried into AGENTS.md). It did not
+come back clean. The allowlist that replaced the denylist on 08-03
+morning had never been reviewed against its own membership rule ("no
+argument suffix can flip this command to a write"), and it failed that
+rule in six places.
+
+**What the falsification found (every claim re-verified at the command
+line before it was believed — the AGENTS.md rule that one agent claim
+won't survive checking):**
+
+- **`git grep -O<pager>` runs an arbitrary program.** Demonstrated:
+  `git grep -O'sh -c rm\ victim;' hello` deleted the file. Granted by
+  **secure, health, design-audit, audit** — the pack's own security skill
+  among them. Arbitrary code execution, certified read-only.
+- **`git log --output=FILE` / `git diff --output=FILE` overwrite any
+  path.** Demonstrated overwriting a "PRECIOUS" file. git log granted by
+  5 of 6 skills, git diff by 2.
+- **`gh auth status --show-token` prints a live token.** Flag confirmed in
+  `gh` help (NOT run — it would leak the real token). Granted by health.
+- **The guard never validated each list's LAST token.** `printf '%s'` (no
+  newline) left the final comma-field unterminated, so `read` dropped it.
+  Proven: `Write` appended last → `check.sh: all clean`. Dormant only
+  because every skill's last grant happened to be allowlisted.
+- **The allowlist blessed `sort`/`uniq`/`git show`/`git symbolic-ref`** —
+  all write/mutate under free args — as UNUSED entries. It was assembled
+  as a plausible-looking read-only-sounding set, not the audited union of
+  what the six skills grant.
+- **A duplicate `allowed-tools:` line** hid grants from `head -1`.
+
+**The structural verdict.** The denylist-can't-be-finished lesson from
+08-03 morning was learned at the command-name level and then re-broken one
+layer down, *inside* the allowlist. "An allowlist can be reviewed" was
+true and unused — it had never been reviewed. One class three ways again
+(exec, write, leak), not three bugs.
+
+**The fixes (path 3 of three the user weighed: 1 = Grep-tool only, 2 =
+narrow prose only, 3 = the split — chosen because it dominates 1 at ~one
+line more, also closing the token leak):**
+
+- **git grep dropped from all four skills**, applied via the read-only
+  **Grep tool** now (the /health find/awk→Read/Glob precedent from this
+  morning); off the allowlist entirely. The 30-plus `git grep -nE` pattern
+  lines STAY — controls.sh extracts them and §3b guards their POSIX-ERE —
+  reframed as pattern specs, not commands. git grep granted by **4 → 0**
+  skills.
+- **gh auth status narrowed** to an exact grant (`Bash(gh auth status)`,
+  no `:*`) so `--show-token` cannot attach. Strictly no-worse; exact-match
+  semantics unverified without a live session.
+- **`printf '%s\n'`** terminates the stream so `read` validates every
+  token; a second `allowed-tools:` line is now rejected.
+- **Allowlist trimmed 30 → 20 entries**, the audited union of what the six
+  skills grant.
+- **git log/diff --output: accepted and disclosed, not fixed.** No
+  read-only tool shows history or diffs a range, and prefix grants can't
+  exclude a flag, so the five skills that need them keep the grant; the
+  residual is stated in secure/migrate-check/health and the §13 comment.
+  **/design-audit is now fully read-only** (grep/ls only, no residual).
+
+**Self-indicting: a recheck reintroduced a defect — the exact round-2
+class.** In the git grep fail-first demo I ran `git checkout
+skills/secure/SKILL.md` to undo a seeded mutation. The file had
+uncommitted edits, so checkout reverted it to HEAD and wiped the
+increment-2 changes (git grep grant reappeared, framing clause gone),
+leaving the tree failing. Caught by the harness's file-change flag,
+restored, re-verified — the green run is post-restore. Lesson: never
+`git checkout` a dirty file to undo a probe; save and restore its bytes.
+
+**Still open, named not buried:** two lesser audit findings — `/challenge`
+promises "report only" with no `allowed-tools` and is absent from
+READONLY_SKILLS, and nothing forces a future read-only-claiming skill onto
+that list (the denylist problem one level up; §14's roster-derivation is
+the fix pattern). Being done next.
+
+**Honest limits, unchanged:** nothing drove a live Claude Code session, so
+"the model uses the Grep tool" and "the exact gh grant blocks
+--show-token" are structurally sound, not live-confirmed.
+
+Validation close: check.sh clean on the commit; guard-matrix **68 → 73**,
+every new read-only case (last-token, sort, git symbolic-ref, duplicate
+line, git grep) shown FAILING first; controls all plants caught; 20
+skills; allowlist 30 → 20 entries; commit `a46332f`, 10 files.
 
 ### Pre-flip rechecks: the denylist that could not be finished (2026-08-02 → 03)
 
