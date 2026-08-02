@@ -10,7 +10,7 @@
 > evening) then audited that allowlist by falsification and found the
 > allowlist itself defective — `git grep -O` ran arbitrary programs,
 > `git log`/`git diff --output` wrote files, and the guard never
-> validated each list's last token — all fixed (matrix 68 → 73); the flip
+> validated each list's last token — all fixed (matrix 68 → 74); the flip
 > is still the user's call. Wave 4 is nearly closed —
 > **14 of 16 items done, 2 open** (4.5 awaiting its seeded-PR CI half,
 > 4.7 the launch checklist itself). Built today: versioning, six guard
@@ -19,7 +19,7 @@
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
 > CONTRIBUTING, README v2). check.sh 6 → **16 checks** (15 numbered + 3b); guard-matrix
-> 15 → **73 cases**; **20 skills**. Five review rounds ran; the last
+> 15 → **74 cases**; **20 skills**. Five review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -35,7 +35,7 @@
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean (**15** numbered
   sections plus 3b = 16 checks, including positive controls over seeded
-  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**73**
+  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**74**
   cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4's work is done.** 4.7's ten checklist items are all
@@ -70,7 +70,7 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard (16 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 73 seeded-defect cases proving the guards fire
+bash docs/guard-matrix.sh "$PWD"   # 74 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty skills load at start
 ```
 
@@ -159,19 +159,26 @@ leaving the tree failing. Caught by the harness's file-change flag,
 restored, re-verified — the green run is post-restore. Lesson: never
 `git checkout` a dirty file to undo a probe; save and restore its bytes.
 
-**Still open, named not buried:** two lesser audit findings — `/challenge`
-promises "report only" with no `allowed-tools` and is absent from
-READONLY_SKILLS, and nothing forces a future read-only-claiming skill onto
-that list (the denylist problem one level up; §14's roster-derivation is
-the fix pattern). Being done next.
+**The two lesser findings, closed the same session (`ad9d9ec`).** A
+forcing function (§13a) now derives the set of skills declaring a no-write
+`allowed-tools` set and diffs it against READONLY_SKILLS — a future
+read-only skill can no longer silently escape the allowlist check (§14's
+roster-derivation shape; matrix +1, shown failing first: it slips a
+check.sh with §13a removed, fails with it present). `/challenge` needed no
+change: its "report only" is a conduct promise (CONDUCT 1/2), the same
+category as /audit's and /resume's accepted behavioral claims — not a
+false structural claim — and §13a guarantees it can't quietly become one.
+A useful invariant fell out: the six skills declaring `allowed-tools` are
+exactly READONLY_SKILLS, and /qa carries none, so the derive-and-diff has
+no false-flag surface today.
 
 **Honest limits, unchanged:** nothing drove a live Claude Code session, so
 "the model uses the Grep tool" and "the exact gh grant blocks
 --show-token" are structurally sound, not live-confirmed.
 
-Validation close: check.sh clean on the commit; guard-matrix **68 → 73**,
+Validation close: check.sh clean on the commit; guard-matrix **68 → 74**,
 every new read-only case (last-token, sort, git symbolic-ref, duplicate
-line, git grep) shown FAILING first; controls all plants caught; 20
+line, git grep, and the §13a forcing function) shown FAILING first; controls all plants caught; 20
 skills; allowlist 30 → 20 entries; commit `a46332f`, 10 files.
 
 ### Pre-flip rechecks: the denylist that could not be finished (2026-08-02 → 03)
