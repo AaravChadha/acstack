@@ -341,22 +341,51 @@ else
 fi
 
 # 13. Structurally read-only skills declare a no-write tool set.
-#     ALLOWLIST, not a denylist. A denylist was tried and failed twice: it
-#     missed `find`/`awk`/`git config`, and the very commit that added those
-#     introduced `sed -n` — which writes, because `sed -n -i ''` is a valid
-#     invocation and prefix grants permit any command STARTING with the
-#     string. An audit then named 18 further misses (git remote/clean/
-#     restore/switch/stash/apply/branch/worktree, python3, chmod, dd,
-#     truncate, ln, curl, npm, gh pr merge, gh issue close…). A denylist
-#     cannot be finished; an allowlist can be reviewed.
-#     Anything not on this list is rejected — add to it deliberately.
+#     ALLOWLIST, not a denylist, and the allowlist is the AUDITED UNION of what
+#     the six skills actually grant — not a plausible-looking set of read-only-
+#     sounding commands. A denylist was tried and failed twice: it missed
+#     `find`/`awk`/`git config`, and the very commit that added those introduced
+#     `sed -n` — which writes, because `sed -n -i ''` is valid and prefix grants
+#     permit any command STARTING with the string. A later audit named 18 more
+#     misses. A denylist cannot be finished; an allowlist can be reviewed — so it
+#     must actually BE reviewed. The 2026-08-03 falsification round found the
+#     first allowlist never had been: it carried sort/uniq/git show/git
+#     symbolic-ref (all write/mutate under free args) as UNUSED entries, now
+#     removed. Adding an entry is a deliberate edit — confirm it accepts NO write
+#     under any argument suffix first. Two parsing bugs were closed the same day:
+#     the final comma-token was dropped unvalidated (`printf '%s'` left it
+#     unterminated so `read` skipped it), and a second `allowed-tools:` line hid
+#     grants from `head -1`.
+#
+#     KNOWN RESIDUAL, deliberately accepted (2026-08-03, narrowed same day).
+#     `git log` and `git diff` accept `--output=FILE`, which overwrites any path,
+#     and no read-only tool shows history or diffs a range — so the skills that
+#     need them keep the grant and this guard certifies "declares only commands
+#     whose DOCUMENTED use is read-only", NOT "cannot write under any argument".
+#     Two sharper holes were CLOSED, not accepted: `git grep` (whose `-O<pager>`
+#     runs an arbitrary program) was dropped from all four skills that had it —
+#     they apply their patterns with the read-only Grep tool now (the /health
+#     find/awk→Read/Glob precedent), so it is off this allowlist entirely; and
+#     `gh auth status` was narrowed to an exact grant (no `:*`) so `--show-token`
+#     cannot be appended to print a live token.
 READONLY_SKILLS="secure health design-audit audit resume migrate-check"
 SAFE_TOOLS="Read|Grep|Glob"
-SAFE_BASH="cat|ls|wc|head|tail|sort|uniq|diff|readlink|command -v|basename|dirname|grep|git log|git grep|git status|git diff|git show|git ls-files|git rev-parse|git check-ignore|git symbolic-ref|git show-ref|git remote get-url|gh auth status|gh issue list|gh label list|gh pr view|gh pr diff|npx prisma migrate status"
+# Audited union of Bash grants across the six skills above (2026-08-03). Every
+# entry read-only in its DOCUMENTED use; the git log/diff residual above is the
+# accepted exception, not an oversight. git grep is deliberately ABSENT — it is
+# applied through the Grep tool, not shell.
+SAFE_BASH="cat|ls|wc|grep|diff|readlink|command -v|git log|git diff|git status|git ls-files|git rev-parse|git check-ignore|git remote get-url|gh auth status|gh issue list|gh label list|gh pr view|gh pr diff|npx prisma migrate status"
 for s_ in $READONLY_SKILLS; do
   f="skills/$s_/SKILL.md"
   if [ ! -f "$f" ]; then
     echo "FAIL readonly: $f is listed as read-only but does not exist"
+    fail=1; continue
+  fi
+  # A second allowed-tools: line would hide grants from the head -1 below, and
+  # a real YAML loader honors the last duplicate key, not the first — so the
+  # form check.sh inspects would not be the form Claude Code consumes.
+  if [ "$(grep -c '^allowed-tools:' "$f")" -gt 1 ]; then
+    echo "FAIL readonly: $f has more than one allowed-tools: line — only the first is enforced; merge them"
     fail=1; continue
   fi
   tools="$(sed -n 's/^allowed-tools:[[:space:]]*//p' "$f" | head -1)"
@@ -364,7 +393,10 @@ for s_ in $READONLY_SKILLS; do
     echo "FAIL readonly: $f declares no allowed-tools — its read-only promise is prose"
     fail=1; continue
   fi
-  printf '%s' "$tools" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | while IFS= read -r t; do
+  # printf '%s\n' (NOT '%s'): without the trailing newline the final comma-field
+  # arrives at `read` unterminated, `read` returns false, and the loop never
+  # validates the LAST tool in the list. Every skill's last grant went unchecked.
+  printf '%s\n' "$tools" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | while IFS= read -r t; do
     [ -n "$t" ] || continue
     case "$t" in
       Bash\(*\)) cmd="${t#Bash(}"; cmd="${cmd%)}"; cmd="${cmd%:\*}"

@@ -2,7 +2,7 @@
 name: audit
 description: Audit one of three targets. code - defect hunt producing a report with safety checks and adversarial verification evidence; docs - drift check of README/PLAN/JOURNAL against the actual tree, counts, and checkbox reality; eval - failure classification with the never-inflate rule. Use when the user asks to audit or review code, a PR, project docs, or an eval report.
 argument-hint: "code|docs|eval [path | PR# | diff range]"
-allowed-tools: Read, Grep, Glob, Bash(git grep:*), Bash(git log:*), Bash(git diff:*), Bash(git check-ignore:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(gh pr view:*), Bash(gh pr diff:*)
+allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git diff:*), Bash(git check-ignore:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(gh pr view:*), Bash(gh pr diff:*)
 ---
 
 # /audit — find what's wrong and report it honestly

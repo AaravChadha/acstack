@@ -2,7 +2,7 @@
 name: secure
 description: "Security review with a confidence gate - a finding exists only with a concrete exploit scenario and a high/medium/low confidence rating; everything else goes to a worth-hardening list, never inflated. Sweeps five surfaces: auth gates, secrets hygiene, injection and unsafe sinks, unsafe deserialization/crypto/transport, and LLM tool-use trust boundaries. Reports only, never fixes. Use when the user asks for a security review or to check vulnerabilities, secrets, or auth."
 argument-hint: "[path | surface | notes]"
-allowed-tools: Read, Grep, Glob, Bash(git grep:*), Bash(git log:*), Bash(git ls-files:*), Bash(git status:*), Bash(grep:*), Bash(ls:*)
+allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git ls-files:*), Bash(git status:*), Bash(grep:*), Bash(ls:*)
 ---
 
 # /secure — findings you can exploit, not vibes you can fear
@@ -71,7 +71,8 @@ applies verbatim.
 
 Checklists and grep patterns per surface live in
 `references/security-surfaces.md`. Sweep every surface the stack has;
-an argument can narrow to one path or surface.
+an argument can narrow to one path or surface. Apply the patterns with
+the Grep tool — this skill grants no shell `git grep`.
 
 1. **Auth gates.** The rival-user test: can authenticated user A reach
    user B's data by swapping an ID. Unauthenticated reach of gated
@@ -100,6 +101,11 @@ an argument can narrow to one path or surface.
 /secure reports; it never fixes, not even the one-liner. Fixes change
 attack surface and deserve their own reviewed commits. Each finding
 carries a fix DIRECTION (one line); the user decides what gets built.
+
+One honest caveat: the `git log` grant accepts `--output=FILE`, and a
+prefix grant cannot forbid a flag — so the tool set is read-only in use,
+not provably read-only under every argument. /secure never writes; the
+residual is recorded in check.sh §13.
 
 ## Report shape
 

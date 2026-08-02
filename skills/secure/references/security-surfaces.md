@@ -3,6 +3,13 @@
 Every finding still needs an exploit scenario and a confidence rating
 (SKILL.md). These patterns FIND candidates; they don't rate them.
 
+> **Applying these.** The patterns are written in `git grep -nE '…'` form
+> because that POSIX-ERE spelling is what `scripts/controls.sh` extracts and
+> tests and what check.sh §3b guards. Apply them at runtime with the **Grep
+> tool**, which is read-only — /secure grants no shell `git grep`, so it cannot
+> be coerced into the `-O<pager>` form that runs an arbitrary program. The Grep
+> tool matches the same patterns; pass any `-- '<glob>'` pathspec as its glob.
+
 > **Regex note.** `git grep -E` is POSIX ERE — `\s` parses as a literal
 > `s`, so `\s*` means "zero or more letter s", and `\b` matches nothing
 > at all. Until 2026-07-29 that made the secret sweep below miss every

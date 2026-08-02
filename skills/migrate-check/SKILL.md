@@ -11,6 +11,8 @@ A teammate's migration once dropped a table from a shared production
 database. This skill exists so that never happens again. It is structurally
 read-only: the tool whitelist has no Edit, no Write, and no prisma
 subcommand that mutates anything. It blocks and explains; it never fixes.
+(One residual: `git log` and `git diff` accept `--output=FILE`, which a
+prefix grant can't exclude; the skill never uses it — see check.sh §13.)
 
 `Adjacent skills:` /secure (security review; /migrate-check is DB-change
 safety) · /audit code (defects in code; this gates schema changes).

@@ -2,7 +2,7 @@
 name: health
 description: Read-only project checkup - three docs present and fresh, CLAUDE.md pointer intact, conduct block current, config valid, secrets clean, attribution honored, learnings alive, tickets-mode prerequisites met. Every failed check comes with its exact fix command, never applied. Use when the user asks for a health check, a project checkup, or whether the project setup is sane.
 argument-hint: "[notes]"
-allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git ls-files:*), Bash(git grep:*), Bash(git remote get-url:*), Bash(ls:*), Bash(cat:*), Bash(grep:*), Bash(command -v:*), Bash(readlink:*), Bash(diff:*), Bash(gh auth status:*), Bash(gh issue list:*), Bash(gh label list:*)
+allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git ls-files:*), Bash(git remote get-url:*), Bash(ls:*), Bash(cat:*), Bash(grep:*), Bash(command -v:*), Bash(readlink:*), Bash(diff:*), Bash(gh auth status), Bash(gh issue list:*), Bash(gh label list:*)
 ---
 
 # /health — the five-minute project checkup
@@ -56,7 +56,9 @@ about the wrong product is worse than no answer (conduct rule 8).
 
 Read-only, always. Every ✗ finding names the exact command or edit that
 would fix it — and applies none of them. /health diagnoses; the user
-(or /plan, /learn, /journal on request) treats.
+(or /plan, /learn, /journal on request) treats. (Residual: the `git log`
+grant accepts `--output=FILE`; a prefix grant can't forbid it, so
+"read-only" is in use, not mechanically absolute — recorded in check.sh §13.)
 
 ## The checks
 

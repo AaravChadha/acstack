@@ -5,6 +5,12 @@ Brand-neutral defaults for when no project config is set. Project config
 grep hit is a candidate, and each finding still names the exact
 convention it violates.
 
+> **Applying these.** The patterns are written in `git grep -nE '…'` form
+> because that POSIX-ERE spelling is what `scripts/controls.sh` extracts and
+> tests and what check.sh §3b guards. Apply them at runtime with the **Grep
+> tool**, which is read-only — /design-audit grants no shell `git grep`, so it
+> cannot be coerced into the `-O<pager>` form that runs an arbitrary program.
+
 ## Config schema
 
 ```markdown

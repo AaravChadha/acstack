@@ -2,7 +2,7 @@
 name: design-audit
 description: Static UI convention check - off-palette colors and wrong product-name casing, dishonest data labels (AI-generated or mock data shown as real), AI-slop (lorem remnants, hedge copy, emoji headings, uniform gradient grids), and client-facing language leaks. Reports file:line findings with fixes; conventions come from config layered over pack defaults. Use when the user asks to design-audit or check UI conventions, polish, or copy.
 argument-hint: "[path | notes]"
-allowed-tools: Read, Grep, Glob, Bash(git grep:*), Bash(grep:*), Bash(ls:*)
+allowed-tools: Read, Grep, Glob, Bash(grep:*), Bash(ls:*)
 ---
 
 # /design-audit — conventions, honesty, and slop
@@ -62,7 +62,8 @@ sprawl, not brand conformance."
 ## The four checks
 
 Grep families and the default convention set live in
-`references/design-conventions.md`.
+`references/design-conventions.md`. Apply them with the Grep tool — this
+skill grants no shell `git grep`.
 
 1. **Palette + branding.** Hardcoded colors outside the configured
    palette; product names in the wrong casing; spacing/font literals

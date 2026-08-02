@@ -127,6 +127,23 @@ fullcase "read-only granted Bash(sed -n)"   FAIL 'readonly' bash -c "sed -e 's/^
 fullcase "read-only granted Bash(git remote)" FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(git remote:*), Read/' skills/resume/SKILL.md > t && mv t skills/resume/SKILL.md"
 fullcase "read-only granted Bash(curl)"     FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(curl:*), Read/' skills/secure/SKILL.md > t && mv t skills/secure/SKILL.md"
 fullcase "read-only skill file missing"       FAIL 'readonly' rm skills/resume/SKILL.md
+# 2026-08-03 recheck round 3 — the allowlist audit that framed agents to DISPROVE.
+# Each of these passed §13 clean before the fix in the same commit; all four are
+# demonstrated FAILING first (run the matrix against the pre-fix check.sh).
+#   - a write tool appended LAST slipped through: `printf '%s'` left the final
+#     comma-field unterminated, so `read` dropped it and never validated it.
+#   - `sort -o`, `git symbolic-ref <ref>` write/mutate under free args yet sat on
+#     the allowlist unused — the allowlist was a plausible-looking set, not the
+#     audited union of what the six skills actually grant.
+#   - a second `allowed-tools:` line hid a write grant from `head -1`.
+fullcase "read-only Write as last token"       FAIL 'readonly' bash -c "sed -e 's/^\\(allowed-tools:.*\\)/\\1, Write/' skills/resume/SKILL.md > t && mv t skills/resume/SKILL.md"
+fullcase "read-only granted Bash(sort)"        FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(sort:*), Read/' skills/audit/SKILL.md > t && mv t skills/audit/SKILL.md"
+fullcase "read-only granted Bash(git symbolic-ref)" FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(git symbolic-ref:*), Read/' skills/health/SKILL.md > t && mv t skills/health/SKILL.md"
+fullcase "read-only duplicate allowed-tools line"   FAIL 'readonly' bash -c "awk '/^allowed-tools:/ && !d {print; print \"allowed-tools: Write\"; d=1; next} {print}' skills/secure/SKILL.md > t && mv t skills/secure/SKILL.md"
+# git grep left the allowlist entirely (its -O<pager> runs an arbitrary program;
+# the four skills apply patterns via the read-only Grep tool now). Granting it
+# back must be rejected — this passed clean while git grep was allowlisted.
+fullcase "read-only granted Bash(git grep)"    FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(git grep:*), Read/' skills/secure/SKILL.md > t && mv t skills/secure/SKILL.md"
 fullcase "guard-matrix syntax error caught"   FAIL 'syntax'   bash -c "printf 'if [ ; then\n' >> docs/guard-matrix.sh"
 fullcase "conduct block drifts from canon" FAIL 'conduct' bash -c "sed -e 's/^4\. Be direct\./4. Be direct and blunt./' AGENTS.md > t && mv t AGENTS.md"
 fullcase "conduct block missing entirely"  FAIL 'conduct' bash -c "awk '/BEGIN:acstack-conduct/{f=1} !f{print} /END:acstack-conduct/{f=0}' CONDUCT.md > t && mv t CONDUCT.md"

@@ -11,9 +11,9 @@ The shape of a report a reviewer can act on without asking follow-ups.
 alternative you rejected and why: "Chose X over Y because Y would still
 <consequence>.">
 
-**Safety checks:** <the exact commands run and what they matched — e.g.
-"`git grep -il "sandbox"` matched only the sandbox files themselves — no
-imports, no nav entry, no route config.">
+**Safety checks:** <the exact searches run and what they matched — e.g.
+"a Grep-tool search for `sandbox` matched only the sandbox files themselves —
+no imports, no nav entry, no route config.">
 
 ## 2. <Next finding>
 
