@@ -3,17 +3,18 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-03. **Still private — the flip has not
-> happened.** Two pre-flip rechecks both returned NOT READY; the second
-> found the first's fix had reintroduced the bug it fixed, which forced
-> check.sh §13 from a denylist to an allowlist. A third round (08-03
-> evening) then audited that allowlist by falsification and found the
-> allowlist itself defective — `git grep -O` ran arbitrary programs,
-> `git log`/`git diff --output` wrote files, and the guard never
-> validated each list's last token — all fixed (matrix 68 → 74); the flip
-> is still the user's call. Wave 4 is nearly closed —
-> **14 of 16 items done, 2 open** (4.5 awaiting its seeded-PR CI half,
-> 4.7 the launch checklist itself). Built today: versioning, six guard
+> **Last update**: 2026-08-03. **PUBLIC as of 2026-08-03** — the repo was
+> flipped after the §13 falsification round closed and CI went green
+> (run 30765510782). Two pre-flip rechecks both returned NOT READY; the
+> second found the first's fix had reintroduced the bug it fixed, which
+> forced check.sh §13 from a denylist to an allowlist. A third round
+> (08-03 evening) then audited that allowlist by falsification and found
+> the allowlist itself defective — `git grep -O` ran arbitrary programs,
+> `git log`/`git diff --output` wrote files, and the guard never validated
+> each list's last token — all fixed (matrix 68 → 74), git grep dropped to
+> the read-only Grep tool, the gh token grant narrowed, and a §13a forcing
+> function added. **Wave 4 is closed** — 4.7's final clause was the public
+> flip, now done. Built across the launch: versioning, six guard
 > classes, the fixtures/controls positive-control layer, the runtime
 > preamble + `bin/` helpers, CI, dry-run honesty, `allowed-tools`, the
 > referral block, multi-product detection, **/eval-run as the 20th
@@ -87,6 +88,22 @@ bash docs/guard-matrix.sh "$PWD"   # 74 seeded-defect cases proving the guards f
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Flipped public (2026-08-03)
+
+The repo is public: https://github.com/AaravChadha/acstack. The sequence
+was **push → CI green → flip**, deliberately gating the irreversible act on
+CI because shellcheck runs only there and check.sh had just been heavily
+edited. Run 30765510782 passed check.sh + guard-matrix (74 cases) +
+shellcheck in 3m6s; `gh repo edit --visibility public` then flipped it.
+Pre-flight sweep was clean: the banned-name list ran **locally** this time
+(not skipped) and passed, and the only secret-shaped strings in the tree
+are the intentional fake fixtures (`sk-live-aaaa…`, `AKIA…`) the /secure
+positive control seeds. 4.7's last clause — "only then flip public" — is
+satisfied; wave 4 is closed. The standing limit is unchanged and now
+public in the docs: no run has ever driven a live Claude Code session, so
+the pack is proven sound as *machinery*, not proven to make a model obey a
+skill.
 
 ### The allowlist audited itself and lost: git grep -O, a token the guard never read (2026-08-03 evening)
 

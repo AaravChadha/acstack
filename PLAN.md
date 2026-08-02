@@ -91,7 +91,7 @@
 | [x] 1 — Core + foundation | The five core skills installable and honest | `./setup` round-trips; `scripts/check.sh` clean; skills load in a fresh session |
 | [x] 2 — Gate, eval, tickets | Planning gets teeth; tickets mode lands | All wave-2 skills load; tickets mode drives a real GitHub repo end-to-end |
 | [x] 3 — Ship + reflect | Full sprint coverage | /qa (http), /secure, /ship, /retro, /learn, /design-audit, /health load and pass their shakedowns |
-| [ ] 4 — Distribution + launch | A stranger can install, trust, and update it | Fresh-machine install test passes; launch checklist all green |
+| [x] 4 — Distribution + launch | A stranger can install, trust, and update it | Fresh-machine install test passes; launch checklist all green; **flipped public 2026-08-03** |
 | [ ] 4.5 — Post-launch hardening | More rigorous and more capable, once real adopters exist | Each item's acceptance passes; journal records what adopter feedback reordered |
 | [ ] 5 — Gates: pre-flight + verification | Nothing destructive or unverified lands quietly | Each gate returns a written verdict on a seeded repo; none of them can write |
 | [ ] 6 — The review board | Multi-perspective review without personas | Each lens returns a verdict on a seeded project; /board consolidates with dissents preserved |
@@ -338,7 +338,7 @@ there.
 > Revisit when adopter feedback shows the /resume shadow hurts in
 > practice.
 
-## [ ] Wave 4 — Distribution + launch
+## [x] Wave 4 — Distribution + launch
 
 **Goal:** A stranger can install in 30 seconds, audit what they're
 trusting in 5 minutes, and never silently run a stale pack.
@@ -431,10 +431,12 @@ below fully green; repo flipped public.
   truncation priority for layered config (user-wide kept, project next,
   local dropped first — security-guidance's model); CONTRIBUTING states
   the skill RED-GREEN rule carried on 6.7.
-- [ ] **4.7** *(All **ten** items demonstrated 2026-07-31 — evidence
-  ledger in the JOURNAL entry of the same date. **The box stays open
-  because its last clause is "only then flip public", and the flip is
-  the user's call — it is the single remaining action.**)*
+- [x] **4.7** *(All **ten** items demonstrated 2026-07-31 — evidence
+  ledger in the JOURNAL entry of the same date. **Closed 2026-08-03:
+  after the §13 allowlist falsification round and CI green (run
+  30765510782), the repo was flipped public via `gh repo edit
+  --visibility public` — the last clause "only then flip public" is
+  done.**)*
   Launch checklist — every line must be *demonstrated*, not
   asserted. Nothing here is checkable by re-reading a file (AGENTS.md's
   verify-the-consumed-form rule); each item names the artifact that
