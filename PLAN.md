@@ -1479,6 +1479,26 @@ error already produced two bugs this wave-planning round.
   > lineup). Their false-positive blocklist rides 4.28 into /audit and
   > applies here too. Fan-out stays inside the 2–4 agent budget.
 
+  > **Reviewers are framed to REFUTE, not to review (2026-08-03).**
+  > The single highest-yield finding of the wave-4 build, and it is a
+  > prompt-shape rule rather than a mechanism. Every round framed as
+  > "audit this" returned agreement; every round framed as "disprove
+  > this, treat each row as a claim not a fact" returned real defects.
+  > One falsification pass over the launch ledger found **2 rows false
+  > and 4 overstated, all in the author's favour**, after three
+  > audit-framed rounds had missed every one.
+  > Therefore each lens gets its refutation framing in its own prompt,
+  > and a finding **survives only when the attempt to refute it fails**
+  > — which is also how `/board` should consolidate: validate each
+  > finding independently and drop what does not survive, per the
+  > code-review prior art above. Two riders: hand the reviewer the
+  > requirement text separately, so it checks the claim against the bar
+  > rather than against itself; and verify the reviewer's own findings
+  > at `file:line`, because a refuter is as capable of being wrong as
+  > the author — one claim in that same session did not survive
+  > checking. Carried in AGENTS.md as this repo's fifth verification
+  > rule; it reaches adopters only through this skill.
+
   > **Second prior art (2026-07-30, third pass).** impeccable's
   > `reference/critique.md` (788 lines) runs **two independent
   > assessments of one resolved target, then synthesizes** — the board

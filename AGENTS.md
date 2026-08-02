@@ -24,7 +24,8 @@ Binding rules for this repo:
   derivation from it — the pack itself has no ticket or task ID per commit.
   Rule 10's no-attribution half still binds.
 
-Verification rules (added 2026-07-29, each from a defect this repo shipped):
+Verification rules (added 2026-07-29, extended 2026-08-03 — each from a
+defect this repo shipped):
 
 - **Verify the consumed form, not the authored form.** The file you wrote is
   not evidence; the thing that reads it is. Check the parsed frontmatter, the
@@ -55,7 +56,22 @@ Verification rules (added 2026-07-29, each from a defect this repo shipped):
   it. This applies to your own earlier statements too: in a long session,
   re-read before restating, or you will contradict yourself in writing.
 
-These four are repo-binding, not part of the shipped conduct block. Promote
+- **Evidence you wrote about your own work is not evidence until
+  something independent tries to break it.** Frame the reviewer to
+  **disprove** — "treat every row as a claim, not a fact; the author
+  wants this falsified" — and hand it the requirement text separately so
+  it checks the claim against the bar rather than against itself. Rounds
+  framed as audits agreed; rounds framed as falsification found real
+  defects, every time. A pass told to disprove the 4.7 launch ledger
+  returned **2 rows false and 4 overstated, every error in the author's
+  favour**, after three prior audit-framed rounds had missed all six. It
+  found a README section claiming "captured, not written by hand" whose
+  commands could not execute as printed, and an evidence column that
+  read "this table" for a requirement to paste command output. Verify
+  the reviewer's findings at `file:line` too — in the same session one
+  agent claim did not survive checking.
+
+These five are repo-binding, not part of the shipped conduct block. Promote
 one into CONDUCT.md only if it proves out across projects — the same bar
 `/learn` uses for promoting a lesson into known-bug-classes.
 
