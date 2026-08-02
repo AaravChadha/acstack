@@ -3,15 +3,19 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-07-31. Wave 4 is nearly closed —
+> **Last update**: 2026-08-03. **Still private — the flip has not
+> happened.** Two pre-flip rechecks both returned NOT READY; the second
+> found the first's fix had reintroduced the bug it fixed, which forced
+> check.sh §13 from a denylist to an allowlist. One clean audit of that
+> allowlist — by a round that did not write it — is the remaining gate. Wave 4 is nearly closed —
 > **14 of 16 items done, 2 open** (4.5 awaiting its seeded-PR CI half,
 > 4.7 the launch checklist itself). Built today: versioning, six guard
 > classes, the fixtures/controls positive-control layer, the runtime
 > preamble + `bin/` helpers, CI, dry-run honesty, `allowed-tools`, the
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
-> CONTRIBUTING, README v2). check.sh 6 → **16 checks**; guard-matrix
-> 15 → **63 cases**; **20 skills**. Three review rounds ran; the last
+> CONTRIBUTING, README v2). check.sh 6 → **16 checks** (15 numbered + 3b); guard-matrix
+> 15 → **68 cases**; **20 skills**. Five review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -27,7 +31,7 @@
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean (**15** numbered
   sections plus 3b = 16 checks, including positive controls over seeded
-  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**63**
+  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**68**
   cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4's work is done.** 4.7's ten checklist items are all
@@ -62,7 +66,7 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard (16 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 63 seeded-defect cases proving the guards fire
+bash docs/guard-matrix.sh "$PWD"   # 68 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty skills load at start
 ```
 
@@ -79,6 +83,84 @@ bash docs/guard-matrix.sh "$PWD"   # 63 seeded-defect cases proving the guards f
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Pre-flip rechecks: the denylist that could not be finished (2026-08-02 → 03)
+
+Two rounds of falsification-framed review before the public flip. **The
+flip did NOT happen** — both rounds returned NOT READY, and the second
+found that the first round's own fix had reintroduced the bug it fixed.
+Matrix 63 → **68**; check.sh 15 → 16 checks (15 numbered + 3b).
+
+**Round 1 — four blocking, one self-inflicted.** `/health` declared
+"Read-only, always" while granting `Bash(find:*)`, `Bash(awk:*)`, and
+`Bash(git config:*)`. All three write, proven: `find -delete` and
+`awk 'BEGIN{system("rm …")}'` each removed a file. Worse, **check.sh
+§13 certified it read-only**, because `WRITE_CMDS` listed none of them.
+Self-inflicted: those grants were added on 07-31 to fix a
+too-narrow finding, over-correcting into write capability. Also: the
+eval runner counted a *crashed* case as a pass when `acceptable_failure`
+was set (its own hard rules forbid exactly that), and `/ship`'s "move
+the commits" off a default branch read as a history rewrite with no
+procedure.
+
+**The README demo failed a third time.** Both agents caught it
+independently: `don't` inside a single-quoted shell argument is an
+unterminated string, and quote-stripping made two other commands assert
+on different input than printed. Twice before I had "verified" it by
+running a differently-escaped string than the one I pasted. The fix that
+finally worked was procedural, not textual — **extract the commands from
+README and execute those**.
+
+**Round 2 — the fix reintroduced the bug.** Replacing `awk` with
+`Bash(sed -n:*)` added a *new* write path: `sed -n -i ''` edits in
+place, and prefix grants permit any command starting with the string.
+The denylist certified it. An audit then named **18 further misses** —
+`git remote`, `git clean`, `git restore`, `git switch`, `git stash`,
+`git apply`, `git branch`, `git worktree`, `python3`, `chmod`, `dd`,
+`truncate`, `ln`, `curl`, `npm install`, `gh pr merge`, `gh issue close`.
+
+**The structural verdict, which is the entry's real content.** Three
+occurrences of one bug is not three bugs — §13 was a **denylist sold as
+a certification**, and a denylist cannot be finished. It is now an
+**allowlist**: anything not explicitly named read-only is rejected. It
+immediately caught both `sed -n` and a pre-existing `git remote` grant
+that had passed for weeks. `/health` now uses the **Read and Glob tools**
+rather than shelling out, since every stream editor that can extract a
+range can also edit in place.
+
+**A guard-satisfying regression, caught by asking the right question.**
+The reviewer was told to check not just whether the guard passes but
+whether **/health still does its job**. It did not: `git ls-files`
+(my `find` replacement) matches `MYPLAN.md`, **misses untracked files** —
+a just-added second product is precisely what that check exists to
+catch — and fails outright outside a git repo. Glob has none of those
+problems. A skill that satisfies its guard while no longer working is a
+worse outcome than the bug being fixed, and only a functional question
+surfaces it.
+
+**Also closed:** the fixture runner still carried the pre-fix
+crash-forgiveness line (regenerated from the template); the template's
+own `subprocess` example lacked `check=True`, so a subject exiting
+non-zero returned empty stdout as a normal answer that
+`acceptable_failure` could forgive; `fixtures/README` said `5/6` twelve
+lines above the line I had just corrected, inside a parenthetical about
+having miscounted twice; the README demo cited commit hashes that
+resolve nowhere for a reader; and counts were wrong again — 15 numbered
+sections + 3b = **16 checks** (docs said 15), **35** open tasks (JOURNAL
+said 37). The `sec_check` comment claimed counting protects individual
+alternation branches; it does not — deleting `|MODE_ECB` still passes —
+so the claim was scoped down rather than defended.
+
+**Why the flip is still pending.** Not because the pack is weak: the
+mechanical layer is green and the allowlist is a genuine structural
+improvement. Because **no round that changed this much has ever been
+clean on first inspection**, and the allowlist deserves one audit that
+is not the round that wrote it.
+
+Validation close: `check.sh` clean on every commit; checks 15 → 16;
+matrix 63 → 68 with every new guard demonstrated failing first;
+controls all plants caught; 20 skills; fresh clone byte-identical to
+local; tracked tree carries no emails, personal paths, or roster hits.
 
 ### Launch checklist executed — 4.7's evidence ledger (2026-07-31)
 
