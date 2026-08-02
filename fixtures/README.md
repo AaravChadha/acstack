@@ -33,7 +33,7 @@ Consequences of living in the tree, all intended:
   CLAUDE.md pointer comparison, the `.env` presence test, /audit's
   Unicode-lookalike byte check, /audit's raw-compare pattern, the
   multi-product `find`, the workspace-marker `ls`, and /eval-run's
-  `5/6 (83.3%)` headline. (Counted twice on 2026-07-31: this said "two",
+  `6/7 (85.7%)` headline. (Counted twice on 2026-07-31: this said "two",
   then "six" — both times by naming rather than counting, which is the
   set rule broken inside the fixture index, twice.)
 

@@ -18,6 +18,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_DIR"
 fail=0
 skipped=0
+WORKTMP_RO="$(mktemp)"; trap 'rm -f "$WORKTMP_RO"' EXIT
 
 extract_principles() {
   awk '/<!-- acstack:principles -->/{f=1} f{print} /<!-- \/acstack:principles -->/{f=0}' "$1"
@@ -339,20 +340,21 @@ else
   done
 fi
 
-# 13. Structurally read-only skills declare a no-write tool set. Their
-#     never-writes promise was prose until 2026-07-30; this makes it
-#     mechanical. /migrate-check is the template these five copy. /qa is
-#     excluded (network shape) and /retro is NOT read-only — it appends to
-#     JOURNAL.md and commits (the 2026-07-29 correction).
+# 13. Structurally read-only skills declare a no-write tool set.
+#     ALLOWLIST, not a denylist. A denylist was tried and failed twice: it
+#     missed `find`/`awk`/`git config`, and the very commit that added those
+#     introduced `sed -n` — which writes, because `sed -n -i ''` is a valid
+#     invocation and prefix grants permit any command STARTING with the
+#     string. An audit then named 18 further misses (git remote/clean/
+#     restore/switch/stash/apply/branch/worktree, python3, chmod, dd,
+#     truncate, ln, curl, npm, gh pr merge, gh issue close…). A denylist
+#     cannot be finished; an allowlist can be reviewed.
+#     Anything not on this list is rejected — add to it deliberately.
 READONLY_SKILLS="secure health design-audit audit resume migrate-check"
-# Commands that write, delete, or publish. A scoped Bash() grant is not
-# automatically safe: Bash(rm:*) is every bit as write-capable as Write.
-# find (-delete/-exec), awk (system()), and git config all write despite
-# reading like inspection commands — /health granted all three until
-# 2026-08-02 while its own text said "Read-only, always".
-WRITE_CMDS='rm|mv|cp|tee|touch|mkdir|sed -i|find|awk|xargs|git config|git commit|git add|git push|git checkout|git reset|git rm|gh issue create|gh issue edit|gh pr create|>'
-for s in $READONLY_SKILLS; do
-  f="skills/$s/SKILL.md"
+SAFE_TOOLS="Read|Grep|Glob"
+SAFE_BASH="cat|ls|wc|head|tail|sort|uniq|diff|readlink|command -v|basename|dirname|grep|git log|git grep|git status|git diff|git show|git ls-files|git rev-parse|git check-ignore|git symbolic-ref|git show-ref|git remote get-url|gh auth status|gh issue list|gh label list|gh pr view|gh pr diff|npx prisma migrate status"
+for s_ in $READONLY_SKILLS; do
+  f="skills/$s_/SKILL.md"
   if [ ! -f "$f" ]; then
     echo "FAIL readonly: $f is listed as read-only but does not exist"
     fail=1; continue
@@ -362,19 +364,18 @@ for s in $READONLY_SKILLS; do
     echo "FAIL readonly: $f declares no allowed-tools — its read-only promise is prose"
     fail=1; continue
   fi
-  case "$tools" in
-    *Write*|*Edit*)   # *Edit* already covers NotebookEdit — listing both
-                      # is dead code, which shellcheck (SC2222) catches
-      echo "FAIL readonly: $f grants a write tool: $tools"; fail=1 ;;
-  esac
-  # bare Bash, and Bash(*) which is the same grant wearing parentheses
-  printf '%s' "$tools" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
-    | grep -qxE 'Bash|Bash\(\*\)' && { echo "FAIL readonly: $f grants unscoped Bash: $tools"; fail=1; }
-  # a scoped grant that still writes
-  if printf '%s' "$tools" | grep -qE "Bash\((${WRITE_CMDS})"; then
-    echo "FAIL readonly: $f grants a write-capable Bash scope: $tools"
-    fail=1
-  fi
+  printf '%s' "$tools" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | while IFS= read -r t; do
+    [ -n "$t" ] || continue
+    case "$t" in
+      Bash\(*\)) cmd="${t#Bash(}"; cmd="${cmd%)}"; cmd="${cmd%:\*}"
+        printf '%s' "$cmd" | grep -qxE "$SAFE_BASH" \
+          || echo "FAIL readonly: $f grants Bash($cmd) — not on the read-only allowlist"
+        ;;
+      *) printf '%s' "$t" | grep -qxE "$SAFE_TOOLS" \
+          || echo "FAIL readonly: $f grants '$t' — not on the read-only allowlist" ;;
+    esac
+  done > "$WORKTMP_RO" 2>/dev/null || true
+  if [ -s "$WORKTMP_RO" ]; then cat "$WORKTMP_RO"; fail=1; fi
 done
 
 # 14. Referral roster: the acstack-referrals table in AGENTS.md must name

@@ -46,10 +46,15 @@ def grade(case, actual):
         # the case — /audit eval calls that bucket "grader brittleness".
         return norm(expected) in norm(actual)
     if rule.startswith("numeric-tolerance:"):
-        tol = float(rule.split(":", 1)[1])
+        raw = rule.split(":", 1)[1].strip()
+        relative = raw.endswith("%")           # the spec allows ±x and ±x%
+        tol = float(raw.rstrip("%"))
         nums = lambda s: [float(x) for x in re.findall(r"-?\d+\.?\d*", str(s))]
         a, e = nums(actual), nums(expected)
-        return bool(a and e and abs(a[0] - e[0]) <= tol)
+        if not (a and e):
+            return False
+        limit = abs(e[0]) * tol / 100 if relative else tol
+        return abs(a[0] - e[0]) <= limit
     if rule.startswith("rubric:"):
         return None          # judged by a human or a model, never invented here
     raise ValueError(f"unknown grade_rule: {rule}")
@@ -76,7 +81,11 @@ def main():
             errors += 1
         if rec["pass"] is None and rec["status"] == "scored":
             rec["status"] = "needs-rubric-review"
-        elif rec["pass"] is False and accepted(c):
+        elif rec["pass"] is False and rec["status"] != "error" and accepted(c):
+            # status guard is load-bearing: a case that CRASHED must never be
+            # forgiven. acceptable_failure means "this answer is wrong for a
+            # known reason", not "this run blew up" — and swallowing an
+            # exception into a pass is the very thing this file forbids.
             rec["acceptable_failure_applied"] = True
             af = c.get("acceptable_failure")
             rec["acceptable_failure_reason"] = (af.get("reason") if isinstance(af, dict)

@@ -63,7 +63,11 @@ def run_subject(case):
     """THE ONE PROJECT-SPECIFIC FUNCTION. Return the system's answer as a
     string. Three shapes, pick one and delete the rest:
 
-      CLI:      return subprocess.run([...], capture_output=True, text=True).stdout
+      CLI:      return subprocess.run([...], capture_output=True, text=True,
+                                     check=True).stdout   # check=True is required:
+                # without it a subject exiting non-zero returns its (empty)
+                # stdout as a normal answer, which acceptable_failure can then
+                # forgive — a crash laundered into a pass
       HTTP:     return requests.post(URL, json={"q": case["input"]}).json()["answer"]
       import:   from myapp import answer; return answer(case["input"])
 

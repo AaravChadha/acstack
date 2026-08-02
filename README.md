@@ -91,9 +91,10 @@ survive copy-paste — an earlier version of this section did not, which is
 exactly the kind of thing this pack exists to catch.
 
 The project counts word frequencies; the plan says what "correct" means.
-Each block below names the commit it runs against — the defect blocks
-only reproduce *before* the fix, which is the whole point of showing
-them.
+The defect blocks only reproduce *before* the fix — that is the point of
+showing them — so each is labelled with the state it runs against. The
+short hashes below are from the scratch project this was recorded in;
+they are labels for the two states, not commits you can check out.
 
 **Task 1.1.1 — `/do` runs the acceptance line before doing the work:**
 
@@ -109,7 +110,7 @@ acceptance line can tell you the work is unnecessary; prose criteria
 never do.
 
 **Task 1.1.2 — real work.** Quoted words count as separate words
-(this block runs at `fa331d6`, before the fix):
+(before the fix):
 
 ```
 $ python3 -c "from wordfreq import top_words; print(top_words(\"'the' the the\"))"
@@ -119,8 +120,7 @@ $ python3 -c "from wordfreq import top_words; assert top_words(\"'the' the the\"
 AssertionError
 ```
 
-Fix: strip surrounding quotes, keep internal ones. Both acceptances at
-`f054971`, after the change:
+Fix: strip surrounding quotes, keep internal ones. Both acceptances after the change:
 
 ```
 $ python3 -c "from wordfreq import top_words; assert top_words(\"'the' the the\") == [('the', 3)]; print('PASS')"

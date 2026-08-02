@@ -27,9 +27,11 @@ proposed move of that content into AGENTS.md; never rewrite it yourself.
 
 ## 3. Conduct block
 
-```bash
-sed -n '/<!-- BEGIN:acstack-conduct -->/,/<!-- END:acstack-conduct -->/p' AGENTS.md
-```
+**Read** AGENTS.md and take the text between
+`<!-- BEGIN:acstack-conduct -->` and `<!-- END:acstack-conduct -->`.
+Use the Read tool, not a shell command: every stream editor that can
+extract a range can also edit in place, and this skill declares a
+read-only tool set.
 
 Locate the installed pack root through the symlink (skip with
 `skipped — copy install` when not symlinked):
@@ -51,9 +53,8 @@ edit as the fix.
 
 ## 3b. Referral roster
 
-```bash
-sed -n '/<!-- BEGIN:acstack-referrals -->/,/<!-- END:acstack-referrals -->/p' AGENTS.md
-```
+**Read** AGENTS.md and take the text between
+`<!-- BEGIN:acstack-referrals -->` and `<!-- END:acstack-referrals -->`.
 
 Present and matching `$pack_root/AGENTS.md`'s block → ✓. Missing → ✗
 with the fix "re-run `/plan seed` (idempotent)". Stale (the pack's
@@ -65,7 +66,10 @@ every typed-only skill.
 ## 3c. One product per repo (info, never a failure)
 
 ```bash
-git ls-files '*PLAN.md' | head        # tracked only; no filesystem walk
+# Glob (the tool, not a shell walk) for: **/PLAN.md  **/BRIEF.md  **/JOURNAL.md
+# Glob sees untracked files too — `git ls-files` would miss a second
+# product that was just added, which is exactly what this check exists
+# to catch, and would fail outright outside a git repo.
 ls pnpm-workspace.yaml lerna.json turbo.json go.work 2>/dev/null
 grep -l '"workspaces"' package.json 2>/dev/null
 grep -l '^\[workspace\]' Cargo.toml 2>/dev/null
@@ -96,6 +100,8 @@ has no such table). Anything else = info (extension hook). Consistency:
 
 ```bash
 command -v gh && gh auth status && git remote get-url origin
+# `git remote get-url` only; a bare `git remote` grant would also permit
+# `git remote add`, which writes .git/config
 ```
 
 ## 5. Secrets
