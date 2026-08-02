@@ -69,7 +69,7 @@ you are most motivated to negotiate them. A command is not.
 ## Mechanical over rhetorical
 
 Where a rule can be a check, it becomes a check. `scripts/check.sh` has
-grown to fifteen numbered sections; `allowed-tools` declarations replace prose
+grown to fifteen numbered sections (sixteen checks with 3b); `allowed-tools` declarations replace prose
 promises about not writing; `docs/guard-matrix.sh` proves each guard
 fires before it is trusted.
 

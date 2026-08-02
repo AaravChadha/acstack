@@ -20,7 +20,7 @@ last step and a deliberate human decision.
   update check that never pulls, capped recall). `runtime: off`, a copy
   install, or an unresolved pack root each degrade to pure markdown.
   Machine-local state is one file: `~/.acstack/update-stamp`.
-- **Guards:** `scripts/check.sh` 5 → 15 numbered sections — versioning,
+- **Guards:** `scripts/check.sh` 5 → 15 numbered sections (16 checks with 3b) — versioning,
   routing lines, cross-reference resolution, config-key reachability,
   verdict-first stance, positive controls, runtime identity and budget,
   read-only tool declarations, the referral roster, and conduct-block

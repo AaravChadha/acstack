@@ -9,7 +9,7 @@ principles applied. `docs/ARCHITECTURE.md` explains the layers.
 guard blocks the commit. Fix the drift; do not skip the check.
 
 ```bash
-scripts/check.sh                    # 15 numbered sections (plus 3b), includes positive controls
+scripts/check.sh                    # 15 numbered sections + 3b = 16 checks, includes positive controls
 bash docs/guard-matrix.sh "$PWD"    # every guard shown firing on a seeded defect
 ./setup && ./setup --uninstall      # installer round-trip
 ```

@@ -47,8 +47,15 @@ the same block, or take the branch name as a literal. Never assume it
 carries over.
 
 - Dirty tree → BLOCK: "commit or stash first" with the porcelain output.
-- On the default branch → offer to cut `<branch-prefix><slug>` and move
-  the commits; never open a PR from default onto itself.
+- On the default branch → **stop and offer**, never act unasked. The
+  offer is to create a branch at the current commit and leave the
+  default branch exactly where it is — `git switch -c <branch-prefix><slug>`
+  — which moves nothing and rewrites nothing. **/ship never resets,
+  rebases, or force-pushes anyone's default branch**; if the user wants
+  the commits removed from it afterwards, that is their call and their
+  command. (Earlier wording said "move the commits" with no procedure,
+  which read as a history rewrite on someone's `main`.) Never open a PR
+  from the default branch onto itself.
 - Zero commits ahead → BLOCK: nothing to ship.
 
 ## 2. Tests

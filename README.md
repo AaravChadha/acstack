@@ -85,39 +85,47 @@ telemetry — the `telemetry` key is reserved and unimplemented.
 
 ## See it work
 
-A real session on a small Python project. Every command below was run and
-every output pasted verbatim — copy any line and it executes.
+A real session on a small Python project. Every command was run and every
+output pasted verbatim. The commands use double quotes throughout so they
+survive copy-paste — an earlier version of this section did not, which is
+exactly the kind of thing this pack exists to catch.
 
-The project counts word frequencies. The plan says what "correct" means.
+The project counts word frequencies; the plan says what "correct" means.
+Each block below names the commit it runs against — the defect blocks
+only reproduce *before* the fix, which is the whole point of showing
+them.
 
 **Task 1.1.1 — `/do` runs the acceptance line before doing the work:**
 
 ```
-$ python3 -c 'from wordfreq import top_words; assert top_words("don't don't stop")[0] == ("don't", 2); print("acceptance PASSES before any work")'
+$ python3 -c "from wordfreq import top_words; assert top_words(\"don't don't stop\")[0] == (\"don't\", 2); print('acceptance PASSES before any work')"
 acceptance PASSES before any work
 ```
 
-It already passes — `[a-z']+` includes the apostrophe, so the task was
-written against a bug that does not exist. The box is ticked with a
-verdict and **no code is written**. A runnable acceptance line can tell
-you the work is unnecessary; prose criteria never do.
+It already passes — the tokenizer's character class includes the
+apostrophe, so the task was written against a bug that does not exist.
+The box is ticked with a verdict and **no code is written**. A runnable
+acceptance line can tell you the work is unnecessary; prose criteria
+never do.
 
-**Task 1.1.2 — real work.** Quoted words count separately:
+**Task 1.1.2 — real work.** Quoted words count as separate words
+(this block runs at `fa331d6`, before the fix):
 
 ```
-$ python3 -c 'from wordfreq import top_words; print(top_words("'the' the the"))'
+$ python3 -c "from wordfreq import top_words; print(top_words(\"'the' the the\"))"
 [('the', 2), ("'the'", 1)]
 
-$ python3 -c 'from wordfreq import top_words; assert top_words("'the' the the") == [("the", 3)]' 2>&1 | tail -1
+$ python3 -c "from wordfreq import top_words; assert top_words(\"'the' the the\") == [('the', 3)]" 2>&1 | tail -1
 AssertionError
 ```
 
-Fix: strip surrounding quotes, keep internal ones. Then both acceptances:
+Fix: strip surrounding quotes, keep internal ones. Both acceptances at
+`f054971`, after the change:
 
 ```
-$ python3 -c 'from wordfreq import top_words; assert top_words("'the' the the") == [("the", 3)]; print("PASS")'
+$ python3 -c "from wordfreq import top_words; assert top_words(\"'the' the the\") == [('the', 3)]; print('PASS')"
 PASS
-$ python3 -c 'from wordfreq import top_words; assert top_words("don't don't stop")[0] == ("don't", 2); print("PASS")'
+$ python3 -c "from wordfreq import top_words; assert top_words(\"don't don't stop\")[0] == (\"don't\", 2); print('PASS')"
 PASS
 ```
 

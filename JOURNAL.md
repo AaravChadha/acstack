@@ -10,7 +10,7 @@
 > preamble + `bin/` helpers, CI, dry-run honesty, `allowed-tools`, the
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
-> CONTRIBUTING, README v2). check.sh 6 → **15 checks**; guard-matrix
+> CONTRIBUTING, README v2). check.sh 6 → **16 checks**; guard-matrix
 > 15 → **63 cases**; **20 skills**. Three review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
@@ -25,8 +25,8 @@
 - Tickets mode (`tracking: tickets`) is live in /plan and /do — bootstrap,
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
-- Working tree clean; `scripts/check.sh` all clean (**14** numbered
-  sections plus 3b = 15 checks, including positive controls over seeded
+- Working tree clean; `scripts/check.sh` all clean (**15** numbered
+  sections plus 3b = 16 checks, including positive controls over seeded
   `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**63**
   cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
@@ -47,7 +47,7 @@
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
   public flip waits on the wave-4 launch checklist.
-- Roadmap runs to 39 skills, **37 open tasks** (re-counted 2026-07-30
+- Roadmap runs to 39 skills, **35 open tasks** (re-counted 2026-07-30
   after batch D): wave 4 (**1**) → 4.5 (post-launch hardening, **13** —
   grew by the eight-repo survey, which also added /design as the 39th
   skill) → 5 (5) → 6 (7) → 7 (4), plus 5 unscheduled browser-layer
@@ -61,7 +61,7 @@
 ```bash
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
-scripts/check.sh   # pack guard (15 checks, runs controls) — clean before any commit
+scripts/check.sh   # pack guard (16 checks, runs controls) — clean before any commit
 bash docs/guard-matrix.sh "$PWD"   # 63 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty skills load at start
 ```
@@ -138,7 +138,7 @@ them.
 
 Starting state: wave 4 at 14 open items, guards freshly built. Ending
 state: **14 of 16 done, 2 open** (4.5's seeded-PR half, 4.7 itself);
-20 skills; check.sh 11 → **15 checks** (14 numbered + 3b); guard-matrix
+20 skills; check.sh 11 → **16 checks** (15 numbered + 3b); guard-matrix
 40 → **58 cases**; 22 commits.
 
 **Batch B — the runtime (4.2, 4.5).** An 11-line marker-fenced block in

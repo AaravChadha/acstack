@@ -347,7 +347,10 @@ fi
 READONLY_SKILLS="secure health design-audit audit resume migrate-check"
 # Commands that write, delete, or publish. A scoped Bash() grant is not
 # automatically safe: Bash(rm:*) is every bit as write-capable as Write.
-WRITE_CMDS='rm|mv|cp|tee|touch|mkdir|sed -i|git commit|git add|git push|git checkout|git reset|git rm|gh issue create|gh issue edit|gh pr create|>'
+# find (-delete/-exec), awk (system()), and git config all write despite
+# reading like inspection commands — /health granted all three until
+# 2026-08-02 while its own text said "Read-only, always".
+WRITE_CMDS='rm|mv|cp|tee|touch|mkdir|sed -i|find|awk|xargs|git config|git commit|git add|git push|git checkout|git reset|git rm|gh issue create|gh issue edit|gh pr create|>'
 for s in $READONLY_SKILLS; do
   f="skills/$s/SKILL.md"
   if [ ! -f "$f" ]; then

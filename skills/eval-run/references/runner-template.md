@@ -131,7 +131,11 @@ def main():
             errors += 1
         if rec["pass"] is None and rec["status"] == "scored":
             rec["status"] = "needs-rubric-review"
-        elif rec["pass"] is False and accepted(c):
+        elif rec["pass"] is False and rec["status"] != "error" and accepted(c):
+            # status guard is load-bearing: a case that CRASHED must never be
+            # forgiven. acceptable_failure means "this answer is wrong for a
+            # known reason", not "this run blew up" — and swallowing an
+            # exception into a pass is the very thing this file forbids.
             rec["acceptable_failure_applied"] = True
             af = c.get("acceptable_failure")
             rec["acceptable_failure_reason"] = (af.get("reason") if isinstance(af, dict)

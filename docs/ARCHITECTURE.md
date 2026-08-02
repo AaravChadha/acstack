@@ -143,8 +143,7 @@ rule `/secure` applies to any untrusted-in-trusted-position path.
 
 Three layers, each answering a different question.
 
-**`scripts/check.sh` — is the pack internally consistent?** Fifteen
-numbered sections plus 3b; the header comment is their single enumeration, updated in the
+**`scripts/check.sh` — is the pack internally consistent?** Fifteen numbered sections plus 3b — **16 checks**; the header comment is their single enumeration, updated in the
 same commit as any new section (that list went stale twice when copies
 lived elsewhere). It covers principles-block byte-identity, banned
 names, frontmatter parsing and description safety, POSIX-ERE hazards in
@@ -161,11 +160,11 @@ reference file at run time* and runs it against a fixture carrying a
 known plant. Editing a documented pattern therefore edits what gets
 tested: a regressed regex fails here rather than silently in the field.
 `/eval-run`'s control is the sharpest — a seeded failing case must
-produce 5/6 (83.3%), and it also asserts that every case excluded
+produce 6/7 (85.7%), and it also asserts that every case excluded
 from the denominator is NAMED — silent exclusion moves no percentage,
 so it is invisible in the number alone.
 
-**`docs/guard-matrix.sh` — does each guard fire?** 63 cases, each
+**`docs/guard-matrix.sh` — does each guard fire?** 65 cases, each
 seeding one defect into a copy of the real tree and asserting the
 expected failure class, plus must-pass cases so a guard cannot pass by
 failing everything. **Extend the matrix first, watch the case fail, then

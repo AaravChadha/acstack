@@ -121,6 +121,8 @@ fullcase "empty referral roster fails loudly"  FAIL 'referral' bash -c "grep -v 
 fullcase "config table header renamed"        FAIL 'config'   bash -c "sed -e 's/^| Key | Values.*/| Key | Allowed | Consumed by |/' README.md > t && mv t README.md"
 fullcase "read-only granted Bash(rm)"         FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(rm:*), Read/' skills/audit/SKILL.md > t && mv t skills/audit/SKILL.md"
 fullcase "read-only granted Bash(*)"          FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(*), Read/' skills/health/SKILL.md > t && mv t skills/health/SKILL.md"
+fullcase "read-only granted Bash(find)"     FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(find:*), Read/' skills/secure/SKILL.md > t && mv t skills/secure/SKILL.md"
+fullcase "read-only granted Bash(awk)"      FAIL 'readonly' bash -c "sed -e 's/^allowed-tools: Read/allowed-tools: Bash(awk:*), Read/' skills/resume/SKILL.md > t && mv t skills/resume/SKILL.md"
 fullcase "read-only skill file missing"       FAIL 'readonly' rm skills/resume/SKILL.md
 fullcase "guard-matrix syntax error caught"   FAIL 'syntax'   bash -c "printf 'if [ ; then\n' >> docs/guard-matrix.sh"
 fullcase "conduct block drifts from canon" FAIL 'conduct' bash -c "sed -e 's/^4\. Be direct\./4. Be direct and blunt./' AGENTS.md > t && mv t AGENTS.md"

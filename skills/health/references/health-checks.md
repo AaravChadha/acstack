@@ -28,7 +28,7 @@ proposed move of that content into AGENTS.md; never rewrite it yourself.
 ## 3. Conduct block
 
 ```bash
-awk '/<!-- BEGIN:acstack-conduct -->/,/<!-- END:acstack-conduct -->/' AGENTS.md
+sed -n '/<!-- BEGIN:acstack-conduct -->/,/<!-- END:acstack-conduct -->/p' AGENTS.md
 ```
 
 Locate the installed pack root through the symlink (skip with
@@ -52,7 +52,7 @@ edit as the fix.
 ## 3b. Referral roster
 
 ```bash
-awk '/<!-- BEGIN:acstack-referrals -->/,/<!-- END:acstack-referrals -->/' AGENTS.md
+sed -n '/<!-- BEGIN:acstack-referrals -->/,/<!-- END:acstack-referrals -->/p' AGENTS.md
 ```
 
 Present and matching `$pack_root/AGENTS.md`'s block → ✓. Missing → ✗
@@ -65,7 +65,7 @@ every typed-only skill.
 ## 3c. One product per repo (info, never a failure)
 
 ```bash
-find . -name PLAN.md -not -path './.git/*' -not -path './node_modules/*' | head
+git ls-files '*PLAN.md' | head        # tracked only; no filesystem walk
 ls pnpm-workspace.yaml lerna.json turbo.json go.work 2>/dev/null
 grep -l '"workspaces"' package.json 2>/dev/null
 grep -l '^\[workspace\]' Cargo.toml 2>/dev/null

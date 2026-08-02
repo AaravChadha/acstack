@@ -47,4 +47,4 @@ and surface-3's sinks, SRI, and Actions injection), `design-audit/`
 with verified bytes), `migrate-check/` (DROP TABLE, RENAME COLUMN),
 `qa/` (live server, auth gap, uncaught crash), `multi-product/` (two
 document sets plus a workspace marker), `eval-run/` (a golden set whose
-seeded failure must produce 5/6, not 100%).
+seeded failure must produce 6/7, not 100%).

@@ -31,10 +31,14 @@ else bad "/secure negation-trap grep missed the !.env plant"; fi
 # regressed pattern fails HERE (PLAN 4.31).
 sec_check() { # label anchor fixture-path expected-hits
   # expected-hits is the NUMBER of distinct lines the pattern must match.
-  # Asserting only "matches the file somewhere" is a vacuous control: an
-  # alternation of five branches passes when one fires, so a broken branch
-  # is invisible. That exact flaw hid an `eval(` pattern that could not
-  # match column 1, on 2026-07-31, in a control that printed ok.
+  # HONEST SCOPE (corrected 2026-08-02): counting catches a pattern that
+  # stops matching a whole class — it is how the `eval(`-at-column-1 gap
+  # was found. It does NOT protect individual branches of an alternation:
+  # deleting `|MODE_ECB` still passes, because other branches cover the
+  # same fixture lines and the assertion is `-ge`. Per-branch coverage
+  # would need one fixture line and one control per branch; that is not
+  # what this does, and claiming otherwise would be the false-confidence
+  # this file exists to prevent.
   local label="$1" anchor="$2" target="$3" want="$4" line pat got
   line="$(grep -F "$anchor" skills/secure/references/security-surfaces.md | head -1 || true)"
   pat="${line#*\'}"; pat="${pat%%\'*}"
