@@ -11,7 +11,8 @@
 #   8  cross-references + citations resolve 9  config-key reachability
 #   10 verdict-first stance present         11 positive controls (fixtures)
 #   12 runtime preamble identity + budget  13 read-only tool declarations
-#   14 referral roster == typed-only set        15 conduct block identity
+#   13a no read-only claim escapes §13     14 referral roster == typed-only set
+#   15 conduct block identity
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
