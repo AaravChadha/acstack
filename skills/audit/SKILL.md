@@ -79,7 +79,10 @@ Drift check — every claim a doc makes that reality can contradict:
 - Stale counts vs greppable reality: tool counts, test counts, table counts,
   record counts.
 - Checkbox state, both directions: a `[x]` whose Acceptance command now
-  fails, and a `[ ]` whose artifact plainly exists.
+  fails, and a subtask `[ ]` whose artifact plainly exists. A phase heading
+  `## [ ]` held open while its `**Exit criterion:**` is unmet is /do's gate,
+  not drift — flag it only when the flip condition is met (the criterion
+  passes, or none is declared and every child is checked).
 - File-location tables vs actual paths.
 - Run the README quickstart where cheap; a broken quickstart is drift.
 

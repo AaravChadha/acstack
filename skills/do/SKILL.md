@@ -81,8 +81,11 @@ about the wrong product is worse than no answer (conduct rule 8).
    `**Exit criterion:**` if this was the last open subtask) before declaring
    anything done. If it fails, say so with the output — do not check the box.
 3. **Check off.** Tick exactly the completed box in PLAN.md. Parent boxes
-   only when every child is checked. The phase heading `## [ ]` flips only
-   when the phase's exit criterion actually passes.
+   only when every child is checked. The phase heading `## [ ]` flips when
+   its `**Exit criterion:**` passes — or, if the phase declares none, when
+   every child is checked (a phase with no gate is done once its subtasks
+   are; without this rule an exit-criterion-less phase could never flip,
+   and /audit docs would forever flag it as drift).
 4. **Commit.** Subject from `subtask-commit-format` (default
    `task <number>: <description>`), plus a brief what-and-why
    body per CONDUCT rule 10. Include the PLAN.md checkbox change in the same
