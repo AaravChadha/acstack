@@ -105,9 +105,10 @@ install instead of symlinks) is reported as `skipped — <why>`.
    no dead paths or skills. A contradiction is a ✗ that names both rules;
    judgment-led, see `references/health-checks.md` §9.
 
-Checks whose artifacts land in wave 4 — hook installed, VERSION and
-update-check freshness, conduct-in-global — are added by that wave, and
-are not reported as missing before then.
+Checks that depend on machinery from later wave-4.5 items — a session
+hook (4.4), the conduct block mirrored into `~/.claude/CLAUDE.md` (4.4),
+and update-stamp/telemetry freshness (4.3) — are deferred to those items
+and not reported as missing until they land.
 
 ## Report shape
 
