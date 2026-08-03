@@ -23,7 +23,7 @@ default_for() {
     telemetry) echo "off" ;;
     runtime) echo "on" ;;
     stale-days) echo "30" ;;
-    subtask-commit-format) echo "completed task <number> (<description>)" ;;
+    subtask-commit-format) echo "task <number>: <description>" ;;
     journal-commit-format) echo "Journal <date>: <summary>" ;;
     *) echo "" ;;   # test-command, base-url, palette, product-names, backup-command: unset
   esac

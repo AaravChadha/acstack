@@ -17,7 +17,7 @@ Questions:
   caused it — blocked dependency, scope growth, rework?
 
 ```bash
-git log --since='<window start>' --format='%ci %s' | grep -iE 'completed task|Fixes #|Journal'
+git log --since='<window start>' --format='%ci %s' | grep -iE 'completed task|task [0-9]|ticket #|Fixes #|Journal'
 ```
 
 Verdict form: "Phase 3 projected 2026-07-20, exit criterion passed

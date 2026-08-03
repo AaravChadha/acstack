@@ -84,7 +84,7 @@ about the wrong product is worse than no answer (conduct rule 8).
    only when every child is checked. The phase heading `## [ ]` flips only
    when the phase's exit criterion actually passes.
 4. **Commit.** Subject from `subtask-commit-format` (default
-   `completed task <number> (<description>)`), plus a brief what-and-why
+   `task <number>: <description>`), plus a brief what-and-why
    body per CONDUCT rule 10. Include the PLAN.md checkbox change in the same
    commit so plan and code move together.
 5. **Stop at the commit — /do never pushes.** The commit is local and

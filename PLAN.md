@@ -1005,7 +1005,16 @@ reordered, if any.
   Small: one check row, not a skill. **Acceptance:** on a repo whose
   AGENTS.md contradicts the installed conduct block, `/health` flags the
   conflict and names both rules.
-- [ ] **4.16** Implement the 2026-07-29 commit-format verdict — the
+- [x] **4.16** *(Done 2026-08-03. The verdict's listed sites were
+  incomplete — the review found the **functional** default in
+  `bin/acstack-config` (the resolver `/do` actually reads; docs alone would
+  have been cosmetic) and `/retro`'s history-detection grep, neither in the
+  task. All now emit/parse `task <number>: <description>` /
+  `ticket #<n>: <description>`; `templates/acstack.md`, CONDUCT rule 10
+  (both byte-identical copies), README's row and `/do` updated too. check.sh
+  §16 guards the retired default from returning — shown failing first;
+  matrix 74 → 75. README's demo commit and wave-4-specs keep the old string
+  as history.)* Implement the 2026-07-29 commit-format verdict — the
   carrier for a decision recorded as `[x]` while nothing emitted the new
   shape. Edit CONDUCT rule 10, `/do`, `/ship`, and README's
   `subtask-commit-format` row to `task 2.3.2: <description>` (document)

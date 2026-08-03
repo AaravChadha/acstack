@@ -148,6 +148,9 @@ fullcase "read-only granted Bash(git grep)"    FAIL 'readonly' bash -c "sed -e '
 # READONLY_SKILLS is a structural read-only claim that escapes §13's allowlist
 # check. ticket is a writer with no allowed-tools; giving it one must fail.
 fullcase "no-write allowed-tools escapes READONLY_SKILLS" FAIL 'readonly' bash -c "awk '/^name: ticket/{print; print \"allowed-tools: Read, Grep, Glob\"; next} {print}' skills/ticket/SKILL.md > t && mv t skills/ticket/SKILL.md"
+# 16 commit-format: the retired `completed task <number>` default must not return
+# (task 4.16 switched it to `task <n>: <desc>`); shown failing first.
+fullcase "retired commit-format default returns" FAIL 'commit-format' bash -c "sed -e 's/task <number>: <description>/completed task <number> (<description>)/' README.md > t && mv t README.md"
 fullcase "guard-matrix syntax error caught"   FAIL 'syntax'   bash -c "printf 'if [ ; then\n' >> docs/guard-matrix.sh"
 fullcase "conduct block drifts from canon" FAIL 'conduct' bash -c "sed -e 's/^4\. Be direct\./4. Be direct and blunt./' AGENTS.md > t && mv t AGENTS.md"
 fullcase "conduct block missing entirely"  FAIL 'conduct' bash -c "awk '/BEGIN:acstack-conduct/{f=1} !f{print} /END:acstack-conduct/{f=0}' CONDUCT.md > t && mv t CONDUCT.md"

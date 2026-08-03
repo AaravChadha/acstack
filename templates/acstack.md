@@ -20,7 +20,7 @@ context belongs — never inside the pack's skills.
 - attribution: none           # none (no AI mentions/trailers in generated docs & commits) | standard
 - runtime: on                 # on | off — off degrades skills to pure markdown (no recall/update-check)
 - telemetry: off              # off | on (local-only usage log; NOT built yet — task 4.3, wave 4.5)
-- subtask-commit-format: completed task <number> (<description>)
+- subtask-commit-format: task <number>: <description>
 - journal-commit-format: Journal <date>: <summary>
 
 ## Collaborators

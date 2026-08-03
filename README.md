@@ -222,7 +222,7 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 | `palette`, `product-names` | (unset; set in a `## design-audit` section) | /design-audit |
 | `backup-command` | `pg_dump "$DATABASE_URL" > backups/pre_<ts>.sql` (set in a `## migrate-check` section) | /migrate-check |
 | `## Collaborators` | (unset; a section, not a key) | /plan (hackathon owner tags) |
-| `subtask-commit-format` | `completed task <number> (<description>)` | /do |
+| `subtask-commit-format` | `task <number>: <description>` | /do |
 | `journal-commit-format` | `Journal <date>: <summary>` | /journal, /resume, /retro |
 
 `attribution: none` (the default) means generated docs, commits, and PR

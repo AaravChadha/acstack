@@ -107,10 +107,10 @@ An offer is a door left open, not a hand held out.
 Every commit the agent writes has three parts:
 
 - **Subject** — short (≤ 72 chars), starting with the work-item reference,
-  then a brief description: `#42: dedupe scheme aliases` in tickets mode;
-  document mode keeps its task-numbered form
-  (`completed task 3.2.1 (dedupe scheme aliases)`), or whatever the
-  project's config sets.
+  then a brief description: `ticket #42: dedupe scheme aliases` in tickets
+  mode; document mode keeps its task-numbered form
+  (`task 3.2.1: dedupe scheme aliases`), or whatever the project's config
+  sets.
 - **Body** — a few lines saying what changed and why, at the level a
   reviewer skimming `git log` needs. Not a diff narration.
 - **No attribution trailers** — no `Co-Authored-By` bots, no
@@ -120,8 +120,8 @@ Every commit the agent writes has three parts:
 
 Bad: `fixed stuff` · a subject-only commit for a non-trivial change · a
 trailer crediting a tool.
-Good: `#42: dedupe scheme aliases` + a two-line body naming the constraint
-that forced the change.
+Good: `ticket #42: dedupe scheme aliases` + a two-line body naming the
+constraint that forced the change.
 
 ---
 
@@ -162,7 +162,7 @@ acstack pack.
    skills (the `acstack-referrals` roster) are offers under this rule:
    name one once, never repeat it, and do the requested work first.
 10. Commits: short subject starting with the work-item reference
-    (`#42: …` in tickets mode; `completed task 3.2.1 (…)` in document
+    (`ticket #42: …` in tickets mode; `task 3.2.1: …` in document
     mode), a brief what-and-why body, and no attribution trailers — no
     Co-Authored-By bots, no "Generated with" footers (per the
     `attribution` config, default none).

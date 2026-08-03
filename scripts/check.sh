@@ -12,7 +12,7 @@
 #   10 verdict-first stance present         11 positive controls (fixtures)
 #   12 runtime preamble identity + budget  13 read-only tool declarations
 #   13a no read-only claim escapes §13     14 referral roster == typed-only set
-#   15 conduct block identity
+#   15 conduct block identity              16 retired commit-format guarded
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -469,6 +469,21 @@ if [ -z "$ccanon" ]; then
   fail=1
 elif ! diff <(printf '%s\n' "$ccanon") <(extract_conduct AGENTS.md) >/dev/null; then
   echo "FAIL conduct: AGENTS.md's conduct block drifts from CONDUCT.md's canonical copy"
+  fail=1
+fi
+
+# 16. Retired subtask-commit-format must not reappear as the CURRENT format.
+#     The 2026-07-29 verdict (task 4.16) switched the default to
+#     `task <n>: <desc>` / `ticket #<n>: <desc>`; "a decision recorded but never
+#     emitted" is exactly the class this guards. Matches only the default/example
+#     forms — README's demo transcript carries a real old-format commit subject,
+#     and /retro's history-detection pattern keeps the bare old string on
+#     purpose, so neither is a match here.
+if hits="$(grep -En 'completed task <number>|completed task 3\.2\.1' \
+      README.md CONDUCT.md AGENTS.md skills/*/SKILL.md \
+      bin/acstack-config templates/acstack.md 2>/dev/null)"; then
+  echo "FAIL commit-format: retired 'completed task' form still documented as the current format:"
+  printf '%s\n' "$hits"
   fail=1
 fi
 
