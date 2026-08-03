@@ -1325,6 +1325,41 @@ reordered, if any.
   — its acceptance runs ai-tells against /design's output, so 4.27
   lands first.
 
+> **Carriers from the 2026-08-03 live-model shakedown** — the first real
+> Claude Code session driven through /resume, /health, /secure. Its full
+> report and the verification of each claim live in JOURNAL's 2026-08-03
+> shakedown entry. Finding 6 (same-day journal commits lack a
+> disambiguating suffix) is already owned by **4.18(a)**, so it gets no
+> new task.
+
+- [ ] **4.33** Correct `/health`'s stale wave-4 forward-reference.
+  `skills/health/SKILL.md:104-105` says VERSION/update-check-freshness and
+  conduct-in-global rows "are added by [wave 4]"; wave 4 closed without
+  adding them (they are 4.3 / 4.4 items), so the sentence promises checks
+  that do not exist and `references/health-checks.md` has none.
+  **Acceptance:** /health's SKILL.md no longer claims those rows are
+  added-by-wave-4 — either the rows exist, or the wording says they are
+  pending (4.3/4.4); a doc-vs-reference check confirms every row /health's
+  prose names exists in health-checks.md.
+- [ ] **4.34** Fixture vocabulary for `/health` and `/secure` run on the
+  pack itself. Run on acstack, both flag the pack's own seeded controls —
+  `fixtures/health/.env`, the planted keys in `fixtures/secure/config.js`,
+  the `fixtures/multi-product` document sets — as ✗ issues, defused only
+  by JOURNAL context; an adopter's plausible first move (run /health on
+  the pack) reads as a security fail. **Acceptance:** when the
+  secret/`.env`/doc-set hits are all under a `fixtures/` (or
+  config-declared) fixtures root, /health and /secure label them
+  seeded-control hits, not defects — without suppressing a real hit
+  outside that root (prove both directions with a planted real-looking
+  secret outside `fixtures/`).
+- [ ] **4.35** Decide `CHANGELOG.md`'s release heading now that the repo
+  is public. Its top heading is `## 0.4.0 — unreleased` on a public repo —
+  defensible (public ≠ released) but an undeliberated default.
+  **Acceptance:** a recorded verdict — cut 0.4.0 as released (date the
+  heading and state the /ship-time discipline that dates it) or keep
+  "unreleased" with a one-line reason; check.sh §6's VERSION/CHANGELOG
+  guard still passes either way.
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
