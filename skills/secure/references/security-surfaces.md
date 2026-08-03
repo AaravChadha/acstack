@@ -57,6 +57,20 @@ git grep -nE '(sk[-_][A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|---
 git grep -niE '(api[_-]?key|secret|token|password)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}' -- . ':!*.md'
 ```
 
+**Seeded-control hits (task 4.34).** A repo that ships a positive-control
+layer plants deliberate secrets so its own scanners can be proven to fire —
+acstack's `fixtures/` is exactly that. Report such a hit as
+**`seeded control (fixture)`**, not a defect, when BOTH hold: the path is
+under a `fixtures/` root, AND the repo has a controls script referencing
+that root (proof the plant is a control, not a stray key). This is a
+**label, never a suppression** — every hit is still listed with its
+`file:line`, and the report states how many were labeled, so a reader can
+audit the classification instead of trusting it. The label NEVER applies
+outside the fixtures root, and a hit whose value looks live (a real key
+shape with a real prefix, not an obvious placeholder) stays a finding
+wherever it sits: parking a genuine secret under `fixtures/` must not buy
+silence. When in doubt, report it as a finding and say why you doubted.
+
 **Scope caveat, stated because it is not obvious:** both key greps end
 `':!*.md'` to keep documentation prose out of the results. That also
 excludes JOURNAL.md and LEARNINGS.md, which this pack writes exact

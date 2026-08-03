@@ -118,6 +118,15 @@ while the canonical one also covers `'*secret*'` and `'*credential*'`).
 Any hit in history means the secret is burned regardless of the working
 tree: the fix line says "rotate the key", not just "remove the file".
 
+The canonical section's **seeded-control** rule applies here too: a hit
+under a `fixtures/` root in a repo whose controls script references it is
+reported as `seeded control (fixture)` rather than ✗ — labeled, never
+suppressed, still listed with its path and count. This is what stops a
+checkup of the acstack pack itself (or any repo with a control layer) from
+reading as a security failure when it is the controls working as designed.
+The same applies to check 3c's document sets: `fixtures/multi-product`'s
+two sets are the 4.14 control, not a real multi-product repo.
+
 ## 6. Attribution
 
 ```bash

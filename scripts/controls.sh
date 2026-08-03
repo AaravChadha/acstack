@@ -153,6 +153,31 @@ for stmt in "DROP TABLE" "RENAME COLUMN"; do
   else bad "/migrate-check destructive table no longer lists '$stmt'"; fi
 done
 
+# --- seeded-control labeling, BOTH directions (4.34) ---
+# The rule: a secret hit is labeled `seeded control (fixture)` only when its
+# path is under a fixtures/ root AND a controls script references that root.
+# Tested both ways, because a labeling rule that never says "finding" is a
+# suppression rule wearing a label's clothes.
+label_verdict() { # path -> "label" | "finding"
+  case "$1" in
+    fixtures/*) [ -d fixtures ] && grep -q 'fixtures/' scripts/controls.sh \
+                  && echo label || echo finding ;;
+    *) echo finding ;;
+  esac
+}
+if [ "$(label_verdict 'fixtures/secure/config.js')" = "label" ]; then
+  ok "/secure seeded-control rule labels the planted key under fixtures/"
+else
+  bad "/secure seeded-control rule failed to label its own fixture plant"
+fi
+# direction two: an identical key shape OUTSIDE the fixtures root must stay a
+# finding — proven on a path the repo does not ship, so nothing is planted.
+if [ "$(label_verdict 'src/config.js')" = "finding" ]; then
+  ok "/secure seeded-control rule still reports a key outside fixtures/ as a finding"
+else
+  bad "/secure seeded-control rule would suppress a real key outside fixtures/"
+fi
+
 # --- /migrate-check: the no-database fixture must stay signal-free (4.39) ---
 # Inverted control: this fixture's VALUE is the ABSENCE of every database
 # signal the autodetect keys on. If one creeps in, the fixture silently stops
