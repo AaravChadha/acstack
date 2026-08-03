@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+  SEEDED FIXTURE for /design (task 4.30) — the "before" page.
+
+  This is an INPUT fixture, not an example of good output. There is
+  deliberately no "after" page here: a canonical good build would become the
+  house style, which 4.30's ruling explicitly rejects ("any production-level
+  UI, not a copy of one house style").
+
+  It is written to look like a plausible generated page — not a strawman. If
+  the before is absurd, improving it proves nothing. Every gap below is
+  deliberate and asserted by scripts/controls.sh; do NOT "fix" them, or this
+  stops being a valid before.
+
+  What is missing, and which production-readiness item it forces:
+    1  states     — Save can fail and has no failure path; no loading,
+                    empty, disabled or focus states anywhere
+    2  content    — three uniformly short names, nothing long enough to
+                    truncate, no zero/one/many handling
+    3  responsive — fixed 680px width, so it scrolls sideways on a phone
+    4  a11y       — placeholder doing a label's job, no reduced-motion branch
+    6  theming    — light only
+    7  performance— transition: all, and ease-in on a UI transition
+  Plus the AI-default look /design must name and remove: the violet gradient
+  header, the eyebrow above the heading, and the emoji used as an icon.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Notification settings</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      color: #111827;
+    }
+    /* fixed width — item 3: no reflow, horizontal scroll below 680px */
+    .page {
+      width: 680px;
+      margin: 0 auto;
+      padding: 32px 0 64px;
+    }
+    /* the AI-default look: violet gradient header + eyebrow */
+    .hero {
+      background: linear-gradient(90deg, #8b5cf6, #a855f7);
+      color: #ffffff;
+      padding: 28px 24px;
+      border-radius: 12px;
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.85;
+      margin: 0 0 6px;
+    }
+    .hero h1 { margin: 0; font-size: 26px; }
+
+    .card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 24px;
+    }
+    .card h2 { margin: 0 0 14px; font-size: 17px; }
+
+    /* no :focus-visible, no error styling, no disabled styling */
+    input[type="email"] {
+      width: 320px;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .btn {
+      margin-top: 14px;
+      padding: 10px 18px;
+      font-size: 14px;
+      background: #8b5cf6;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      /* item 7: animates everything, and eases IN on a UI transition */
+      transition: all 420ms ease-in;
+    }
+    .btn:hover { background: #7c3aed; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-top: 1px solid #f3f4f6;
+      font-size: 14px;
+    }
+    .row:first-child { border-top: none; }
+    .muted { color: #6b7280; }
+    /* NOTE: no reduced-motion media query anywhere in this file — item 4 */
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <p class="eyebrow">Preferences</p>
+      <h1>Notification settings</h1>
+    </div>
+
+    <div class="card">
+      <h2>Delivery address</h2>
+      <!-- placeholder doing a label's job: no <label> anywhere -->
+      <input type="email" placeholder="Email address">
+      <!-- emoji as an icon; the write has no failure path at all -->
+      <button class="btn" onclick="saveEmail()">🔔 Save changes</button>
+    </div>
+
+    <div class="card">
+      <h2>Channels</h2>
+      <!-- three uniformly short names; no empty state, no count, nothing
+           long enough to expose truncation -->
+      <div class="row"><span>Email</span><span class="muted">On</span></div>
+      <div class="row"><span>Slack</span><span class="muted">On</span></div>
+      <div class="row"><span>SMS</span><span class="muted">Off</span></div>
+    </div>
+  </div>
+
+  <script>
+    // The write that can fail — and does not handle failing. Nothing is
+    // restored, nothing is surfaced, nothing shows progress. This is the gap
+    // 4.30's second control exists to close. (Deliberately not naming the
+    // recovery mechanisms here: the control greps this file for them, so
+    // prose describing what is absent would report the plant as present.)
+    function saveEmail() {
+      fetch('/api/notifications', { method: 'POST' });
+      alert('Saved');
+    }
+  </script>
+</body>
+</html>

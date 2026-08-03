@@ -102,6 +102,25 @@ lessons into this file.
   looked right and matched nothing. A pattern that has never been run
   against a known-bad sample is not a check, it is decoration.
 
+## A fixture's prose trips its own detector
+
+- **Symptom:** an inverted control — one asserting something is ABSENT —
+  reports the plant present, on a fixture that plainly lacks it. Or a
+  presence control passes on a file that only *mentions* the pattern.
+- **Cause:** the fixture's own comment names the token the control greps
+  for, while explaining that the thing is deliberately missing. The grep
+  reads the whole file and cannot tell a description from an instance.
+  Seen three times here: `DATABASE_URL` in a no-database fixture's
+  description, `prefers-reduced-motion` in a comment saying the query was
+  omitted on purpose, and `rollback` in a comment listing what the failing
+  write does not do.
+- **Check:** in any fixture whose value is an ABSENCE, never spell the
+  token being detected — describe the gap in other words and say why. Fix
+  the fixture, not the grep: narrowing the pattern to dodge a comment
+  trades a loud false positive for a quiet false negative, which is the
+  worse trade. A control that fires on the fixture's own prose is at least
+  telling you it is reading the file.
+
 ## Gitignore negation leaking secrets
 
 - **Symptom:** a real `.env` is committed despite `.env*` in .gitignore.

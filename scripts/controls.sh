@@ -236,6 +236,50 @@ else
   bad "/audit tests fixture missing — the tests target has no control"
 fi
 
+# --- /design: the seeded "before" page (4.30) ---
+# INVERTED control: this fixture's value is what it LACKS. Each assertion is
+# "the gap is still there" — a helpfully-fixed fixture silently stops being a
+# valid before, and /design would then be improving an already-good page.
+# There is deliberately no "after" fixture: a canonical good build would
+# become the house style 4.30's ruling rejects.
+dg="fixtures/design/index.html"
+if [ -f "$dg" ]; then
+  # gaps that must PERSIST (the raw material for the eight items)
+  for probe in \
+    'FIXEDWIDTH|fixed width, item 3' \
+    'placeholder="Email address"|placeholder as label, item 4' \
+    'transition: all|transition-all, item 7' \
+    'ease-in|ease-in on a UI transition, item 7' \
+    'linear-gradient(90deg, #8b5cf6|violet gradient, the AI-default look' \
+    'class="eyebrow"|eyebrow above the heading' \
+    '🔔|emoji as an icon'; do
+    pat="${probe%%|*}"; label="${probe#*|}"
+    if [ "$pat" = "FIXEDWIDTH" ]; then
+      # anchored: `max-width: 680px` CONTAINS `width: 680px`, so a substring
+      # test cannot see the very fix /design would apply (caught fail-first).
+      grep -qE '(^|[^-])width: 680px' "$dg" \
+        && ok "/design before-page still lacks: $label" \
+        || bad "/design before-page lost its seeded gap ($label) — it is no longer a valid before"
+    else
+      grep -qF "$pat" "$dg" \
+        && ok "/design before-page still lacks: $label" \
+        || bad "/design before-page lost its seeded gap ($label) — it is no longer a valid before"
+    fi
+  done
+  # absences that must STAY absent
+  grep -q 'prefers-reduced-motion' "$dg" \
+    && bad "/design before-page gained a reduced-motion branch — that absence IS the plant" \
+    || ok "/design before-page still lacks: reduced-motion branch, item 4"
+  grep -qE 'catch|onerror|rollback' "$dg" \
+    && bad "/design before-page gained a failure path — the failable write must stay unhandled" \
+    || ok "/design before-page still lacks: any failure path for its write, item 1"
+  grep -q 'prefers-color-scheme' "$dg" \
+    && bad "/design before-page gained a dark theme — light-only is the plant for item 6" \
+    || ok "/design before-page still lacks: a dark theme, item 6"
+else
+  bad "/design before-page fixture missing — 4.30's pairing control has no input"
+fi
+
 # --- /health: the externally-recorded-brief carve-out (4.41) ---
 # This repo has no BRIEF.md on purpose (the founding doc lives outside it), so
 # check 1 reports info instead of ✗ — but ONLY because PLAN.md records that.
