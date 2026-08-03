@@ -16,13 +16,13 @@ the candidates) · /triage (full plan/backlog hygiene sweep; /resume flags
 only what it trips over while reading).
 
 <!-- acstack:runtime -->
-Run once before the skill's steps; any failure degrades to pure markdown:
+Run before the skill's steps — per invocation, not per session (4.36); failures degrade to markdown:
 ```bash
 link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"   # empty = not symlinked
 pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non-empty
 if [ "${link#/}" != "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
-  "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
+  "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; silent ONLY if already checked today
   "$pack/bin/acstack-recall" || true          # LEARNINGS.md + bug-class names, capped 3KB
 else
   echo "runtime off — proceeding without recall/update-check"
@@ -57,6 +57,14 @@ about the wrong product is worse than no answer (conduct rule 8).
 2. BRIEF.md, PLAN.md, JOURNAL.md (legacy names per the principles block).
    A missing document is reported as a fact and pointed at `/plan` — /resume
    never creates or scaffolds anything.
+   **Retrieve, don't ingest.** Once JOURNAL.md is past roughly 500 lines,
+   stop reading it whole: read its blockquote and TL;DR, then its `###`
+   entry headings, then fetch the FULL text of only the newest entry (plus
+   any heading that matches what the user asked about). A five-minute
+   catch-up that spends its budget loading six months of history has
+   already failed at the thing it is for, and a whole-file read of a long
+   journal crowds out the plan and the git state — the two inputs the brief
+   actually needs. Say which entries were read in full.
 3. `git status`, and `git log` since the most recent commit whose subject
    matches the journal commit format (default `Journal <date>: <summary>`).
    **Match the format as a PREFIX, not in full.** A second entry on one day

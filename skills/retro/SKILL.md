@@ -15,13 +15,13 @@ many) · /audit eval (one report's honesty; /retro the trend across runs)
 · /triage (grooms the backlog; /retro reviews the trajectory).
 
 <!-- acstack:runtime -->
-Run once before the skill's steps; any failure degrades to pure markdown:
+Run before the skill's steps — per invocation, not per session (4.36); failures degrade to markdown:
 ```bash
 link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"   # empty = not symlinked
 pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non-empty
 if [ "${link#/}" != "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
-  "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
+  "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; silent ONLY if already checked today
   "$pack/bin/acstack-recall" || true          # LEARNINGS.md + bug-class names, capped 3KB
 else
   echo "runtime off — proceeding without recall/update-check"
@@ -57,6 +57,15 @@ about the wrong product is worse than no answer (conduct rule 8).
 - Eval artifacts when present: `eval/spec.md` targets and the result
   files across runs.
 - `git log` over the window for commit / checkbox velocity.
+
+**Retrieve by window, don't ingest the file.** Past roughly 500 lines,
+JOURNAL.md is read headings-first: scan the `###` entry headings and their
+dates, select the ones inside the window (`week`, `phase N`, or since the
+last retro), and fetch full text for those only. Entries outside the window
+are not evidence for this retro — reading them wastes budget and, worse,
+invites a trend claim drawn from data the window explicitly excluded. State
+the window and how many entries fell inside it, so a reader can tell a
+five-entry trend from a one-entry anecdote.
 
 **Missing inputs are named, never worked around.** No JOURNAL.md → stop:
 a retro is a trend across recorded sessions, and without the record there

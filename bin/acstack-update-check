@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 # acstack-update-check — at most one `git fetch` per day, offline-safe,
-# never pulls. When the pack is behind its upstream, prints the exact
-# pull command and nothing else. Machine-local state: ONE stamp file
-# (override the directory with ACSTACK_STATE_DIR for tests).
-# Bash 3.2+; exits 0 always.
+# never pulls. Machine-local state: ONE stamp file (override the directory
+# with ACSTACK_STATE_DIR for tests). Bash 3.2+; exits 0 always.
+#
+# SILENCE HAS EXACTLY ONE MEANING: the check already ran today. Every other
+# path says something — up to date, behind, unreachable, or unable to keep
+# state. Before 2026-08-04 four different outcomes were all silent, so a
+# quiet preamble could not be told from a broken one, which is the false-
+# pass class this pack exists to prevent. The throttled path stays quiet
+# deliberately: it is the COMMON path (every invocation after the first
+# each day), and a line there would be noise on every skill run.
 set -uo pipefail
 
 PACK="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -14,10 +20,13 @@ today="$(date +%Y-%m-%d)"
 # stamp first, fetch second: an offline day still counts as checked, so a
 # broken network never causes a fetch storm.
 [ -f "$STAMP" ] && [ "$(cat "$STAMP" 2>/dev/null)" = "$today" ] && exit 0
-mkdir -p "$STATE" 2>/dev/null || exit 0
-printf '%s\n' "$today" > "$STAMP" 2>/dev/null || exit 0
+mkdir -p "$STATE" 2>/dev/null \
+  || { echo "acstack: cannot write $STATE — update check runs every invocation"; exit 0; }
+printf '%s\n' "$today" > "$STAMP" 2>/dev/null \
+  || { echo "acstack: cannot write $STAMP — update check runs every invocation"; exit 0; }
 
-git -C "$PACK" fetch --quiet 2>/dev/null || exit 0
+git -C "$PACK" fetch --quiet 2>/dev/null \
+  || { echo "acstack: remote unreachable — update state unknown (offline is fine)"; exit 0; }
 behind="$(git -C "$PACK" rev-list --count 'HEAD..@{u}' 2>/dev/null || echo 0)"
 if [ "${behind:-0}" -gt 0 ] 2>/dev/null; then
   # `pull` alone is NOT enough and saying so cost a real skill: an update that
@@ -27,5 +36,7 @@ if [ "${behind:-0}" -gt 0 ] 2>/dev/null; then
   # instruction. (Found 2026-08-03: /why shipped and answered no one.)
   printf 'acstack: %s update(s) behind — run: git -C %s pull && %s/setup\n' \
     "$behind" "$PACK" "$PACK"
+else
+  echo "acstack: up to date"
 fi
 exit 0

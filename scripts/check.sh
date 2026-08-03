@@ -391,6 +391,19 @@ fi
 #     find/awk→Read/Glob precedent), so it is off this allowlist entirely; and
 #     `gh auth status` was narrowed to an exact grant (no `:*`) so `--show-token`
 #     cannot be appended to print a live token.
+#
+#     THE PREAMBLE IS OUTSIDE THIS CERTIFICATION (stated 2026-08-04, task 4.41).
+#     The marker-fenced runtime block every skill carries runs `readlink`,
+#     `dirname`, and the three `bin/acstack-*` helpers — none of which any skill
+#     grants, because a grant cannot name a path resolved at run time. Two
+#     consequences, both accepted rather than hidden: under a strict permission
+#     harness a skill may prompt for its own preamble (it degrades to markdown
+#     on any refusal, so nothing breaks), and `acstack-update-check` WRITES
+#     `~/.acstack/update-stamp` — so "read-only" describes what a skill does to
+#     the PROJECT, not a claim that the pack touches nothing on the machine.
+#     That stamp is the pack's only machine-local state and is documented as
+#     such. This section certifies the declared tool set; it does not and cannot
+#     certify the preamble.
 READONLY_SKILLS="secure health design-audit audit resume migrate-check why"
 SAFE_TOOLS="Read|Grep|Glob"
 # Audited union of Bash grants across the six skills above (2026-08-03). Every

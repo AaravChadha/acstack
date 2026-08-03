@@ -18,13 +18,13 @@ vulnerabilities — /qa's auth anomalies land here) · /audit code
 safety; shares the structurally-read-only stance).
 
 <!-- acstack:runtime -->
-Run once before the skill's steps; any failure degrades to pure markdown:
+Run before the skill's steps — per invocation, not per session (4.36); failures degrade to markdown:
 ```bash
 link="$(readlink "$HOME/.claude/skills/health" 2>/dev/null || true)"   # empty = not symlinked
 pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non-empty
 if [ "${link#/}" != "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
-  "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
+  "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; silent ONLY if already checked today
   "$pack/bin/acstack-recall" || true          # LEARNINGS.md + bug-class names, capped 3KB
 else
   echo "runtime off — proceeding without recall/update-check"

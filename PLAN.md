@@ -1190,7 +1190,7 @@ reordered, if any.
   underlying causes, /triage names the three clusters with their
   evidence and proposes parents — and proposes nothing when every item
   is genuinely independent.
-- [ ] **4.29** Journal-retrieval discipline for /resume and /retro —
+- [x] **4.29** *(Done 2026-08-04: search→filter→fetch on repo-owned markdown. /resume's READ STEP names it — past ~500 lines, read the blockquote and TL;DR, then the ### headings, then fetch full text for the newest entry plus any heading matching the question, and say which were read in full; a five-minute catch-up that spends its budget loading six months of history has already failed at what it is for. /retro retrieves BY WINDOW and states the window plus how many entries fell inside it, so a reader can tell a five-entry trend from a one-entry anecdote — entries outside the window are not evidence, and reading them invites a trend claim drawn from data the window excluded. Partly pre-implemented by 4.36, which had already made recall itself a headings digest.)* Journal-retrieval discipline for /resume and /retro —
   claude-mem's search→filter→fetch rule applied to repo-owned markdown:
   read headings and the TL;DR first, filter entries by the window or
   question, fetch full entry text only for matches; never a whole-file
@@ -1423,7 +1423,7 @@ reordered, if any.
   parallelism (harness territory, not a discipline skill), and always-on
   prose injection (prose decays — check.sh is the pack's answer).
 
-- [ ] **4.41** Make the runtime preamble auditable (2026-08-03 shakedown 3).
+- [x] **4.41** *(Done 2026-08-04. (a) update-check now speaks on every path — up to date / N behind / remote unreachable / cannot write state — and SILENCE NOW MEANS EXACTLY ONE THING: already checked today. That path stays quiet deliberately, being the common one (every invocation after the first each day); a line there would be noise on every skill run. All four paths verified by RUNNING them against isolated state dirs, not asserted. (b) the preamble reads "per invocation, not per session (4.36)" and its update-check comment no longer claims it only speaks when behind — reworded in place across README + all 22 skills, still 12 lines inside the budget. (c)+(d) stated rather than fixed, in check.sh §13 where the read-only claim is certified: the preamble runs readlink/dirname/bin helpers that no skill grants (a grant cannot name a run-time-resolved path), so a strict harness may prompt for the preamble — it degrades to markdown, nothing breaks — and update-check WRITES the update stamp, so "read-only" describes what a skill does to the PROJECT, not a claim the pack touches nothing on the machine.)* Make the runtime preamble auditable (2026-08-03 shakedown 3).
   Two small honesty gaps in the block that runs before every skill:
   (a) **`acstack-update-check` prints nothing when current**, so silence
   cannot distinguish *up to date* from *today's fetch already consumed*
