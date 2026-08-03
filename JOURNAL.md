@@ -19,8 +19,8 @@
 > preamble + `bin/` helpers, CI, dry-run honesty, `allowed-tools`, the
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
-> CONTRIBUTING, README v2). check.sh 6 → **18 checks** (16 numbered + 3b + 13a); guard-matrix
-> 15 → **75 cases**; **20 skills**. Five review rounds ran; the last
+> CONTRIBUTING, README v2). check.sh 6 → **19 checks** (16 numbered + 3b + 3c + 13a); guard-matrix
+> 15 → **77 cases**; **20 skills**. Five review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -35,9 +35,9 @@
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean (**16** numbered
-  sections plus 3b and 13a = 18 checks, including positive controls over
+  sections plus 3b, 3c and 13a = 19 checks, including positive controls over
   seeded `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
-  (**75** cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
+  (**77** cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI
   green run 30765510782). 4.7's ten checklist items were all demonstrated
@@ -70,8 +70,8 @@
 ```bash
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
-scripts/check.sh   # pack guard (18 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 75 seeded-defect cases proving the guards fire
+scripts/check.sh   # pack guard (19 checks, runs controls) — clean before any commit
+bash docs/guard-matrix.sh "$PWD"   # 77 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty skills load at start
 ```
 
@@ -83,11 +83,71 @@ bash docs/guard-matrix.sh "$PWD"   # 75 seeded-defect cases proving the guards f
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 1/14 | 4.16 done (commit-format verdict emitted, + check.sh §16 guard). Remaining: telemetry, `setup --global`, /audit tests, /why, /refactor, degradation paths, plus 6 survey items (ai-tells, skill hygiene, retrieval discipline, /design, secure coverage, triage clustering) |
+| 4.5 — Post-launch hardening | 🔶 2/17 | 4.16 + 4.13 done (commit-format verdict emitted with a check.sh §16 guard; /health check 9 for agent-instruction quality). Remaining: telemetry, `setup --global`, /audit tests, /why, /refactor, degradation paths, the 6 survey items, + 3 carriers 4.33–4.35 from the 2026-08-03 live shakedown |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Wave 4.5 opens: 4.16, the first live shakedown, and the hole it found in the day's own fix (2026-08-03, post-flip)
+
+Post-flip, wave 4.5 started as a plan → build → review → commit → journal
+loop. Five commits: 4.16, two shakedown-fix commits, the carrier filing, 4.13.
+
+**4.16 — emit the commit-format verdict, don't just document it** (`d9d74c7`).
+A 2026-07-29 verdict was recorded `[x]` while nothing emitted the new shape.
+Switched the default to `task <n>: <desc>` / `ticket #<n>: <desc>`. The
+**review step earned its keep**: the task's own site list was incomplete —
+it missed `bin/acstack-config`, the resolver `/do` actually reads (docs
+alone would have been cosmetic; verified the *emitted* form changed), and
+`/retro`'s history-detection grep (which would have gone blind to new-format
+commits). check.sh **§16** guards the retired default from returning; matrix
+74 → 75.
+
+**The first live-model shakedown** — the #1 standing limit, finally
+exercised. A fresh Claude Code session (prompt handed over by the user) ran
+/resume, /health, /secure on this repo. **The skills loaded and largely
+worked** — /resume caught real drift and named the right next tasks, /secure
+held at "no findings" with the fixtures contextualized, /health ran all 8
+checks. Its report was **verified at file:line — every concrete claim held**
+(unlike the 4.7 ledger, which had false rows). Two findings mattered:
+
+- **Finding 1 (my defect): JOURNAL contradicted itself about the flip.**
+  Recording the flip (`8a175f7`) updated the blockquote but not the TL;DR or
+  the what's-built table, so the journal said both PUBLIC/closed and "flip
+  not made / Next 4.7 / wave 4 🔶 14/16." Synced the skeleton (`33f7bb8`).
+- **Finding 2: a hole in *this day's own* read-only fix.** In a harness with
+  no Grep tool (this one), the skills' "use the Grep tool, no shell
+  `git grep`" instruction had **no fallback**, so /health degraded to the
+  exact `git grep` the RCE fix removed. Added the safe path — plain
+  `grep -rnE` — and check.sh **§3c**, which fails any skill that forbids
+  shell git grep without stating that fallback (`50ffcae`; matrix 75 → 76).
+  Finding it in the hardening I'd shipped hours earlier is the whole
+  argument for running a live session.
+
+Minor findings 3–5 filed as carriers **4.33–4.35** (`72fd3c2`); finding 6
+(same-day journal-commit suffix) is already owned by 4.18(a).
+
+**4.13 — /health check 9, agent-instruction quality** (`f6662af`). Reads the
+project's own AGENTS.md rules outside the conduct block and flags
+contradictions with a conduct rule (naming both) and dead references.
+Judgment-led (no grep for "contradiction"), so the control is behavioral per
+4.15's /qa carve-out: `fixtures/health/AGENTS.md` plants an attribution +
+push contradiction and a dead reference; controls.sh asserts the plants,
+matrix 76 → 77.
+
+**Honest limits the shakedown confirmed live:** the harness enforced no
+`allowed-tools` (zero prompts, even for ungranted `find`/`sed`/`readlink`/
+`bin/acstack-*`) — so the read-only guarantee still depends on the harness,
+the standing 4.8 limit; and the cold start couldn't be fully cold
+(AGENTS.md + memory pre-loaded), exactly 4.7 item 10's caveat. The
+live-model-obeys-skills question is now **partly** answered — the skills
+work and the gaps are real — not fully.
+
+Validation close: check.sh 18 → **19 checks** (added §3c); guard-matrix
+74 → **77 cases**, every new case shown failing first; controls all plants
+caught; 20 skills; wave 4.5 at **2/17** (4.16, 4.13 done). Five commits:
+`d9d74c7`, `33f7bb8`, `50ffcae`, `72fd3c2`, `f6662af`.
 
 ### Flipped public (2026-08-03)
 
