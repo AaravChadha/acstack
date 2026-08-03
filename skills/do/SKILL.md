@@ -77,6 +77,25 @@ about the wrong product is worse than no answer (conduct rule 8).
 
 1. **Execute.** Complete the named subtask — strictly scoped to it. Adjacent
    improvements are proposed in step 6, not smuggled in.
+
+   **Climb the simplicity ladder BEFORE writing.** Stop at the first rung
+   that holds; most work stops early:
+   1. Does this need to exist at all? (If the subtask is satisfied without
+      it, say so and build nothing.)
+   2. Does the codebase already do it? → reuse.
+   3. Does the standard library? → use it.
+   4. Does the platform/framework already in use? → use it.
+   5. Does an already-installed dependency? → use it. (A NEW dependency is
+      a decision to surface, not a rung to climb past quietly.)
+   6. Is it one line? → write the one line.
+   7. Only then: the minimal thing that satisfies the acceptance.
+
+   This runs *before* code, which is the point — a cleanup pass afterwards
+   cannot recover the "didn't need to exist" rung. **Be lazy about the
+   solution, NEVER about validation, error handling, security, or
+   accessibility** — those are not padding to trim, and the ladder is not a
+   licence to skip them. Reading is never the thing you skimp on either:
+   climb only after you understand the problem.
 2. **Verify.** Run the relevant `**Acceptance:**` command (or the phase
    `**Exit criterion:**` if this was the last open subtask) before declaring
    anything done. If it fails, say so with the output — do not check the box.

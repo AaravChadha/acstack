@@ -96,6 +96,8 @@ fullcase "lost fixture plant caught"        FAIL 'controls' rm fixtures/secure/c
 fullcase "lost instruction-quality plant"   FAIL 'controls' rm fixtures/health/AGENTS.md
 # 4.39 inverted control: the no-DB fixture's value is the ABSENCE of signals
 fullcase "no-DB fixture gains a db signal"  FAIL 'controls' bash -c "printf 'DATABASE_URL=postgres://x\n' > fixtures/migrate-check-no-db/.env"
+# 17: the ladder without its never-cut floor is "write less code", unbounded
+fullcase "simplicity ladder loses its floor" FAIL 'ladder' bash -c "grep -v 'NEVER about validation, error handling, security, or' skills/do/SKILL.md > t && mv t skills/do/SKILL.md"
 # recheck A.1 — silent-disable and evasion classes found 2026-07-30
 bannedcase "invalid banned entry fails loudly"  'acstack
 broken(' 'FAIL banned'

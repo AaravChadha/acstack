@@ -1404,7 +1404,7 @@ reordered, if any.
   nothing to pre-flight" (or a `db: none` autodetect), proven on a fixture;
   the conservative shared-prod default still applies whenever a DB *might*
   exist.
-- [ ] **4.40** A pre-code simplicity gate (from the 2026-08-03 external
+- [x] **4.40** *(Done 2026-08-03: the ladder is a STEP inside /do's Execute — climbed before writing, stop at the first rung that holds — not always-on prose. Rung 5 makes a NEW dependency a decision to surface rather than a rung to pass quietly. The never-cut floor (validation, error handling, security, accessibility) ships with it and is COUPLED to it by check.sh §17: document the ladder without the floor and the guard fails — shown failing on all four terms, plus a matrix case. Matrix 78 → 79. The behavioral half — a live model actually reducing a would-over-build task — is shakedown evidence, not a mechanical check.)* A pre-code simplicity gate (from the 2026-08-03 external
   survey — ponytail ~93k★, Karpathy's "Simplicity First", and Boris
   Cherny's `code-simplifier` all converge here). `/simplify` is POST-hoc;
   nothing stops over-building before it happens, and rung 1 — "does this

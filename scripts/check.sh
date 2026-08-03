@@ -14,6 +14,7 @@
 #   12 runtime preamble identity + budget  13 read-only tool declarations
 #   13a no read-only claim escapes §13     14 referral roster == typed-only set
 #   15 conduct block identity              16 retired commit-format guarded
+#   17 simplicity ladder keeps its floor
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -496,6 +497,18 @@ if hits="$(grep -En 'completed task <number>|completed task 3\.2\.1' \
   echo "FAIL commit-format: retired 'completed task' form still documented as the current format:"
   printf '%s\n' "$hits"
   fail=1
+fi
+
+# 17. The simplicity ladder keeps its safety floor (task 4.40). A "write less
+#     code" rule with no floor is how validation, error handling, security,
+#     and accessibility get trimmed as padding — the one failure mode the
+#     source material (ponytail) explicitly warns against. Couple them: if the
+#     ladder is documented, the never-cut clause must be documented too.
+if grep -q 'simplicity ladder' skills/do/SKILL.md; then
+  for term in validation 'error handling' security accessibility; do
+    grep -qi "$term" skills/do/SKILL.md \
+      || { echo "FAIL ladder: /do documents the simplicity ladder but its never-cut floor lost '$term'"; fail=1; }
+  done
 fi
 
 if [ "$fail" -eq 0 ]; then
