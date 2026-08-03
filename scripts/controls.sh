@@ -83,6 +83,53 @@ if [ -z "$pat" ]; then bad "/design-audit slop pattern not extractable"
 elif grep -riqEw "$pat" fixtures/design-audit/; then ok "/design-audit slop grep catches the hedge copy"
 else bad "/design-audit slop grep MISSED the hedge copy (pattern: $pat)"; fi
 
+# --- /design-audit: the ai-tells rule classes (4.27) ---
+# Each entry EXTRACTS its documented grep from ai-tells.md and runs it against
+# the seeded fixture, so a regressed pattern fails HERE rather than shipping
+# as a false pass. Same shape as the /secure sec_check layer.
+ai_check() { # label anchor fixture
+  local label="$1" anchor="$2" target="$3" line pat
+  line="$(grep -F "$anchor" skills/design-audit/references/ai-tells.md | head -1 || true)"
+  pat="${line#*\'}"; pat="${pat%%\'*}"
+  if [ -z "$pat" ] || [ "$pat" = "$line" ]; then
+    bad "/design-audit ai-tells $label pattern not extractable (anchor: $anchor)"
+  elif grep -rqE "$pat" "$target" 2>/dev/null; then
+    ok "/design-audit ai-tells $label grep catches its plant"
+  else
+    bad "/design-audit ai-tells $label grep MISSED its plant (pattern: $pat)"
+  fi
+}
+if [ -d fixtures/design-audit ]; then
+  ai_check "violet-gradient" "git grep -nE 'from-(purple" fixtures/design-audit/ai-slop.tsx
+  ai_check "gradient-text"   "git grep -nE '(bg-clip-text" fixtures/design-audit/ai-slop.tsx
+  ai_check "eyebrow"         "git grep -niE 'class(Name)?=\"[^\"]*(eyebrow" fixtures/design-audit/ai-slop.tsx
+  ai_check "numbered-label"  "git grep -nE '>[[:space:]]*0[1-9]" fixtures/design-audit/ai-slop.tsx
+  ai_check "pulsing-dot"     "git grep -nE 'animate-pulse'" fixtures/design-audit/ai-slop.tsx
+  ai_check "ai-orb"          "git grep -niE '(ai|assistant|magic|intelligen)" fixtures/design-audit/ai-slop.tsx
+  ai_check "emoji-icon"      "git grep -nE '<(button|a|h[1-6])" fixtures/design-audit/ai-slop.tsx
+  ai_check "fake-stats"      "git grep -nE '(99\\.9" fixtures/design-audit/ai-slop.tsx
+  ai_check "filler-identity" "git grep -niE '(john (doe" fixtures/design-audit/ai-slop.tsx
+  ai_check "social-proof"    "git grep -niE 'trusted by" fixtures/design-audit/ai-slop.tsx
+  ai_check "placeholder-label" "git grep -nE '<input[^>]*placeholder='" fixtures/design-audit/ai-slop.tsx
+  ai_check "popover-origin"  "git grep -nE '(transform-origin:|transformOrigin:)" fixtures/design-audit/ai-slop.tsx
+  ai_check "transition-all"  "git grep -nE 'transition:[^;]*[[:space:]]all" fixtures/design-audit/motion.css
+  ai_check "ease-in"         "git grep -nE 'ease-in(" fixtures/design-audit/motion.css
+  ai_check "scale-zero"      "git grep -nE 'scale\\(0" fixtures/design-audit/motion.css
+  ai_check "long-duration"   "git grep -nE '(duration-|[[:space:]])[4-9]" fixtures/design-audit/motion.css
+  ai_check "layout-animation" "git grep -nE 'transition:[^;]*(width" fixtures/design-audit/motion.css
+  ai_check "backdrop-filter" "git grep -nE 'backdrop-filter" fixtures/design-audit/motion.css
+  ai_check "sticky-chrome"   "git grep -nE 'position:[[:space:]]*sticky'" fixtures/design-audit/motion.css
+  # the reduced-motion plant is an ABSENCE: motion present, media query gone
+  if grep -qE 'transition:|@keyframes' fixtures/design-audit/motion.css \
+     && ! grep -q 'prefers-reduced-motion' fixtures/design-audit/motion.css; then
+    ok "/design-audit ai-tells reduced-motion plant intact (motion present, query absent)"
+  else
+    bad "/design-audit ai-tells reduced-motion plant lost — the absence IS the plant"
+  fi
+else
+  bad "/design-audit ai-tells fixtures missing — the rule classes have no control"
+fi
+
 # --- /health: pointer test + tracked .env-class plant (inline) ---
 if [ "$(tr -d '\n' < fixtures/health/CLAUDE.md | head -c 12)" != "@AGENTS.md" ]; then
   ok "/health pointer test flags the non-pointer CLAUDE.md"

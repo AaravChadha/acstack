@@ -1,0 +1,44 @@
+/* SEEDED FIXTURE for /design-audit's ai-tells.md motion + materials rules
+   (task 4.27). Every rule below is a deliberate plant, one per class, so
+   scripts/controls.sh can prove each documented grep still catches it.
+   Do NOT "fix" these; they are the positive controls. This file also
+   deliberately contains NO reduced-motion or reduced-transparency media
+   query — that absence is itself a plant, so do not name those queries
+   even in a comment: the control greps the whole file, and prose spelling
+   the token would report the plant as present. */
+
+/* PLANT: transition: all + ease-in on a UI transition + over-long duration */
+.card {
+  transition: all 450ms ease-in;
+}
+
+/* PLANT: scale(0) entrance */
+@keyframes pop-in {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+/* PLANT: animating layout-triggering properties */
+.drawer {
+  transition: width 200ms, height 200ms, top 200ms, left 200ms;
+}
+
+/* PLANT: nested backdrop-filter surfaces (legibility + compositing) */
+.glass-shell {
+  backdrop-filter: blur(20px);
+}
+.glass-shell .glass-panel {
+  backdrop-filter: blur(12px);
+}
+
+/* PLANT: ambient loops on equal durations — they visibly re-sync */
+.orb-a { animation: drift 24s linear infinite; }
+.orb-b { animation: drift 24s linear infinite; }
+.orb-c { animation: drift 24s linear infinite; }
+
+/* PLANT: hard divider under sticky chrome where a scroll edge belongs */
+.app-header {
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid #e5e7eb;
+}

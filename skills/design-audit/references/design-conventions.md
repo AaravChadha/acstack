@@ -5,6 +5,11 @@ Brand-neutral defaults for when no project config is set. Project config
 grep hit is a candidate, and each finding still names the exact
 convention it violates.
 
+> **Generated-UI tells live in `ai-tells.md`,** not here — violet
+> gradients, eyebrows, fabricated statistics, motion bounds, materials and
+> interaction feel. The hedge-copy list in §3 below stays canonical here
+> and is cited there rather than duplicated (4.17.4's citation rule).
+
 > **Applying these.** The patterns are written in `git grep -nE '…'` form
 > because that POSIX-ERE spelling is what `scripts/controls.sh` extracts and
 > tests and what check.sh §3b guards. Apply them at runtime with the **Grep

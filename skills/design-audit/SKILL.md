@@ -52,6 +52,9 @@ fi
 Read a `## design-audit` section from `.claude/acstack.md`:
 
 - `palette:` — the allowed hex values; colors outside it are findings.
+- `banned-palette:` — hex values that are findings wherever they appear,
+  even if someone adds them to `palette`. Defaults to the violet-gradient
+  family that generated UI reaches for (`references/ai-tells.md`).
 - `product-names:` — exact casings; other casings are findings.
 
 Config always wins over the brand-neutral defaults in
@@ -84,6 +87,14 @@ skill grants no shell `git grep`. No Grep tool? Use `grep -rnE`, never
    names, file paths) — cross-referenced to /secure when they leak
    system detail; inconsistent terminology for the same object across
    screens ("order" here, "purchase" there).
+5. **AI tells.** The signature of generated UI — violet gradients,
+   eyebrows, fabricated statistics, motion and materials violations,
+   interaction-feel misses. Rules and greps in `references/ai-tells.md`.
+
+**Severity order is fixed: accessibility, then honesty, then everything
+else** — regardless of how many hits each class produced. Unreadable text
+and a fabricated statistic are harm; a gradient is embarrassment. One tell
+is a choice; the full set is a signature, so say which it was.
 
 **No UI files in the path → say so and stop.** If the target contains no
 markup, styles, or component files, there is nothing to audit; report the

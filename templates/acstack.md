@@ -63,6 +63,7 @@ context belongs — never inside the pack's skills.
 
 <!-- Per-skill overrides. Examples:
 - palette: #0f172a, #f8fafc, #3b82f6, #64748b   # allowed hex values; anything else is a finding
+- banned-palette: #8b5cf6, #a855f7, #7c3aed, #6366f1, #d946ef   # never allowed, even if added to palette
 - product-names: Acme, AcmeCloud               # exact required casings -->
 
 ## ship

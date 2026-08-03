@@ -222,6 +222,7 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 | `stale-days` | `30` (days; set in a `## triage` section) | /triage, /health |
 | `base-url` | (unset; set in a `## qa` section) | /qa |
 | `palette`, `product-names` | (unset; set in a `## design-audit` section) | /design-audit |
+| `banned-palette` | the violet-gradient family (set in a `## design-audit` section to override) | /design-audit |
 | `backup-command` | `pg_dump "$DATABASE_URL" > backups/pre_<ts>.sql` (set in a `## migrate-check` section) | /migrate-check |
 | `## Collaborators` | (unset; a section, not a key) | /plan (hackathon owner tags) |
 | `subtask-commit-format` | `task <number>: <description>` | /do |
