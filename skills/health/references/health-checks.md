@@ -149,3 +149,29 @@ gh issue list --state open --json number,updatedAt   # stale count vs stale-days
 Missing labels/template → ✗ with the fix "re-run /plan's tickets
 bootstrap (idempotent)". The stale count is reported as a number and a
 pointer to /triage — /health counts rot, it does not groom it.
+
+## 9. Agent-instruction quality (2026-08-03, task 4.13)
+
+The pack writes AGENTS.md and CLAUDE.md but never reviews their quality —
+odd for a pack whose thesis is that instructions ARE the product. Read the
+project's OWN rules — everything in AGENTS.md OUTSIDE the marker-fenced
+`acstack-conduct` block (check 3 already guards that block byte-for-byte) —
+and flag, each with file:line:
+
+- **Contradiction with the conduct block.** A project rule that negates a
+  conduct rule. Judgment, not grep — understand mandate vs forbid: "Always
+  add a `Co-Authored-By` trailer" contradicts rule 10 (no trailers), and
+  "push after every commit" contradicts rules 2 and 5 (the user sets the
+  pace). Name BOTH rules and the conflict; report ✗ — the pack promises
+  the conduct block binds, so a project rule silently overriding it is a
+  broken promise, not a matter of taste.
+- **Dead reference.** A path or a named skill the project's rules cite
+  that does not resolve.
+
+There is no grep for "contradiction", so this check is judgment-led and its
+positive control is behavioral (per 4.15's /qa carve-out): the fixture
+`fixtures/health/AGENTS.md` carries a planted attribution-contradiction and
+a dead reference, and controls.sh asserts both plants are present — a
+self-run that flags them is the shakedown demonstration. A project's own
+rules are otherwise the user's to set; this flags conflict with the
+installed contract, not taste.

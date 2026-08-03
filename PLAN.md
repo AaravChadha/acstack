@@ -997,8 +997,16 @@ reordered, if any.
   it returns the 2026-07-27 shadowing verdict from PLAN 3.7 with its
   reason; asked about a decision with no record, it says so rather than
   inventing one.
-- [ ] **4.13** `/health` row auditing the project's own agent
-  instructions — contradictory rules, stale references, project
+- [x] **4.13** *(Done 2026-08-03: /health check 9 + health-checks.md §9
+  read the project's own AGENTS.md rules outside the conduct block and flag
+  contradictions with a conduct rule — naming both — and dead references.
+  Judgment-led (there is no grep for "contradiction"), so the positive
+  control is behavioral per 4.15's /qa carve-out: `fixtures/health/AGENTS.md`
+  plants an attribution + push-after-commit contradiction and a dead
+  reference; controls.sh asserts the plants present, and a matrix case
+  removes the fixture. check.sh clean, matrix +1.)* `/health` row auditing
+  the project's own agent instructions — contradictory rules, stale
+  references, project
   instructions conflicting with the installed conduct block. acstack
   manages AGENTS.md and CLAUDE.md but never reviews their quality, which
   is odd for a pack whose thesis is that instructions are the product.

@@ -100,6 +100,10 @@ install instead of symlinks) is reported as `skipped — <why>`.
    authenticated, the pack label set present, the issue template
    present, stale-issue count vs `stale-days` (count only — the sweep
    itself is /triage's job).
+9. **Agent instructions.** The project's own rules in AGENTS.md (outside
+   the `acstack-conduct` block) don't contradict a conduct rule and cite
+   no dead paths or skills. A contradiction is a ✗ that names both rules;
+   judgment-led, see `references/health-checks.md` §9.
 
 Checks whose artifacts land in wave 4 — hook installed, VERSION and
 update-check freshness, conduct-in-global — are added by that wave, and

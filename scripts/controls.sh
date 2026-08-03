@@ -89,6 +89,14 @@ if [ "$(tr -d '\n' < fixtures/health/CLAUDE.md | head -c 12)" != "@AGENTS.md" ];
 else bad "/health fixture CLAUDE.md became a clean pointer — plant lost"; fi
 if [ -f fixtures/health/.env ]; then ok "/health .env-class plant present"
 else bad "/health .env plant missing"; fi
+# check 9 (agent-instruction quality) — judgment check, so the control is
+# plant-presence (like the pointer/.env checks above), not a detection rerun.
+if grep -qi 'Co-Authored-By' fixtures/health/AGENTS.md 2>/dev/null; then
+  ok "/health instruction-quality: attribution-contradiction plant present"
+else bad "/health instruction-quality: AGENTS.md contradiction plant lost"; fi
+if grep -q 'references/ghost.md' fixtures/health/AGENTS.md 2>/dev/null && [ ! -f fixtures/health/references/ghost.md ]; then
+  ok "/health instruction-quality: dead-reference plant present and unresolved"
+else bad "/health instruction-quality: dead-reference plant lost"; fi
 
 # --- /audit: unicode-lookalike class + raw-compare pattern ---
 if grep -rq "$(printf '\xe2\x80\x93')" fixtures/audit/ && grep -rq "$(printf '\xc2\xa0')" fixtures/audit/; then

@@ -93,6 +93,7 @@ fullcase "verdict stance removed"     FAIL 'verdict' bash -c "grep -iv 'verdict'
 fullcase "regressed secret pattern caught"  FAIL 'controls' bash -c "sed -e 's/sk\[-_\]\[A-Za-z0-9_-\]/sk-[A-Za-z0-9]/' skills/secure/references/security-surfaces.md > t && mv t skills/secure/references/security-surfaces.md"
 fullcase "gutted mock-data pattern caught"  FAIL 'controls' bash -c "sed -e 's/mockData|//' skills/design-audit/references/design-conventions.md > t && mv t skills/design-audit/references/design-conventions.md"
 fullcase "lost fixture plant caught"        FAIL 'controls' rm fixtures/secure/config.js
+fullcase "lost instruction-quality plant"   FAIL 'controls' rm fixtures/health/AGENTS.md
 # recheck A.1 — silent-disable and evasion classes found 2026-07-30
 bannedcase "invalid banned entry fails loudly"  'acstack
 broken(' 'FAIL banned'
