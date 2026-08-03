@@ -1,15 +1,17 @@
 # Changelog
 
-Versions map to waves (0.x pre-launch; 1.0.0 is the public flip, gated
-on PLAN 4.7). The first versioned heading below must equal `VERSION` —
-`scripts/check.sh` enforces the agreement. Entries are distilled from
-JOURNAL.md, which remains the full record.
+Versions map to waves (0.x pre-launch). The repo went public 2026-08-03;
+`1.0.0` is reserved for the first *cut* release once the pack stabilizes
+post-launch — public availability is not itself a version cut. The first
+versioned heading below must equal `VERSION` — `scripts/check.sh` enforces
+the agreement. Entries are distilled from JOURNAL.md, the full record.
 
 ## 0.4.0 — unreleased
 
-Wave 4, distribution + launch. Every item below is built; the version
-stays `unreleased` until the repo is made public, which is the wave's
-last step and a deliberate human decision.
+Wave 4, distribution + launch. Every item below is built and the repo went
+**public 2026-08-03**. The version stays `unreleased` because no `0.4.0`
+has been cut as a tagged release — a deliberate step, deferred while the
+pack stabilizes through post-launch shakedowns and wave-4.5 hardening.
 
 - **New skill:** `/eval-run` — executes a golden set, writes a per-case
   results file, and computes the headline from that file. Closes the
