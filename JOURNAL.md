@@ -3,7 +3,7 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-03. **PUBLIC as of 2026-08-03** — the repo was
+> **Last update**: 2026-08-04. **PUBLIC as of 2026-08-03** — the repo was
 > flipped after the §13 falsification round closed and CI went green
 > (run 30765510782). Two pre-flip rechecks both returned NOT READY; the
 > second found the first's fix had reintroduced the bug it fixed, which
@@ -83,11 +83,88 @@ bash docs/guard-matrix.sh "$PWD"   # 82 seeded-defect cases proving the guards f
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 13/22 | Done: 4.16, 4.13, Phase 1 (4.33–4.39), **4.40** pre-code simplicity ladder, **4.11** /why, **4.10** /audit tests, **4.19** /refactor. Remaining 9: 4.18 degradation paths, the design lane (4.27 → 4.30), 4.28 skill hygiene, 4.29 retrieval discipline, 4.32 triage clustering, 4.41 preamble auditability, plus 4.3/4.4 (deliberately adopter-gated) |
+| 4.5 — Post-launch hardening | 🔶 16/22 | Done: 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, **4.18 degradation paths**, **4.41 preamble auditability**, **4.29 retrieval discipline**. Remaining 6: the design lane (4.27 → 4.30), 4.28 skill hygiene, 4.32 triage clustering, plus 4.3/4.4 (deliberately adopter-gated) |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Degradation paths, an auditable preamble, and the docs that were quietly lying (2026-08-04)
+
+**Wave 4.5: 13 → 16 of 22.** Six commits, `95f28f9` → `09d594e`. Everything
+cheap and everything adopter-facing is now closed; what remains is either
+large (the design lane) or deliberately gated on adopters (4.3, 4.4).
+
+**4.18 — every skill names what is missing and stops.** Eleven degradation
+paths across nine skills, on one rule: hit a missing precondition, name it,
+stop. **Surveyed before writing**, which paid — three listed sub-items were
+already done, including the entire config-consistency group, where §9's
+reachability guard from wave 4 had silently closed part of a wave-4.5 task.
+The survey also produced a false positive on /investigate that only direct
+checking caught. The paths with teeth beyond "say it's missing": `/plan seed`
+REFUSES to regenerate an existing BRIEF (it is the frozen record; regenerating
+destroys the only artifact later work can be compared against); `/journal`
+stages JOURNAL and PLAN **by name**, never `git add -A`, which is how
+unrelated work lands under a subject nobody looks under; `/qa` takes
+credentials from the user, never the repo, because using a committed
+credential would launder a `/secure` finding into a passing test;
+`/design-audit` stops on a path with no UI, since `CLEAN` over a directory
+with no UI is a true statement that reads as false reassurance; `/do` refuses
+to tick a task with no acceptance line on the strength of "it looks done".
+
+**Shakedown 5 proved all six live — and verified from disk, none of them
+wrote a byte.** No PLAN.md appeared (`/ticket` did not scaffold), no
+JOURNAL.md appeared (`/retro` did not append), scratch repo still at its one
+setup commit. It found one real gap: `/qa` said "argument beats base-url,
+neither → stop" but nothing forbade **deducing** a target, and
+`app.listen(3000)` was sitting in the fixture. Closed with the same shape as
+the credential rule below it: a target is supplied, never deduced.
+**Recorded as NOT proven:** the reviewer flagged that `/qa`'s credential
+prohibition was honoured *vacuously* — the run blocked at step 1, so the
+planted `.env` token was never under pressure. Not-falsified, not proven.
+
+**4.41 — silence had four meanings.** `acstack-update-check` exited quietly
+when up to date, when already checked today, when the remote was unreachable,
+and when it could not write state — so a quiet preamble could not be told
+from a broken one. The fix is not "always print": the throttled path is the
+COMMON one and a line there would be noise on every skill run. Every other
+path now speaks, so **silence means exactly one thing**, documented in the
+header. All four verified by RUNNING them against isolated state dirs.
+(c) and (d) are **stated, not fixed**, in check.sh §13 where the read-only
+claim is certified: the preamble runs `readlink`/`dirname`/`bin` helpers no
+skill grants — a grant cannot name a path resolved at run time — so a strict
+harness may prompt for a skill's own preamble, and update-check **writes**
+the update stamp. "Read-only" describes what a skill does to the PROJECT, not
+a claim the pack touches nothing on the machine.
+
+**4.29 — reads are windowed.** `/resume` reads headings-first past ~500 lines
+and says which entries it read in full; `/retro` retrieves by window and
+states the window plus the entry count, so a five-entry trend can be told from
+a one-entry anecdote.
+
+**The docs were quietly lying, and one lie shipped in every skill.** A sweep
+of README, ARCHITECTURE, CONTRIBUTING and CHANGELOG found four stale claims.
+The sharp one: the runtime preamble's own comment said `capped 6KB` while the
+cap has been 3KB since 4.36 — and that line lives inside the block §12 holds
+**byte-identical across all 22 skills**, so every skill shipped the wrong
+number and *the guard could not catch it*. **§12 proves the copies AGREE, not
+that they are TRUE.** Fixed in all 23 files at once, which is precisely the
+edit §12 exists to force. Also: the CHANGELOG's newest section still described
+wave 4 only — no mention of /why, /refactor, /audit tests or the ladder — so
+the one file an adopter reads to learn what changed was the one file that did
+not say. It now leads with the instruction that actually affects existing
+users: **re-run `./setup` after pulling.**
+
+**A repeated bug became operational.** This pack has shipped the same regex
+failure three times — `\b`, `\s`, and `\1` — and `known-bug-classes.md`, the
+file recall surfaces to every skill invocation, had **no class for it**. The
+journal recorded each as history; nothing warned the next author. Now it does,
+and AGENTS.md's consumed-form rule gained today's instance: **a dry run is not
+the consumed form** — `./setup --dry-run` printing "21 would be linked" was
+accepted as proof while `/why` sat unregistered.
+
+Validation close: check.sh **22 checks**, all clean; guard-matrix **82 cases**,
+no BAD; controls all plants caught; **22 skills**; wave 4.5 **16/22**.
 
 ### Phases 2–4: two new skills, a test-integrity target, and three guards that caught their own author (2026-08-03, late)
 
