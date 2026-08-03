@@ -31,7 +31,12 @@ defect this repo shipped):
   not evidence; the thing that reads it is. Check the parsed frontmatter, the
   rendered markdown, the command's actual output — not your own text. `/ship`
   shipped for a whole wave with a YAML-truncated description, losing its
-  entire trigger sentence, because it was re-read instead of parsed.
+  entire trigger sentence, because it was re-read instead of parsed. **A
+  dry run is not the consumed form either:** `/why` shipped and answered
+  nobody because `./setup --dry-run` printed "21 would be linked" and that
+  was accepted as proof — the form that registers a skill is the symlink in
+  `~/.claude/skills`, and nothing had created it. Output describing an
+  action is not evidence the action happened.
 - **Prove a new check fails before trusting that it passes.** Seed the defect
   the check exists to catch and watch it fire. A green check with no
   demonstrated failure mode is decoration. This repo has produced three: the

@@ -82,6 +82,26 @@ lessons into this file.
   `sk[-_][A-Za-z0-9_-]{20,}`. Verify against `sk-proj-…`, `sk_live_…`,
   and a bare `sk-…` sample before trusting a "no secrets" result.
 
+## PCRE escapes in a POSIX-ERE grep — a check that matches nothing
+
+- **Symptom:** a `grep -E` / `git grep -E` check reports **clean on dirty
+  input**. Not a weak match — zero hits, silently, so the check reads as a
+  pass. The most expensive shape of false pass: it converts an unknown
+  into a false certainty.
+- **Cause:** PCRE syntax in a POSIX ERE. `\b` matches nothing at all;
+  `\s` parses as a literal `s`, so `\s*` means "zero or more letter s";
+  and a backreference `\1` is an **invalid escape** — the grep errors out
+  and matches nothing (on BSD/macOS `grep`, `ugrep`, and any strict ERE).
+  POSIX ERE genuinely cannot express "the same token twice", so a
+  self-comparison pattern cannot be written at all and must become a
+  broader grep plus human judgment.
+- **Check:** `-w` for word boundaries, `[[:space:]]` for whitespace, no
+  backreferences. **Prove it on a planted positive** — this class has
+  shipped in this pack three times (`\b` in a palette check, `\s` in a
+  secret sweep, `\1` in a test-audit pattern), and each time the code
+  looked right and matched nothing. A pattern that has never been run
+  against a known-bad sample is not a check, it is decoration.
+
 ## Gitignore negation leaking secrets
 
 - **Symptom:** a real `.env` is committed despite `.env*` in .gitignore.
