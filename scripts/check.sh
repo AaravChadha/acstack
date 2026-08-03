@@ -155,6 +155,15 @@ if hits="$(grep -rnE '^[[:space:]]*(\$[[:space:]]*)?git grep' skills/*/reference
   printf '%s\n' "$hits"
   fail=1
 fi
+#     Backreferences are the same class and worse: \1 is an INVALID ESCAPE in
+#     ERE, so the grep errors out and matches nothing at all. Added 2026-08-03
+#     after a \1 shipped in test-audit-rules.md — its positive control caught
+#     it, but the hazard guard above had not.
+if hits="$(grep -rnE '^[[:space:]]*(\$[[:space:]]*)?git grep' skills/*/references/*.md 2>/dev/null | grep -E '\\[1-9]')"; then
+  echo "FAIL regex: backreference (\\1-\\9) in a git grep -E command — POSIX ERE has none; the grep errors out and matches NOTHING"
+  printf '%s\n' "$hits"
+  fail=1
+fi
 
 # 3c. A skill that forbids shell `git grep` (its patterns dropped to the
 #     read-only Grep tool, post-RCE) MUST also give the Grep-tool-absent

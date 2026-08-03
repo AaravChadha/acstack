@@ -24,7 +24,7 @@ machine state.
 | `/why` | Decision archaeology: why is this like this — BRIEF constraints → dated PLAN verdicts → JOURNAL → git history, stopping at the first real answer and saying "no recorded rationale" rather than inventing one | `/why "the /health name"` |
 | `/triage` | Backlog hygiene: stale, dupes, missing acceptance, ready work, milestone burn — report first, apply on approval | `/triage` |
 | `/journal` | End-of-session JOURNAL.md entry: exact bugs, before→after numbers, eval failure classification, PLAN.md sync | `/journal` |
-| `/audit` | code: evidence-led defect report · docs: doc-says/reality-is drift check · eval: failure classification + never-inflate rule | `/audit code src/` |
+| `/audit` | code: evidence-led defect report · docs: doc-says/reality-is drift check · eval: failure classification + never-inflate rule · tests: finds tests that pass without catching, incl. a mutation spot-check | `/audit code src/` |
 | `/migrate-check` | Read-only pre-flight for migrations against shared Postgres; per-statement classification; written GO/NO-GO | `/migrate-check` |
 | `/learn` | Capture a durable lesson to LEARNINGS.md (symptom → cause → fix, seen-count); recurring lessons promoted into the pack's known-bug-classes | `/learn "…"` |
 | `/health` | Read-only project checkup: docs, pointer, conduct block, config, secrets, attribution, learnings, tickets prerequisites — every ✗ with its exact fix command | `/health` |

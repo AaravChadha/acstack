@@ -108,6 +108,11 @@ fullcase "backtick-quoted dangling ref"     FAIL 'crossref' bash -c "printf 'Pai
 fullcase "template key line gone, prose left" FAIL 'config' bash -c "sed -e '/^- push:/d' templates/acstack.md > t && mv t templates/acstack.md"
 fullcase "audit plant reduced to prose"     FAIL 'controls' bash -c "printf 'the en dash \xe2\x80\x93 and nbsp \xc2\xa0 sit in prose\n' > fixtures/audit/compare.py"
 fullcase "dollar-prefixed git grep hazard"  FAIL 'regex'   bash -c "printf '%s\n' '\$ git grep -E '\''\\bfoo'\''' >> skills/qa/references/probe-layer.md"
+# 3b extension: a backreference is an INVALID ESCAPE in ERE — the grep errors
+# out and matches nothing. Shipped once in test-audit-rules.md (2026-08-03).
+fullcase "backreference in a documented grep" FAIL 'regex' bash -c "printf '%s\n' \"git grep -nE 'Equal\\(([A-Za-z]+), \\\\1\\)'\" >> skills/qa/references/probe-layer.md"
+# 4.10: the seeded bad-suite fixture for /audit tests
+fullcase "lost /audit tests plant"          FAIL 'controls' rm fixtures/audit-tests/tests/test_cart.py
 fullcase "headingless changelog fails, not dies" FAIL 'version' bash -c "printf '# Changelog\nno versioned headings here\n' > CHANGELOG.md"
 # 4.2 runtime preamble — identity, presence, and the hard budget
 fullcase "runtime block drifts in one skill"  FAIL 'runtime' bash -c "sed -e 's/proceeding without recall/proceeding sans recall/' skills/do/SKILL.md > t && mv t skills/do/SKILL.md"

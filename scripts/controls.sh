@@ -153,6 +153,41 @@ for stmt in "DROP TABLE" "RENAME COLUMN"; do
   else bad "/migrate-check destructive table no longer lists '$stmt'"; fi
 done
 
+# --- /audit tests: the seeded bad suite (4.10) ---
+# Three plants, each a way a test passes while catching nothing. The
+# tautological pattern is EXTRACTED from the reference so a regressed pattern
+# fails here; the others are plant-presence, and the suite must actually RUN
+# (a fixture that cannot execute proves nothing — it could not, at first).
+at="fixtures/audit-tests"
+if [ -d "$at" ]; then
+  for plant in 'PLANT 1' 'PLANT 2' 'PLANT 3'; do
+    grep -q "$plant" "$at/tests/test_cart.py" \
+      && ok "/audit tests fixture carries $plant" \
+      || bad "/audit tests fixture lost $plant"
+  done
+  line="$(grep -F "git grep -nE 'assert(True" skills/audit/references/test-audit-rules.md | head -1 || true)"
+  pat="${line#*\'}"; pat="${pat%%\'*}"
+  if [ -z "$pat" ]; then
+    bad "/audit tests tautological pattern not extractable from test-audit-rules.md"
+  elif grep -rqE "$pat" "$at/tests/"; then
+    ok "/audit tests tautological grep catches the planted assertTrue(True)"
+  else
+    bad "/audit tests tautological grep MISSED its plant (pattern: $pat)"
+  fi
+  if command -v python3 >/dev/null 2>&1; then
+    if ( cd "$at" && python3 -m unittest discover -s tests -p 'test_*.py' >/dev/null 2>&1 ); then
+      ok "/audit tests fixture suite runs and is green (as a bad suite should be)"
+    else
+      bad "/audit tests fixture suite does not run green — the mutation demo cannot be reproduced"
+    fi
+  else
+    printf '  SKIP /audit tests suite run: python3 absent — NOT verified\n'
+    skipped=$((skipped + 1))
+  fi
+else
+  bad "/audit tests fixture missing — the tests target has no control"
+fi
+
 # --- /health: the externally-recorded-brief carve-out (4.41) ---
 # This repo has no BRIEF.md on purpose (the founding doc lives outside it), so
 # check 1 reports info instead of ✗ — but ONLY because PLAN.md records that.
