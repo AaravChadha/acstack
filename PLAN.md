@@ -1404,6 +1404,24 @@ reordered, if any.
   nothing to pre-flight" (or a `db: none` autodetect), proven on a fixture;
   the conservative shared-prod default still applies whenever a DB *might*
   exist.
+- [ ] **4.40** A pre-code simplicity gate (from the 2026-08-03 external
+  survey — ponytail ~93k★, Karpathy's "Simplicity First", and Boris
+  Cherny's `code-simplifier` all converge here). `/simplify` is POST-hoc;
+  nothing stops over-building before it happens, and rung 1 — "does this
+  need to exist at all?" — is upstream of anything a cleanup can catch.
+  Fold a YAGNI ladder into `/do`'s Execute step as a STEP, not always-on
+  prose (the pack rejects prose-pressure enforcement): before writing,
+  climb — need it at all? → already in the codebase? → stdlib? → native
+  platform? → an installed dependency? → one line? → only then a minimal
+  solution — stopping at the first rung that holds. Keep ponytail's nuance
+  verbatim: lazy about the solution, NEVER about validation, error
+  handling, security, or accessibility. **Acceptance:** `/do`'s Execute
+  step documents the ladder and the never-cut-safety half; a behavioral
+  demonstration shows a would-over-build task (a date picker) reduced to a
+  minimal solution with validation intact. **Declined siblings** (recorded,
+  not carried): multi-agent adapters (the Claude-Code-only lock), worktree
+  parallelism (harness territory, not a discipline skill), and always-on
+  prose injection (prose decays — check.sh is the pack's answer).
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
