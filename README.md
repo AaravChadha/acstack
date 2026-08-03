@@ -22,6 +22,7 @@ machine state.
 | `/investigate` | Root-cause before any fix: minimal repro, hypotheses vs evidence, three-strikes stop rule | `/investigate "500 on save"` |
 | `/resume` | Five-minute catch-up: where the project is, divergence flags, next 3 unblocked tasks | `/resume` |
 | `/why` | Decision archaeology: why is this like this — BRIEF constraints → dated PLAN verdicts → JOURNAL → git history, stopping at the first real answer and saying "no recorded rationale" rather than inventing one | `/why "the /health name"` |
+| `/refactor` | Behavior-preserving cleanup with proof: green before and after with the same test count; stops on a dirty tree, a red baseline, or a suite too thin to notice a change | `/refactor src/parser.py` |
 | `/triage` | Backlog hygiene: stale, dupes, missing acceptance, ready work, milestone burn — report first, apply on approval | `/triage` |
 | `/journal` | End-of-session JOURNAL.md entry: exact bugs, before→after numbers, eval failure classification, PLAN.md sync | `/journal` |
 | `/audit` | code: evidence-led defect report · docs: doc-says/reality-is drift check · eval: failure classification + never-inflate rule · tests: finds tests that pass without catching, incl. a mutation spot-check | `/audit code src/` |
@@ -42,7 +43,7 @@ git clone https://github.com/AaravChadha/acstack.git acstack
 cd acstack && ./setup      # clone anywhere; setup links from where it lives
 ```
 
-Start a new Claude Code session; the twenty-one skills above load as slash
+Start a new Claude Code session; the twenty-two skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 

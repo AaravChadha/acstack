@@ -113,6 +113,8 @@ fullcase "dollar-prefixed git grep hazard"  FAIL 'regex'   bash -c "printf '%s\n
 fullcase "backreference in a documented grep" FAIL 'regex' bash -c "printf '%s\n' \"git grep -nE 'Equal\\(([A-Za-z]+), \\\\1\\)'\" >> skills/qa/references/probe-layer.md"
 # 4.10: the seeded bad-suite fixture for /audit tests
 fullcase "lost /audit tests plant"          FAIL 'controls' rm fixtures/audit-tests/tests/test_cart.py
+# 19: /refactor without its same-count proof is "refactor and hope"
+fullcase "refactor loses its count proof"   FAIL 'refactor' bash -c "grep -viE 'same (test )?count' skills/refactor/SKILL.md > t && mv t skills/refactor/SKILL.md"
 fullcase "headingless changelog fails, not dies" FAIL 'version' bash -c "printf '# Changelog\nno versioned headings here\n' > CHANGELOG.md"
 # 4.2 runtime preamble — identity, presence, and the hard budget
 fullcase "runtime block drifts in one skill"  FAIL 'runtime' bash -c "sed -e 's/proceeding without recall/proceeding sans recall/' skills/do/SKILL.md > t && mv t skills/do/SKILL.md"

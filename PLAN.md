@@ -1075,7 +1075,7 @@ reordered, if any.
   **Acceptance:** for each, the precondition is removed and the skill
   names what is missing and stops, rather than proceeding on a guess.
 
-- [ ] **4.19** /refactor — behavior-preserving cleanup with proof. The rule
+- [x] **4.19** *(Done 2026-08-03 — the 22nd skill. Three preconditions before any edit: clean tree (dirty makes before/after unattributable), GREEN baseline with the exact count recorded (a red baseline cannot prove preservation, and "it was already failing" is how a real regression gets absorbed), and a suite that could actually notice — too thin means STOP and name what to test first, which is a success, not a failure to deliver. After: same count green = the promise held; count DROPPED = the headline finding; count ROSE = say why; and compare test NAMES when the count is unchanged, since equal totals hide a one-for-one swap. Never edit a test to force green (never-inflate pointed at refactoring); no behavior change smuggled in; no opportunistic scope. check.sh §19 guards BOTH halves of the proof rule, shown failing first. **The matrix caught a weak case of mine:** the first mutation stripped only "same test count" while the guard also accepts "same count", so the case reported got=PASS want=FAIL — it never demonstrated the guard firing. Strengthened to strip both phrasings. 21 → 22 skills; matrix 81 → 82.)* /refactor — behavior-preserving cleanup with proof. The rule
   is that the test suite is run and green BEFORE the refactor and green
   again after, with the same test count — a suite that shrinks during a
   refactor is the finding, not a detail. Scope stated up front, no

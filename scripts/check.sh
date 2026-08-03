@@ -15,6 +15,7 @@
 #   13a no read-only claim escapes §13     14 referral roster == typed-only set
 #   15 conduct block identity              16 retired commit-format guarded
 #   17 simplicity ladder keeps its floor   18 update msg re-links, not just pull
+#   19 /refactor keeps its proof rule
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -518,6 +519,17 @@ if grep -q 'simplicity ladder' skills/do/SKILL.md; then
     grep -qi "$term" skills/do/SKILL.md \
       || { echo "FAIL ladder: /do documents the simplicity ladder but its never-cut floor lost '$term'"; fail=1; }
   done
+fi
+
+# 19. /refactor keeps its proof rule. The skill's entire value is "green
+#     before, green after, SAME COUNT" plus never editing a test to force
+#     green. Trim either and it becomes "refactor and hope" while still
+#     reading like a safety skill — the same floor-erosion class as §17.
+if [ -f skills/refactor/SKILL.md ]; then
+  grep -qi 'same test count\|same count' skills/refactor/SKILL.md \
+    || { echo "FAIL refactor: /refactor no longer states the same-test-count rule — its proof is gone"; fail=1; }
+  grep -qiE 'never (delete|edit|change|fix).{0,40}test|fix the code, never the test' skills/refactor/SKILL.md \
+    || { echo "FAIL refactor: /refactor lost its never-edit-a-test-to-go-green rule"; fail=1; }
 fi
 
 # 18. The update instruction must re-link, not just pull. A pull that adds a
