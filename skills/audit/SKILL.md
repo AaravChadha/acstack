@@ -51,9 +51,17 @@ about the wrong product is worse than no answer (conduct rule 8).
 
 ## Target: code
 
+**First: does this target need the pass at all?** A diff that only moves
+files, bumps a version, or changes generated output has nothing to audit —
+say so in one line and stop. A review that manufactures findings because it
+was invoked is worse than no review: it spends the reader's attention on
+noise and trains them to skim the next one.
+
 Hunt defects in the named path, diff range, or PR. Consult
 `references/known-bug-classes.md` — check every class that applies to the
-stack. Report per `references/code-report-template.md`:
+stack. **Check the do-not-flag list in
+`references/code-report-template.md` before writing any finding.** Report
+per that template:
 
 - **Lede** — the verdict with concrete evidence (a failing input, a number),
   never adjectives.

@@ -117,6 +117,9 @@ fullcase "lost /audit tests plant"          FAIL 'controls' rm fixtures/audit-te
 fullcase "lost ai-tells plant"              FAIL 'controls' rm fixtures/design-audit/motion.css
 # 4.30: the /design before-page loses a seeded gap and stops being a valid before
 fullcase "design before-page fixed up"      FAIL 'controls' bash -c "sed -e 's/width: 680px/max-width: 680px/' fixtures/design/index.html > t && mv t fixtures/design/index.html"
+# 21: the 4.28 hygiene rule set is five rules across five skills; dropping one
+# is invisible in a green run — nothing fails, the reports just get noisier.
+fullcase "hygiene rule set loses a rule"    FAIL 'hygiene' bash -c "grep -vi 'Do NOT flag these' skills/audit/references/code-report-template.md > t && mv t skills/audit/references/code-report-template.md"
 # 20: /design without all eight items is the mockup generator 4.30 exists not to be.
 # The mutation deletes the BODY item only — the frontmatter description still
 # says "real content", which is exactly how a looser guard stayed green.

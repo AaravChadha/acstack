@@ -62,6 +62,16 @@ A finding exists ONLY if it carries both:
   - `low` — pattern-level suspicion; the mechanism is plausible but not
     traced.
 
+**A written justification demotes a finding; it never deletes one.** Where
+the code carries an inline comment explaining why a risk is accepted — a
+pickle load documented as reading a repo-shipped file, a `verify=False`
+marked as talking to a pinned internal host — the finding moves to **Worth
+hardening** with that reason quoted. It does not silently disappear. Two
+reasons: the justification may be stale or wrong, and a reader deserves to
+see the trade someone made rather than a clean report that hides it. If the
+stated reason is *itself* incorrect, that is a finding, argued against the
+reason rather than the line.
+
 Suspicions that can't clear the gate go to **Worth hardening** — a
 separate list, honestly labeled. Promoting a maybe into a finding is
 the security version of inflating an eval score; the never-inflate rule

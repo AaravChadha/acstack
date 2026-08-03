@@ -105,6 +105,20 @@ about the wrong product is worse than no answer (conduct rule 8).
    an acceptance line for the user to approve or leave the box open with
    that reason. Declaring done-unverified is precisely the rot /triage and
    /plan-review exist to flag, and it costs nothing to name instead.
+
+   **Say what the evidence does and does not establish.** Before ticking,
+   state it in three parts — the discipline that stops a passing command
+   from being read as more than it proved:
+
+   | Claim | Requires | NOT sufficient |
+   |---|---|---|
+   | What you are asserting is done | The evidence that would establish it | What looks like evidence but isn't |
+
+   Worked: *claim* "the endpoint rejects oversized input"; *requires* a
+   request over the limit returning 413; *not sufficient* the validation
+   code existing, the unit test passing, or the happy path still working.
+   Most false completions come from the third column — the check ran, but
+   it could not have failed.
 3. **Check off.** Tick exactly the completed box in PLAN.md. Parent boxes
    only when every child is checked. The phase heading `## [ ]` flips when
    its `**Exit criterion:**` passes — or, if the phase declares none, when

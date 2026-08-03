@@ -1,5 +1,29 @@
 # Code audit report template
 
+## Do NOT flag these
+
+Checked before any finding is written. Each is a real thing reviewers report
+that costs the reader more than it returns:
+
+- **Pre-existing issues outside the diff.** Real, but not this change's
+  doing. Reporting them as findings of *this* review makes the author
+  responsible for the repo's whole history. Name them in `Scope` as
+  observed-but-out-of-range if they matter.
+- **Correct code that merely looks wrong.** Unusual is not broken. If you
+  cannot state the input that fails, you have a question, not a finding —
+  ask it as a question.
+- **Pedantic nitpicks.** Naming preferences, ordering, "I'd have written
+  this differently." A finding needs a consequence.
+- **Anything a linter or formatter already catches.** If the project's
+  tooling would flag it on the next run, the tooling is the right place —
+  say the tool is missing or misconfigured instead, once.
+- **Lines with an explicit silencing comment** (`eslint-disable`,
+  `# noqa`, `# type: ignore`) — unless the *reason given is wrong*, which is
+  itself the finding, stated against the reason rather than the line.
+
+The bar in one sentence: **a finding names a consequence and the input that
+produces it.** Everything else is a question, a note in `Scope`, or silence.
+
 The shape of a report a reviewer can act on without asking follow-ups.
 
 ```markdown

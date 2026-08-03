@@ -135,6 +135,20 @@ Under `attribution: none` (default) any hit FAILS the gate, listing the
 offending commit subjects — they need `git commit --amend`/rebase before
 shipping. Under `attribution: standard`, this gate is informational.
 
+## Review-comment discipline
+
+Two rules for anything written onto the PR itself:
+
+- **One comment per issue.** Not one per occurrence. Three instances of the
+  same mistake are one comment naming the pattern and listing the lines —
+  a reviewer answering the same point three times reads it as noise and
+  starts skimming.
+- **A code suggestion only when it FULLY fixes the issue.** A partial
+  suggestion looks applyable, gets applied, and leaves the defect half
+  present with the comment now resolved. If the fix needs judgment,
+  context, or more than the lines in view, describe it in prose and leave
+  the suggestion off.
+
 ## PR body template
 
 ```markdown

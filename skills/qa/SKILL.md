@@ -70,6 +70,12 @@ probe. Adversarial probing of a production URL never starts uninvited.
 
 ## Method
 
+**First: does this target need the pass at all?** If the change under test
+touches no runtime behaviour — docs, comments, a version bump, a pure
+rename — say so in one line and stop. Probing an app that could not have
+changed produces a PASS that means nothing, and a green report nobody
+earned is worse than no report.
+
 1. **Resolve the target.** Argument URL beats config `base-url` (from a
    `## qa` section). Neither → say exactly what's missing and stop:
    `BLOCKED — no target: pass a URL or set base-url in .claude/acstack.md`.

@@ -16,6 +16,7 @@
 #   15 conduct block identity              16 retired commit-format guarded
 #   17 simplicity ladder keeps its floor   18 update msg re-links, not just pull
 #   19 /refactor keeps its proof rule      20 /design keeps its 8-item spine
+#   21 skill-hygiene rule set stays whole
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -537,6 +538,35 @@ if grep -q 'simplicity ladder' skills/do/SKILL.md; then
       || { echo "FAIL ladder: /do documents the simplicity ladder but its never-cut floor lost '$term'"; fail=1; }
   done
 fi
+
+# 21. The skill-hygiene rule set (4.28) stays whole. Five rules across five
+#     skills, landed in one commit because they are one rule set — and the
+#     failure mode is a later edit quietly dropping one, leaving the pack
+#     inconsistent about what it will and will not report. Each rule earns
+#     its place by SUPPRESSING noise, so its absence is invisible in a green
+#     run: nothing fails, the reports just get worse.
+hyg_rule() { # file pattern description
+  grep -qi "$2" "$1" \
+    || { echo "FAIL hygiene: $3 (4.28's rule set is incomplete)"; fail=1; }
+}
+[ -f skills/audit/references/code-report-template.md ] && \
+  hyg_rule skills/audit/references/code-report-template.md 'Do NOT flag these' \
+    "/audit lost its do-not-flag blocklist"
+[ -f skills/audit/SKILL.md ] && \
+  hyg_rule skills/audit/SKILL.md 'need the pass at all' \
+    "/audit lost its does-this-need-the-pass triage opener"
+[ -f skills/qa/SKILL.md ] && \
+  hyg_rule skills/qa/SKILL.md 'need the pass at all' \
+    "/qa lost its does-this-need-the-pass triage opener"
+[ -f skills/secure/SKILL.md ] && \
+  hyg_rule skills/secure/SKILL.md 'never deletes' \
+    "/secure lost the rule that a written justification DEMOTES a finding rather than dropping it"
+[ -f skills/ship/references/ship-gates.md ] && \
+  hyg_rule skills/ship/references/ship-gates.md 'One comment per issue' \
+    "/ship lost one-comment-per-issue"
+[ -f skills/do/SKILL.md ] && \
+  hyg_rule skills/do/SKILL.md 'NOT sufficient' \
+    "/do lost the claim/requires/not-sufficient evidence table"
 
 # 20. /design keeps its production-readiness spine. The skill's whole claim is
 #     that it produces production-grade UI rather than a pretty mockup, and
