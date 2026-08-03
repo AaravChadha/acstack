@@ -99,6 +99,12 @@ about the wrong product is worse than no answer (conduct rule 8).
 2. **Verify.** Run the relevant `**Acceptance:**` command (or the phase
    `**Exit criterion:**` if this was the last open subtask) before declaring
    anything done. If it fails, say so with the output — do not check the box.
+   **The task has no `**Acceptance:**` line at all** → do not tick it on
+   the strength of "it looks done". State that the task carries no
+   acceptance, say what you did and what you observed, and either propose
+   an acceptance line for the user to approve or leave the box open with
+   that reason. Declaring done-unverified is precisely the rot /triage and
+   /plan-review exist to flag, and it costs nothing to name instead.
 3. **Check off.** Tick exactly the completed box in PLAN.md. Parent boxes
    only when every child is checked. The phase heading `## [ ]` flips when
    its `**Exit criterion:**` passes — or, if the phase declares none, when

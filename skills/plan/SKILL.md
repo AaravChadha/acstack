@@ -53,6 +53,13 @@ about the wrong product is worse than no answer (conduct rule 8).
 
 Parse the arguments. No mode given: if no BRIEF.md exists → `seed`; if
 BRIEF.md exists but no PLAN.md → `build`; otherwise ask which mode is wanted.
+**`seed` when BRIEF.md already exists → STOP.** The BRIEF is the frozen
+record of what was believed at the start; regenerating it destroys the
+only artifact that can later be compared against what was learned. Say it
+exists, name its path, and offer the two honest routes: `build` if the
+plan is what's missing, or `replan` to supersede a decision with a dated
+verdict. Editing the BRIEF is the user's own call, never this skill's side
+effect.
 `hackathon` as an argument (or `mode: hackathon` in config) switches the
 templates to the hackathon shape.
 

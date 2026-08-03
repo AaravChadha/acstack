@@ -90,6 +90,9 @@ document mode; never guess. The sweep:
 
 ## Document mode
 
+**No PLAN.md → stop and say so.** There is no backlog to groom, and
+inventing one would be fiction. Name `/plan seed` and stop.
+
 The same rot, PLAN.md-shaped:
 
 1. **Checked but failing.** `[x]` whose `**Acceptance:**` command fails

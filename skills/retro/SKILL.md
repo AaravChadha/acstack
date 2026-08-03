@@ -58,6 +58,14 @@ about the wrong product is worse than no answer (conduct rule 8).
   files across runs.
 - `git log` over the window for commit / checkbox velocity.
 
+**Missing inputs are named, never worked around.** No JOURNAL.md → stop:
+a retro is a trend across recorded sessions, and without the record there
+is no trend, only the git log's shape — say that and point at `/journal`.
+No PLAN.md → run the trends that only need the journal and state that
+velocity-vs-plan and the risk review were skipped for want of the plan. A
+window containing one entry is reported as one entry, not extrapolated
+into a trend.
+
 ## Sections
 
 The four sections live in `references/retro-sections.md` with their

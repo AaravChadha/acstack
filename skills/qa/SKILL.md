@@ -91,6 +91,14 @@ probe. Adversarial probing of a production URL never starts uninvited.
 6. **Auth-gate probing.** Every gated endpoint, hit unauthenticated,
    must fail closed: 401/403. A 200 is a security finding — recorded
    here, handed to /secure. A 5xx is an error-hygiene finding.
+   **Credentials come from the user, never from the repo.** Probing a
+   gated flow as an authenticated user needs a token or session the user
+   supplies for this run. Do NOT read one out of `.env`, a fixture, or a
+   config file: a credential committed to the tree is a /secure finding,
+   and using it here would launder a defect into a passing test. None
+   supplied → probe the unauthenticated half (which is the security-
+   relevant half anyway), and report the authenticated flows as
+   `not probed — no credentials supplied`.
 
 ## Report shape
 

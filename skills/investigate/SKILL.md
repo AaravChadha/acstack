@@ -56,6 +56,13 @@ not an exemption from the law — it is the trigger for this skill.
 
 ## The investigation
 
+**The verdict leads the report.** Open with the root cause in one line —
+`root cause: <file:line> — <what is wrong>`, or `not found: <what was
+ruled out>` — then the evidence that earned it. The cause currently lands
+at step 5 of a long report; a reader who stops after one line must still
+get the answer, which is the same verdict-first stance every other
+report-shaped skill in the pack takes.
+
 Method details in `references/investigation-method.md`. The sequence:
 
 1. **Symptom statement.** Exact observed behavior: the error text verbatim,

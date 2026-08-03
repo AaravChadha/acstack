@@ -85,6 +85,11 @@ skill grants no shell `git grep`. No Grep tool? Use `grep -rnE`, never
    system detail; inconsistent terminology for the same object across
    screens ("order" here, "purchase" there).
 
+**No UI files in the path → say so and stop.** If the target contains no
+markup, styles, or component files, there is nothing to audit; report the
+path, what was looked for, and stop. A "CLEAN" verdict over a directory
+with no UI in it is a true statement that reads as a false reassurance.
+
 ## Stance and report shape
 
 Read-only: findings and suggested fixes, never applied edits. First

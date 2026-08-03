@@ -91,6 +91,10 @@ Append a numbered task to PLAN.md:
 - With its acceptance line (or the explicit TBD).
 - No obvious phase → a dated checkbox under `## Open items` instead;
   /triage or the next `/plan replan` finds it a home.
+- **No PLAN.md at all** → do NOT create one. A plan scaffolded as a side
+  effect of filing a ticket is a plan nobody designed. Say the item cannot
+  be filed in document mode, print the well-formed task text so nothing is
+  lost, and name `/plan seed` as what creates the document.
 
 ## Report and stop
 

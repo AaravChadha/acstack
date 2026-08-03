@@ -80,6 +80,24 @@ about the wrong product is worse than no answer (conduct rule 8).
 6. **Commit** with subject from `journal-commit-format` (default
    `Journal YYYY-MM-DD: <summary>`) plus a brief body, per CONDUCT rule 10.
    Include the PLAN.md sync in the same commit.
+   **Stage explicitly — never `git add -A`.** Stage JOURNAL.md and PLAN.md
+   by name. A blanket add sweeps whatever else was in the tree into a
+   commit labelled "Journal", which is how unrelated work lands under a
+   subject nobody would look under. Other files already modified → say so,
+   list them, and leave them unstaged.
+
+## When the preconditions are not met
+
+Each of these stops rather than guessing; naming the gap is the deliverable.
+
+- **Not a git repo.** Write the entry, then say plainly that no commit was
+  made and why. The journal is still worth having; a fabricated commit
+  step is not.
+- **Nothing to record.** A session with no commits and no plan movement
+  gets that stated in one line, not an entry padded to look like progress.
+  An honest "no work landed since <date>" is a true record.
+- **No PLAN.md.** Write the entry and skip the sync step, saying so —
+  never invent a task list to sync against.
 
 ## Hard rules
 

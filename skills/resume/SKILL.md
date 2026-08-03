@@ -59,6 +59,11 @@ about the wrong product is worse than no answer (conduct rule 8).
    never creates or scaffolds anything.
 3. `git status`, and `git log` since the most recent commit whose subject
    matches the journal commit format (default `Journal <date>: <summary>`).
+   **Match the format as a PREFIX, not in full.** A second entry on one day
+   is legitimately `Journal 2026-07-29 (3rd): …`, and a full-string match
+   misses it — which made this skill count six journal commits as
+   unjournaled on its own repo. Anything starting with `Journal <date>` is
+   a journal commit.
    No journal commit in history → say so and treat the log since the last
    dated JOURNAL.md entry (or, failing that, the whole log) as unjournaled.
 
@@ -87,7 +92,11 @@ audit (a full sweep is /triage's job):
 From PLAN.md in plan order: ID, task text, and its acceptance line.
 Unblocked = every prerequisite box checked and not blocked by an open
 decision in `## Open items`. Fewer than three exist → list what's there and
-say why the rest are blocked.
+say why the rest are blocked. A task carrying **no `**Acceptance:**` line**
+is still listed, flagged as `no acceptance recorded` — the sibling of
+`/do`'s stop on the same gap. Do not invent one to fill the column: a task
+whose done-condition is unwritten is a real finding about the plan, and
+`/plan-review` or `/triage` is where it gets fixed.
 
 ## Tickets mode (`tracking: tickets`)
 
