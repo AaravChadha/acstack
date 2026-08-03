@@ -13,10 +13,12 @@ tells of machine-generated filler, and internal language leaking to the
 user. Nothing is rendered — a rendered mode arrives with the browser
 probe (same deferral as /qa, decision 2026-07-27).
 
-`Adjacent skills:` /qa (behavior; /design-audit is look and language) ·
-/audit code (correctness; /design-audit is convention) · /secure
-(exploitability; /design-audit flags leaked internals as language, not
-as a vulnerability).
+`Adjacent skills:` /design (the generative half — it produces UI, this
+inspects it; /design-audit stays purely detective and never generates) ·
+/qa (behavior; /design-audit is look and language) · /audit code
+(correctness; /design-audit is convention) · /secure (exploitability;
+/design-audit flags leaked internals as language, not as a
+vulnerability).
 
 <!-- acstack:runtime -->
 Run before the skill's steps — per invocation, not per session (4.36); failures degrade to markdown:

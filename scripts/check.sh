@@ -15,7 +15,7 @@
 #   13a no read-only claim escapes §13     14 referral roster == typed-only set
 #   15 conduct block identity              16 retired commit-format guarded
 #   17 simplicity ladder keeps its floor   18 update msg re-links, not just pull
-#   19 /refactor keeps its proof rule
+#   19 /refactor keeps its proof rule      20 /design keeps its 8-item spine
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -532,6 +532,27 @@ if grep -q 'simplicity ladder' skills/do/SKILL.md; then
     grep -qi "$term" skills/do/SKILL.md \
       || { echo "FAIL ladder: /do documents the simplicity ladder but its never-cut floor lost '$term'"; fail=1; }
   done
+fi
+
+# 20. /design keeps its production-readiness spine. The skill's whole claim is
+#     that it produces production-grade UI rather than a pretty mockup, and
+#     that claim rests on two things: all EIGHT items, and the rule that a
+#     style dial can never lower the floor. Trim either and it silently
+#     becomes the style-matching skill 4.30 exists not to be — the same
+#     floor-erosion class as §17 and §19.
+if [ -f skills/design/SKILL.md ]; then
+  # Match the BOLDED list form, not the bare words: the frontmatter
+  # description names most of these too, so a loose grep stays green while
+  # the body item is gone. (Caught by its own fail-first probe, 2026-08-04.)
+  for item in 'States, all of them' 'Real content' 'Responsive behaviour' 'Accessibility floor' \
+              'Interaction feel' 'Theming' 'Performance-shaped choices' 'UX writing'; do
+    grep -q "\*\*$item" skills/design/SKILL.md \
+      || { echo "FAIL design: /design lost production-readiness item '$item' — seven of eight is a mockup generator"; fail=1; }
+  done
+  grep -qi 'never lower the floor' skills/design/SKILL.md \
+    || { echo "FAIL design: /design lost the rule that a style dial cannot lower the production-readiness floor"; fail=1; }
+  grep -qi 'rollback' skills/design/SKILL.md \
+    || { echo "FAIL design: /design lost the optimistic/rollback requirement — the item a demo always skips"; fail=1; }
 fi
 
 # 19. /refactor keeps its proof rule. The skill's entire value is "green

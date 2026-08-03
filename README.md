@@ -31,6 +31,7 @@ machine state.
 | `/health` | Read-only project checkup: docs, pointer, conduct block, config, secrets, attribution, learnings, tickets prerequisites — every ✗ with its exact fix command | `/health` |
 | `/qa` | Exercise the running app through the probe layer: happy-path flows, adversarial inputs, auth-gate probing; PASS/FAIL report with exact repro commands (http now; browser deferred) | `/qa http://localhost:3000` |
 | `/secure` | Confidence-gated security review: findings need an exploit scenario + high/medium/low rating; sweeps auth gates, secrets, injection and unsafe sinks, deserialization/crypto/TLS, LLM tool-use; reports only | `/secure src/` |
+| `/design` | Generate production-grade UI: DTCG token system first, wireframe before code, then eight production-readiness items (all states incl. error/rollback, real content, responsive, a11y, feel, theming, performance, UX writing) — unanswered items reported as named gaps | `/design "settings page"` |
 | `/design-audit` | Static UI convention check: off-palette colors, wrong name casing, dishonest data labels, AI-slop, leaked internal language — file:line findings with fixes | `/design-audit src/ui/` |
 | `/retro` | Trend across sessions: velocity vs plan dates, eval-score trend, failure-category trends, open-risk status — written into JOURNAL.md | `/retro week` |
 | `/eval-run` | Execute the eval: scaffold a runner for the project's stack when none exists, grade every case by its rule, write per-case results, and compute the headline from that file — never by hand | `/eval-run` |
@@ -43,7 +44,7 @@ git clone https://github.com/AaravChadha/acstack.git acstack
 cd acstack && ./setup      # clone anywhere; setup links from where it lives
 ```
 
-Start a new Claude Code session; the twenty-two skills above load as slash
+Start a new Claude Code session; the twenty-three skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 
@@ -223,6 +224,7 @@ Unknown keys and sections are ignored — that's the extension mechanism.
 | `base-url` | (unset; set in a `## qa` section) | /qa |
 | `palette`, `product-names` | (unset; set in a `## design-audit` section) | /design-audit |
 | `banned-palette` | the violet-gradient family (set in a `## design-audit` section to override) | /design-audit |
+| `variance`, `motion`, `density` | `balanced`, `standard`, `comfortable` (set in a `## design` section) | /design |
 | `backup-command` | `pg_dump "$DATABASE_URL" > backups/pre_<ts>.sql` (set in a `## migrate-check` section) | /migrate-check |
 | `## Collaborators` | (unset; a section, not a key) | /plan (hackathon owner tags) |
 | `subtask-commit-format` | `task <number>: <description>` | /do |

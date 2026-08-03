@@ -66,6 +66,13 @@ context belongs — never inside the pack's skills.
 - banned-palette: #8b5cf6, #a855f7, #7c3aed, #6366f1, #d946ef   # never allowed, even if added to palette
 - product-names: Acme, AcmeCloud               # exact required casings -->
 
+## design
+
+<!-- Per-skill overrides. Examples:
+- variance: balanced      # conservative | balanced | bold — how far from convention
+- motion: standard        # minimal | standard | expressive (reduced-motion is always honoured)
+- density: comfortable    # comfortable | compact -->
+
 ## ship
 
 <!-- Per-skill overrides. Example:

@@ -115,6 +115,11 @@ fullcase "backreference in a documented grep" FAIL 'regex' bash -c "printf '%s\n
 fullcase "lost /audit tests plant"          FAIL 'controls' rm fixtures/audit-tests/tests/test_cart.py
 # 4.27: the ai-tells rule classes lose their seeded fixture
 fullcase "lost ai-tells plant"              FAIL 'controls' rm fixtures/design-audit/motion.css
+# 20: /design without all eight items is the mockup generator 4.30 exists not to be.
+# The mutation deletes the BODY item only — the frontmatter description still
+# says "real content", which is exactly how a looser guard stayed green.
+fullcase "design loses a readiness item"    FAIL 'design' bash -c "grep -v '[*][*]Real content[.][*][*]' skills/design/SKILL.md > t && mv t skills/design/SKILL.md"
+fullcase "design loses its floor rule"      FAIL 'design' bash -c "grep -vi 'never lower the floor' skills/design/SKILL.md > t && mv t skills/design/SKILL.md"
 # 19: /refactor without its same-count proof is "refactor and hope"
 fullcase "refactor loses its count proof"   FAIL 'refactor' bash -c "grep -viE 'same (test )?count' skills/refactor/SKILL.md > t && mv t skills/refactor/SKILL.md"
 fullcase "headingless changelog fails, not dies" FAIL 'version' bash -c "printf '# Changelog\nno versioned headings here\n' > CHANGELOG.md"
