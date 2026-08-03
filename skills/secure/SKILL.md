@@ -25,7 +25,7 @@ pack="$(dirname "$(dirname "$link")")"   # NEVER trust this unless $link was non
 if [ "${link#/}" != "$link" ] && [ -x "$pack/bin/acstack-config" ] && ! "$pack/bin/acstack-config" runtime | grep -q '=off'; then
   "$pack/bin/acstack-config" || true          # resolved keys, with sources
   "$pack/bin/acstack-update-check" || true    # ≤1 fetch/day; prints the pull command when behind
-  "$pack/bin/acstack-recall" || true          # LEARNINGS.md + pack known-bug-classes, capped 6KB
+  "$pack/bin/acstack-recall" || true          # LEARNINGS.md + bug-class names, capped 3KB
 else
   echo "runtime off — proceeding without recall/update-check"
 fi

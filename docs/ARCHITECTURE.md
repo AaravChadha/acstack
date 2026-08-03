@@ -103,8 +103,8 @@ commit:
    their sources, so a skill's behavior traces to a setting.
 7. **`"$pack/bin/acstack-update-check" || true`** — at most one
    `git fetch` per day; prints the pull command when behind; never pulls.
-8. **`"$pack/bin/acstack-recall" || true`** — LEARNINGS.md plus the
-   pack's known-bug-classes, capped at 6KB. Every one of these three
+8. **`"$pack/bin/acstack-recall" || true`** — LEARNINGS.md in full plus
+   the pack's known-bug-class NAMES, capped at 3KB. Every one of these three
    carries `|| true`: a broken helper must never block the actual work.
 9. **`else`** — the degradation branch.
 10. **`echo "runtime off — proceeding without recall/update-check"`** —
@@ -123,10 +123,13 @@ against the repo and all shellcheck'd by check.sh:
 - **`acstack-update-check`** — writes `~/.acstack/update-stamp` **before**
   fetching, so an offline day still counts as checked and a broken
   network cannot cause a fetch storm. Offline exits 0 silently.
-- **`acstack-recall`** — prints project LEARNINGS.md plus the pack's
-  known-bug-classes, jointly capped at 6KB with an explicit
-  `[recall truncated at 6KB]` marker. Missing files produce empty output
-  and exit 0.
+- **`acstack-recall`** — prints project LEARNINGS.md in full plus the
+  pack's known-bug-class NAMES (headings only, with a pointer to the full
+  file — the read-headings-then-fetch discipline), jointly capped at 3KB
+  with an explicit `[recall truncated at 3KB]` marker. Missing files
+  produce empty output and exit 0. It runs per invocation by design: a
+  session marker would add machine-local state the pack minimises, so the
+  digest was made cheap instead (verdict 2026-08-03, task 4.36).
 
 `~/.acstack/` holds exactly one file. There is no telemetry.
 
@@ -143,7 +146,7 @@ rule `/secure` applies to any untrusted-in-trusted-position path.
 
 Three layers, each answering a different question.
 
-**`scripts/check.sh` — is the pack internally consistent?** Fifteen numbered sections plus 3b — **16 checks**; the header comment is their single enumeration, updated in the
+**`scripts/check.sh` — is the pack internally consistent?** Nineteen numbered sections plus 3b, 3c and 13a — **22 checks**; the header comment is their single enumeration, updated in the
 same commit as any new section (that list went stale twice when copies
 lived elsewhere). It covers principles-block byte-identity, banned
 names, frontmatter parsing and description safety, POSIX-ERE hazards in
@@ -164,7 +167,7 @@ produce 6/7 (85.7%), and it also asserts that every case excluded
 from the denominator is NAMED — silent exclusion moves no percentage,
 so it is invisible in the number alone.
 
-**`docs/guard-matrix.sh` — does each guard fire?** 68 cases, each
+**`docs/guard-matrix.sh` — does each guard fire?** 82 cases, each
 seeding one defect into a copy of the real tree and asserting the
 expected failure class, plus must-pass cases so a guard cannot pass by
 failing everything. **Extend the matrix first, watch the case fail, then
