@@ -1368,6 +1368,43 @@ reordered, if any.
   "unreleased" with a one-line reason; check.sh §6's VERSION/CHANGELOG
   guard still passes either way.
 
+> **Carriers from the 2026-08-03 write-path shakedown** — the second
+> live-model session (/do, /journal, /audit docs, /migrate-check in a
+> throwaway repo). Full report and verification in JOURNAL's 2026-08-03
+> shakedown entry; finding 1 (the /do↔/audit phase contradiction) was
+> fixed directly, not carried.
+
+- [ ] **4.36** Runtime preamble runs per-invocation, not per-session. The
+  marker-fenced block runs `acstack-config` + `acstack-recall` (~6KB of
+  known-bug-classes) on every skill invocation — 4× in one shakedown; the
+  model improvised suppressing the repeats. `acstack-update-check` is
+  already throttled to ≤1 fetch/day via its stamp, so this is about the
+  recall re-print, not the fetch. **Acceptance:** a recorded verdict —
+  either a session-level "recall already ran" marker (weighed against the
+  pack's minimal-machine-state stance — the stamp is the only precedent),
+  or an explicit decision that per-invocation recall is acceptable and the
+  preamble comment says so. No silent 4×-per-session waste.
+- [ ] **4.37** BRIEF.md absence is invisible to the write-path skills. A
+  fresh repo went empty → committed → journaled with no skill asking what
+  the project is; only `/health` flags a missing BRIEF. **Acceptance:** a
+  recorded verdict — either `/do` and `/journal` note a missing BRIEF once
+  (without blocking; /do needs only PLAN), or it is deliberately /health's
+  job alone and that is stated. Not "silently fine" by default.
+- [ ] **4.38** `/journal`'s first-entry case is unspecified.
+  `skills/journal/SKILL.md:57` says "`git log` since the last journal
+  commit" — undefined when no journal commit exists yet (the model used
+  the full log and said so). **Acceptance:** the skill's step 1 covers the
+  first-entry case explicitly (full log, stated); demonstrated on a repo
+  with no prior journal commit.
+- [ ] **4.39** `/migrate-check`'s no-database decline is indirect. On a
+  repo with no DB at all it defaults `db:` to `shared-prod` and stops at
+  "can't find the migration stack" rather than "this project has no
+  database". Honest, but reached the long way. **Acceptance:** a repo with
+  no migration stack and no DB config gets a crisp up-front "no database —
+  nothing to pre-flight" (or a `db: none` autodetect), proven on a fixture;
+  the conservative shared-prod default still applies whenever a DB *might*
+  exist.
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
