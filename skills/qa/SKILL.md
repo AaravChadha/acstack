@@ -73,6 +73,13 @@ probe. Adversarial probing of a production URL never starts uninvited.
 1. **Resolve the target.** Argument URL beats config `base-url` (from a
    `## qa` section). Neither → say exactly what's missing and stop:
    `BLOCKED — no target: pass a URL or set base-url in .claude/acstack.md`.
+   **Never infer a target from source.** An `app.listen(3000)` in the code
+   says a port the app *would* use if it were running, not an address that
+   is serving now — probing a guessed URL either fails confusingly or, if
+   something unrelated answers, produces results attributed to the wrong
+   process. A target is supplied, never deduced. Same rule, same reason as
+   the credential rule in step 6: the tempting value sitting in the repo is
+   not the one you are entitled to use.
 2. **Reach first.** One reach probe. Target down → `BLOCKED`, report
    ends; nothing else is meaningful.
 3. **Enumerate flows** from BRIEF/PLAN (or run only the flow named in
