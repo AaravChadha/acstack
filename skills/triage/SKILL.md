@@ -110,6 +110,55 @@ The same rot, PLAN.md-shaped:
 5. **Phase-state drift.** Phase headings whose `[ ]`/`[x]` disagrees with
    their children's state or their exit criterion's reality.
 
+## Root-cause clustering (both modes)
+
+Every sweep above is a **local** comparison — this item against that item,
+this box against its acceptance. Clustering is the **global** one: twelve
+items that are all one cause is a finding no pairwise duplicate check can
+see, because no two of them are duplicates.
+
+Run it last, over the whole backlog at once, after the local sweeps have
+already removed the noise.
+
+**A cluster needs a stated cause, not a shared topic.** "These five all
+mention the parser" is a tag. "These five all fail because the tokenizer
+drops the final field when the input has no trailing newline" is a cause.
+The test is one sentence: **would fixing the named cause close every item
+in the cluster?** If some would survive it, the cluster is wrong — split it
+or drop it.
+
+The bar, all three required:
+
+- **Three or more items.** Two is a duplicate pair, and the sweep above
+  already handles that shape better.
+- **A cause written as a sentence**, naming the mechanism — not a
+  component, a label, or a theme.
+- **Evidence per member**: the quoted line, error, or acceptance that ties
+  that specific item to that cause. An item nobody can tie to the cause is
+  not in the cluster.
+
+**Propose nothing when the backlog is genuinely independent.** This is the
+half that keeps the pass honest: a backlog of unrelated work is the normal,
+healthy state, and a clustering step that always finds clusters is
+astrology. Say plainly that no root-cause groups were found and move on —
+that is a real result, not a failed sweep. Never widen a cause until items
+fit it; a cause broad enough to cover everything explains nothing.
+
+What the report proposes, per cluster:
+
+- **A parent** — in tickets mode a new issue titled by the CAUSE; in
+  document mode a parent task in PLAN.md with the children as its subtasks.
+  Never a parent that merely renames the group.
+- **The children redirected**, each with the same standardized line so the
+  tree stays navigable: `rolled up into <parent> — same cause: <cause>`.
+- **What stays independent**, listed. An item that resisted clustering is
+  information, not a leftover.
+
+Approval-gated exactly like the rest of this skill: the clusters are
+proposed with their evidence, and nothing is filed, edited, or closed until
+the user says so. Getting a cluster wrong reshapes someone's whole backlog,
+so this is the sweep where a wrong proposal costs the most.
+
 ## Hard rules
 
 - Findings without evidence (the quoted text, the failing command, the

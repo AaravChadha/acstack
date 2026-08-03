@@ -120,6 +120,10 @@ fullcase "design before-page fixed up"      FAIL 'controls' bash -c "sed -e 's/w
 # 21: the 4.28 hygiene rule set is five rules across five skills; dropping one
 # is invisible in a green run — nothing fails, the reports just get noisier.
 fullcase "hygiene rule set loses a rule"    FAIL 'hygiene' bash -c "grep -vi 'Do NOT flag these' skills/audit/references/code-report-template.md > t && mv t skills/audit/references/code-report-template.md"
+# 4.32: both clustering fixtures. The negative one matters most — without it
+# a clustering pass that always finds clusters would look correct.
+fullcase "clustering fixture loses a task"  FAIL 'controls' bash -c "grep -v '1.8' fixtures/triage/clustered-PLAN.md > t && mv t fixtures/triage/clustered-PLAN.md"
+fullcase "independent fixture goes missing" FAIL 'controls' rm fixtures/triage/independent-PLAN.md
 # 20: /design without all eight items is the mockup generator 4.30 exists not to be.
 # The mutation deletes the BODY item only — the frontmatter description still
 # says "real content", which is exactly how a looser guard stayed green.

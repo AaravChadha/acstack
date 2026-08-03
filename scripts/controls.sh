@@ -236,6 +236,38 @@ else
   bad "/audit tests fixture missing — the tests target has no control"
 fi
 
+# --- /triage: the root-cause clustering fixtures, BOTH directions (4.32) ---
+# The positive fixture must keep 8 tasks over 3 causes with NO duplicate pair
+# (a pairwise check must find nothing, so only clustering can). The negative
+# fixture must stay genuinely independent — it is the half that proves the
+# pass is honest, since a clustering step that always clusters is astrology.
+tc="fixtures/triage/clustered-PLAN.md"; ti="fixtures/triage/independent-PLAN.md"
+if [ -f "$tc" ] && [ -f "$ti" ]; then
+  n="$(grep -c '^- \[ \] \*\*1\.' "$tc")"
+  [ "$n" -eq 8 ] \
+    && ok "/triage clustering fixture carries $n tasks (needs 8)" \
+    || bad "/triage clustering fixture has $n tasks, not 8 — the seeded shape is gone"
+  c="$(grep -cE '^  [A-C]\. ' "$tc")"
+  [ "$c" -eq 3 ] \
+    && ok "/triage clustering fixture still states its 3 causes" \
+    || bad "/triage clustering fixture states $c causes, not 3"
+  # every task must carry its own acceptance: if any two were duplicates the
+  # existing pairwise sweep would catch them and clustering would be untested
+  a="$(grep -c '\*\*Acceptance:\*\*' "$tc")"
+  [ "$a" -eq 8 ] \
+    && ok "/triage clustering fixture: all 8 tasks keep distinct acceptances" \
+    || bad "/triage clustering fixture has $a acceptances for 8 tasks — members must not be duplicates"
+  ni="$(grep -c '^- \[ \] \*\*1\.' "$ti")"
+  [ "$ni" -ge 5 ] \
+    && ok "/triage independent fixture carries $ni unrelated tasks" \
+    || bad "/triage independent fixture has only $ni tasks — too few to prove restraint"
+  grep -q 'no cluster here' "$ti" \
+    && ok "/triage independent fixture still declares itself cluster-free" \
+    || bad "/triage independent fixture lost its answer key — the negative case is unverifiable"
+else
+  bad "/triage clustering fixtures missing — 4.32 has no positive OR negative control"
+fi
+
 # --- /design: the seeded "before" page (4.30) ---
 # INVERTED control: this fixture's value is what it LACKS. Each assertion is
 # "the gap is still there" — a helpfully-fixed fixture silently stops being a
