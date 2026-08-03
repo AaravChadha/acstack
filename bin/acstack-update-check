@@ -20,6 +20,12 @@ printf '%s\n' "$today" > "$STAMP" 2>/dev/null || exit 0
 git -C "$PACK" fetch --quiet 2>/dev/null || exit 0
 behind="$(git -C "$PACK" rev-list --count 'HEAD..@{u}' 2>/dev/null || echo 0)"
 if [ "${behind:-0}" -gt 0 ] 2>/dev/null; then
-  printf 'acstack: %s update(s) behind — run: git -C %s pull\n' "$behind" "$PACK"
+  # `pull` alone is NOT enough and saying so cost a real skill: an update that
+  # adds a skill leaves it with no symlink in ~/.claude/skills, so it is
+  # invisible to the user and the model until setup re-links. setup is
+  # idempotent, so always pairing the two is safe and is the only complete
+  # instruction. (Found 2026-08-03: /why shipped and answered no one.)
+  printf 'acstack: %s update(s) behind — run: git -C %s pull && %s/setup\n' \
+    "$behind" "$PACK" "$PACK"
 fi
 exit 0

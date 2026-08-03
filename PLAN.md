@@ -1437,6 +1437,20 @@ reordered, if any.
   preamble comment states per-invocation and cites the 4.36 verdict. The
   block is byte-identical across all 21 files, so a change here edits every
   skill — check.sh §12 enforces that, and the line budget of 12 still binds.
+  **Added by shakedown 4 (2026-08-03), same block, same fix window:**
+  (c) **the preamble cannot run under the grants of the skills that carry
+  it.** It needs `readlink`, `dirname`, and execution of `bin/acstack-*`;
+  only /health grants `readlink`, and no skill grants the rest. It degrades
+  gracefully by design, so nothing breaks — but under a strict permission
+  harness every acstack skill would open with a prompt for its own preamble,
+  and §13's allowlist certifies a tool set the preamble then steps outside
+  of. Decide: widen the read-only grants to cover the preamble, or state
+  plainly that the preamble runs outside the declared set and why that is
+  acceptable. (d) **the read-only claim carries an asterisk**: the preamble
+  runs `acstack-update-check`, which WRITES `~/.acstack/update-stamp`. That
+  single file is disclosed pack-wide as the only machine-local state, but
+  the read-only skills' own prose says they never write, and a stamp write
+  is a write. Reconcile the wording with the behavior.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 

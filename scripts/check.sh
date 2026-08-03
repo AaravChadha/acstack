@@ -14,7 +14,7 @@
 #   12 runtime preamble identity + budget  13 read-only tool declarations
 #   13a no read-only claim escapes §13     14 referral roster == typed-only set
 #   15 conduct block identity              16 retired commit-format guarded
-#   17 simplicity ladder keeps its floor
+#   17 simplicity ladder keeps its floor   18 update msg re-links, not just pull
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -509,6 +509,15 @@ if grep -q 'simplicity ladder' skills/do/SKILL.md; then
     grep -qi "$term" skills/do/SKILL.md \
       || { echo "FAIL ladder: /do documents the simplicity ladder but its never-cut floor lost '$term'"; fail=1; }
   done
+fi
+
+# 18. The update instruction must re-link, not just pull. A pull that adds a
+#     skill leaves it unlinked and therefore invisible — /why shipped on
+#     2026-08-03 and no user or model could invoke it. `pull` alone is an
+#     incomplete instruction, and the incompleteness is silent.
+if ! grep -q 'setup' bin/acstack-update-check; then
+  echo "FAIL update-msg: bin/acstack-update-check tells the user to pull without re-running setup — a new skill would stay unlinked and invisible"
+  fail=1
 fi
 
 if [ "$fail" -eq 0 ]; then
