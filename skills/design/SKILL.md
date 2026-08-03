@@ -90,10 +90,16 @@ integration time that the empty state has nowhere to live.
 memorable — a considered empty state, a distinctive control, one motion.
 Zero is forgettable; three is noise.
 
-**Self-critique BEFORE coding.** Name which AI-default look this design is
-avoiding and why — the violet-gradient hero, the eyebrow-above-heading, the
-icon-tile triptych (`../design-audit/references/ai-tells.md` is the full
-roster). A design that cannot name what it avoided has not made a choice.
+**Self-critique BEFORE coding — written down, not recalled.** Name which
+AI-default look this design is avoiding and why — the violet-gradient hero,
+the eyebrow-above-heading, the icon-tile triptych
+(`../design-audit/references/ai-tells.md` is the full roster). A design that
+cannot name what it avoided has not made a choice.
+
+**State it before the first component, and keep it in that order in the
+report.** A critique that appears only after the artifact cannot be
+distinguished from one back-filled to fit what was built — the same
+auditability problem the runtime preamble had. Order is the evidence.
 
 ## The eight items — every interactive surface answers all of them
 
@@ -138,6 +144,21 @@ other product, it is decoration; cut it.
 **Load the result and check the console.** No 404s, no framework key
 warnings, no CORS/CSP failures, and fonts actually resolving rather than
 silently falling back to a system stack that changes every metric.
+
+**Close the token loop.** Every colour, radius and spacing literal in the
+shipped code must resolve to a value that exists in the token file. Grep the
+output for raw values and diff them against the tokens — a value in the CSS
+that is absent from the token file is **token drift**, and it means the
+token file has stopped being the source of truth it was declared to be. This
+is the closing check the token-first rule needs: without it, the tokens are
+written first and diverged from immediately. Drift found on a live run
+(2026-08-04) is why this step is written down.
+
+**Beware the viewport your tool cannot render.** Headless browsers enforce a
+minimum window width (~500px in Chrome), so a "375px mobile" capture may
+silently be a crop of a wider layout — which looks exactly like an overflow
+bug. Verify the rendered width before trusting a narrow screenshot, and
+report the widths actually exercised rather than the ones requested.
 
 Depth matches the change: a copy tweak needs a look, a new interactive
 surface needs its states exercised. This is the pack's

@@ -399,8 +399,12 @@ fi
 #     consequences, both accepted rather than hidden: under a strict permission
 #     harness a skill may prompt for its own preamble (it degrades to markdown
 #     on any refusal, so nothing breaks), and `acstack-update-check` WRITES
-#     `~/.acstack/update-stamp` — so "read-only" describes what a skill does to
-#     the PROJECT, not a claim that the pack touches nothing on the machine.
+#     `~/.acstack/update-stamp` AND runs `git fetch` inside the PACK repo,
+#     writing its `.git/FETCH_HEAD` (observed live 2026-08-04) — so "read-only"
+#     describes what a skill does to the PROJECT it is pointed at, not a claim
+#     that the pack touches nothing on the machine. Note the consequence for
+#     sandboxed work: a session told "do not touch <pack>" cannot honour that
+#     while running any skill, short of `runtime: off`.
 #     That stamp is the pack's only machine-local state and is documented as
 #     such. This section certifies the declared tool set; it does not and cannot
 #     certify the preamble.

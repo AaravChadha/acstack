@@ -56,6 +56,7 @@ git grep -nE 'rgb\(|rgba\(|hsl\('
 ```bash
 git grep -niE '(mock|sample|dummy|placeholder|fake|lorem|test)[[:space:]]*(data|value|user|chart)'
 git grep -niE '(faker|mockData|SAMPLE_|DUMMY_|generateFake|randomInt|Math\.random)'
+git grep -niE '(stand-?in|stub|not (yet )?wired|no-?op|hard-?coded)[^a-z]{0,12}(for|impl|request|endpoint|api|data|response)?'
 ```
 
 - Data marked mock/sample/fake in code but rendered in a user-facing
