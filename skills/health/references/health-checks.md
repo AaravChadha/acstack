@@ -16,6 +16,18 @@ Journal is stale when non-journal commits postdate its last touch by
 more than a session. PLAN check: the topmost `## [ ]` phase must carry
 an `**Exit criterion:**` whose command is literally runnable.
 
+**Externally-recorded brief (task 4.41).** A missing BRIEF is ✗ by
+default. It drops to **info — `brief recorded as external`** ONLY when
+PLAN.md explicitly says where the founding document lives (a statement
+naming a path outside the repo). A recorded decision is not a missing
+document; an unrecorded absence still is, so this is never a blanket pass
+for any repo lacking a BRIEF — the same declaration-not-suppression shape
+as the seeded-control rule in check 5. Quote the recording line as the
+row's evidence so the reader can judge it. Rationale: without this, a repo
+whose founding doc deliberately lives elsewhere shows a permanent red row
+that is working as designed, which trains readers to ignore the whole
+report — the failure mode this checkup exists to prevent.
+
 ## 2. Pointer
 
 ```bash

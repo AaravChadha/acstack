@@ -1423,6 +1423,21 @@ reordered, if any.
   parallelism (harness territory, not a discipline skill), and always-on
   prose injection (prose decays — check.sh is the pack's answer).
 
+- [ ] **4.41** Make the runtime preamble auditable (2026-08-03 shakedown 3).
+  Two small honesty gaps in the block that runs before every skill:
+  (a) **`acstack-update-check` prints nothing when current**, so silence
+  cannot distinguish *up to date* from *today's fetch already consumed*
+  from *failed quietly* — in a pack whose whole stance is that a silent
+  pass is worse than a loud failure, the one component that says nothing is
+  the odd one out. (b) **"Run once before the skill's steps" is
+  ambiguous** — per invocation or per session? The 4.36 A′ verdict settled
+  the behavior (per invocation, deliberately); the comment never says so.
+  **Acceptance:** update-check emits one short line in every path it can
+  take (current / behind / offline), verified by running all three; the
+  preamble comment states per-invocation and cites the 4.36 verdict. The
+  block is byte-identical across all 21 files, so a change here edits every
+  skill — check.sh §12 enforces that, and the line budget of 12 still binds.
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every

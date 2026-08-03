@@ -153,6 +153,17 @@ for stmt in "DROP TABLE" "RENAME COLUMN"; do
   else bad "/migrate-check destructive table no longer lists '$stmt'"; fi
 done
 
+# --- /health: the externally-recorded-brief carve-out (4.41) ---
+# This repo has no BRIEF.md on purpose (the founding doc lives outside it), so
+# check 1 reports info instead of ✗ — but ONLY because PLAN.md records that.
+# If the recording line goes, the row correctly returns to ✗; assert it is
+# still there so the carve-out can never quietly become "no BRIEF is fine".
+if grep -q 'outside this repo' PLAN.md; then
+  ok "/health external-brief carve-out: PLAN.md still records where the founding doc lives"
+else
+  bad "/health external-brief carve-out: PLAN.md no longer records the founding doc's location — check 1 is a bare ✗ again"
+fi
+
 # --- seeded-control labeling, BOTH directions (4.34) ---
 # The rule: a secret hit is labeled `seeded control (fixture)` only when its
 # path is under a fixtures/ root AND a controls script references that root.
