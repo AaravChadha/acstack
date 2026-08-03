@@ -51,6 +51,18 @@ fi
 1. **Resolve the safety level** from config `db:`. Default when unspecified
    is **shared-prod** — the conservative assumption. `local` → lighter path
    (step 8). `none` → say so in one line and stop.
+
+   **No-database autodetect.** When `db:` is *unset* AND the project shows
+   **no** database signal at all — no `prisma/`, no `migrations/`
+   directory, no `*.sql`, no `alembic.ini`/`Gemfile`, no ORM or driver
+   dependency in a manifest, no `DATABASE_URL` in `.env`/`.env.example` —
+   open with *"no database in this project — nothing to pre-flight"* and
+   stop there. That is the honest answer up front, rather than reaching it
+   the long way through a failed stack lookup in step 2. **The conservative
+   default is unchanged whenever a database MIGHT exist:** any one signal
+   present, or `db:` set explicitly, means shared-prod strictness as
+   before. Absence of every signal is the only trigger — never a partial
+   match, and never an inference from "I couldn't find the stack."
 2. **Identify the target**: the folder or file named in the arguments,
    else the newest unapplied migration. Resolution is stack-dependent —
    `npx prisma migrate status` for Prisma; otherwise the newest unapplied

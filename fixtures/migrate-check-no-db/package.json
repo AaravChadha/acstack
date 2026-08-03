@@ -1,0 +1,12 @@
+{
+  "name": "no-db-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fixture for /migrate-check's no-database autodetect (task 4.39): a real project carrying zero database signals. See README.md for what it deliberately omits.",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "picocolors": "^1.0.0"
+  }
+}

@@ -153,6 +153,29 @@ for stmt in "DROP TABLE" "RENAME COLUMN"; do
   else bad "/migrate-check destructive table no longer lists '$stmt'"; fi
 done
 
+# --- /migrate-check: the no-database fixture must stay signal-free (4.39) ---
+# Inverted control: this fixture's VALUE is the ABSENCE of every database
+# signal the autodetect keys on. If one creeps in, the fixture silently stops
+# testing the no-DB path — so the assertion is "still nothing here".
+nodb="fixtures/migrate-check-no-db"
+if [ -d "$nodb" ]; then
+  sig=""
+  [ -d "$nodb/prisma" ] && sig="$sig prisma/"
+  [ -d "$nodb/migrations" ] && sig="$sig migrations/"
+  [ -f "$nodb/alembic.ini" ] && sig="$sig alembic.ini"
+  [ -f "$nodb/Gemfile" ] && sig="$sig Gemfile"
+  { find "$nodb" -name '*.sql' | grep -q . ; } && sig="$sig *.sql"
+  { grep -rqE 'DATABASE_URL|"(prisma|pg|mysql2?|sequelize|typeorm|knex|mongoose|sqlite3?|drizzle-orm)"' "$nodb" 2>/dev/null; } \
+    && sig="$sig db-dep-or-url"
+  if [ -z "$sig" ]; then
+    ok "/migrate-check no-DB fixture is still free of every database signal"
+  else
+    bad "/migrate-check no-DB fixture gained a database signal ($sig) — it no longer tests the no-DB path"
+  fi
+else
+  bad "/migrate-check no-DB fixture missing — the autodetect path has no control"
+fi
+
 echo
 if [ "$fail" -eq 0 ] && [ "$skipped" -gt 0 ]; then
   echo "controls.sh: no failures, but $skipped control(s) SKIPPED — coverage is incomplete"
