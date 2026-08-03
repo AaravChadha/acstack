@@ -28,7 +28,8 @@ lessons into this file.
 - **Cause:** U+202F narrow no-break space, U+2013 en dash, U+00A0 NBSP in
   one side of the compare.
 - **Check:** normalize (NFKC + space/dash folding) before any substring
-  assertion. Grep for raw membership comparisons on external text:
+  assertion. Grep (the tool, or `grep -rnE` if absent — never shell
+  `git grep`) for raw membership comparisons on external text:
   `git grep -nE 'if .* in .*:|\.includes\('` — the pattern the pack's
   own positive control re-runs, so it is documented rather than
   restated only in the control.

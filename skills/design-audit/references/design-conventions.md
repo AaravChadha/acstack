@@ -10,6 +10,9 @@ convention it violates.
 > tests and what check.sh §3b guards. Apply them at runtime with the **Grep
 > tool**, which is read-only — /design-audit grants no shell `git grep`, so it
 > cannot be coerced into the `-O<pager>` form that runs an arbitrary program.
+> If a harness exposes no Grep tool, apply them with plain `grep -rnE`
+> instead — also granted, read-only, and without `git grep`'s `-O`; never
+> fall back to shell `git grep`.
 
 ## Config schema
 

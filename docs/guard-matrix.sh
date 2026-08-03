@@ -151,6 +151,9 @@ fullcase "no-write allowed-tools escapes READONLY_SKILLS" FAIL 'readonly' bash -
 # 16 commit-format: the retired `completed task <number>` default must not return
 # (task 4.16 switched it to `task <n>: <desc>`); shown failing first.
 fullcase "retired commit-format default returns" FAIL 'commit-format' bash -c "sed -e 's/task <number>: <description>/completed task <number> (<description>)/' README.md > t && mv t README.md"
+# 3c: a skill that forbids shell git grep must keep its grep -rnE fallback
+# (else a harness with no Grep tool degrades to the removed git grep form).
+fullcase "git-grep drop loses its grep fallback" FAIL 'grep-fallback' bash -c "sed '/Use .grep -rnE., never/d' skills/secure/SKILL.md > t && mv t skills/secure/SKILL.md"
 fullcase "guard-matrix syntax error caught"   FAIL 'syntax'   bash -c "printf 'if [ ; then\n' >> docs/guard-matrix.sh"
 fullcase "conduct block drifts from canon" FAIL 'conduct' bash -c "sed -e 's/^4\. Be direct\./4. Be direct and blunt./' AGENTS.md > t && mv t AGENTS.md"
 fullcase "conduct block missing entirely"  FAIL 'conduct' bash -c "awk '/BEGIN:acstack-conduct/{f=1} !f{print} /END:acstack-conduct/{f=0}' CONDUCT.md > t && mv t CONDUCT.md"

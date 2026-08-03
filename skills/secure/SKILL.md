@@ -72,7 +72,8 @@ applies verbatim.
 Checklists and grep patterns per surface live in
 `references/security-surfaces.md`. Sweep every surface the stack has;
 an argument can narrow to one path or surface. Apply the patterns with
-the Grep tool — this skill grants no shell `git grep`.
+the Grep tool — this skill grants no shell `git grep`. No Grep tool in the
+harness? Use `grep -rnE`, never `git grep`.
 
 1. **Auth gates.** The rival-user test: can authenticated user A reach
    user B's data by swapping an ID. Unauthenticated reach of gated

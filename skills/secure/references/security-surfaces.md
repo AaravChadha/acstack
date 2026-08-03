@@ -9,6 +9,9 @@ Every finding still needs an exploit scenario and a confidence rating
 > tool**, which is read-only — /secure grants no shell `git grep`, so it cannot
 > be coerced into the `-O<pager>` form that runs an arbitrary program. The Grep
 > tool matches the same patterns; pass any `-- '<glob>'` pathspec as its glob.
+> If a harness exposes no Grep tool, apply them with plain `grep -rnE`
+> instead — also granted, read-only, and without `git grep`'s `-O`, so still
+> no code-exec path; never fall back to shell `git grep`.
 
 > **Regex note.** `git grep -E` is POSIX ERE — `\s` parses as a literal
 > `s`, so `\s*` means "zero or more letter s", and `\b` matches nothing

@@ -63,7 +63,8 @@ sprawl, not brand conformance."
 
 Grep families and the default convention set live in
 `references/design-conventions.md`. Apply them with the Grep tool — this
-skill grants no shell `git grep`.
+skill grants no shell `git grep`. No Grep tool? Use `grep -rnE`, never
+`git grep`.
 
 1. **Palette + branding.** Hardcoded colors outside the configured
    palette; product names in the wrong casing; spacing/font literals

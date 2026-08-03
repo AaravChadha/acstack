@@ -6,7 +6,8 @@
 # README now points at this header instead of enumerating.)
 #   1  principles-block byte-identity       2  banned personal/client names
 #   3  frontmatter safety + strict parse    3b POSIX-ERE hazards in greps
-#   4  SKILL.md line budgets                5  shell syntax + shellcheck
+#   3c git-grep drop carries grep fallback  4  SKILL.md line budgets
+#   5  shell syntax + shellcheck
 #   6  VERSION/CHANGELOG agreement          7  routing lines present
 #   8  cross-references + citations resolve 9  config-key reachability
 #   10 verdict-first stance present         11 positive controls (fixtures)
@@ -153,6 +154,16 @@ if hits="$(grep -rnE '^[[:space:]]*(\$[[:space:]]*)?git grep' skills/*/reference
   printf '%s\n' "$hits"
   fail=1
 fi
+
+# 3c. A skill that forbids shell `git grep` (its patterns dropped to the
+#     read-only Grep tool, post-RCE) MUST also give the Grep-tool-absent
+#     fallback — plain `grep -rnE`. Without it, a harness with no Grep tool
+#     degrades to the exact `git grep` form the fix removed; the 2026-08-03
+#     live shakedown watched /health do precisely that.
+for f in $(grep -rl 'grants no shell' skills/*/SKILL.md skills/*/references/*.md 2>/dev/null || true); do
+  grep -q 'grep -rnE' "$f" \
+    || { echo "FAIL grep-fallback: $f forbids shell git grep but states no Grep-tool-absent fallback (grep -rnE)"; fail=1; }
+done
 
 # 4. SKILL.md line budget (< 500 per Claude Code guidance).
 for f in skills/*/SKILL.md; do
