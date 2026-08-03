@@ -54,9 +54,10 @@ about the wrong product is worse than no answer (conduct rule 8).
 
 1. **Gather.** Read the config, JOURNAL.md (create from
    `references/journal-template.md` if missing), PLAN.md, and
-   `git log` since the last journal commit. Get current test counts — run
-   the suite if it's cheap; otherwise use the last recorded counts and say
-   you did.
+   `git log` since the last journal commit — or, for a first entry (no
+   prior journal commit exists), the full log, said as such. Get current
+   test counts — run the suite if it's cheap; otherwise use the last
+   recorded counts and say you did.
 2. **Write the entry** under `## Key decisions and journey`, newest first,
    heading `### <what changed> (YYYY-MM-DD[ morning/evening])`. Follow
    `references/worklog-rules.md` for granularity — exact bugs, exact
