@@ -306,7 +306,7 @@ EOF
 # 10. Verdict-first stance present in every report-shaped skill (five of
 #     them violated the pack's own stance while it was documented nowhere
 #     mechanical). Enumerated list — update it when a report skill lands.
-REPORT_SKILLS="audit challenge design-audit health migrate-check plan-review qa resume retro secure triage"
+REPORT_SKILLS="audit challenge design-audit health migrate-check plan-review qa resume retro secure triage why"
 for s in $REPORT_SKILLS; do
   grep -qi 'verdict' "skills/$s/SKILL.md" \
     || { echo "FAIL verdict: skills/$s/SKILL.md never states its verdict stance"; fail=1; }
@@ -381,7 +381,7 @@ fi
 #     find/awk→Read/Glob precedent), so it is off this allowlist entirely; and
 #     `gh auth status` was narrowed to an exact grant (no `:*`) so `--show-token`
 #     cannot be appended to print a live token.
-READONLY_SKILLS="secure health design-audit audit resume migrate-check"
+READONLY_SKILLS="secure health design-audit audit resume migrate-check why"
 SAFE_TOOLS="Read|Grep|Glob"
 # Audited union of Bash grants across the six skills above (2026-08-03). Every
 # entry read-only in its DOCUMENTED use; the git log/diff residual above is the

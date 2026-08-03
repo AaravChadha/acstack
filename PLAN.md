@@ -985,7 +985,7 @@ reordered, if any.
   tautological assert, and a test that passes against deliberately broken
   code, `/audit tests` names all three; on a clean suite it returns no
   findings. (That seeded suite is this target's positive control, 4.15.)
-- [ ] **4.11** /why — decision archaeology (*originally wave 5; settled here by the 2026-07-29 split*). Answers "why is this code like this" from BRIEF
+- [x] **4.11** *(Done 2026-08-03 — the 21st skill. Search order BRIEF → dated PLAN verdicts → JOURNAL → git history, stop at the first REAL answer (one stating a reason, not just what changed), never invent a rationale, never infer intent from the implementation. Both acceptance halves demonstrated: the order finds PLAN 3.7's 2026-07-27 /health verdict WITH its reason at PLAN.md:326, and a decision with no record returns empty from all four sources → `no recorded rationale`. **Deviation from this spec, deliberate:** it uses `git log -S`/`-L` rather than `git blame` — `git blame --output=FILE` was tested and WRITES, so granting it would have widened the very write-capable residual §13 narrowed the same day; git log is already granted and does the same archaeology. Enrolled in READONLY_SKILLS (caught by §13a's forcing function on first run) and REPORT_SKILLS. 20 → 21 skills; matrix 79.)* /why — decision archaeology (*originally wave 5; settled here by the 2026-07-29 split*). Answers "why is this code like this" from BRIEF
   constraints → dated PLAN decision blocks → JOURNAL entries → git blame,
   in that order, stopping at the first real answer and stating "no
   recorded rationale" when there is none. The payoff for three waves of

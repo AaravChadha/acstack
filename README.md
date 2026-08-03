@@ -21,6 +21,7 @@ machine state.
 | `/ticket` | Capture a brain-dump as a well-formed work item — GitHub issue or PLAN.md task; unknowns marked TBD, never invented | `/ticket "…"` |
 | `/investigate` | Root-cause before any fix: minimal repro, hypotheses vs evidence, three-strikes stop rule | `/investigate "500 on save"` |
 | `/resume` | Five-minute catch-up: where the project is, divergence flags, next 3 unblocked tasks | `/resume` |
+| `/why` | Decision archaeology: why is this like this — BRIEF constraints → dated PLAN verdicts → JOURNAL → git history, stopping at the first real answer and saying "no recorded rationale" rather than inventing one | `/why "the /health name"` |
 | `/triage` | Backlog hygiene: stale, dupes, missing acceptance, ready work, milestone burn — report first, apply on approval | `/triage` |
 | `/journal` | End-of-session JOURNAL.md entry: exact bugs, before→after numbers, eval failure classification, PLAN.md sync | `/journal` |
 | `/audit` | code: evidence-led defect report · docs: doc-says/reality-is drift check · eval: failure classification + never-inflate rule | `/audit code src/` |
@@ -41,7 +42,7 @@ git clone https://github.com/AaravChadha/acstack.git acstack
 cd acstack && ./setup      # clone anywhere; setup links from where it lives
 ```
 
-Start a new Claude Code session; the twenty skills above load as slash
+Start a new Claude Code session; the twenty-one skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 
