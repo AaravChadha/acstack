@@ -13,6 +13,47 @@ Wave 4, distribution + launch. Every item below is built and the repo went
 has been cut as a tagged release — a deliberate step, deferred while the
 pack stabilizes through post-launch shakedowns and wave-4.5 hardening.
 
+### Post-launch hardening (wave 4.5, in progress — 2026-08-03)
+
+Shipped to `main` after the public flip; pull to get it. **If you already
+have the pack installed, re-run `./setup` after pulling** — a pull alone
+leaves any newly added skill unlinked and invisible, which is exactly how
+`/why` shipped and reached nobody until it was caught.
+
+- **New skill:** `/why` — decision archaeology. Answers "why is this like
+  this" from BRIEF constraints → dated PLAN verdicts → JOURNAL → git
+  history, stops at the first answer that states a *reason*, and says
+  `no recorded rationale` rather than inventing one.
+- **New skill:** `/refactor` — behavior-preserving cleanup with proof:
+  green before, green after, **same test count**. Stops on a dirty tree, a
+  red baseline, or a suite too thin to notice a behavior change.
+  **22 skills total.**
+- **New `/audit` target:** `tests` — finds tests that pass without
+  catching (assertion-free, tautological, mocks stubbing the unit under
+  test, unread snapshots, accumulating skips) plus a mutation spot-check
+  that breaks the code deliberately to prove the suite can fail.
+- **`/do` climbs a simplicity ladder before writing** — need it at all? →
+  already in the codebase? → stdlib? → platform? → installed dependency? →
+  one line? → minimal solution. Never at the cost of validation, error
+  handling, security, or accessibility.
+- **Read-only skills are genuinely narrower.** `git grep` was dropped from
+  all four skills that had it (its `-O` flag runs an arbitrary program);
+  they use the read-only Grep tool, with plain `grep -rnE` as the stated
+  fallback. The `gh auth status` grant was narrowed so `--show-token`
+  cannot be appended. Remaining residual is documented in `check.sh` §13.
+- **Fewer false alarms:** `/health` and `/secure` now label a repo's own
+  seeded test fixtures as `seeded control (fixture)` instead of reporting
+  them as defects — labeled and still listed, never hidden. `/health` also
+  stops flagging a deliberately external BRIEF when the plan records where
+  it lives.
+- **Honest declines:** `/migrate-check` opens with "no database in this
+  project" when there is genuinely none, instead of reaching that answer
+  through a failed stack lookup.
+- Guards grew 16 → **22 checks** and the seeded-defect matrix 68 → **82
+  cases**, including a new class for PCRE escapes in POSIX-ERE greps —
+  `\b`, `\s`, and `\1` each make a check match *nothing* while reporting
+  clean, and this pack shipped all three.
+
 - **New skill:** `/eval-run` — executes a golden set, writes a per-case
   results file, and computes the headline from that file. Closes the
   loop `/eval-spec`, `/audit eval`, and `/ship`'s eval gate all assumed.
