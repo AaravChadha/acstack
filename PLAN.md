@@ -1340,7 +1340,7 @@ reordered, if any.
 > disambiguating suffix) is already owned by **4.18(a)**, so it gets no
 > new task.
 
-- [ ] **4.33** Correct `/health`'s stale wave-4 forward-reference.
+- [x] **4.33** *(Done 2026-08-03: re-pointed to 4.3/4.4 — wave 4 closed without adding those checks. Verified the other direction too: every numbered /health check 1–9 has a matching health-checks.md section.)* Correct `/health`'s stale wave-4 forward-reference.
   `skills/health/SKILL.md:104-105` says VERSION/update-check-freshness and
   conduct-in-global rows "are added by [wave 4]"; wave 4 closed without
   adding them (they are 4.3 / 4.4 items), so the sentence promises checks
@@ -1349,7 +1349,7 @@ reordered, if any.
   added-by-wave-4 — either the rows exist, or the wording says they are
   pending (4.3/4.4); a doc-vs-reference check confirms every row /health's
   prose names exists in health-checks.md.
-- [ ] **4.34** Fixture vocabulary for `/health` and `/secure` run on the
+- [x] **4.34** *(Done 2026-08-03: seeded-control rule in the canonical secrets section + check 3c — a hit under a fixtures/ root that a controls script references is LABELED `seeded control (fixture)`, never suppressed; still listed with file:line and a count. Never applies outside the root; a live-looking value stays a finding anywhere. controls.sh proves BOTH directions and the fail-first turns the predicate into a blanket suppressor.)* Fixture vocabulary for `/health` and `/secure` run on the
   pack itself. Run on acstack, both flag the pack's own seeded controls —
   `fixtures/health/.env`, the planted keys in `fixtures/secure/config.js`,
   the `fixtures/multi-product` document sets — as ✗ issues, defused only
@@ -1360,7 +1360,7 @@ reordered, if any.
   seeded-control hits, not defects — without suppressing a real hit
   outside that root (prove both directions with a planted real-looking
   secret outside `fixtures/`).
-- [ ] **4.35** Decide `CHANGELOG.md`'s release heading now that the repo
+- [x] **4.35** *(Verdict 2026-08-03: keep **unreleased** — no 0.4.0 was cut as a tagged release; public availability is not a version cut. Also fixed two lines the flip had made false: "1.0.0 is the public flip" and "unreleased until the repo is made public". check.sh §6 still passes.)* Decide `CHANGELOG.md`'s release heading now that the repo
   is public. Its top heading is `## 0.4.0 — unreleased` on a public repo —
   defensible (public ≠ released) but an undeliberated default.
   **Acceptance:** a recorded verdict — cut 0.4.0 as released (date the
@@ -1374,7 +1374,7 @@ reordered, if any.
 > shakedown entry; finding 1 (the /do↔/audit phase contradiction) was
 > fixed directly, not carried.
 
-- [ ] **4.36** Runtime preamble runs per-invocation, not per-session. The
+- [x] **4.36** *(Verdict 2026-08-03 — option A′: no session marker (that adds machine-local state the pack minimises). Made recall cheaper instead — class NAMES + a pointer, not the full text; cap 6KB → 3KB. Output ~4.2KB → **522 bytes**, all 9 classes retained, fresh every invocation.)* Runtime preamble runs per-invocation, not per-session. The
   marker-fenced block runs `acstack-config` + `acstack-recall` (~6KB of
   known-bug-classes) on every skill invocation — 4× in one shakedown; the
   model improvised suppressing the repeats. `acstack-update-check` is
@@ -1384,19 +1384,19 @@ reordered, if any.
   pack's minimal-machine-state stance — the stamp is the only precedent),
   or an explicit decision that per-invocation recall is acceptable and the
   preamble comment says so. No silent 4×-per-session waste.
-- [ ] **4.37** BRIEF.md absence is invisible to the write-path skills. A
+- [x] **4.37** *(Verdict 2026-08-03: deliberately **/health's job alone** — its Docs check already flags a missing BRIEF; /do needs only PLAN and /journal only the log, so duplicating the nag in every write-path skill is scope creep. No code change; the status quo is correct and now recorded.)* BRIEF.md absence is invisible to the write-path skills. A
   fresh repo went empty → committed → journaled with no skill asking what
   the project is; only `/health` flags a missing BRIEF. **Acceptance:** a
   recorded verdict — either `/do` and `/journal` note a missing BRIEF once
   (without blocking; /do needs only PLAN), or it is deliberately /health's
   job alone and that is stated. Not "silently fine" by default.
-- [ ] **4.38** `/journal`'s first-entry case is unspecified.
+- [x] **4.38** *(Done 2026-08-03: step 1 spells out the first-entry case — full log, said as such.)* `/journal`'s first-entry case is unspecified.
   `skills/journal/SKILL.md:57` says "`git log` since the last journal
   commit" — undefined when no journal commit exists yet (the model used
   the full log and said so). **Acceptance:** the skill's step 1 covers the
   first-entry case explicitly (full log, stated); demonstrated on a repo
   with no prior journal commit.
-- [ ] **4.39** `/migrate-check`'s no-database decline is indirect. On a
+- [x] **4.39** *(Done 2026-08-03: step-1 no-database autodetect — fires ONLY when db: is unset and every signal is absent; any one signal or an explicit db: keeps shared-prod strictness. fixtures/migrate-check-no-db/ + an inverted control (the fixture's value is the ABSENCE), shown failing three ways.)* `/migrate-check`'s no-database decline is indirect. On a
   repo with no DB at all it defaults `db:` to `shared-prod` and stops at
   "can't find the migration stack" rather than "this project has no
   database". Honest, but reached the long way. **Acceptance:** a repo with

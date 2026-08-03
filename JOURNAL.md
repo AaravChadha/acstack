@@ -20,7 +20,7 @@
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
 > CONTRIBUTING, README v2). check.sh 6 → **19 checks** (16 numbered + 3b + 3c + 13a); guard-matrix
-> 15 → **77 cases**; **20 skills**. Five review rounds ran; the last
+> 15 → **78 cases**; **20 skills**. Five review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -37,7 +37,7 @@
 - Working tree clean; `scripts/check.sh` all clean (**16** numbered
   sections plus 3b, 3c and 13a = 19 checks, including positive controls over
   seeded `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
-  (**77** cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
+  (**78** cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI
   green run 30765510782). 4.7's ten checklist items were all demonstrated
@@ -71,7 +71,7 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard (19 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 77 seeded-defect cases proving the guards fire
+bash docs/guard-matrix.sh "$PWD"   # 78 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty skills load at start
 ```
 
@@ -83,11 +83,83 @@ bash docs/guard-matrix.sh "$PWD"   # 77 seeded-defect cases proving the guards f
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 2/17 | 4.16 + 4.13 done (commit-format verdict emitted with a check.sh §16 guard; /health check 9 for agent-instruction quality). Remaining: telemetry, `setup --global`, /audit tests, /why, /refactor, degradation paths, the 6 survey items, + 3 carriers 4.33–4.35 from the 2026-08-03 live shakedown |
+| 4.5 — Post-launch hardening | 🔶 9/21 | Done: 4.16 (commit-format emitted + §16 guard), 4.13 (/health agent-instruction check), and Phase 1 — 4.33, 4.34, 4.35, 4.36, 4.37, 4.38, 4.39 (stale refs, seeded-control labeling, CHANGELOG verdict, cheaper recall, BRIEF verdict, journal first-entry, no-DB autodetect). Remaining 12: telemetry, `setup --global`, /audit tests, /why, /refactor, degradation paths, the 6 survey items, + 4.40 the pre-code YAGNI gate |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Phase 1 — honesty and trust: seven items, four of them verdicts (2026-08-03, late)
+
+A second live shakedown (write-path skills) and an external survey set the
+agenda; Phase 1 cleared everything adopter-facing that was stale, missing, or
+noisy. **Wave 4.5: 2 → 9 of 21 done.** Matrix 77 → **78**.
+
+**The second shakedown first.** A fresh session drove /do, /journal,
+/audit docs and /migrate-check in a throwaway repo. **The write-path skills
+work**: verified from disk, /do produced `task 1.1: create greeting.txt with
+hi` — **4.16 confirmed live** — ticked exactly box 1.1, really ran the
+acceptance, stopped at a local commit (**4.25 confirmed**), and left no
+attribution trailer (the pack's `attribution=none` beating the harness
+default). /journal wrote a real entry; /audit verified its own claims;
+/migrate-check declined without inventing a verdict. Its one structural
+finding was a genuine contradiction: **/do refuses to flip a phase heading
+without a passing exit criterion, so a phase declaring none could never
+flip — and /audit then flags that same unflipped box as drift, forever.**
+Both sides reconciled (`819d013`): /do flips a criterion-less phase once its
+children are checked; /audit scopes its rule to subtask boxes and treats a
+held-open phase as /do's gate, not drift.
+
+**External survey (Karpathy ~199k★ · ponytail ~93k★ · Boris Cherny's
+config).** All three attack over-engineering. Karpathy's four principles are
+what acstack already *encodes* — "Surgical Changes" is /do's scoped-execute,
+"Goal-Driven Execution" is the acceptance spine — but as prose with **zero
+enforcement**. Boris's `/grill`, `staff-reviewer`, `code-simplifier` are
+shapes acstack already ships, which is useful validation from Claude Code's
+own creator. **One real gap found and carried as 4.40:** /simplify is
+POST-hoc, and ponytail's rung 1 — "does this need to exist at all?" — is
+upstream of any cleanup. Declined by name: multi-agent adapters (the
+Claude-Code-only lock), worktree parallelism (harness territory), always-on
+prose injection (prose decays — check.sh is the answer). **The strategic
+read, recorded because it should shape the roadmap:** a single prose
+CLAUDE.md is pulling ~199k★ against every comprehensive pack. The market
+rewards one sharp idea, not breadth — evidence for sharpening PRINCIPLES.md
+as the front door over racing to 39 skills.
+
+**The four verdicts (decisions, not fixes — recorded so they stop recurring):**
+**4.35** CHANGELOG stays `unreleased` — no 0.4.0 was cut; public
+availability is not a version cut (and two lines the flip had made false
+were corrected). **4.37** BRIEF-absence is deliberately **/health's job
+alone**; duplicating the nag in every write-path skill is scope creep.
+**4.36 (option A′)** no session marker — that adds machine-local state the
+pack minimises; recall was made *cheaper* instead: class NAMES plus a
+pointer rather than full text, cap 6KB → 3KB, output **~4.2KB → 522 bytes**
+with all 9 classes retained. It incidentally pre-implements 4.29's
+read-headings-then-fetch discipline. **4.33** /health's promise of checks
+"added by wave 4" — a wave that closed without them — re-pointed to 4.3/4.4.
+
+**Two builds, both with controls proven failing first.** **4.39**:
+/migrate-check now opens with "no database in this project" when `db:` is
+unset and *every* signal is absent; any single signal or an explicit `db:`
+keeps shared-prod strictness — absence of everything is the only trigger.
+Its fixture uses an **inverted control** (the fixture's value is the
+ABSENCE, so the assertion is "still nothing here"), shown failing three
+ways. **Review caught a self-inflicted false positive**: the fixture's own
+prose spelled `DATABASE_URL` and tripped the grep — the fixture was reworded
+rather than the grep narrowed, because a loud false positive beats a quiet
+false pass. **4.34**: /health and /secure now label a hit under a
+`fixtures/` root that a controls script references as `seeded control
+(fixture)` — **a label, never a suppression**: still listed with file:line
+and a stated count, never applied outside the root, and a live-looking value
+stays a finding wherever it sits, so parking a real secret under `fixtures/`
+buys no silence. Its control proves **both** directions, because a labeling
+rule that never says "finding" is a suppressor in disguise; the fail-first
+turns the predicate into a blanket suppressor and watches direction two
+fail.
+
+Validation close: check.sh **19 checks**, all clean; guard-matrix 77 →
+**78**, every new case shown failing first; controls all plants caught; 20
+skills; wave 4.5 **9/21**. Eight commits, `259cee9` → `1b4f214`.
 
 ### Wave 4.5 opens: 4.16, the first live shakedown, and the hole it found in the day's own fix (2026-08-03, post-flip)
 
