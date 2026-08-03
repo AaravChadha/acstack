@@ -119,6 +119,7 @@ if [ -d fixtures/design-audit ]; then
   ai_check "layout-animation" "git grep -nE 'transition:[^;]*(width" fixtures/design-audit/motion.css
   ai_check "backdrop-filter" "git grep -nE 'backdrop-filter" fixtures/design-audit/motion.css
   ai_check "sticky-chrome"   "git grep -nE 'position:[[:space:]]*sticky'" fixtures/design-audit/motion.css
+  ai_check "accent-stripe"   "git grep -nE 'border-left:" fixtures/design-audit/motion.css
   # the reduced-motion plant is an ABSENCE: motion present, media query gone
   if grep -qE 'transition:|@keyframes' fixtures/design-audit/motion.css \
      && ! grep -q 'prefers-reduced-motion' fixtures/design-audit/motion.css; then

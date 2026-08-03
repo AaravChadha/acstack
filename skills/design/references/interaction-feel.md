@@ -123,7 +123,51 @@ Visual, sound and haptic land on the **same frame**. A haptic 80ms after
 the visual is worse than no haptic: it reads as a second, unexplained
 event.
 
-## 9. Reduced-motion, transparency and contrast are THREE signals
+## 9. Naming motions — the reverse lookup
+
+People describe motion by its *effect*, not its name: "the bouncy thing when
+a popover opens", "make it feel snappier". Without shared names the
+conversation loops. Translate the description into a named motion, say the
+name back, and build that.
+
+| What they describe | The motion | What it is |
+|---|---|---|
+| "bouncy thing when it opens" | **Pop in** | Scale from ~0.9 with a spring that overshoots slightly |
+| "grows out of the button" | **Origin expand** | Scale from the trigger's `transform-origin` |
+| "slides up from the bottom" | **Sheet** | Y-translate with a drawer spring (0.8 / 0.3) |
+| "fades but also moves a bit" | **Fade-rise** | Opacity plus a small Y-translate — the default entrance |
+| "snappy" | **Shorter response, same damping** | Not "faster duration" |
+| "smoother" | **Higher damping** | Removes overshoot; it is not about speed |
+| "springy / alive" | **Lower damping** | Overshoot — earn it with a gesture first |
+| "it jumps" | **Interrupt bug** | Animating from the model value, not the presentation value (§3) |
+| "laggy" | **Duration over ~300ms**, or work on the main thread |
+
+Naming it converts a taste argument into a parameter change.
+
+## 10. Where motion belongs — propose, never sprinkle
+
+Motion is **proposed** at specific moments, not applied as a layer. Each
+candidate must answer *what does this tell the user?* If the answer is
+"nothing, it looks nice", it is decoration — cut it (see delight vs whimsy
+in SKILL.md).
+
+The moments that genuinely earn motion:
+
+- **State changes that would otherwise pop** — appearing, disappearing,
+  reordering. Motion carries continuity so the user tracks the object.
+- **Causality** — the popover growing from its trigger says *this caused
+  that*.
+- **Direct manipulation** — anything under the finger (§2).
+- **Boundaries and limits** — rubber-banding says "this is the end".
+- **Continuity across a route or layout change** — a shared element moving
+  rather than two unrelated screens.
+- **Feedback on an action whose result is not instant** — the only honest
+  use of a loading animation.
+
+Everywhere else — decorative loops, entrance animations on static content,
+hover flourishes on non-interactive elements — the default is **no motion**.
+
+## 11. Reduced-motion, transparency and contrast are THREE signals
 
 They are independent preferences and must be handled separately:
 

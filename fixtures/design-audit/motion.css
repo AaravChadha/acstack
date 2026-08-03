@@ -42,3 +42,10 @@
   top: 0;
   border-bottom: 1px solid #e5e7eb;
 }
+
+/* PLANT: the generated callout — rounded card with a left accent stripe,
+   used for every note, tip and warning alike */
+.callout {
+  border-radius: 12px;
+  border-left: 4px solid #8b5cf6;
+}

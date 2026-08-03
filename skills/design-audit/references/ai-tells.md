@@ -84,6 +84,7 @@ Individually defensible; together they are the tell.
 | Cards nested inside cards | Border inside border inside border |
 | Icon-tile feature grids | 3- or 4-up grid, each cell an icon over a bold line |
 | Pulsing dots and glow rings | `animate-pulse` on decorative elements |
+| Rounded card with a left accent stripe | The generated "callout": `border-left: 4px solid <accent>` on a rounded card, used for every note, tip and warning alike |
 | Em-dash overuse in UI copy | More em dashes than sentences |
 
 ```bash
@@ -93,6 +94,7 @@ git grep -nE '(bg-clip-text|background-clip:[[:space:]]*text)'
 git grep -niE 'class(Name)?="[^"]*(eyebrow|kicker|overline)'
 git grep -nE '>[[:space:]]*0[1-9][[:space:]]*(—|-|\.)[[:space:]]*[A-Z]'
 git grep -nE 'animate-pulse'
+git grep -nE 'border-left:[[:space:]]*[0-9]+px[[:space:]]*solid|border-l-[248]'
 git grep -niE '(ai|assistant|magic|intelligen)[^<>]{0,40}(orb|blob|glow)|(orb|blob)[^<>]{0,40}gradient'
 ```
 
