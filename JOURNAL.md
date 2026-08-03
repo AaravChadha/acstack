@@ -19,8 +19,8 @@
 > preamble + `bin/` helpers, CI, dry-run honesty, `allowed-tools`, the
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
-> CONTRIBUTING, README v2). check.sh 6 → **22 checks** (19 numbered + 3b + 3c + 13a); guard-matrix
-> 15 → **82 cases**; **22 skills**. Five review rounds ran; the last
+> CONTRIBUTING, README v2). check.sh 6 → **24 checks** (21 numbered + 3b + 3c + 13a); guard-matrix
+> 15 → **89 cases**; **23 skills**. Five review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -35,9 +35,9 @@
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean (**16** numbered
-  sections plus 3b, 3c, 13a, 18 and 19 = 22 checks, including positive controls over
+  sections plus 3b, 3c and 13a = 24 checks, including positive controls over
   seeded `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
-  (**82** cases); `./setup` links **22**. Banned-name list is untracked (`.acstack-banned`) — copy
+  (**89** cases); `./setup` links **23**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI
   green run 30765510782). 4.7's ten checklist items were all demonstrated
@@ -70,9 +70,9 @@
 ```bash
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
-scripts/check.sh   # pack guard (22 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 82 seeded-defect cases proving the guards fire
-# then start a new Claude Code session; the twenty-two skills load at start
+scripts/check.sh   # pack guard (24 checks, runs controls) — clean before any commit
+bash docs/guard-matrix.sh "$PWD"   # 89 seeded-defect cases proving the guards fire
+# then start a new Claude Code session; the twenty-three skills load at start
 ```
 
 ## What's been built
@@ -83,11 +83,108 @@ bash docs/guard-matrix.sh "$PWD"   # 82 seeded-defect cases proving the guards f
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 16/22 | Done: 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, **4.18 degradation paths**, **4.41 preamble auditability**, **4.29 retrieval discipline**. Remaining 6: the design lane (4.27 → 4.30), 4.28 skill hygiene, 4.32 triage clustering, plus 4.3/4.4 (deliberately adopter-gated) |
+| 4.5 — Post-launch hardening | 🔶 20/22 | **All buildable work done.** 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**. Remaining 2: 4.3 telemetry and 4.4 `setup --global` — both deliberately gated on real adopters, not blocked |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### The design lane, and wave 4.5's buildable work closes at 20/22 (2026-08-04, later)
+
+**Wave 4.5: 16 → 20 of 22.** Skills 22 → **23**; check.sh 22 → **24**;
+matrix 82 → **89**. Six commits, `7c87fca` → `062ec05`. The two that remain
+(4.3 telemetry, 4.4 `setup --global`) are **deliberately gated on adopters**,
+not blocked — PLAN says so and nothing here changes that.
+
+**4.27 — `ai-tells.md`, 20 rule classes.** Six sections in a FIXED severity
+order: accessibility, then honesty, then everything else, regardless of hit
+count — a violet gradient is embarrassment, unreadable text and a fabricated
+statistic are harm. Every class has a seeded plant and an extracted-pattern
+control. **Both acceptance clauses verified**: each grep catches its seed,
+and the clean tree stays quiet. Two defects caught on the controls' first
+run — the popover pattern matched CSS `transform-origin` but not JSX
+`transformOrigin` (a real coverage gap, since production code has both), and
+the motion fixture's own comment spelled `prefers-reduced-motion` while
+explaining its absence.
+
+**4.30 — `/design`, the 23rd skill.** Deliberately not another looks skill:
+the four surveyed design repos are about palette and type, and that is not
+where generated UI fails. It fails past the happy path. So the spine is
+eight production-readiness items, a design answering seven is reported
+INCOMPLETE with the gap named, and **a style dial can never lower the
+floor** — `variance: bold` changes the look, it does not licence skipping
+the error state. DTCG tokens in three layers, wireframe before code,
+self-critique naming the AI-default look avoided. check.sh §20 guards the
+spine; **its own fail-first probe caught the guard matching bare words**,
+which stayed green when a body item was deleted because the frontmatter
+description repeats them.
+
+**Shakedown 6 ran the pair, and 4.30's acceptances passed** — verified from
+disk: genuine DTCG (37 `$value`/`$type`), all eight items answered or named
+as an explicit GAP with none silently skipped, error+rollback designed and
+EXERCISED unprompted, and **/design-audit found zero slop tells in /design's
+own output**. The generator avoided exactly what its detective hunts. It
+also found three real defects, since fixed: /design shipped **token drift**
+(two dark-theme values absent from the tokens.json it declared the source of
+truth — it demanded tokens-first with no CLOSING check), "self-critique
+BEFORE coding" was **unauditable** because the report shape put it after the
+artifact, and the honesty greps had a **synonym hole** (`mock|fake|sample`
+does not match a "stand-in", so a `save()` that persists nothing while
+rendering "Saved" was caught only by judgment).
+
+**A set claim that was false when I made it.** Asked whether everything from
+the surveyed design repos had landed, enumerating the routing list against
+the tree found **three items missing from tasks already ticked** — emil's
+`animation-vocabulary` and `find-animation-opportunities`, and jiji262's
+accent-stripe tell. The near-miss is the lesson: a grep for `vocabulary`
+matched interaction-feel.md and *looked* like proof; it was that word in a
+sentence about CSS APIs. **Enumerating a set by grepping one word is how a
+set claim passes while its members are absent.**
+
+**4.28 — the skill-hygiene rule set**, five rules across five skills in one
+commit because splitting them leaves the pack inconsistent about what it
+will report. /audit gained a do-not-flag blocklist with the bar in one
+sentence — *a finding names a consequence and the input that produces it*;
+/audit and /qa ask whether the target needs the pass at all; /secure demotes
+on a written justification rather than deleting; /ship writes one comment
+per issue and suggests only a full fix; /do states what its evidence does
+NOT establish. §21 keeps the set whole, and this guard matters more than
+most: **every rule works by suppressing noise, so dropping one is invisible
+in a green run** — nothing fails, the reports just quietly get worse.
+
+**4.32 — root-cause clustering for /triage**, the global pass its local
+sweeps cannot do: twelve items sharing one cause contain no duplicate pair.
+A cluster needs a stated CAUSE, not a shared topic, tested by one sentence —
+would fixing it close every member? **The negative half is load-bearing**: a
+clustering step that always finds clusters is astrology, so an independent
+backlog returns "no root-cause groups found" as a real result. Both
+directions seeded — 8 tasks over 3 causes each with its OWN acceptance (so
+no two are duplicates and a pairwise check finds nothing), and 6 genuinely
+unrelated tasks where any grouping is a false positive.
+
+**`fixtures/design/` — the input 4.30 always assumed.** Its acceptance reads
+"on a seeded generic page" and that page did not exist, so every run needed a
+hand-built scratch repo. INPUT fixture only: **no "after" page**, because a
+canonical good build would become the house style 4.30's ruling rejects —
+and every fixture in this pack is an example of what is WRONG, which cannot
+be cargo-culted and is mechanically testable.
+
+**The recurring trap became a bug class.** A fixture's prose naming the token
+its own control greps for has now bitten three times — `DATABASE_URL`,
+`prefers-reduced-motion`, `rollback`. It is a known bug class, so recall
+carries it to every skill invocation. The rule: **fix the fixture, never
+narrow the grep** — narrowing trades a loud false positive for a quiet false
+negative.
+
+**Docs swept for staleness at wave close**, since four documents had drifted:
+ARCHITECTURE (22 → 24 checks, 82 → 89 cases), CONTRIBUTING (the same check
+count), the JOURNAL skeleton, and the CHANGELOG — which had no mention of
+/design, ai-tells, /audit tests, the hygiene set or clustering, making the
+one file adopters read to learn what changed the one file that did not say.
+
+Validation close: check.sh **24 checks** (21 numbered + 3b/3c/13a), all
+clean; guard-matrix **89 cases**, no BAD; controls **71** passing, all plants
+caught; **23 skills**; wave 4.5 **20/22**.
 
 ### Degradation paths, an auditable preamble, and the docs that were quietly lying (2026-08-04)
 

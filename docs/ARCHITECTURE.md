@@ -146,7 +146,7 @@ rule `/secure` applies to any untrusted-in-trusted-position path.
 
 Three layers, each answering a different question.
 
-**`scripts/check.sh` — is the pack internally consistent?** Nineteen numbered sections plus 3b, 3c and 13a — **22 checks**; the header comment is their single enumeration, updated in the
+**`scripts/check.sh` — is the pack internally consistent?** Twenty-one numbered sections plus 3b, 3c and 13a — **24 checks**; the header comment is their single enumeration, updated in the
 same commit as any new section (that list went stale twice when copies
 lived elsewhere). It covers principles-block byte-identity, banned
 names, frontmatter parsing and description safety, POSIX-ERE hazards in
@@ -167,7 +167,7 @@ produce 6/7 (85.7%), and it also asserts that every case excluded
 from the denominator is NAMED — silent exclusion moves no percentage,
 so it is invisible in the number alone.
 
-**`docs/guard-matrix.sh` — does each guard fire?** 82 cases, each
+**`docs/guard-matrix.sh` — does each guard fire?** 89 cases, each
 seeding one defect into a copy of the real tree and asserting the
 expected failure class, plus must-pass cases so a guard cannot pass by
 failing everything. **Extend the matrix first, watch the case fail, then

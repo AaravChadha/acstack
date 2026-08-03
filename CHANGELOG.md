@@ -24,10 +24,36 @@ leaves any newly added skill unlinked and invisible, which is exactly how
   this" from BRIEF constraints → dated PLAN verdicts → JOURNAL → git
   history, stops at the first answer that states a *reason*, and says
   `no recorded rationale` rather than inventing one.
+- **New skill:** `/design` — production-grade UI rather than a mockup. DTCG
+  token system first, wireframe before code, then eight production-readiness
+  items every interactive surface must answer (all states including error
+  and rollback, real content, responsive, accessibility, interaction feel,
+  theming, performance, UX writing). An unanswered item is reported as a
+  named gap, never silently skipped. Style is yours via `variance` /
+  `motion` / `density` dials; the readiness floor is not negotiable.
+  **23 skills total.**
+- **`/design-audit` gained `references/ai-tells.md`** — twenty rule classes
+  for the signature of generated UI, in a fixed severity order:
+  accessibility, then honesty, then everything else. Violet gradients,
+  eyebrows, fabricated statistics, motion bounds, materials/translucency
+  and interaction-feel misses, each with a seeded plant proving its check
+  fires. New `banned-palette` config key.
+- **Quieter, sharper reviews.** `/audit` now checks a do-not-flag list
+  before writing any finding (pre-existing issues outside the diff,
+  correct-but-unusual code, pedantic nitpicks, anything a linter catches,
+  explicitly silenced lines); `/audit` and `/qa` both ask whether the target
+  needs the pass at all; `/secure` treats a written justification as
+  demoting a finding to worth-hardening with the reason quoted, never
+  deleting it; `/ship` writes one comment per issue and only offers a code
+  suggestion that fully fixes; `/do` states what its evidence does and does
+  not establish.
+- **`/triage` clusters a backlog by root cause** — the global pass its
+  local sweeps cannot do, since twelve items sharing one cause contain no
+  duplicate pair. A cluster needs a stated cause and per-member evidence,
+  and an independent backlog correctly returns nothing.
 - **New skill:** `/refactor` — behavior-preserving cleanup with proof:
   green before, green after, **same test count**. Stops on a dirty tree, a
   red baseline, or a suite too thin to notice a behavior change.
-  **22 skills total.**
 - **New `/audit` target:** `tests` — finds tests that pass without
   catching (assertion-free, tautological, mocks stubbing the unit under
   test, unread snapshots, accumulating skips) plus a mutation spot-check
@@ -49,7 +75,7 @@ leaves any newly added skill unlinked and invisible, which is exactly how
 - **Honest declines:** `/migrate-check` opens with "no database in this
   project" when there is genuinely none, instead of reaching that answer
   through a failed stack lookup.
-- Guards grew 16 → **22 checks** and the seeded-defect matrix 68 → **82
+- Guards grew 16 → **24 checks** and the seeded-defect matrix 68 → **89
   cases**, including a new class for PCRE escapes in POSIX-ERE greps —
   `\b`, `\s`, and `\1` each make a check match *nothing* while reporting
   clean, and this pack shipped all three.
