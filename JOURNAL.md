@@ -19,8 +19,8 @@
 > preamble + `bin/` helpers, CI, dry-run honesty, `allowed-tools`, the
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
-> CONTRIBUTING, README v2). check.sh 6 → **19 checks** (16 numbered + 3b + 3c + 13a); guard-matrix
-> 15 → **81 cases**; **22 skills**. Five review rounds ran; the last
+> CONTRIBUTING, README v2). check.sh 6 → **22 checks** (19 numbered + 3b + 3c + 13a); guard-matrix
+> 15 → **82 cases**; **22 skills**. Five review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -35,9 +35,9 @@
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean (**16** numbered
-  sections plus 3b, 3c and 13a = 19 checks, including positive controls over
+  sections plus 3b, 3c, 13a, 18 and 19 = 22 checks, including positive controls over
   seeded `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
-  (**81** cases); `./setup` links **22**. Banned-name list is untracked (`.acstack-banned`) — copy
+  (**82** cases); `./setup` links **22**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI
   green run 30765510782). 4.7's ten checklist items were all demonstrated
@@ -70,8 +70,8 @@
 ```bash
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
-scripts/check.sh   # pack guard (19 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 81 seeded-defect cases proving the guards fire
+scripts/check.sh   # pack guard (22 checks, runs controls) — clean before any commit
+bash docs/guard-matrix.sh "$PWD"   # 82 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty-two skills load at start
 ```
 
@@ -83,11 +83,96 @@ bash docs/guard-matrix.sh "$PWD"   # 81 seeded-defect cases proving the guards f
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 9/21 | Done: 4.16 (commit-format emitted + §16 guard), 4.13 (/health agent-instruction check), and Phase 1 — 4.33, 4.34, 4.35, 4.36, 4.37, 4.38, 4.39 (stale refs, seeded-control labeling, CHANGELOG verdict, cheaper recall, BRIEF verdict, journal first-entry, no-DB autodetect). Remaining 12: telemetry, `setup --global`, /audit tests, /why, /refactor, degradation paths, the 6 survey items, + 4.40 the pre-code YAGNI gate |
+| 4.5 — Post-launch hardening | 🔶 13/22 | Done: 4.16, 4.13, Phase 1 (4.33–4.39), **4.40** pre-code simplicity ladder, **4.11** /why, **4.10** /audit tests, **4.19** /refactor. Remaining 9: 4.18 degradation paths, the design lane (4.27 → 4.30), 4.28 skill hygiene, 4.29 retrieval discipline, 4.32 triage clustering, 4.41 preamble auditability, plus 4.3/4.4 (deliberately adopter-gated) |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Phases 2–4: two new skills, a test-integrity target, and three guards that caught their own author (2026-08-03, late)
+
+**Wave 4.5: 9 → 13 of 22.** Skills 21 → **22**; check.sh 19 → **22 checks**;
+matrix 78 → **82**. Four items (4.40, 4.11, 4.10, 4.19) plus a shipped-defect
+fix, across seven commits `db1fa21` → `da00f3d`.
+
+**4.40 — the pre-code simplicity ladder** (Phase 2). The external survey's
+one real gap: `/simplify` is post-hoc, and rung 1 — "does this need to exist
+at all?" — is upstream of anything a cleanup can recover. Folded into `/do`'s
+Execute step as a STEP (not always-on prose injection, which the pack rejects
+because prose decays). Rung 5 makes a NEW dependency a decision to surface
+rather than a rung to pass quietly. check.sh **§17** couples the ladder to its
+never-cut floor — validation, error handling, security, accessibility — since
+the real regression is trimming the ladder for brevity and leaving "write less
+code" unbounded.
+
+**4.11 — `/why`, decision archaeology** (Phase 3, 21st skill). BRIEF → dated
+PLAN verdicts → JOURNAL → git history, stop at the first REAL answer (one
+stating a *reason*, not just what changed), never invent, never infer intent
+from the implementation. **Deliberate deviation from its own spec:** it uses
+`git log -S`/`-L`, NOT `git blame` — `git blame --output=FILE` was tested and
+**writes**, inheriting git's diff machinery, so granting it would have widened
+the exact residual §13 narrowed hours earlier.
+
+**4.10 — `/audit tests`, the fourth target** (Phase 4). Five classes of test
+that passes without catching, the last being a mutation spot-check with an
+explicit revert-and-verify rule. The set-claim trap was live: description
+(three → four targets, **re-parsed in the live listing**), argument-hint,
+body, README row — all four together.
+
+**4.19 — `/refactor`** (Phase 4, 22nd skill). Green before, green after,
+**same count**. Three preconditions: clean tree, green baseline recorded, and
+a suite that could actually notice — too thin means STOP and name what to test
+first, which is a success, not a failure to deliver. Count DROPPED is the
+headline finding; compare test NAMES when the count is unchanged, because
+equal totals hide a one-for-one swap. **§19** guards both halves.
+
+**The day's real lesson: three verification layers each caught what the layer
+above missed.**
+
+1. **A positive control caught a defect in its own documented pattern, first
+   run.** `/audit tests`' tautological grep used a `\1` backreference — an
+   *invalid escape* in POSIX ERE, so the grep errors out and matches
+   **nothing**, exactly like `\b`. §3b guarded `\b` and `\s` but not
+   backreferences; the guard was extended and shown failing first. POSIX ERE
+   cannot express "the same identifier twice" at all, so that case is now
+   honestly documented as over-broad and judgment-led.
+2. **The matrix caught a case that only looked proven.** §19's first mutation
+   stripped `same test count` while the guard also accepts `same count` →
+   `got=PASS want=FAIL`. The case never demonstrated the guard firing. The
+   *case* was wrong, not the guard.
+3. **The same hazard bit a third time, one layer up.** The script writing
+   4.10's tick used Python `re.sub`, whose *replacement* string also parses
+   `\1` — and the note text quoted the very hazard being fixed. It raised,
+   the box stayed open, the rest committed clean. Fixed with `str.replace`.
+   One hazard class, three tools, three symptoms, one day.
+
+**A shipped defect, found by shakedown 4 and fixed (`a344034`).** `/why`
+shipped and answered **nobody**: skills reach the harness as symlinks in
+`~/.claude/skills`, and `bin/acstack-update-check` told users `git pull` **and
+nothing else**. Every future release adding a skill would land the same way —
+pulled, present, invisible. It now prints `pull && <pack>/setup` (idempotent,
+so pairing is always safe), guarded by **§18**. The local miss was mine and it
+is the consumed-form rule catching me: I ran `./setup --dry-run`, saw "21
+would be linked", and treated that as verification. **A dry run is not the
+consumed form.**
+
+**Also from shakedown 4, carried not fixed:** 4.41 grew two items — the
+preamble needs `readlink`/`dirname`/`bin` execution that the skills carrying
+it do not grant, and it runs `update-check`, which **writes** the update
+stamp, so the read-only skills' "never writes" prose has an asterisk.
+
+**Behavioral proof gained (shakedown 3).** The ladder pulled **zero**
+dependencies on a date-picker task, stopping at the native platform control
+with validation intact; the exit-criterion-less phase flip fired and
+`/audit docs` accepted it as non-drift; seeded-control labeling kept `/secure`
+and `/health` honest without hiding a path; recall ran at 869 bytes. Three
+shakedowns, three reviewer claims that did NOT survive verification — most
+recently a roster-drift alarm that was a false positive in the reviewer's own
+unanchored grep, not a gap in §14.
+
+Validation close: check.sh **22 checks**, all clean; guard-matrix 78 → **82**,
+every new case shown failing first; controls all plants caught; **22 skills**,
+installed and verified registered; wave 4.5 **13/22**.
 
 ### Phase 1 — honesty and trust: seven items, four of them verdicts (2026-08-03, late)
 
