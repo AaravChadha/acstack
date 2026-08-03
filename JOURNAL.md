@@ -19,8 +19,8 @@
 > preamble + `bin/` helpers, CI, dry-run honesty, `allowed-tools`, the
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
-> CONTRIBUTING, README v2). check.sh 6 → **16 checks** (15 numbered + 3b); guard-matrix
-> 15 → **74 cases**; **20 skills**. Five review rounds ran; the last
+> CONTRIBUTING, README v2). check.sh 6 → **18 checks** (16 numbered + 3b + 13a); guard-matrix
+> 15 → **75 cases**; **20 skills**. Five review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -34,15 +34,15 @@
 - Tickets mode (`tracking: tickets`) is live in /plan and /do — bootstrap,
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
-- Working tree clean; `scripts/check.sh` all clean (**15** numbered
-  sections plus 3b = 16 checks, including positive controls over seeded
-  `fixtures/`); `docs/guard-matrix.sh` proves every guard fires (**74**
-  cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
+- Working tree clean; `scripts/check.sh` all clean (**16** numbered
+  sections plus 3b and 13a = 18 checks, including positive controls over
+  seeded `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
+  (**75** cases); `./setup` links **20**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
-- **Wave 4's work is done.** 4.7's ten checklist items are all
-  demonstrated (evidence ledger, 2026-07-31 entry); its box stays open
-  because its final clause is "only then flip public", and **the flip is
-  the user's call and has not been made.** 4.31 closed
+- **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI
+  green run 30765510782). 4.7's ten checklist items were all demonstrated
+  (evidence ledger, 2026-07-31 entry) and its final clause — "only then
+  flip public" — is now done. 4.31 closed
   2026-07-31 (/secure grew a fifth surface — deserialization, crypto,
   transport — with nine controls demonstrated failing first); 4.5 closed
   the same day with both halves evidenced, including PR #1 shown failing
@@ -51,27 +51,27 @@
   /eval-run, the launch docs — is done with evidence.
 - 4.24 history purge **declined** by verdict 2026-07-30 (roster reviewed:
   non-sensitive company names, first names, already-public project
-  names) — the public flip is gated on the 4.7 checklist only.
+  names) — it did not block the flip, which has since happened.
 - Conduct contract (10 rules) shipped in CONDUCT.md and embedded in this
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
-- Remote live (2026-07-27): private `AaravChadha/acstack`, `main` pushed;
-  public flip waits on the wave-4 launch checklist.
+- Remote live (2026-07-27); **public as of 2026-08-03**, `main` pushed.
 - Roadmap runs to 39 skills, **35 open tasks** (re-counted 2026-07-30
   after batch D): wave 4 (**1**) → 4.5 (post-launch hardening, **13** —
   grew by the eight-repo survey, which also added /design as the 39th
   skill) → 5 (5) → 6 (7) → 7 (4), plus 5 unscheduled browser-layer
   items. Full detail in PLAN.md.
-- Next: **4.7, the launch checklist** — ten demonstrated items, then the
-  public flip. 4.24 (history purge) was declined by verdict, so nothing
-  blocks the flip except the checklist itself.
+- Next: **wave 4.5** (post-launch hardening). 4.16 landed 2026-08-03 (the
+  commit-format verdict now emitted, not just documented); a live
+  first-session shakedown then exercised /resume, /health, /secure and
+  found real gaps to fold into 4.5's order.
 
 ## How to run it right now
 
 ```bash
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
-scripts/check.sh   # pack guard (16 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 74 seeded-defect cases proving the guards fire
+scripts/check.sh   # pack guard (18 checks, runs controls) — clean before any commit
+bash docs/guard-matrix.sh "$PWD"   # 75 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty skills load at start
 ```
 
@@ -82,8 +82,8 @@ bash docs/guard-matrix.sh "$PWD"   # 74 seeded-defect cases proving the guards f
 | 1 — Core + foundation | ✅ | 5 skills (403 SKILL.md lines total, budget 500/each), 9 reference files, setup round-trip verified, guard clean on first run |
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
-| 4 — Distribution + launch | 🔶 14/16 | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Open: 4.5's seeded-PR evidence, 4.7's launch checklist |
-| 4.5 — Post-launch hardening | ⬜ | 14 items: telemetry, `setup --global`, /audit tests, /why, /refactor, degradation paths, plus 6 carried by the 2026-07-30 survey (ai-tells, skill hygiene, retrieval discipline, /design, secure coverage, triage clustering) |
+| 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
+| 4.5 — Post-launch hardening | 🔶 1/14 | 4.16 done (commit-format verdict emitted, + check.sh §16 guard). Remaining: telemetry, `setup --global`, /audit tests, /why, /refactor, degradation paths, plus 6 survey items (ai-tells, skill hygiene, retrieval discipline, /design, secure coverage, triage clustering) |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
