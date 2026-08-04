@@ -89,6 +89,62 @@ bash docs/guard-matrix.sh "$PWD"   # 89 seeded-defect cases proving the guards f
 
 ## Key decisions and journey (so you don't relearn)
 
+### Shakedown 8: twelve skills work, and a shipped claim turned out false (2026-08-04, late)
+
+Eight never-driven skills plus the two regression items from shakedown 7.
+**All twelve worked**, including the two whose *correct* behaviour is
+refusal: `/refactor` stopped at precondition 1 on a dirty tree and named the
+file; `/ship` blocked at gate 1 (dirty tree, on the default branch, zero
+commits ahead) and never reached the push. `/investigate` held its iron law
+— repro before any fix talk, known-bug-classes swept first, root cause at
+`src/stats.py:9`, and it **did not fix**: the seeded median bug was still
+live afterwards, filed as a task instead. `/refactor` also declined to
+smuggle that fix into a cleanup, which was the sharpest test in the round.
+
+Both regression items held: `/triage` produced two parents plus the
+same-cause pair named under `Related pairs`, and `/design-audit` flagged the
+🔔 the old seven-emoji denylist had missed.
+
+**The finding that mattered: a claim in shipped docs was false.** AGENTS.md's
+referral block said `disable-model-invocation: true` means *"an agent cannot
+see or invoke them — it can only mention them."* A session told "type
+/plan seed" **invoked it end to end**. The flag removes a skill from the
+model's LISTING; it does not prevent invocation when the name is supplied.
+Worse, `/plan seed` copies that block verbatim into every adopter repo, so
+the false claim propagated. Reworded to the shape the pack already uses for
+`allowed-tools`: **a discoverability control, not an enforcement boundary** —
+user-initiated by convention, not by mechanism.
+
+Incidental but instructive: **the false claim spans a line break**, so my
+first single-line grep for it returned nothing while the sentence sat in
+plain view. Reading across lines is now how I check prose claims.
+
+Three others fixed: `/plan seed` had **no non-interactive path** — "if the
+user hasn't supplied one, ask" is unexecutable when nobody can answer, so
+the run improvised; it now says mark TBD, list them up front, declare the
+BRIEF incomplete, and never invent a constraint, audience or domain landmine.
+**Two marker grammars** (`acstack:NAME` in skills, `BEGIN:acstack-NAME` in
+shared blocks) caused a real in-session miss, now documented rather than
+unified — the markers are matched by four check.sh sections, `/plan seed`
+and `/health`, and already live in every adopter's AGENTS.md, so renaming
+them would break installed repos to buy tidiness. And `/ship`'s gate 1
+proved "zero commits ahead" with an **empty** `git log`, which is
+indistinguishable from a command that never ran; it now echoes the count
+first so the evidence reads itself.
+
+**Per verification rule 6, these four fixes now owe a live re-test** — they
+are behavioural, found live, and currently verified only mechanically. That
+debt is recorded rather than assumed away; the next round opens with them.
+
+Honest scope the reviewer volunteered: no step was a blind-discovery test —
+the triage fixture carries its answer key and the median bug was seeded — so
+this round measures whether each skill's *process* produces the right shape
+and restraint, not whether it can find an unknown defect.
+
+Validation close: check.sh **24 checks**, all clean; matrix **89 cases**, no
+BAD; controls **72** passing; **23 skills**; wave 4.5 **20/22**, unchanged —
+correctness, not scope.
+
 ### The regression round: fixes were never re-tested, and three were wrong (2026-08-04, evening)
 
 **A process gap the user named, not a task.** Six shakedowns had each found
