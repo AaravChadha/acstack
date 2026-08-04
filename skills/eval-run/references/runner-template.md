@@ -196,7 +196,10 @@ def main():
         for r in forgiven:
             print(f"  {r['id']} ({r['category']}): {r.get('acceptable_failure_reason') or '(no reason recorded)'}")
     if errors:
-        print(f"errors: {errors} — run did not complete cleanly")
+        # "did not complete cleanly" was wrong here: a run whose every case
+        # has a record IS complete, even when a subject crashed on one.
+        print(f"errors: {errors} case(s) — subject crashed or could not be "
+              f"invoked; each has an error record in the results file")
     return 1 if errors else 0
 
 if __name__ == "__main__":
