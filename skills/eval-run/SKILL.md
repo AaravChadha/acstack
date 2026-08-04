@@ -73,6 +73,13 @@ about the wrong product is worse than no answer (conduct rule 8).
    ask**. Never guess a stack. Build from
    `references/runner-template.md`.
 
+   **A run command in the spec settles the stack — it is not a guess.** If
+   `spec.md` names `eval/run.py`, the language is already decided by the
+   committed spec, and stopping to ask which stack to use is a deadlock over
+   a question already answered. Take the extension from the spec's run
+   command and say that is where it came from. Only a spec that names no
+   runner leaves the question genuinely open.
+
    The runner needs one fact the spec often lacks: **how to invoke the
    system under test** — a CLI command, an HTTP endpoint, or a function
    import. If `spec.md` does not say, ask, then record the answer in

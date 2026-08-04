@@ -46,7 +46,7 @@ no imports, no nav entry, no route config.">
 ## Verification
 
 - <input> → <observed output>, including the adversarial set (canonical
-  bank: `../../qa/references/adversarial-inputs.md`): misspellings
+  bank — the `/qa` skill's `adversarial-inputs.md` reference): misspellings
   resolve, `zzzz` returns nothing, empty query / out-of-range page /
   regex-special chars / 500-char input all return 200.
 - <build/typecheck/lint results, against a production build where relevant.>

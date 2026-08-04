@@ -68,6 +68,16 @@ about the wrong product is worse than no answer (conduct rule 8).
    ask, what must the system refuse, what does partial credit mean. Push
    for the ugly categories the user hasn't thought about — the eval's value
    concentrates there.
+
+   **When nobody can answer** — a non-interactive or unattended run —
+   derive the categories from the BRIEF and PLAN, use this skill's own
+   stated defaults for the rest, and **write the derivation contract into
+   the spec**: the category definitions and precedence you applied, so
+   every expected answer can be checked against a stated rule rather than
+   taken on faith. Then say plainly which parts came from documents and
+   which from defaults. **Never invent expected answers** — a golden set
+   whose expecteds were guessed measures nothing and manufactures a score,
+   which is the never-inflate rule at its origin.
 3. **Write `eval/spec.md`** per `references/eval-spec-template.md`: the
    category table (name, definition, MINIMUM case count, target score),
    the grader definition per grade rule, the exact run command, and the

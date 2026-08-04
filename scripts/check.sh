@@ -266,6 +266,22 @@ if hits="$(grep -rnE 'skills/[a-z-]+/references/' skills/ 2>/dev/null)"; then
   printf '%s\n' "$hits"
   fail=1
 fi
+#    8d  a `../` path inside a FENCED block of a reference file. Those blocks are
+#        templates that get emitted into the adopter's own repo, where a
+#        pack-relative path resolves to nothing. §8 above cannot catch this: the
+#        path is valid IN SITU (it resolves from the skill directory) and only
+#        breaks in the copy. Shipped in two templates until shakedown 9 —
+#        /eval-spec's and /audit's — so every adopter's eval/spec.md carried a
+#        dead link. Name the source descriptively in emitted text instead.
+awk '
+  /^[[:space:]]*```/ { infence = !infence; next }
+  infence && /\.\.\// { printf "%s:%d: %s\n", FILENAME, FNR, $0 }
+' skills/*/references/*.md > "$WORKTMP_RO" 2>/dev/null || true
+if [ -s "$WORKTMP_RO" ]; then
+  echo "FAIL crossref: pack-relative path inside an emitted template block — it will not resolve in the adopter's copy:"
+  cat "$WORKTMP_RO"
+  fail=1
+fi
 
 # 9. Config-key reachability: every key in README's config table appears in
 #    templates/acstack.md AND is read by each /skill the table names.
