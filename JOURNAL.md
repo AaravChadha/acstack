@@ -19,8 +19,8 @@
 > preamble + `bin/` helpers, CI, dry-run honesty, `allowed-tools`, the
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
-> CONTRIBUTING, README v2). check.sh 6 → **24 checks** (21 numbered + 3b + 3c + 13a); guard-matrix
-> 15 → **89 cases**; **23 skills**. Five review rounds ran; the last
+> CONTRIBUTING, README v2). check.sh 6 → **25 checks** (22 numbered + 3b + 3c + 13a); guard-matrix
+> 15 → **90 cases**; **23 skills**. Five review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -34,10 +34,10 @@
 - Tickets mode (`tracking: tickets`) is live in /plan and /do — bootstrap,
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
-- Working tree clean; `scripts/check.sh` all clean (**16** numbered
-  sections plus 3b, 3c and 13a = 24 checks, including positive controls over
+- Working tree clean; `scripts/check.sh` all clean (**22** numbered
+  sections plus 3b, 3c and 13a = 25 checks, including positive controls over
   seeded `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
-  (**89** cases); `./setup` links **23**. Banned-name list is untracked (`.acstack-banned`) — copy
+  (**90** cases); `./setup` links **23**. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI
   green run 30765510782). 4.7's ten checklist items were all demonstrated
@@ -70,8 +70,8 @@
 ```bash
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
-scripts/check.sh   # pack guard (24 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 89 seeded-defect cases proving the guards fire
+scripts/check.sh   # pack guard (25 checks, runs controls) — clean before any commit
+bash docs/guard-matrix.sh "$PWD"   # 90 seeded-defect cases proving the guards fire
 # then start a new Claude Code session; the twenty-three skills load at start
 ```
 
@@ -83,13 +83,106 @@ bash docs/guard-matrix.sh "$PWD"   # 89 seeded-defect cases proving the guards f
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 20/22 | **All buildable work done.** 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**. Remaining 2: 4.3 telemetry and 4.4 `setup --global` — both deliberately gated on real adopters, not blocked |
+| 4.5 — Post-launch hardening | 🔶 20/23 | **All buildable work done.** 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**. Remaining 3: 4.3 telemetry and 4.4 `setup --global` (both deliberately gated on real adopters, not blocked) + **4.42 shakedown 11** — the rule-6 re-test the shakedown-10 fix round owes |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
 
-### Shakedown 9: the eval layer drives, and a dead link was shipping to adopters (2026-08-04, latest)
+### Shakedown 10 came back clean, its findings closed, and the review broke the fix (2026-08-04, night)
+
+**The rule-6 debt is cleared.** Shakedown 10 ran in a fresh session on a
+blind seeded venue (`revq`, a sentiment-classifier CLI: BRIEF/PLAN/JOURNAL,
+a subject requiring a project-namespaced `REVQ_ANTHROPIC_KEY`, no
+manifests, no key present) — blind meaning the session was never told
+which fixes were under test; the venue was built so every owed branch
+fired naturally. **All six owed items HELD**, verified here at file:line
+against the venue on disk, not from the pasted report: shakedown 9's five
+fixes (non-interactive derivation with a P1–P5 derivation contract in the
+emitted spec; `expected: null` on the one placeholder row; zero `../` in
+any emitted artifact; run-command-settles-the-stack with no manifest
+present; and the no-key run reporting `NO SCORE — system under test
+unreachable` over 28 honest `status: error` rows, positive controls
+redirected out of `eval/results/`) plus the two never-exercised branches:
+/retro walked all three seeded risks to three different verdicts with
+quoted evidence, and /eval-run declined without a key. The session had
+opened with /resume as a live test of the five-minute claim — it
+reconstructed the wave, the gates and the owed work from the documents
+alone; its one real flag became this entry's carrier task.
+
+**Verification was falsification, and it cut both ways.** The three
+/audit stub proofs were re-run independently and all reproduced
+(`"Negative."` passed through verbatim; empty `content` → IndexError;
+429 uncaught). Two operator claims did NOT survive: the audit report
+cited `:56`/`:44` and "56 lines" against a 49-line file — substance of
+all five findings confirmed, citations recalled rather than pasted (now
+F4) — and "the shape the pack's own /journal seeds" lacking the retro
+heading was false (journal-template.md:29 carries it; only hand-kept
+journals lack it — finding kept, cause corrected, now F3).
+
+**The accidental blind-discovery test.** The seed journal claimed
+retry-with-backoff that the seeded code never contained — an authoring
+accident, owned as such. Both skills caught it independently: /audit
+stub-proved the 429 crash against the "hardened" claim, and /retro
+refused R3's retirement, cross-referencing the audit. First time two
+skills caught the same unplanned contradiction from different
+directions.
+
+**Four findings, closed in `43cc1ca`.** F1 — the grader case-fold
+conflict: the spec template documented per-case `case_sensitive: true`
+while /eval-run's grading rules and runner template folded case
+unconditionally, and grader-rules.md (the claimed canon) said nothing.
+Canonical rule written (fold by default, keep case under the flag), all
+four sites agree, **check.sh §22** guards the flag's presence — shown
+failing first (token stripped from the runner template → `FAIL
+grader-case`; restored → clean) — and the matrix gains the case. F2 —
+/eval-run's two missing unattended paths: a committed document settles
+the invocation (recorded as a dated addition naming its source; never
+derived from the subject's code), and the NO SCORE hard rule — honest
+per-case errors, the missing thing named in Scope, never mock a
+credential. F3 — /retro's hand-kept-journal path. F4 — line numbers
+pasted from `grep -n` output, never counted, all four targets plus the
+emitted report template.
+
+**Then the falsification review of the diff found the fix broken in its
+consumed form.** The runner template's CODE block — the thing adopters
+scaffold — still folded case unconditionally (`norm()` ended in
+`.lower()`; `grade()` never read the flag) while four prose sites and a
+green §22 certified agreement. Verify-the-consumed-form, inside the
+same diff that quoted the rule. Also: NO SCORE was inexpressible in
+/eval-run's own two-form verdict grammar; the first F3 wording imposed
+the pack's newest-first ordering on hand-kept journals — the exact
+failure class the fix targets; and F4 bound only the code target. All
+fixed in the same commit. The code block is now extracted and EXECUTED
+during verification — it compiles, and three grade assertions prove the
+flag (`Negative.` fails case-sensitive, `negative` passes, default
+still folds). §22's comment states its token-presence scope honestly,
+citing its own first-day escape.
+
+**Docs drift, found twice while closing.** ARCHITECTURE's check.sh
+paragraph had gone stale a THIRD time — sixteen items enumerated,
+"fifteen, matching the header" claimed, everything since §16 absent —
+inside the very sentence recording that the list went stale twice.
+Replaced with a pointer to the check.sh header, the designated single
+enumeration. And this file's own TL;DR said "**16** numbered sections …
+= 24 checks" — a stale 16 beside an updated total, the set-claim class
+again — fixed in this commit.
+
+**The rule-3 orphan is closed.** The owed live round now has a carrier,
+**task 4.42 (shakedown 11)**, instead of journal prose — the gap
+/resume flagged at session start. Rule-6 debt, stated: every fix in
+`43cc1ca` is behavioural and unverified until 4.42 runs. Its two
+never-driven branches: /retro appending to a CHRONOLOGICAL hand-kept
+journal (shakedown 10 seeded only the newest-first shape), and
+/eval-run's `NO SCORE — <what is missing>` verdict form live.
+
+Validation close: check.sh **25 checks** (22 numbered + 3b/3c/13a), all
+clean; guard-matrix **90 cases**, no BAD — run twice, before and after
+the review's fixes; controls **72** passing; **23 skills**; wave 4.5
+**20/23** — one carrier task added, no boxes ticked, correctness plus
+scheduling.
+
+### Shakedown 9: the eval layer drives, and a dead link was shipping to adopters (2026-08-04, late II)
 
 The first round shaped by **verification rule 6** — regression segment
 first, then new ground. **All four of shakedown 8's fixes held** under live

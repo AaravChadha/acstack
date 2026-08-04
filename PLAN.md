@@ -1452,6 +1452,23 @@ reordered, if any.
   the read-only skills' own prose says they never write, and a stamp write
   is a write. Reconcile the wording with the behavior.
 
+- [ ] **4.42** Shakedown 11 — live re-test of the shakedown-10 fix round
+  (verification rule 6: every fix in commit `43cc1ca` is behavioural and
+  stays unverified until a live run re-tests it). Two branches born in
+  that round have never been driven live and must be: /retro appending
+  to a CHRONOLOGICAL hand-kept journal (shakedown 10 seeded only the
+  newest-first shape, so the bottom-of-the-record path is untested), and
+  /eval-run's `NO SCORE — <what is missing>` verdict form. Plus: live
+  `case_sensitive` grading through a freshly scaffolded runner (the
+  fixed code block has executed in verification, never under a model's
+  hands), the unattended-invocation clause sourced from an acceptance
+  line, and /audit's pasted-not-counted line-number rule on a real
+  report. **Acceptance:** a fresh-session round on a seeded venue
+  exercises all of the above; the report is verified at file:line
+  against the venue on disk; the journal entry records a verdict per
+  fix. This task exists so the rule-6 debt has a carrier in the plan,
+  not only in journal prose — the gap /resume flagged on 2026-08-04.
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
