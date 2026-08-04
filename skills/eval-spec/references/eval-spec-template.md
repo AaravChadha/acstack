@@ -30,7 +30,7 @@ alone.
 
 | grade_rule | How it's judged |
 |---|---|
-| exact | normalized string equality (Unicode NFKC, trimmed, case per case's `case_sensitive` flag) |
+| exact | normalized string equality (Unicode NFKC, trimmed, case folded unless the case sets `case_sensitive: true`) |
 | concept | expected lists concept keywords; pass = all present in any phrasing (normalized substring) |
 | numeric-tolerance:<x> | parsed number within ±x (absolute) or ±x% (suffix `%`) of expected |
 | rubric:<name> | LLM-graded against the named rubric below; grader model + prompt pinned here |
@@ -61,9 +61,14 @@ a fabricated answer waiting to be counted the day the status changes. Superseded
 
 ```json
 {"id": "hp-001", "category": "happy-path", "input": "…", "expected": "…", "grade_rule": "concept"}
+{"id": "hp-002", "category": "happy-path", "input": "…", "expected": "positive", "grade_rule": "exact", "case_sensitive": true}
 {"id": "rf-003", "category": "refusal", "input": "…", "expected": "decline: out-of-domain", "grade_rule": "concept"}
 {"id": "ed-002", "category": "edge", "input": "…", "expected": "…", "grade_rule": "numeric-tolerance:0.5", "acceptable_failure": true, "reason": "source data itself ambiguous — see spec"}
 ```
+
+`case_sensitive: true` belongs on a row whose expected's SHAPE is part
+of the contract (an exact lowercase label); the grader then keeps case
+instead of folding it (see the Grader table).
 
 Ids are `<category-prefix>-<zero-padded n>` and never reused — a
 superseded `ed-002` is replaced by `ed-007`, not a new `ed-002`.

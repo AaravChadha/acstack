@@ -49,6 +49,11 @@ its path in the report's scope line. If more than one candidate set exists
 list the candidates and STOP. Never pick one silently: a confident answer
 about the wrong product is worse than no answer (conduct rule 8).
 
+**Every line number is pasted, never counted — all four targets.** A
+`file:line` in any report comes from line-numbered tool output
+(`grep -n`), not from counting or recall: a wrong line number turns a
+real finding into one the author can dismiss.
+
 ## Target: code
 
 **First: does this target need the pass at all?** A diff that only moves

@@ -85,6 +85,15 @@ about the wrong product is worse than no answer (conduct rule 8).
    import. If `spec.md` does not say, ask, then record the answer in
    spec.md's run section as a dated addition (that file is living; the
    golden set is not).
+
+   **Unattended, the same settled-not-guessed rule applies:** when
+   nobody can answer, a committed document that states the exact
+   invocation — a PLAN exit criterion, an acceptance line — settles the
+   question; record it as the dated addition with the source named.
+   Only when no committed document states the invocation does an
+   unattended run stop and say what is missing. Never derive it from
+   reading the subject's code: the code cannot distinguish its intended
+   interface from an accident, so that is a guess wearing evidence.
 4. **Run it, then read the file.** The runner writes
    `eval/results/<UTC-timestamp>.jsonl`. The headline is computed from
    that file — overall %, per-category %, refusal % — and never
@@ -98,7 +107,10 @@ Per case, from its `grade_rule`, aligned with the canonical grader rules
 in `../eval-spec/references/grader-rules.md` and with `/audit eval`:
 
 - `exact` — normalized equality: trim, collapse whitespace, NFKC, and
-  fold case. Same answer, not same keystrokes.
+  fold case — unless the case carries `case_sensitive: true`, set when
+  the output's shape is itself part of the contract; then case is kept
+  and a right answer in the wrong case fails on shape. Same answer, not
+  same keystrokes.
 - `concept` — the expected concept is present. The scaffold implements
   this as normalized substring containment, which is the FLOOR, not the
   ideal: it is literal enough to produce brittleness. When a case fails
@@ -137,13 +149,21 @@ dangerous of the false-pass family.
   file, every time.
 - A run that errors part-way reports what completed and what did not —
   a partial run is never presented as a full score.
+- **A subject that cannot be invoked yields NO SCORE, not 0%.** When
+  the system under test needs a credential or endpoint the environment
+  lacks, record honest per-case errors in the results file, report the
+  headline as measuring the environment rather than the subject, and
+  name what is missing in Scope. Never set, invent, or mock the
+  credential to make the run go — a mocked subject scores the mock.
 - The results file is committed with the run: an eval score whose
   evidence is not in the repo is an assertion.
 
 ## Report shape
 
 Verdict first — `<headline>% vs target <n>%` plus `MEETS TARGET` or
-`BELOW TARGET by <x>` — then:
+`BELOW TARGET by <x>`; when nothing was graded, the verdict is instead
+`NO SCORE — <what is missing>` (per the hard rule above — a zero-graded
+run has no headline to compare) — then:
 
 - per-category table (category | cases | passed | % | target)
 - failures, grouped by the /audit eval buckets (prompt issue, grader

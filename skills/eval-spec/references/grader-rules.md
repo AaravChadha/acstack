@@ -18,6 +18,14 @@ A grader that misses these reports subject failures that are actually
 grader bugs — /audit eval calls this grader brittleness, and it is
 fixable WITHOUT touching the case: fix the comparison, log the fix.
 
+Case folds by default — same answer, not same keystrokes — unless the
+case carries `case_sensitive: true`, set when the output's SHAPE is
+itself part of the contract (an exact lowercase label, a cased
+identifier). Then a right answer in the wrong case fails on shape:
+that is contract enforcement, not grader brittleness. This is the
+canonical statement of the rule; the spec template, /eval-run and the
+runner template restate it and must agree.
+
 ## Numbers get tolerances, stated
 
 `numeric-tolerance:0.5` means ±0.5 absolute; `numeric-tolerance:2%`

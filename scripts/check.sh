@@ -16,7 +16,7 @@
 #   15 conduct block identity              16 retired commit-format guarded
 #   17 simplicity ladder keeps its floor   18 update msg re-links, not just pull
 #   19 /refactor keeps its proof rule      20 /design keeps its 8-item spine
-#   21 skill-hygiene rule set stays whole
+#   21 skill-hygiene rule set stays whole  22 grader case flag named at every site
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -624,6 +624,33 @@ if ! grep -q 'setup' bin/acstack-update-check; then
   echo "FAIL update-msg: bin/acstack-update-check tells the user to pull without re-running setup — a new skill would stay unlinked and invisible"
   fail=1
 fi
+
+# 22. Grader case flag named at every site. Exact-grade normalization is
+#     defined in four places: grader-rules.md (canonical), the spec template,
+#     /eval-run's grading rules, and the runner template. Shakedown 10 found
+#     them disagreeing — the spec template documented a per-case
+#     `case_sensitive: true` flag while both /eval-run sites folded case
+#     unconditionally, so a runner scaffolded verbatim from the template
+#     silently ignored a flag the spec documents. All four must name the
+#     flag; dropping it from one is invisible in a green run — nothing
+#     fails, the scaffolds just grade against the spec. Same floor-erosion
+#     class as §17/§19/§21. Token-presence only, stated honestly: a site
+#     can keep the token while inverting the meaning (the runner template's
+#     CODE block did exactly that on this check's first day, caught by a
+#     falsification review, not by this grep) — semantic agreement belongs
+#     to review rounds; this check makes silent DROP loud, nothing more.
+for f in \
+  skills/eval-spec/references/grader-rules.md \
+  skills/eval-spec/references/eval-spec-template.md \
+  skills/eval-run/SKILL.md \
+  skills/eval-run/references/runner-template.md; do
+  if [ -f "$f" ]; then
+    grep -q 'case_sensitive' "$f" \
+      || { echo "FAIL grader-case: $f defines exact-grade behavior but never names the case_sensitive flag — the four grader sites have diverged"; fail=1; }
+  else
+    echo "FAIL grader-case: $f is missing — the grader-site agreement check cannot run"; fail=1
+  fi
+done
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then

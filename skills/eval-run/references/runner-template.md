@@ -22,7 +22,9 @@ Whatever the language, a runner MUST:
    (NFKC), case, and whitespace before any string compare. NFKC folds
    U+202F and U+00A0 to spaces on its own; U+2013 needs an explicit
    fold. A grader that fails on invisible characters reports a subject
-   failure that never happened.
+   failure that never happened. Case folds only when the case does not
+   carry `case_sensitive: true` — a flag the spec template documents,
+   so a scaffold that folds unconditionally silently ignores the spec.
 4. Apply `acceptable_failure` ONLY when the case carries a `reason`
    string — accepting BOTH shapes in the wild, a bool with a sibling
    `reason` and an object carrying its own — and record every
@@ -52,12 +54,15 @@ ROOT = pathlib.Path(__file__).resolve().parent
 GOLDEN = ROOT / "golden.jsonl"
 RESULTS_DIR = ROOT / "results"
 
-def norm(s):
+def norm(s, fold_case=True):
     """NFKC folds NBSP and narrow-NBSP to spaces on its own; the en-dash
-    needs an explicit fold. Case is folded too — `exact` means the same
-    answer, not the same keystrokes."""
+    needs an explicit fold. Case folds by default — `exact` means the same
+    answer, not the same keystrokes — EXCEPT when the case carries
+    `case_sensitive: true`: then the output's shape is part of the
+    contract and case is kept."""
     s = unicodedata.normalize("NFKC", str(s)).replace("\u2013", "-")
-    return re.sub(r"\s+", " ", s).strip().lower()
+    s = re.sub(r"\s+", " ", s).strip()
+    return s.lower() if fold_case else s
 
 def run_subject(case):
     """THE ONE PROJECT-SPECIFIC FUNCTION. Return the system's answer as a
@@ -92,7 +97,8 @@ def grade(case, actual):
     rule = case.get("grade_rule", "exact")
     expected = case.get("expected", "")
     if rule == "exact":
-        return norm(actual) == norm(expected)
+        fold = not case.get("case_sensitive", False)
+        return norm(actual, fold) == norm(expected, fold)
     if rule == "concept":
         # Substring containment is the floor, not the ideal: it is literal
         # enough to produce grader brittleness. When a case fails here but
@@ -158,6 +164,11 @@ def main():
     print(f"results: {out}")
     print(f"overall: {ok}/{len(scored)} ({100*ok/len(scored):.1f}%)" if scored
           else "overall: no scored cases")
+    if scored and all(r["status"] == "error" for r in scored):
+        # zero graded cases: the number above measures the environment
+        # (missing key, dead endpoint), never the subject — say so.
+        print("NO SCORE: every case errored — nothing was graded; "
+              "fix the environment and re-run before reading the number")
     by = {}
     for r in scored:
         d = by.setdefault(r["category"], [0, 0, 0]); d[1] += 1

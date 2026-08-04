@@ -105,7 +105,13 @@ correct, not a gap.
 
 Append to JOURNAL.md as a dated entry under `## Key decisions and
 journey`, newest first:
-`### Retro (YYYY-MM-DD — <window>)`. Commit using the project's
+`### Retro (YYYY-MM-DD — <window>)`. A journal without that heading —
+hand-kept rather than seeded from /journal's template — takes the entry
+per that journal's own convention: appended where its entries actually
+go (top of a newest-first record, bottom of a chronological one), with
+the divergence named inside the entry; never scaffold the pack's
+skeleton into a journal the project keeps by hand, and never impose the
+pack's ordering on it. Commit using the project's
 `journal-commit-format` (pack default `Journal <date>: <summary>`) with
 `retro — <summary>` as the summary, brief body, attribution per config.
 PLAN edits the retro proposes are listed for the user to apply

@@ -31,9 +31,10 @@ The shape of a report a reviewer can act on without asking follow-ups.
 
 ## 1. <Finding or area>
 
-<What was found, with root cause and exact location `file.ts:42`. State the
-alternative you rejected and why: "Chose X over Y because Y would still
-<consequence>.">
+<What was found, with root cause and exact location `file.ts:42` — the
+line number pasted from `grep -n`-style output, never counted or
+recalled. State the alternative you rejected and why: "Chose X over Y
+because Y would still <consequence>.">
 
 **Safety checks:** <the exact searches run and what they matched — e.g.
 "a Grep-tool search for `sandbox` matched only the sandbox files themselves —

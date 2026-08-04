@@ -195,6 +195,10 @@ bannedcase "a planted banned token is caught" 'zzqqplanted' 'FAIL banned names'
 # in README *and* every skill so the diff still matches
 fullcase "preamble over budget, identity intact" FAIL 'runtime' bash -c "for f in README.md skills/*/SKILL.md; do awk '/<!-- \\/acstack:runtime -->/{print \"pad1\"; print \"pad2\"} {print}' \$f > t && mv t \$f; done"
 fullcase "preamble fails open on unresolved pack" FAIL 'runtime' bash -c "sed -e 's|if \[ \"\${link#/}\" != \"\$link\" \] && |if |' README.md > t && mv t README.md"
+# 22: the four grader sites must agree on the case rule. Shakedown 10 found the
+# runner template folding case unconditionally against the flag the spec
+# template documents — a verbatim scaffold silently ignored the spec.
+fullcase "grader site drops the case flag" FAIL 'grader-case' bash -c "sed -e 's/case_sensitive/caseflaggone/g' skills/eval-run/references/runner-template.md > t && mv t skills/eval-run/references/runner-template.md"
 
 echo
 echo "passed=$pass failed=$failed"

@@ -156,16 +156,14 @@ rule `/secure` applies to any untrusted-in-trusted-position path.
 
 Three layers, each answering a different question.
 
-**`scripts/check.sh` — is the pack internally consistent?** Twenty-one numbered sections plus 3b, 3c and 13a — **24 checks**; the header comment is their single enumeration, updated in the
-same commit as any new section (that list went stale twice when copies
-lived elsewhere). It covers principles-block byte-identity, banned
-names, frontmatter parsing and description safety, POSIX-ERE hazards in
-documented greps, line budgets, shell syntax and shellcheck,
-VERSION/CHANGELOG agreement, routing lines, cross-reference resolution,
-config-key reachability, verdict-first stance, positive controls,
-runtime-block identity and budget, read-only tool declarations, the
-referral roster, and conduct-block identity between CONDUCT.md and
-AGENTS.md — fifteen, matching the header.
+**`scripts/check.sh` — is the pack internally consistent?** Twenty-two numbered sections plus 3b, 3c and 13a — **25 checks**; the header comment is their single enumeration, updated in the
+same commit as any new section. That list went stale twice when copies
+lived elsewhere — and a partial copy that used to sit in this paragraph
+went stale a third time (it enumerated sixteen items, claimed fifteen,
+and had missed every section added since §16), so it is now a pointer:
+coverage runs from principles-block byte-identity and banned names
+through the later single-rule guards (§17–§22); the check.sh header is
+the full list.
 
 **`scripts/controls.sh` — do the documented checks actually work?** For
 each check-shaped skill it extracts the detection command *from the
@@ -177,7 +175,7 @@ produce 6/7 (85.7%), and it also asserts that every case excluded
 from the denominator is NAMED — silent exclusion moves no percentage,
 so it is invisible in the number alone.
 
-**`docs/guard-matrix.sh` — does each guard fire?** 89 cases, each
+**`docs/guard-matrix.sh` — does each guard fire?** 90 cases, each
 seeding one defect into a copy of the real tree and asserting the
 expected failure class, plus must-pass cases so a guard cannot pass by
 failing everything. **Extend the matrix first, watch the case fail, then
