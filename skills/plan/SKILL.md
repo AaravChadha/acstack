@@ -69,6 +69,15 @@ Interview the user (or take their brain-dump) and write `BRIEF.md` following
 `references/brief-template.md`. Required sections — if the user hasn't
 supplied one, ask; never silently skip:
 
+**When nobody can answer** — a non-interactive or unattended run — asking is
+not an option and inventing is worse. Write the section as
+`TBD — not supplied at seed time`, list every TBD together at the top of the
+report, and say plainly that the BRIEF is incomplete until they are filled.
+A BRIEF with honest gaps is a usable frozen record; one with invented
+context is a lie that later work is measured against. Never guess a
+constraint, an audience, or a domain landmine — those are exactly the fields
+whose fabrication costs the most.
+
 - **Context** — who this is for, why now, what stage, solo or team.
 - **Source data / domain landmines** — the gotchas an implementer must know
   (formats, quirks, do-NOT rules). Prompt for these explicitly; every domain

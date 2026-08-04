@@ -29,6 +29,10 @@ done
 if [ -z "$d" ] || ! git rev-parse --verify -q "$d" >/dev/null; then
   echo "BLOCKED — cannot determine the default branch; pass it explicitly"
 else
+  # Count first, then list: an empty `git log` prints NOTHING, and "no
+  # output" is indistinguishable from "the command didn't run" in a
+  # transcript. State the number so the evidence reads itself.
+  echo "commits ahead of $d: $(git rev-list --count "$d"..HEAD)"
   git log --oneline "$d"..HEAD    # the commits being shipped (non-empty)
 fi
 ```

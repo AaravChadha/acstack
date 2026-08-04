@@ -65,6 +65,16 @@ more likely to be a deliberate standing choice.
 
 ## Runtime
 
+> **Two marker grammars exist, deliberately.** Blocks inside a SKILL.md use
+> `<!-- acstack:NAME -->` … `<!-- /acstack:NAME -->` (runtime, principles);
+> blocks shared with adopter repos use `<!-- BEGIN:acstack-NAME -->` …
+> `<!-- END:acstack-NAME -->` (conduct, referrals). Grepping for one style
+> reports the other absent — a real in-session miss during shakedown 8. They
+> are not unified because the markers are matched by check.sh §1, §12, §14
+> and §15, by `/plan seed`, and by `/health`, and they already live in every
+> adopter's AGENTS.md; renaming them would break installed repos to buy
+> tidiness. Search for `acstack` and take both forms.
+
 A marker-fenced block at the top of every SKILL.md, byte-identical
 across all of them, canonical copy in README.md. Budget: **12 lines**,
 enforced by `PREAMBLE_BUDGET` in check.sh. Raising it requires editing

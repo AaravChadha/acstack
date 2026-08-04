@@ -99,10 +99,19 @@ one into CONDUCT.md only if it proves out across projects — the same bar
 <!-- BEGIN:acstack-referrals -->
 ## Typed-only skills
 
-These skills carry `disable-model-invocation: true`, so an agent cannot
-see or invoke them — it can only mention them. Suggest one when its
-column-three condition is true, per conduct rule 9: name it once, never
-repeat it, and treat silence or a pivot as a no.
+These skills carry `disable-model-invocation: true`, which keeps them out
+of the model's skill listing — so an agent will not reach for one on its
+own, and the roster below exists because otherwise nobody would find them.
+
+**That is a discoverability control, not an enforcement boundary.** A model
+handed the name explicitly can still run it: a session told "type /plan
+seed" invoked it end to end (observed 2026-08-04). The same honest scope as
+`allowed-tools` — the flag governs what the model is *offered*, not what it
+is *prevented* from doing. Treat these as user-initiated by convention, not
+by mechanism.
+
+Suggest one when its column-three condition is true, per conduct rule 9:
+name it once, never repeat it, and treat silence or a pivot as a no.
 
 | Skill | What it does | Suggest when |
 |---|---|---|
