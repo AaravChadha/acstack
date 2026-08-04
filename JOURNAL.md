@@ -89,6 +89,65 @@ bash docs/guard-matrix.sh "$PWD"   # 89 seeded-defect cases proving the guards f
 
 ## Key decisions and journey (so you don't relearn)
 
+### Shakedown 9: the eval layer drives, and a dead link was shipping to adopters (2026-08-04, latest)
+
+The first round shaped by **verification rule 6** — regression segment
+first, then new ground. **All four of shakedown 8's fixes held** under live
+re-test: the reworded typed-only claim now matches observed behaviour,
+`/plan seed` marked every unanswerable section `TBD — not supplied at seed
+time` and invented nothing, `/ship` printed `commits ahead of master: 0`,
+and both marker grammars resolve as ARCHITECTURE describes.
+
+**The eval layer — the pack's flagship claim — drove end to end for the
+first time.** `/eval-spec` produced minimums per class, five refusal cases,
+and a deterministic pinned grader, with every expected derived from a stated
+contract rather than fabricated; the reviewer's proof it wasn't
+implementation-worship is that one case (`ed-004`) is derived from the
+category definition and **the subject fails it**. `/eval-run` scaffolded the
+runner, recomputed the headline **from the results file** (24/25, 96.0%),
+named its exclusions by id, and produced an identical score with API keys
+stripped. `/retro` stated its window, read the seeded 71→70 dip as *"a real
+regression, not noise"*, and went further than asked — flagging that the
+journal's headlines had no result files behind them and refusing a velocity
+claim from a history that contradicted itself.
+
+**The finding worth the entry: a pack-relative path shipped INSIDE an
+emitted template.** `../../qa/references/adversarial-inputs.md` sat in the
+fenced block that becomes the adopter's own `eval/spec.md`, where it
+resolves to nothing. **§8 could not see it** — the path is valid *in situ*
+(it resolves from the skill directory) and only breaks in the copy. So every
+adopter's eval spec carried a dead link.
+
+**Scanning the class rather than the reported instance found a second:**
+`/audit`'s code-report-template carried the same path in its own emitted
+block. Both now name the source descriptively; **check.sh §8d** catches any
+`../` inside a fenced reference block, shown failing first.
+
+Three more fixed: `/eval-run` could **deadlock** on stack detection —
+"neither manifest → stop and ask" even when the committed spec already names
+`eval/run.py`, which settles the language; a run command in the spec is now
+explicitly not a guess. `/eval-spec` had **no non-interactive clause** (the
+gap `/plan` closed last round) — it now derives categories from BRIEF/PLAN
+and writes the **derivation contract** into the spec, so every expected can
+be checked against a stated rule, with *never invent an expected* stated
+outright: a golden set with guessed answers manufactures a score, which is
+the never-inflate rule at its origin. And `needs-data` placeholders now take
+`expected: null` rather than a plausible value that would be counted the day
+the status changes.
+
+**Recorded, not fixed:** `/retro`'s open-risk review stayed untested because
+the prescribed seeding creates no PLAN.md — **a gap in my shakedown prompt,
+not in the skill.** A future round seeds a PLAN with open risks first. Also
+noted by the reviewer: `/eval-run`'s decline-without-a-key branch went
+unexercised, because a local subject needs no key — nothing was declined
+because nothing needed declining.
+
+Validation close: check.sh **24 checks**, all clean — §8d is a fourth
+sub-form inside §8's crossref block, not a new numbered section, so the
+count is unchanged; matrix **89
+cases**, no BAD; controls **72** passing; **23 skills**; wave 4.5 **20/22**,
+unchanged — correctness, not scope.
+
 ### Shakedown 8: twelve skills work, and a shipped claim turned out false (2026-08-04, late)
 
 Eight never-driven skills plus the two regression items from shakedown 7.
