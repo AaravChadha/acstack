@@ -129,8 +129,15 @@ or drop it.
 
 The bar, all three required:
 
-- **Three or more items.** Two is a duplicate pair, and the sweep above
-  already handles that shape better.
+- **Three or more items to propose a PARENT.** A parent over two items is
+  more structure than it earns.
+  **But a same-cause pair is still named, never dropped.** Two items sharing
+  a cause are not a duplicate pair — the duplicate sweep keys on overlapping
+  text and will not see them, so a pair that falls below this bar would
+  otherwise vanish between the two sweeps. Report it under
+  `Related pairs`: the cause, both items, and the evidence, with no parent
+  proposed. Found by shakedown 7, where two items sharing a UTC-boundary
+  cause were invisible to both passes.
 - **A cause written as a sentence**, naming the mechanism — not a
   component, a label, or a theme.
 - **Evidence per member**: the quoted line, error, or acceptance that ties

@@ -188,11 +188,13 @@ Verdict first: `production-ready` or `<N> gaps`. Then:
 
 - **Before / After / Why** — a row per meaningful change. "Why" cites the
   item or dial that drove it, never taste alone.
+- **Self-critique** — which AI-default look was avoided, and the signature
+  element. **This sits here, before the artifact sections**, matching the
+  order it was written in: a critique printed after the thing it supposedly
+  shaped cannot be told from one back-filled to fit.
 - **Token system** — the DTCG block, with the layer each value sits in.
 - **The eight items** — one line each: how it is answered, or
   `GAP: <what is missing>`. Never silently omitted.
-- **Self-critique** — which AI-default look was avoided, and the signature
-  element.
 - **Verification** — what was loaded, what the console said.
 - **Scope** — what was NOT designed (surfaces skipped, states deferred),
   so nobody reads a component as a system.

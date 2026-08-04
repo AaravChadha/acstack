@@ -37,10 +37,18 @@ statistic are harm. Report in that order regardless of hit count.
 
 ```bash
 git grep -nE 'aria-hidden="false"|role="img"[^>]*>[^<]' -- '*.html' '*.jsx' '*.tsx'
-git grep -nE '<(button|a|h[1-6])[^>]*>[^<]*(🚀|✨|🎉|🔥|💡|⚡|🎯)' -- '*.html' '*.jsx' '*.tsx' '*.vue' '*.svelte'
+git grep -nE '<(button|a|h[1-6])[^>]*>[^<]*[^ -~<]' -- '*.html' '*.jsx' '*.tsx' '*.vue' '*.svelte'
 git grep -nE 'animation:|transition:|@keyframes' -- '*.css' '*.scss'
 git grep -nE 'prefers-reduced-(motion|transparency)' -- '*.css' '*.scss'
 ```
+
+**The emoji grep matches any non-ASCII in a button or heading**, not an
+enumerated emoji list. An enumerated list is a denylist and cannot be
+finished — the previous version named seven emoji and missed the one this
+pack's own fixture seeds (🔔), so it reported clean on the pack's own
+before-page. The cost is a false positive on legitimately accented text
+("Café"); drop those on sight. A loud false positive beats a silent miss,
+which is the same trade the fixture rules make.
 
 The last two are read **together**: motion present and the media query
 absent is the finding. Heading order and contrast are judgment — grep finds

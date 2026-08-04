@@ -107,6 +107,9 @@ if [ -d fixtures/design-audit ]; then
   ai_check "pulsing-dot"     "git grep -nE 'animate-pulse'" fixtures/design-audit/ai-slop.tsx
   ai_check "ai-orb"          "git grep -niE '(ai|assistant|magic|intelligen)" fixtures/design-audit/ai-slop.tsx
   ai_check "emoji-icon"      "git grep -nE '<(button|a|h[1-6])" fixtures/design-audit/ai-slop.tsx
+  # the emoji rule is NOT an enumerated list: prove it on the OTHER fixture,
+  # whose 🔔 the previous seven-emoji denylist missed entirely (shakedown 7).
+  ai_check "emoji-icon-other-fixture" "git grep -nE '<(button|a|h[1-6])" fixtures/design/index.html
   ai_check "fake-stats"      "git grep -nE '(99\\.9" fixtures/design-audit/ai-slop.tsx
   ai_check "filler-identity" "git grep -niE '(john (doe" fixtures/design-audit/ai-slop.tsx
   ai_check "social-proof"    "git grep -niE 'trusted by" fixtures/design-audit/ai-slop.tsx
