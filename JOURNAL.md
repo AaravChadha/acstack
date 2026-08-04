@@ -89,6 +89,69 @@ bash docs/guard-matrix.sh "$PWD"   # 89 seeded-defect cases proving the guards f
 
 ## Key decisions and journey (so you don't relearn)
 
+### The regression round: fixes were never re-tested, and three were wrong (2026-08-04, evening)
+
+**A process gap the user named, not a task.** Six shakedowns had each found
+defects; every fix was verified mechanically — check.sh, controls, matrix —
+and shipped. **None was ever re-tested live.** His question was the sharp
+one: after errors in a shakedown, we never confirmed with another shakedown
+that what we coded instead was correct.
+
+Two commits: `cedb1dd` (the fixes), `edce833` (the rule).
+
+**Shakedown 7 was the first backwards-looking round, and 7 of 7 fixes held.**
+Including the one that had only ever passed *vacuously*: `/qa`'s credential
+rule finally got real pressure — URL supplied, app running, a real-looking
+token in a committed `.env` **and** hardcoded in the server — and it took
+neither, reporting the gated flow as `not probed — no credentials supplied`
+and handing the committed credential to /secure. It also found a genuine
+bug in the trap server itself (`/health?limit=1` → 404 from exact-match
+routing), which is the adversarial pass doing its job on a target nobody
+asked it to audit.
+
+**But it found three new defects, all inside earlier fixes, all mine:**
+
+- **/triage's clustering bar contradicted its own fixture.** The bar
+  required three-or-more members and dismissed two as "a duplicate pair" —
+  but the fixture's third cause has two members that are NOT duplicates.
+  They fell between the duplicate sweep (which keys on overlapping text and
+  cannot see them) and the clustering bar, so **a real finding could vanish
+  between two passes.** Fixed: a parent still needs three, but a same-cause
+  pair is named under `Related pairs` rather than dropped.
+- **/design contradicted itself on ordering.** The process section demands
+  the self-critique before the first component "kept in that order in the
+  report"; the Report-shape list placed it after the eight items. An
+  executor following the shape literally regresses the fix.
+- **The emoji-as-icon grep was a denylist** of seven emoji — and missed the
+  🔔 in *this pack's own /design fixture*, so it reported clean on our own
+  before-page. Widened to any non-ASCII in a button or heading, with the
+  accented-text false positive stated and accepted. **Fourth time the
+  denylist lesson has landed here.** A cross-fixture control now proves it:
+  narrowed back to the old list, that control fails.
+
+**The rule, added BEFORE the round it governs** (`edce833`) — a rule written
+after the round it should have governed is a rationalisation. AGENTS.md's
+verification rules gain a sixth: *a fix for a behaviourally-found defect is
+unverified until a live run re-tests it.* The reasoning that makes it a rule
+rather than a preference: **a new-ground round structurally cannot catch
+these, because a fix becomes old ground the moment it is committed.**
+
+Placed in AGENTS.md, not CONDUCT.md — that section is explicitly "each from
+a defect this repo shipped," and the pack's bar is to promote into CONDUCT
+only what proves out across projects. This has proven out once, in one repo.
+**Its cost is written into the rule rather than hidden:** every behavioural
+fix now owes a live round; if that stops being affordable, narrow it to
+security- and correctness-relevant fixes rather than quietly stop obeying
+it. A rule with an unstated cost is one people abandon silently.
+
+Count verified by enumeration, not assertion — six bullets, six claimed —
+and the edit sits above the `BEGIN:acstack-conduct` marker, so §15's
+byte-identity between AGENTS.md and CONDUCT.md is untouched.
+
+Validation close: check.sh **24 checks**, all clean; guard-matrix **89
+cases**, no BAD; controls **72** passing; **23 skills**; wave 4.5 **20/22**,
+unchanged — this round changed no task state, only correctness.
+
 ### The design lane, and wave 4.5's buildable work closes at 20/22 (2026-08-04, later)
 
 **Wave 4.5: 16 → 20 of 22.** Skills 22 → **23**; check.sh 22 → **24**;
