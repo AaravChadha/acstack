@@ -76,7 +76,23 @@ defect this repo shipped):
   the reviewer's findings at `file:line` too — in the same session one
   agent claim did not survive checking.
 
-These five are repo-binding, not part of the shipped conduct block. Promote
+- **A fix for a behaviourally-found defect is unverified until a live run
+  re-tests it.** Mechanical green is not proof: check.sh, controls and the
+  matrix verify the *authored* fix, never that a model now behaves
+  differently. Six shakedowns each found defects, every fix was verified
+  mechanically and shipped, and none was re-tested — then the first round
+  that looked **backwards** instead of at new ground found three more
+  defects *inside those fixes*: a clustering bar that contradicted its own
+  fixture, a skill that contradicted its own report shape, and an emoji
+  denylist that reported clean on this pack's own before-page. A new-ground
+  round cannot catch these, because a fix becomes old ground the moment it
+  is committed. Re-test in the venue that found the defect, and keep the
+  outstanding list where it cannot be forgotten. **Cost, stated:** this
+  makes every behavioural fix owe a live round. That is affordable here; if
+  it stops being affordable, narrow the rule to security- and
+  correctness-relevant fixes rather than quietly stop obeying it.
+
+These six are repo-binding, not part of the shipped conduct block. Promote
 one into CONDUCT.md only if it proves out across projects — the same bar
 `/learn` uses for promoting a lesson into known-bug-classes.
 
