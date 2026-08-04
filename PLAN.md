@@ -1452,7 +1452,25 @@ reordered, if any.
   the read-only skills' own prose says they never write, and a stamp write
   is a write. Reconcile the wording with the behavior.
 
-- [ ] **4.42** Shakedown 11 — live re-test of the shakedown-10 fix round
+- [x] **4.42** *(Done 2026-08-05: the round ran fresh-session on two blind
+  venues — tiq, whose golden set made flag-honoring readable from the
+  headline (honest 70.0% vs the 90% a flag-ignoring runner would print;
+  the scaffolded run.py carried `fold = not case.get("case_sensitive",
+  False)`), and pulse, which isolated the missing-credential branch. All
+  five fixes HELD, verified at file:line against the venues on disk: the
+  dated addition names PLAN task 1.1's acceptance line as invocation
+  source (and venue B's spec-stated invocation correctly produced NO
+  addition); NO SCORE appeared in all three layers — skill verdict,
+  scaffold's printed line, all-error results file; /retro appended at the
+  BOTTOM of the chronological hand-kept journal with the divergence named
+  and PLAN untouched; and every /audit line citation matched `grep -n`,
+  where round 10's audit had three wrong. The report itself survived
+  falsification with zero broken claims (round 10's had two). One new
+  finding: the runner template printed "run did not complete cleanly" on
+  a COMPLETE run with one crashed-subject case — reworded in `b566654`,
+  owing a regression slot next round. Journal entry 2026-08-05 records
+  the verdict per fix, closing this task's third acceptance clause.)*
+  Shakedown 11 — live re-test of the shakedown-10 fix round
   (verification rule 6: every fix in commit `43cc1ca` is behavioural and
   stays unverified until a live run re-tests it). Two branches born in
   that round have never been driven live and must be: /retro appending

@@ -3,7 +3,7 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-04. **PUBLIC as of 2026-08-03** — the repo was
+> **Last update**: 2026-08-05. **PUBLIC as of 2026-08-03** — the repo was
 > flipped after the §13 falsification round closed and CI went green
 > (run 30765510782). Two pre-flip rechecks both returned NOT READY; the
 > second found the first's fix had reintroduced the bug it fixed, which
@@ -83,11 +83,81 @@ bash docs/guard-matrix.sh "$PWD"   # 90 seeded-defect cases proving the guards f
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 20/23 | **All buildable work done.** 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**. Remaining 3: 4.3 telemetry and 4.4 `setup --global` (both deliberately gated on real adopters, not blocked) + **4.42 shakedown 11** — the rule-6 re-test the shakedown-10 fix round owes |
+| 4.5 — Post-launch hardening | 🔶 21/23 | **All buildable work done.** 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). Remaining 2: 4.3 telemetry and 4.4 `setup --global` — both deliberately gated on real adopters, not blocked |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Shakedown 11: all five fixes held, and the report survived falsification (2026-08-05)
+
+**4.42 closed — the shakedown-10 fix round is live-verified.** Two blind
+venues this time: `tiq`, a deterministic keyword labeler whose golden set
+made the headline itself the verdict on F1's consumed form — a
+flag-honoring runner produces the honest **70.0% (7/10), BELOW TARGET by
+20**, while a flag-ignoring one would print 90% and MEETS TARGET — and
+`pulse`, which isolated the missing-credential branch by stating the
+invocation in the spec so ONLY the token was absent. The scaffolded
+run.py, written by the live model from the fixed template, carried
+`fold = not case.get("case_sensitive", False)`: hp-005 (`Positive`,
+unflagged) passed by folding while sh-001/sh-002 failed on shape — the
+same subject defect, forgiven and caught on adjacent rows, exactly as
+designed.
+
+**Verdict per fix, each verified at file:line against the venues on
+disk:** F1 HELD (the discriminator above). F2a HELD in both branches —
+venue A's spec named no invocation, so a dated addition cites *PLAN.md
+task 1.1's acceptance line* as source; venue B's spec named it, so no
+addition was written (spec untouched since seed, confirmed in git). F2b
+HELD in all three layers — the skill's verdict led with NO SCORE, the
+scaffold printed its `NO SCORE: every case errored…` line, and the
+results file is five error records with zero passes; no credential set,
+invented, or mocked. F3 HELD — the retro sits at the BOTTOM of the
+chronological hand-kept `# LOG — tiq`, divergence named inside the
+entry, heading adapted to the journal's own style, and the retro commit
+touched JOURNAL.md only. F4 HELD — every audit citation matched
+`grep -n` (`:15`, `:19`, `:24`, `:27-29`, `:34-35`), where round 10's
+audit had three wrong; the behavioral claims (`badge` → negative,
+`goods` → positive) also reproduce live. Run-command-settles-stack
+re-held in both venues as a free regression check.
+
+**The report survived falsification with zero broken claims** — round
+10's had two. The operator's honest-scope list did real work too,
+naming what no round has tested yet: the interactive halves of the
+unattended contracts, the >500-line retro retrieval rule, and
+tickets-mode deltas.
+
+**The seed accident struck twice, and was caught twice.** Round 10's
+venue journal claimed hardening its code lacked; this round I ticked
+Phase 1 `[x]` while the seeded 07-30 entry recorded "9/10 lowercase"
+against an exit criterion demanding the contract — an unplanned false
+tick. /retro caught it unprompted: "the box was ticked on a day whose
+own record shows the criterion failing." Two consecutive rounds where
+an authoring accident became a blind-discovery test and a skill found
+it — the strongest capability evidence these rounds have produced, and
+none of it was designed.
+
+**One new finding, fixed (`b566654`):** the runner template printed
+`errors: N — run did not complete cleanly` on venue A's COMPLETE run —
+all 10 cases have records; one subject crashed. The operator had to
+argue against the scaffold's own wording in an otherwise-honest report.
+Reworded to name errored cases without claiming incompleteness; the
+template block re-executed after the edit. Behaviourally-found, so this
+wording owes a slot in the next round's regression segment (rule 6 —
+proportionate: one print string). No guard touched; matrix unchanged.
+
+**Outward-facing, user-called each time:** `main` pushed
+(`2c2a5aa..76af65a`), CI green (run 30938383854), then the empty GitHub
+About filled — description (the README's first sentence compressed,
+deliberately count-free so it cannot go stale) and six topics, both
+verified by API read-back, not assumed from the command.
+
+Validation close: check.sh **25 checks**, all clean; guard-matrix **90
+cases** (unchanged — no guard edited since the 90/90 double run at
+`43cc1ca`); controls **72** passing; **23 skills**; wave 4.5 **21/23**
+— 4.42 ticked with all three acceptance clauses met, 4.3/4.4 remain,
+both adopter-gated. Venues from rounds 10 and 11 stay on disk pending
+the user's deletion call.
 
 ### Shakedown 10 came back clean, its findings closed, and the review broke the fix (2026-08-04, night)
 
