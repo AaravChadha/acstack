@@ -1487,6 +1487,21 @@ reordered, if any.
   fix. This task exists so the rule-6 debt has a carrier in the plan,
   not only in journal prose — the gap /resume flagged on 2026-08-04.
 
+- [ ] **4.43** Decide the front door before opening wave 5 — carrier for
+  the 2026-08-03 external survey's strategic read, which sat in JOURNAL
+  prose with no task until 2026-08-05. The datum: a single prose
+  CLAUDE.md pulls ~199k★ against every comprehensive pack — the market
+  rewards one sharp idea, not breadth. The question it forces: is
+  acstack's sharp idea (verification — guards proven to fire, evals
+  never inflated, evidence in the consumed form) legible to a stranger
+  in thirty seconds from README/PRINCIPLES, or buried under a 23-skill
+  table? Options, none pre-decided: (a) sharpen PRINCIPLES.md and
+  README's opening into the one-sharp-idea front door and hold wave 5
+  until done; (b) open wave 5 as planned and revisit this at its close;
+  (c) decline the read, with the reason written. **Acceptance:** a dated
+  verdict recorded on this task; if (a), the sharpening work lands as
+  its own task with its own acceptance in the same edit (rule 3).
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
@@ -1610,6 +1625,20 @@ error already produced two bugs this wave-planning round.
   reading the file instead of the parsed result. Prior art: gstack
   `/autoplan`, BMAD's parallel review subagents. Build LAST — it is
   worthless until 6.1–6.5 exist.
+
+  > **Routed here from the 2026-07-30 survey (carrier note added
+  > 2026-08-05):** three review-mechanics pieces mined but not yet landed
+  > in any skill — (a) impeccable `critique.md`: two INDEPENDENT
+  > assessments of one resolved target, then a synthesis, with the chat
+  > deliverable kept separate from the persisted snapshot; (b) the
+  > code-review plugin's per-finding validation subagents: every finding
+  > is adversarially validated or DROPPED, never shipped unvalidated —
+  > the falsification practice this repo already runs by hand, due to
+  > become skill text here; (c) security-guidance's layered-config
+  > truncation priority: when layered config must be cut to fit, which
+  > layer survives is an explicit ordering, never silent loss. Until this
+  > note, (c) had no carrier anywhere — the rule-3 orphan found
+  > 2026-08-05. Sources: docs/survey-2026-07-30.md, Review mechanics.
 
   > **Attribution correction (2026-07-29):** this item previously
   > credited the independent review with finding the `sk-live-`
