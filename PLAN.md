@@ -1493,8 +1493,7 @@ reordered, if any.
   legible in thirty seconds is the thing most likely to produce
   adopters; wave 5's gates serve people who have already adopted. The
   sharpening work is 4.44, landed in this same edit per this task's own
-  acceptance. First real-adopter signal arrived the same day: the user
-  is adopting the pack for a real project of their own.)* Decide the
+  acceptance.)* Decide the
   front door before opening wave 5 — carrier for
   the 2026-08-03 external survey's strategic read, which sat in JOURNAL
   prose with no task until 2026-08-05. The datum: a single prose

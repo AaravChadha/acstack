@@ -83,11 +83,74 @@ bash docs/guard-matrix.sh "$PWD"   # 90 seeded-defect cases proving the guards f
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 21/23 | **All buildable work done.** 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). Remaining 2: 4.3 telemetry and 4.4 `setup --global` — both adopter-gated, and the first real-adopter signal exists as of 2026-08-05. **4.43/4.44 done:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed) |
+| 4.5 — Post-launch hardening | 🔶 21/23 | **All buildable work done.** 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). Remaining 2: 4.3 telemetry and 4.4 `setup --global` — both adopter-gated. **4.43/4.44 done:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed) |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### The front door: Karpathy's datum becomes a verdict, and the survey's last orphans get carriers (2026-08-05, later)
+
+**It started as a disposition audit.** Asked what had been taken from the
+surveyed skill repos, enumerating both survey records against the tree
+found everything landed or carried — except two items leaking value. The
+2026-08-03 external survey's **strategic read** (a single prose CLAUDE.md
+pulls ~199k★ against every comprehensive pack; the market rewards one
+sharp idea, not breadth; "should shape the roadmap") had sat in journal
+prose with **no carrier since it was written**. And security-guidance's
+**layered-config truncation priority** — mined 2026-07-30, routed
+nowhere — was a clean rule-3 orphan. Both got carriers in `3f47f51`:
+**4.43** (decide the front door before wave 5, verdict required, options
+not pre-decided) and a routing note on **6.6** naming the three
+review-mechanics pieces /board must inherit (critique.md's
+independent-assessments-then-synthesis, per-finding validation
+subagents, truncation priority).
+
+**4.43's verdict (`b7b358e`): option (a) — front door before wave 5.**
+Reason recorded on the task: the remaining 4.5 tasks wait on adopters,
+and adopters are produced by a legible front door, not by more gates;
+wave 5's pre-flight family serves people who have already adopted.
+
+**4.44 shipped the sharpening same-day (`35c9b27`).** README now opens
+with the one idea — *a claim is only as good as the thing that can
+falsify it* — instantiated five ways (phase/command, eval/results-file,
+guard/seeded-defect, migration/GO-NO-GO, resume/committed-record)
+before any table; PRINCIPLES.md names it in one sentence. The
+stranger-read pass, framed to falsify, confirmed a cold reader of lines
+1–30 lands on the idea — and found **three defects in the draft, every
+one in the author's favour**: "three committed markdown files"
+contradicted by the next paragraph's four and by /resume's own contract
+(fixed count-free: "the repo's own committed record"); "several dozen"
+inflating 25 checks *inside the sentence written to stop miscounting*
+(now "more than two dozen"); and "**Every** principle" falsified by its
+own list — The-word-is-the-mode is a conduct rule, nothing in it can
+mechanically fail (now "Most… the rest keep the conduct around those
+claims honest"). It also caught a positional loss: the shared-database
+GO/NO-GO, the old opening's most searchable safety feature, had left
+the first screen — restored as the fifth instantiation.
+
+**The audit's bonus: a fourth count-drift this week.** PRINCIPLES.md's
+"Mechanical over rhetorical" — the principle *about* replacing prose
+with checks — claimed "fifteen numbered sections (sixteen checks with
+3b)" against a reality of 22 and 25. Joins ARCHITECTURE's stale
+enumeration (2026-08-04) and this file's own stale "16" in the same
+class: a count duplicated outside its single enumeration goes stale.
+The sentence now describes growth count-free and names its own history.
+
+**Also this session, before the front-door arc:** the three shakedown
+venues were deleted after inspection (no remotes, clean trees, no pack
+references, evidence preserved in this file and the round records) —
+superseding the "stay on disk pending the user's call" line in the
+previous entry. The GitHub About was then re-aligned to the new front
+line ("Claude Code skills that prove their work instead of describing
+it — runnable exit criteria, honest evals, guards shown firing"),
+verified by API read-back.
+
+Validation close: check.sh **25 checks**, all clean; guard-matrix **90
+cases** (no guard changed in this arc); controls **72**; **23 skills**;
+wave 4.5 **23/25** — 4.43 and 4.44 done, 4.3/4.4 remain, both
+adopter-gated. Wave 5 stays held behind nothing now except its own
+spec pass: the front door the verdict demanded is shipped.
 
 ### Shakedown 11: all five fixes held, and the report survived falsification (2026-08-05)
 
