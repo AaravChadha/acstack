@@ -1487,7 +1487,15 @@ reordered, if any.
   fix. This task exists so the rule-6 debt has a carrier in the plan,
   not only in journal prose — the gap /resume flagged on 2026-08-04.
 
-- [ ] **4.43** Decide the front door before opening wave 5 — carrier for
+- [x] **4.43** *(Verdict 2026-08-05 — option (a): sharpen the front door
+  and hold wave 5 until it is done. Reason: the two remaining 4.5 tasks
+  wait on real adopters, and a front door that makes the sharp idea
+  legible in thirty seconds is the thing most likely to produce
+  adopters; wave 5's gates serve people who have already adopted. The
+  sharpening work is 4.44, landed in this same edit per this task's own
+  acceptance. First real-adopter signal arrived the same day: the user
+  is adopting the pack for a real project of their own.)* Decide the
+  front door before opening wave 5 — carrier for
   the 2026-08-03 external survey's strategic read, which sat in JOURNAL
   prose with no task until 2026-08-05. The datum: a single prose
   CLAUDE.md pulls ~199k★ against every comprehensive pack — the market
@@ -1501,6 +1509,22 @@ reordered, if any.
   (c) decline the read, with the reason written. **Acceptance:** a dated
   verdict recorded on this task; if (a), the sharpening work lands as
   its own task with its own acceptance in the same edit (rule 3).
+
+- [ ] **4.44** Sharpen the front door (4.43's option (a), same-edit
+  carrier). One sharp idea, stated before anything else: verification —
+  guards proven to fire on seeded defects, evals never inflated,
+  evidence read from the consumed form, and a fresh session caught up
+  from three committed documents. README's opening and PRINCIPLES.md
+  lead with that idea; the skill table sells it afterwards, never
+  substitutes for it. Constraint: the marker-fenced blocks README
+  carries (`acstack:principles` is canonical there, `acstack:runtime`
+  is budgeted) are guarded by §1/§12 — the sharpening edits prose
+  around them, never inside them. **Acceptance:** README's first screen
+  (before any table) states the idea and what a stranger gets from it;
+  PRINCIPLES.md's opening names it in one sentence; an independent
+  stranger-read pass — framed to falsify, per house practice — confirms
+  the first thirty lines answer "what makes this different" without
+  scrolling; `scripts/check.sh` stays clean.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
