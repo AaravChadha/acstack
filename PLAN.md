@@ -1510,8 +1510,25 @@ reordered, if any.
   verdict recorded on this task; if (a), the sharpening work lands as
   its own task with its own acceptance in the same edit (rule 3).
 
-- [ ] **4.44** Sharpen the front door (4.43's option (a), same-edit
-  carrier). One sharp idea, stated before anything else: verification —
+- [x] **4.44** *(Done 2026-08-05: README's first screen now leads with
+  the one idea — "a claim is only as good as the thing that can falsify
+  it" — instantiated five ways (phase/command, eval/results-file,
+  guard/seeded-defect, migration/GO-NO-GO, resume/committed-record)
+  before any table; PRINCIPLES.md names it in one sentence. The
+  stranger-read falsification pass confirmed a cold reader of lines
+  1–30 lands on the intended idea — and found THREE defects in the
+  first draft, every one in the author's favour: "three committed
+  markdown files" contradicted by the very next paragraph's four and by
+  /resume's own contract (fixed count-free: "the repo's own committed
+  record"), "several dozen" inflating 25 checks inside the sentence
+  written to stop miscounting (now "more than two dozen"), and "Every
+  principle" falsified by The-word-is-the-mode (now "Most… the rest
+  keep the conduct around those claims honest"). It also caught a
+  positional loss: the shared-database GO/NO-GO — the old opening's
+  most searchable safety feature — had left the first screen; restored
+  as the fifth instantiation. Marker-fenced blocks untouched (verified
+  against the diff); check.sh clean.)* Sharpen the front door (4.43's
+  option (a), same-edit carrier). One sharp idea, stated before anything else: verification —
   guards proven to fire on seeded defects, evals never inflated,
   evidence read from the consumed form, and a fresh session caught up
   from three committed documents. README's opening and PRINCIPLES.md

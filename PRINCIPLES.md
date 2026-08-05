@@ -5,6 +5,11 @@ file is the *why* behind each one. Nothing here is aspirational: every
 principle exists because its absence produced a specific defect, and
 most are enforced by `scripts/check.sh` rather than by good intentions.
 
+**The one idea:** a claim is only as good as the thing that can falsify
+it. Most of the principles below turn some claim — *done*, *safe*,
+*passing*, *remembered* — into something that can visibly fail; the
+rest keep the conduct around those claims honest.
+
 **Positioning:** other packs simulate a team; acstack encodes a
 discipline. The difference shows up in what gets written down and where
 it lives.
@@ -69,9 +74,11 @@ you are most motivated to negotiate them. A command is not.
 ## Mechanical over rhetorical
 
 Where a rule can be a check, it becomes a check. `scripts/check.sh` has
-grown to fifteen numbered sections (sixteen checks with 3b); `allowed-tools` declarations replace prose
-promises about not writing; `docs/guard-matrix.sh` proves each guard
-fires before it is trusted.
+grown from six checks to more than two dozen (its header comment is
+their single enumeration — a count repeated here went stale twice
+before this sentence stopped carrying one); `allowed-tools`
+declarations replace prose promises about not writing;
+`docs/guard-matrix.sh` proves each guard fires before it is trusted.
 
 **Why, with numbers:** three audit rounds on this repo found roughly 25,
 39, and 35 defects — while the share *caused by the previous round's

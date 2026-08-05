@@ -1,13 +1,20 @@
 # acstack
 
-A skill pack for Claude Code that encodes an engineering discipline: frozen
-briefs, plans with runnable exit criteria, journals with exact numbers,
-decisions that get superseded instead of deleted, eval scores that are never
-inflated, and a hard gate before anything touches a shared database.
+**Claude Code skills that prove their work instead of describing it.**
 
-Where other packs simulate a team, acstack encodes a discipline — and all of
-its memory lives in **your repo**, as committed markdown, not in hidden
-machine state.
+One idea, applied everywhere: a claim is only as good as the thing that
+can falsify it. So a phase is done when its named command passes — not
+when prose says it went well. An eval score is recomputed from the
+results file on disk — never tallied by hand, never edited upward. A
+guard counts as coverage only after it has been shown firing on a
+seeded defect. A migration against a shared database starts from a
+written GO/NO-GO, never from hope. And a fresh session catches up from
+the repo's own committed record, not from anyone's memory.
+
+Where other packs simulate a team, acstack encodes a discipline — and
+all of its memory lives in **your repo**, as committed markdown (BRIEF,
+PLAN, JOURNAL, LEARNINGS), diffable and reviewable in a pull request,
+not in hidden machine state.
 
 ## Skills
 
