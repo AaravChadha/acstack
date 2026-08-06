@@ -64,11 +64,11 @@
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27); **public as of 2026-08-03**, `main` pushed.
 - Roadmap runs to 39 skills (those built, plus wave 5's 5, wave 6's 7 and
-  wave 7's 4), **<!-- count:open-scheduled -->19<!-- /count --> scheduled
+  wave 7's 4), **<!-- count:open-scheduled -->22<!-- /count --> scheduled
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,
-  **<!-- count:wave45-open -->3<!-- /count -->**) → 5 (5) → 6
+  **<!-- count:wave45-open -->6<!-- /count -->**) → 5 (5) → 6
   (7) → 7 (4), plus 5 unscheduled browser-layer items. Full detail in
   PLAN.md.
 - Next: **wave 4.5**, which reopened 2026-08-06 after being called done.
@@ -82,8 +82,10 @@
   config, pins the subject model, and floors every category against the
   last committed run; the doc set checks that owed work names a live
   carrier; count drift and stranded modes both block at commit time.
-  **4.50 is the next move and it is behavioural** — four segments no
-  mechanical check can discharge, including 4.45's and 4.49's live halves.
+  **Shakedown 12 ran and closed five segments**; 4.50 stays open on the
+  interactive contracts, tickets-mode deltas, /plan and /do splits, and
+  4.30's design acceptances. It also produced 4.51 (the gate's
+  partial-crash blindness), 4.52 and 4.53.
   4.3 and 4.4 stay adopter-gated. Wave 5 still needs a spec pass before
   code — 5.1–5.4 carry no acceptance lines.
 
@@ -105,11 +107,101 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->28<!-- /count -->/<!-- count:wave45-total -->31<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 is PARTIAL, not ticked** — `/plan` split 12,181 → 7,175 bytes with 0 lines lost, `do`/`triage`/`design`/`eval-run` still to go. Still open: 4.49, **4.50** (four behavioural segments), plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
+| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->28<!-- /count -->/<!-- count:wave45-total -->34<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. Still open: **4.50** (segments still owed), **4.51/4.52/4.53** (round-12 carriers), plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Shakedown 12: five segments held, and the round found a hole in a guard built four hours earlier (2026-08-07)
+
+**Four blind venues, four fresh sessions, five segments HELD** — and the
+round's value was not the five. It was the defect it found in
+`regression-gate.py`, shipped the same day as part of 4.46.
+
+| Segment | Verdict |
+|---|---|
+| (a) `b566654` runner error line | HELD |
+| 4.46 per-category non-regression floor | HELD |
+| (d) 4.45 isolation + model pin | HELD, 4/4 |
+| (d) 4.49 `/triage` split | HELD, exactly 1/1/2/2 |
+| (b) `/retro` >500-line retrieval | HELD |
+
+**4.46 took the hard path, which is the only reason the verdict counts.**
+Venue A's headline was **66.7% against a ≥60% target** — genuinely
+passing, deliberately seeded that way — and the session still returned *do
+not ship*, naming the mechanism: *"the exact shape /ship's gate 3 cannot
+see: it compares one number to one target."* Refusal had gone 100% → 0%
+while the overall doubled from 33.3%.
+
+**4.45 came back 4/4 and then some.** The scaffolded runner carried
+`--setting-sources "" --bare --disable-slash-commands`, the
+`SUBJECT_MODEL` guard fired (`exits 1 with NO SCORE`), and the session
+ADDED `--strict-mcp-config` and alias-rejection (`opus`/`sonnet` re-point
+on release and silently un-pin a run) — both stronger than what the
+template ships. It also flagged one claim as unverified: that
+`--setting-sources ""` means "no sources", since the help documents the
+valid values and says nothing about empty. **It was right that I inferred
+it.** Verified afterwards: `--setting-sources bogus` is rejected with
+*"Invalid setting source: bogus. Valid options are: user, project,
+local"*, and `--setting-sources ""` is accepted and runs — each token is
+validated, so an empty string parses to zero sources. The claim holds; it
+should not have shipped un-run.
+
+**The finding: the gate is blind to partial crashing.** Venue A noticed
+the headline and the gate treat errored records differently and called it
+"correct by their own rules". Chasing it down turned a note into a defect.
+`regression-gate.py:44` filters to `status == "scored"` before computing
+rates, so a category whose cases start CRASHING is compared on the
+survivors alone. Reproduced: refusal **4/4 passing → 1 passing + 3
+erroring** is a real collapse from **100% to 25%**, and the gate printed
+`no category regressed` and exited **0**. A category that vanishes
+entirely is caught; partial crashing — the likelier shape — is not. That
+is the failure the gate exists to prevent, inside the gate. Carried as
+**4.51**, and because it was found behaviourally its fix owes a live
+re-test under rule 6.
+
+**Two more carriers from the same round.** **4.52:** the spec template
+never says how `concept` keywords are delimited, so a comma-free expected
+like `decline: not a diagnostic tool` becomes one literal keyword and a
+correct refusal scores FAIL — grader brittleness manufactured by the
+pack's own ambiguity, failing in the inflating direction. **4.53:** the
+runner contract says "exit non-zero when the run could not complete" and
+says nothing about completing WITH failures — zero occurrences of any
+such rule across three files — so /ship cannot distinguish a crash from a
+bad score, which is the distinction item 7 exists to protect.
+
+**The round beat its own discriminators twice, and both times the session
+was better than the test.** `/retro`'s window test assumed a whole-file
+read would compare endpoints (20% → 46%) and report *rising*; instead it
+stated the window, found the **peak at 82% on S32 and 12 consecutive
+falling sessions**, and returned *off plan*. Reading the shape rather
+than the endpoints is better analysis than the test rewarded. It also
+detected that the venue was synthetic — *"the eval moves in exact 2-point
+steps for 32 sessions… the record reads as templated rather than
+observed"* — and said so before drawing conclusions from any number.
+
+**Six defects in the venues were mine, and the first round was compromised
+by two of them.** The first pass predicted 66.7% MEETS TARGET; the real
+figure was 57.1% BELOW target, because I assumed errored cases leave the
+denominator when the template counts a crash as a failure — which blunted
+the discriminator into a case where a headline-only run would also have
+blocked. And all 26 journal entries were byte-identical, so the trend half
+was untestable; the session caught that and refused to chart a flat line.
+**Both fixtures were rebuilt and both segments re-run** rather than
+recorded as soft HELDs — a verdict that cannot be stood behind is the
+thing this round exists to avoid. Also mine: a spec claiming 7 cases
+against 9 in the golden set, `er-001` mis-categorised as happy-path, and
+two commits with identical subjects.
+
+**Not covered, and still owed:** the interactive halves of the unattended
+contracts; the tickets-mode deltas, since all four sessions ran in
+document mode; `/plan`'s and `/do`'s splits, only `/triage`'s was
+exercised; and 4.30's design acceptances, excluded because judging a
+`/design` output is a round's work on its own. 4.50 stays open.
+
+Validation close: check.sh **29 checks**, all clean; guard-matrix **105
+cases**; controls **85**; **23 skills**; wave 4.5 **28/34**.
 
 ### Four guards built, and every one of them caught its own author (2026-08-06, later)
 

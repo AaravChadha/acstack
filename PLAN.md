@@ -1937,7 +1937,15 @@ reordered, if any.
   §24 proves the rule is still *written* at all three sites and controls.sh
   proves the documented flags still *catch* a seeded unisolated runner —
   neither can prove a model reads them and complies, which is precisely
-  the gap rule 6 exists for. **Out of scope:** new-ground exploration. A round that only looks
+  the gap rule 6 exists for.
+  *(Round 12 ran 2026-08-07 and closed (a), (d) and part of (b) — see the
+  journal entry. **Still owed and NOT covered:** the interactive halves of
+  the unattended contracts; the tickets-mode deltas, since all four
+  sessions ran in document mode; /plan's and /do's splits, only /triage's
+  was exercised; and (c) 4.30's design acceptances, excluded by design.
+  Round 12 also produced three new carriers — 4.51, 4.52, 4.53 — and
+  4.51's fix is itself behaviourally-found, so it re-enters here.)*
+  **Out of scope:** new-ground exploration. A round that only looks
   forward cannot catch these, because a fix becomes old ground the moment
   it is committed — that is the whole reason rule 6 exists. **Acceptance:**
   a fresh-session round on a blind venue covers all three segments and
@@ -1946,6 +1954,60 @@ reordered, if any.
   least one case errors and the rest complete, with the scaffolded
   runner's printed line naming the errored cases without claiming the run
   was incomplete. Findings get carriers in the same edit.
+
+- [ ] **4.51** Close the non-regression gate's partial-crash blindness.
+  **Found behaviourally by shakedown 12, in code shipped the same day.**
+  `regression-gate.py:44` filters to `status == "scored"` before computing
+  per-category rates, so a category whose cases start CRASHING is compared
+  on the survivors alone. Reproduced 2026-08-07: refusal 4/4 passing → 1
+  passing + 3 erroring is a real collapse from 100% to 25%, and the gate
+  printed `no category regressed` and exited **0**. A category that
+  vanishes ENTIRELY is caught by the existing `gone` check; partial
+  crashing — the likelier shape, since a subject usually breaks on some
+  inputs — is invisible. That is the exact failure the gate exists to
+  prevent, in the gate itself. **Design question, not pre-decided:**
+  whether the denominator becomes all non-skipped records (so an error
+  counts against the category, matching how the headline treats it), or
+  the gate blocks separately on a drop in a category's SCORED count, or
+  both. The headline and the gate currently disagree by design and the
+  round noted it as "correct by their own rules" — decide whether that
+  divergence stays. **Acceptance:** the reproduction above BLOCKS; a run
+  where a category's scored count is unchanged still passes; both shown
+  failing before they pass; and rule 6 applies — the fix is
+  behaviourally-found, so it owes a live re-test [owed: 4.50].
+
+- [ ] **4.52** Say what `concept` expecteds are separated by. The spec
+  template documents the rule as "expected lists concept keywords; pass =
+  all present in any phrasing (normalized substring)" and never says how
+  the keywords are delimited, nor what a comma-free expected does. A
+  runner author has to guess. Shakedown 12 caught the consequence live: an
+  expected of `decline: not a diagnostic tool` has no commas, so a
+  comma-splitting grader treats the whole phrase as ONE literal keyword
+  the answer must contain verbatim — and a correct refusal
+  ("I'm sorry, I cannot help with that") scores FAIL. The category's
+  target was 100%, so it would have read 0% for grader reasons with a
+  perfectly good subject. That is grader brittleness manufactured by the
+  pack's own ambiguity, and it fails in the inflating-the-problem
+  direction rather than the safe one. **Acceptance:** the template states
+  the separator and what a single-keyword expected means; a fixture with
+  a comma-free multi-word expected grades the way the template says, shown
+  failing first.
+
+- [ ] **4.53** Decide what a completed-with-failures run exits. The
+  runner contract says "Exit non-zero when the run could not complete, so
+  /ship's gate 3 cannot mistake a crash for a pass" (contract item 7, and
+  again in the Node section) and says NOTHING about a run that completes
+  with failing cases — verified 2026-08-07: zero occurrences of any
+  completed-with-failures exit rule across runner-template.md,
+  /eval-run and /ship. Two readers implement it two ways, and /ship then
+  cannot distinguish "the runner crashed" from "the eval scored badly" —
+  which is precisely the distinction item 7 exists to protect. Shakedown
+  12's runner exited 1 on a run where all nine cases produced records.
+  **Out of scope:** the gate's own exit code, which correctly signals
+  BLOCKED. **Acceptance:** the contract states both cases explicitly, and
+  /ship's gate 3 says which exit code it reads as which; a fixture run
+  that completes with failures and one that cannot complete are
+  distinguishable by exit code alone, shown failing first.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
