@@ -1688,6 +1688,46 @@ reordered, if any.
   description guard, the palette check whose `\b` matched nothing), and a
   count guard never seen failing is decoration.
 
+- [ ] **4.49** Split the heavy skills so an invocation loads only the
+  procedure it selected. Measured 2026-08-06: the always-on cost is the
+  skill listing at 9,523 bytes over 21 model-invocable descriptions
+  (~2,540 tokens, ~1.3% of a 200k window) — small, and not worth
+  attacking. The cost that scales with use is the BODY: 182,421 bytes
+  across 23 SKILL.md files, average 7,931, of which six carry 63,711 =
+  35% of all body text. `/plan` is the clearest case — `Mode: seed`,
+  `Mode: build`, `Mode: replan`, `Tickets mode` and `Hackathon mode` all
+  sit in one 12,181-byte body, so `/plan replan` pays for four modes it
+  will not use. **`/audit` is the model, not a candidate**: 8,975 bytes
+  of dispatch and shared rules with its four targets' detail already in
+  `references/` (16,924 bytes, fetched on selection). The pattern to
+  copy is the one this pack already ships. **Candidates need identifying
+  per skill, not assumed from size** — `do` (10,428) and `triage`
+  (9,625) carry zero reference files and are the strongest; `design`
+  (11,814) and `eval-run` (10,688) have one each and need reading before
+  a claim. **Out of scope, deliberately:** trimming the frontmatter
+  descriptions — that is the discovery surface, `/ship` already shipped
+  once with a YAML-truncated description that lost its whole trigger
+  sentence, and ~500 tokens a session is the wrong side of that trade.
+  Also out of scope unless §13 is extended to follow it: collapsing the
+  818-byte runtime block into a one-line `bin/` call, which would save
+  ~175 tokens per invocation but move the block off the surface §13 reads
+  to certify the read-only claim, undoing 4.41's auditability on
+  purpose. **Sequencing:** this is gated behind 4.45 — without an
+  isolated runner there is no way to show the split preserved behaviour,
+  and compressing first and checking later means never knowing which cut
+  cost what. **This is a refactor of shipped skills, so /refactor's own
+  rule binds:** behaviour preserved, proven before and after, and a
+  count that DROPS is the finding rather than a detail. **Acceptance:**
+  (a) each split skill's SKILL.md shrinks by a stated before → after
+  byte count, with the totals above as the baseline; (b) check.sh gains
+  a guard that every mode or target named in a dispatch has a reachable
+  reference file — the failure mode is a split that orphans a mode,
+  which is INVISIBLE in a green run because the skill still loads and
+  simply stops knowing how to do one thing; shown failing first; and (c)
+  a live round drives each split skill in each of its modes and gets the
+  same report shape as before the split — behavioural, so it owes a
+  shakedown slot under verification rule 6.
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
