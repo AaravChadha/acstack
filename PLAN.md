@@ -972,6 +972,17 @@ reordered, if any.
   working model for `--hook`. Scope question to settle at build: also a
   Stop-hook reminder when the session ends with unjournaled commits
   (claude-mem's Stop concept as a one-line reminder, never a daemon).
+  *Note (2026-08-06, survey):* a second and smaller working model —
+  i-have-adhd's `hooks/always-on.sh`, 25 lines of POSIX sh (not bash, so
+  it runs wherever Claude Code runs a command hook). Five properties
+  worth copying over the 49-line version: opt-in gated on a flag file
+  existing, so the hook is inert until the user creates it; every failure
+  path exits 0, so it can never block session start; `SessionStart`
+  matched on `startup|resume|clear|compact` rather than startup alone;
+  the skill path resolved from `$0` instead of a trusted env var; and the
+  injected text names its own off-switch. Its flag file is also the
+  contamination source 4.45 exists to stop — the hook and the warning
+  about the hook ship together, which is the pairing to imitate.
 - [x] **4.10** *(Done 2026-08-03: fourth /audit target. references/test-audit-rules.md covers five classes — assertion-free tests, tautological assertions, mocks stubbing the unit under test, unread snapshots + accumulating skips, and the mutation spot-check (the only one that PROVES rather than suggests, with a revert-and-verify rule). The set-claim trap was live and all four sites changed together: the frontmatter description (three → four targets, verified re-parsed in the live listing), argument-hint, body, and README's row. fixtures/audit-tests/ seeds all three acceptance defects and was demonstrated green under a mutation returning 0.0 instead of 20.0 — a confirmed coverage hole. **Two defects caught in itself:** the fixture could not RUN (bare `def test_` needs pytest, which the pack does not ship → rewritten on stdlib unittest, since a fixture that cannot execute proves nothing), and my own documented pattern used a backreference — an INVALID ESCAPE in POSIX ERE, so the grep errors out and matches NOTHING, the same class as \b. Its positive control caught it on the first run; §3b guarded \b and \s but not backreferences, so the guard was extended and shown failing first. Matrix 79 → 81.)* /audit tests — fourth target on the existing skill
   (*originally wave 5; pulled into wave 4 then settled in 4.5 by the split, all 2026-07-29*). Sweeps an existing suite
   for tests that pass without catching: assertion-free and tautological
@@ -1541,6 +1552,88 @@ reordered, if any.
   stranger-read pass — framed to falsify, per house practice — confirms
   the first thirty lines answer "what makes this different" without
   scrolling; `scripts/check.sh` stays clean.
+
+- [ ] **4.45** Isolate the eval runner from the operator's own agent
+  configuration. An eval that runs the subject through whatever the
+  operator has installed is not measuring the subject; user-level skills,
+  plugins, hooks, memory and output styles all leak into every condition,
+  and they leak into the BASELINE arm hardest — where their effect reads
+  as the candidate performing worse than it does, or better. acstack has
+  this exposure by construction: `./setup` symlinks 23 skills into
+  `~/.claude/skills`, so a pack author running the pack's own eval is the
+  worst case. Verified absent 2026-08-06: zero hits for isolation, leak,
+  contamination or baseline language across `skills/eval-spec/`,
+  `skills/eval-run/` and `skills/ship/`. Two halves: (a) /eval-spec's
+  template requires the run command to state its isolation flags and
+  names what leaks without them; (b) /eval-run's scaffolded runner emits
+  them and pins the SUBJECT model explicitly — unpinned, the eval
+  silently runs whatever the operator or the CLI release defaults to, so
+  the model varies between operators and drifts over time. Grader-side
+  pinning is already covered (`eval-spec/references/grader-rules.md`,
+  "Rubrics are pinned or they drift") — this is the subject side, which
+  is not. *Source: 2026-08-06 survey of i-have-adhd, whose eval README
+  names its own always-on flag file as the sharpest case — it would
+  inject the skill's full ruleset into the baseline and make the
+  comparison measure the skill against itself.* **Out of scope:** spend
+  ledgers and per-condition cost caps; a budget is not a contamination
+  control. **Acceptance:** eval-spec's template carries an isolation line
+  naming at least user-level skills, hooks, memory and output styles; a
+  scaffolded /eval-run runner for a Claude-CLI stack emits an isolation
+  flag and an explicit model pin; and a fixture seeding a contaminating
+  user-level config demonstrates the check firing, shown failing before
+  it passes (verification rule 2).
+
+- [ ] **4.46** Add a per-dimension non-regression floor to the eval
+  release gate. /ship gate 3 today compares one headline number against a
+  fixed target ("Below target BLOCKS"), and /eval-spec's category
+  minimums are floors on the GOLDEN SET's composition (≥10 happy-path, ≥5
+  edge/adversarial/refusal) — neither compares a run against the previous
+  run. So a change that lifts the headline while degrading correctness or
+  refusal behaviour passes both gates, which is the never-inflate rule
+  losing to an aggregate. *Source: 2026-08-06 survey of i-have-adhd,
+  whose release gate holds "correctness and safety are each within 0.1
+  points of baseline or better" separately from the weighted score.*
+  Design call to settle at build, deliberately NOT pre-decided: acstack's
+  evals are per-case pass/fail with category minimums rather than
+  weighted multi-dimensional scores, so the transferable form is probably
+  "no category may fall below its previous run's pass rate" rather than a
+  float floor — and whether the baseline is the last committed results
+  file or the spec's stated target is the second half of that call.
+  **Out of scope:** gating public comparison claims on identical
+  cases/models/trials — the honesty half is already carried by the
+  never-inflate principle and /audit eval. **Acceptance:** TBD — needs
+  the baseline-source decision above, recorded on this task before build.
+  The demonstrable half is fixed regardless: a seeded results pair where
+  the headline RISES and one category's pass rate FALLS must block, shown
+  failing before it passes.
+
+- [ ] **4.47** Add a reachability check over the doc set — work named as
+  owed with no open task owning it. AGENTS.md's third verification rule
+  ("anything named as needed work gets a carrier task in the same edit")
+  has now been broken three times, and every time a human-driven audit
+  caught it rather than a check: three cross-cutting rules binding with
+  nobody owning them, then two proposed skills named in analysis and
+  never scheduled, then `b566654`'s regression debt — written as owed in
+  both JOURNAL.md:209 and inside 4.42's CLOSED task text at
+  PLAN.md:1471, with no open task carrying it, and four tool calls to
+  establish by hand on 2026-08-06. A rule enforced only by remembering to
+  look is not enforced. The check, over PLAN.md + JOURNAL.md: every
+  phrase naming work as owed ("owes", "owing", "needs a carrier", "still
+  to do") resolves to an OPEN task, and every `4.NN` and short-SHA
+  reference resolves to something that exists. Home is /audit docs or
+  /triage — both already read the doc set; a fourth skill for this is
+  scope creep. Mechanism NOT pre-decided: plain regex over existing prose
+  is the cheap candidate; `[[wikilink]]` references written into the
+  canonical files are the richer one, and are preferred over any BUILT
+  index or graph — a derived index is a duplicated enumeration, and this
+  repo's demonstrated failure mode is precisely that (four count-drifts
+  in the week to 2026-08-05, a fifth found in JOURNAL's own TL;DR on
+  08-06). **Out of scope:** /triage's existing stale-item and
+  duplicate-pair sweeps; reachability across git history or GitHub
+  issues. **Acceptance:** a seeded fixture PLAN/JOURNAL pair in which one
+  "owed" phrase has no open carrier and one `4.NN` reference dangles —
+  the check names both with file:line, and reports zero on the clean
+  tree. Shown failing before it passes.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
