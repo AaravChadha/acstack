@@ -76,15 +76,16 @@
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
   reachability check for work named as owed with no open task owning it.
-  **4.48 is done** — the count-drift check moved from /audit docs
-  (opt-in, never typed, never once fired) into check.sh §23, and blocked
-  its own completion commit. 4.49 is progressive disclosure over the
-  heavy skill bodies, gated behind 4.45: the always-on listing is only
-  ~2,540 tokens, so the cost worth attacking is per-invocation body
-  loading, not descriptions. 4.3 and 4.4 stay adopter-gated. Wave 5
-  still needs a spec pass before code — 5.1–5.4 carry no acceptance
-  lines. 4.46's baseline decision is recorded (last committed results
-  file), and 4.50 now owns the three shakedown debts that had no carrier.
+  **4.45, 4.46, 4.47 and 4.48 are done**; 4.49 is PARTIAL (`/plan` split,
+  `do`/`triage`/`design`/`eval-run` still to go) and deliberately not
+  ticked. The eval layer now isolates the runner from the operator's
+  config, pins the subject model, and floors every category against the
+  last committed run; the doc set checks that owed work names a live
+  carrier; count drift and stranded modes both block at commit time.
+  **4.50 is the next move and it is behavioural** — four segments no
+  mechanical check can discharge, including 4.45's and 4.49's live halves.
+  4.3 and 4.4 stay adopter-gated. Wave 5 still needs a spec pass before
+  code — 5.1–5.4 carry no acceptance lines.
 
 ## How to run it right now
 
@@ -104,11 +105,96 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->27<!-- /count -->/<!-- count:wave45-total -->31<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06** — 4.45 eval-runner isolation, 4.46 per-dimension non-regression floor, 4.47 doc-set reachability (all from an external survey), **4.48 done same day** — the count-drift check moved out of /audit docs (which had carried it since it shipped and never once run) into check.sh §23, blocking on its own completion the moment 4.48 was ticked; and 4.49, progressive disclosure over the heavy skill bodies (35% of all body text sits in six files), gated behind 4.45. Still open: 4.45–4.47 and 4.49, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
+| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->27<!-- /count -->/<!-- count:wave45-total -->31<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 is PARTIAL, not ticked** — `/plan` split 12,181 → 7,175 bytes with 0 lines lost, `do`/`triage`/`design`/`eval-run` still to go. Still open: 4.49, **4.50** (four behavioural segments), plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Four guards built, and every one of them caught its own author (2026-08-06, later)
+
+**Four tasks landed: 4.45, 4.46, 4.47, and half of 4.49.** The through-line
+is not the features — it is that each new guard's fail-first run found a
+defect in the guard, the fixture, or the prose *I had just written*, and in
+three cases the defect was invisible to a green run.
+
+**4.45 — eval-runner isolation (`9508b6f`).** An eval that runs the subject
+through the operator's ambient config measures the operator; it lands
+hardest in the BASELINE arm of an A/B, and a pack author running the pack's
+own eval is the worst case, since `./setup` symlinks the roster into
+`~/.claude/skills`. Three sites, one rule: /eval-spec's template gained
+**Isolation** and **Model pin** sections; /eval-run carries it where the
+runner is scaffolded; runner-template gained contract item 8 and a worked
+invocation. **Verifying the flags against `claude --help` corrected the
+task's own premise** — `--bare` states that skills still resolve when typed
+by name, so settings isolation ALONE does not drop a symlinked pack;
+`--disable-slash-commands` closes it, and the residual (admin policy
+settings still apply) is stated rather than implied. `SUBJECT_MODEL` ships
+**empty with a guard that exits**: no model id is hardcoded, because a
+shipped id goes stale and a stale default is the same defect as no pin.
+Nine fail-first demonstrations. §8 rejected a verbatim quote of `--bare`'s
+help text, because `/skill-name` parses as a skill cross-reference.
+
+**4.46 — per-category non-regression floor (`b98d5f5`).** /ship gate 3
+compared one headline against a target; the spec's category minimums
+constrain the golden set's *composition*. Neither compares a run to the
+previous run. `regression-gate.py` is adopter-side (the runner is the
+project's file, not the pack's) and blocks when any category falls against
+the last committed results file. **The fixture is a discriminator, not a
+demonstration:** overall rises **50.0% → 66.7%** while refusal collapses
+**100% → 0%**, so a headline-only gate sees an improvement and ships it.
+Both directions controlled — accept-all fires, blanket-reject fires — since
+without the second a gate that blocked everything would score full marks.
+The no-baseline path passes and PRINTS that it did; a control asserts the
+message, not the exit code.
+
+**4.47 — owed-carrier reachability (`2909234`).** AGENTS.md's third rule has
+been broken three times and caught by hand every time. An `owed:` tag —
+written here without its brackets, because the guard reads this file and
+would otherwise take the example for a real marker — must name a task that
+exists and is OPEN. **The mechanism was chosen by
+measurement.** The bare-numeric approach was built and tested first:
+matching `N.NN` across PLAN and JOURNAL returned six unresolved values on a
+clean tree, every one incidental — `1.3% of a 200k window`, VERSION
+`0.4.0`, a `1:1` ratio. Chasing those is a denylist and cannot be finished
+(§13's ruling), so explicit markers won on evidence and the rejected
+approach is recorded in the script header rather than lost. Three live
+obligations annotated in the same edit, including `b566654`'s.
+
+**4.49 — progressive disclosure, PARTIAL and deliberately NOT ticked
+(`9172964`).** `/plan` split: **12,181 → 7,175 bytes, 215 → 127 lines**,
+with `Mode: seed` (71 lines) and `Tickets mode` (29) behind pointers.
+Behaviour preserved in the form prose allows: every non-blank line of the
+original is present in the new body or a reference — **0 lines lost**, the
+analogue of /refactor's same-test-count rule. **The guard question turned
+out narrower than the task assumed:** §8 already catches a pointer citing a
+missing file, so building that would have been duplication. What nothing
+caught was the silent shape — a `## Mode:` heading whose body moved out and
+whose pointer was then dropped, citing nothing and saying nothing. Seeded,
+it passed **every** existing check. That is now §26. `do` (10,428) and
+`triage` (9,625) remain unsplit; one skill is not "the heavy skills", and
+ticking would have been the false completion the acceptance warns about.
+
+**Three weak guards, caught by running the fail-first rather than assuming
+it.** This is the session's real lesson. (1) The matrix's neutered-comparison
+case for 4.47 anchored on `^  fail=1$` — every `fail=1` sits indented inside
+a case branch, so it matched nothing and reported got=PASS want=FAIL. (2)
+§24's new 4.46 rule anchored on a bare `regress`, which also matches the
+filename `regression-gate.py`, so deleting the rule statement still passed.
+(3) 4.47's own guard rejected PLAN.md, because 4.47's done-text used the
+literal marker form as an *example* — then rejected **this entry** for the
+same reason while it was being written. That is the pack's documented
+prose-trips-its-own-detector class, hit four times in one day. Every one
+was found by seeding the defect and watching, never by re-reading.
+
+**4.48's count guard blocked five times across the session**, twice from
+inside the matrix's own copied tree where a stale marker was invisible to a
+plain `check.sh` run. It is now the most frequently-firing guard in the
+pack, which is the correct outcome for a check built after five drifts.
+
+Validation close: check.sh **26 → 29 checks**, all clean; guard-matrix
+**94 → 105 cases**; controls **75 → 85**; **23 skills**; wave 4.5 **27/31**.
+Four commits, CI green through `9508b6f`.
 
 ### An external survey became four carriers, and the count guard blocked its own commit (2026-08-06)
 
