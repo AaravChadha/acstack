@@ -3,7 +3,7 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-05. **PUBLIC as of 2026-08-03** — the repo was
+> **Last update**: 2026-08-06. **PUBLIC as of 2026-08-03** — the repo was
 > flipped after the §13 falsification round closed and CI went green
 > (run 30765510782). Two pre-flip rechecks both returned NOT READY; the
 > second found the first's fix had reintroduced the bug it fixed, which
@@ -27,17 +27,19 @@
 
 ## TL;DR
 
-- **Twenty skills** exist, pass the guard, and are symlink-installed.
-  Wave 3 added seven (/learn, /health, /qa, /secure, /design-audit,
-  /retro, /ship); wave 4 added /eval-run, which closes the eval loop the
-  pack's flagship methodology had left open.
+- **Twenty-three skills** exist, pass the guard, and are symlink-installed
+  — this bullet is the single count; everything below refers to it rather
+  than repeating the number. Wave 3 added seven (/learn, /health, /qa,
+  /secure, /design-audit, /retro, /ship); wave 4 added /eval-run, which
+  closes the eval loop the pack's flagship methodology had left open;
+  wave 4.5 added three more (/why, /refactor, /design).
 - Tickets mode (`tracking: tickets`) is live in /plan and /do — bootstrap,
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean (**22** numbered
   sections plus 3b, 3c and 13a = 25 checks, including positive controls over
   seeded `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
-  (**90** cases); `./setup` links **23**. Banned-name list is untracked (`.acstack-banned`) — copy
+  (**90** cases); `./setup` links all of them. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI
   green run 30765510782). 4.7's ten checklist items were all demonstrated
@@ -55,15 +57,19 @@
 - Conduct contract (10 rules) shipped in CONDUCT.md and embedded in this
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27); **public as of 2026-08-03**, `main` pushed.
-- Roadmap runs to 39 skills, **35 open tasks** (re-counted 2026-07-30
-  after batch D): wave 4 (**1**) → 4.5 (post-launch hardening, **13** —
-  grew by the eight-repo survey, which also added /design as the 39th
-  skill) → 5 (5) → 6 (7) → 7 (4), plus 5 unscheduled browser-layer
-  items. Full detail in PLAN.md.
-- Next: **wave 4.5** (post-launch hardening). 4.16 landed 2026-08-03 (the
-  commit-format verdict now emitted, not just documented); a live
-  first-session shakedown then exercised /resume, /health, /secure and
-  found real gaps to fold into 4.5's order.
+- Roadmap runs to 39 skills (those built, plus wave 5's 5, wave 6's 7 and
+  wave 7's 4), **21 scheduled open tasks** (re-counted 2026-08-06 by
+  enumerating each wave, not by adjusting the prior figure): wave 4
+  **closed at 17/17** → 4.5 (post-launch hardening, **5**) → 5 (5) → 6
+  (7) → 7 (4), plus 5 unscheduled browser-layer items. Full detail in
+  PLAN.md.
+- Next: **wave 4.5**, which reopened 2026-08-06 after being called done.
+  4.45–4.47 carry three findings from a survey of two high-star
+  single-idea skills: eval-runner isolation from the operator's own
+  config, a per-dimension non-regression floor on the release gate, and a
+  reachability check for work named as owed with no open task owning it.
+  4.3 and 4.4 stay adopter-gated. Wave 5 still needs a spec pass before
+  code — 5.1–5.4 carry no acceptance lines.
 
 ## How to run it right now
 
@@ -83,7 +89,7 @@ bash docs/guard-matrix.sh "$PWD"   # 90 seeded-defect cases proving the guards f
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 21/23 | **All buildable work done.** 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). Remaining 2: 4.3 telemetry and 4.4 `setup --global` — both adopter-gated. **4.43/4.44 done:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed) |
+| 4.5 — Post-launch hardening | 🔶 23/28 | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06** — 4.45 eval-runner isolation, 4.46 per-dimension non-regression floor, 4.47 doc-set reachability, all from an external survey. Open 5: those three plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 

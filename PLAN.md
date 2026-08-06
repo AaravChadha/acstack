@@ -908,12 +908,20 @@ below fully green; repo flipped public.
 > denominator: wave 4 was 7 items when they were pulled in and 18 when the
 > split was made.
 
-> **Risk (2026-07-29, revised; updated 2026-07-31):** the split left wave
-> 4 at 11 items; two audit rounds took it to **16**, and 4.31 was promoted
-> from wave 4.5 on 2026-07-31, making **17** — of which 14 are done and
-> **3 remain** (4.5, 4.7, 4.31). Those four are cleanup of defects already found, not new
-> ambition — but the wave is heavy again and that should be watched rather
-> than discovered late.
+> **Risk (2026-07-29, revised; updated 2026-07-31; CLOSED 2026-08-06):**
+> the split left wave 4 at 11 items; two audit rounds took it to **16**,
+> and 4.31 was promoted from wave 4.5 on 2026-07-31, making **17**.
+> ~~Of which 14 are done and **3 remain** (4.5, 4.7, 4.31). Those four
+> are cleanup of defects already found, not new ambition — but the wave
+> is heavy again and that should be watched rather than discovered
+> late.~~ **Closed 2026-08-06: all 17 done**, counted by enumerating the
+> wave rather than by adjusting the previous figure. That enumeration
+> also settled an off-by-one the superseded text carried from 07-31 — it
+> said "**3 remain**" and then "Those **four**" in the next clause, and
+> neither number was re-derived when the note was revised. The growth
+> itself was cleanup of defects already found, not new ambition; the
+> lesson that a wave can get heavy twice without anyone noticing stands,
+> and is why the counts here are now enumerated on every touch.
 >
 > Cut order if it slips: 4.22 (`--dry-run` output — cosmetic and rarely
 > hit), then 4.26 (README requirements — a doc correction, though it is
