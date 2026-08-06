@@ -1791,7 +1791,29 @@ reordered, if any.
   description guard, the palette check whose `\b` matched nothing), and a
   count guard never seen failing is decoration.
 
-- [ ] **4.49** Split the heavy skills so an invocation loads only the
+- [ ] **4.49** *(PARTIAL 2026-08-06 — deliberately NOT ticked. One skill
+  split, not the set, and the title says "the heavy skills". **`/plan`
+  done: 12,181 → 7,175 bytes, 215 → 127 lines**, with `Mode: seed` (71
+  lines) → `references/mode-seed.md` and `Tickets mode` (29) →
+  `references/tickets-mode.md`. A `/plan replan` run no longer pays for
+  either. **Behaviour preserved and proven**, /refactor's rule in its
+  prose form: every non-blank line of the 215-line original is present in
+  the new body or a reference — set difference **0 lines lost**, which is
+  the analogue of "same test count", and a line that vanished would have
+  been the finding. **The guard question turned out narrower than the
+  task assumed.** §8 (crossref) ALREADY catches a pointer citing a missing
+  file — verified by seeding one — so building that would have been
+  duplication (ladder rung 2). What no guard caught was the silent shape:
+  a `## Mode:` heading whose body moved out and whose pointer was then
+  dropped, leaving a heading that cites nothing and says nothing. Seeded,
+  it passed EVERY existing check. That is now §26, scoped to exactly the
+  gap and shown failing first; matrix gained two cases and deliberately
+  does not re-test §8's shape. check.sh **28 → 29**; matrix **100 → 102**.
+  **Still open:** `do` (10,428) and `triage` (9,625) carry zero reference
+  files and are the next clearest; `design` (11,814) and `eval-run`
+  (11,369) have one each and need reading before any claim; `/audit`
+  remains the model, not a candidate. The behavioural half is unchanged
+  and still owed [owed: 4.50].)* Split the heavy skills so an invocation loads only the
   procedure it selected. Measured 2026-08-06: the always-on cost is the
   skill listing at 9,523 bytes over 21 model-invocable descriptions
   (~2,540 tokens, ~1.3% of a 200k window) — small, and not worth

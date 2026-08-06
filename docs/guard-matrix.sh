@@ -225,6 +225,12 @@ fullcase "reach-check implementation gone"  FAIL 'reach'   bash -c "rm -f script
 # and never demonstrated the guard firing. Same weak-mutation class the
 # matrix caught on 4.19.
 fullcase "reach comparison neutered"        FAIL 'control' bash -c "sed -e 's/fail=1/fail=0/g' scripts/reach-check.sh > t && mv t scripts/reach-check.sh"
+# 4.49 progressive disclosure. The pointer-cites-a-missing-file shape is
+# already section 8's (crossref) and is NOT re-tested here. These cover the
+# shape section 8 cannot see: a mode heading stranded with no pointer at
+# all, and the reference body deleted out from under a live pointer.
+fullcase "mode section stranded, no pointer" FAIL 'modesection' bash -c "awk '/^Full procedure: .references\/mode-seed/{skip=3} skip>0{skip--; next} {print}' skills/plan/SKILL.md > t && mv t skills/plan/SKILL.md"
+fullcase "split reference body deleted"      FAIL 'crossref'    bash -c "rm -f skills/plan/references/mode-seed.md"
 
 echo
 echo "passed=$pass failed=$failed"

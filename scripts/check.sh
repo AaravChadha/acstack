@@ -18,7 +18,7 @@
 #   19 /refactor keeps its proof rule      20 /design keeps its 8-item spine
 #   21 skill-hygiene rule set stays whole  22 grader case flag named at every site
 #   23 marked counts match derivations    24 eval isolation named at every site
-#   25 owed-markers name a live carrier
+#   25 owed-markers name a live carrier   26 no mode section left without a procedure
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -721,6 +721,40 @@ else
   echo "FAIL reach: scripts/reach-check.sh is missing — owed-markers are unverified"
   fail=1
 fi
+
+# 26. No mode section left without a procedure (4.49). Progressive
+#     disclosure moves a mode's body into references/ and leaves a pointer.
+#     Two ways that goes wrong. A pointer citing a file that does not exist
+#     is ALREADY caught by section 8 (crossref) — verified 2026-08-06 by
+#     seeding one, so this section deliberately does not duplicate it. The
+#     shape section 8 CANNOT see is the silent one: a `## Mode:` heading
+#     whose body was moved out and whose pointer was then dropped, leaving
+#     a heading that cites nothing and says nothing. That passed every
+#     other check on a seeded run — the skill still loads, the section
+#     still renders, and it simply stops knowing how to do one thing. A
+#     mode section must therefore either cite a reference or carry a real
+#     body; five content lines is the floor, since a pointer is four.
+while IFS= read -r hit; do
+  [ -n "$hit" ] || { continue; }
+  echo "FAIL modesection: $hit"
+  fail=1
+done < <(
+  for f in skills/*/SKILL.md; do
+    awk -v F="$f" '
+      /^## /{
+        if (h != "" && h ~ /^## (Mode|Target)/ && cite == 0 && body < 5)
+          printf "%s: section %s cites no reference and carries no procedure (%d content lines) — a split stranded this mode\n", F, h, body
+        h=$0; body=0; cite=0; next
+      }
+      { if ($0 ~ /references\/[A-Za-z0-9._-]+\.md/) cite=1
+        if ($0 ~ /[^[:space:]]/) body++ }
+      END{
+        if (h != "" && h ~ /^## (Mode|Target)/ && cite == 0 && body < 5)
+          printf "%s: section %s cites no reference and carries no procedure (%d content lines) — a split stranded this mode\n", F, h, body
+      }
+    ' "$f"
+  done
+)
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
