@@ -58,9 +58,9 @@
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27); **public as of 2026-08-03**, `main` pushed.
 - Roadmap runs to 39 skills (those built, plus wave 5's 5, wave 6's 7 and
-  wave 7's 4), **21 scheduled open tasks** (re-counted 2026-08-06 by
+  wave 7's 4), **22 scheduled open tasks** (re-counted 2026-08-06 by
   enumerating each wave, not by adjusting the prior figure): wave 4
-  **closed at 17/17** → 4.5 (post-launch hardening, **5**) → 5 (5) → 6
+  **closed at 17/17** → 4.5 (post-launch hardening, **6**) → 5 (5) → 6
   (7) → 7 (4), plus 5 unscheduled browser-layer items. Full detail in
   PLAN.md.
 - Next: **wave 4.5**, which reopened 2026-08-06 after being called done.
@@ -68,6 +68,8 @@
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
   reachability check for work named as owed with no open task owning it.
+  4.48 followed from the same session: the count-drift check moves from
+  /audit docs (opt-in, never typed) into check.sh (runs every commit).
   4.3 and 4.4 stay adopter-gated. Wave 5 still needs a spec pass before
   code — 5.1–5.4 carry no acceptance lines.
 
@@ -89,7 +91,7 @@ bash docs/guard-matrix.sh "$PWD"   # 90 seeded-defect cases proving the guards f
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 23/28 | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06** — 4.45 eval-runner isolation, 4.46 per-dimension non-regression floor, 4.47 doc-set reachability, all from an external survey. Open 5: those three plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
+| 4.5 — Post-launch hardening | 🔶 23/29 | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06** — 4.45 eval-runner isolation, 4.46 per-dimension non-regression floor, 4.47 doc-set reachability (all from an external survey), and 4.48, which moves the count-drift check out of /audit docs and into check.sh after it missed six drifts in three days without ever being run. Open 6: those four plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 

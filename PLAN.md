@@ -1643,6 +1643,51 @@ reordered, if any.
   the check names both with file:line, and reports zero on the clean
   tree. Shown failing before it passes.
 
+- [ ] **4.48** Move the count-drift check from /audit docs into
+  `scripts/check.sh`. Coverage was never the problem: the check exists,
+  is correctly written, and reads *"Stale counts vs greppable reality:
+  tool counts, test counts, table counts, record counts"* at
+  `skills/audit/SKILL.md:92`. It has never fired. `/audit docs` runs only
+  when a human types it, and nobody types it without already suspecting
+  drift — so the one condition that triggers the check is the one
+  condition that never occurs, while `scripts/check.sh` runs before every
+  commit by AGENTS.md rule. Instances found 2026-08-06 alone: JOURNAL's
+  TL;DR said "Twenty skills" against 23, its table said `21/23` against
+  23/28, its roadmap bullet said "35 open tasks" against 21 scheduled,
+  and PLAN's wave-4 risk note said "3 remain" and then "Those four" in
+  the next clause. JOURNAL records two more in the days before
+  (ARCHITECTURE's enumeration 08-04, PRINCIPLES' "fifteen numbered
+  sections" 08-05 — inside the principle *about* replacing prose with
+  checks). Every instance was a restatement of something enumerable in
+  the tree, which is what makes a bash guard possible at all.
+  **Mechanism:** derive-and-compare on MARKED counts —
+  `<!-- count:skills -->twenty-three<!-- /count -->` — where check.sh
+  derives each (`ls skills/ | wc -l`, a wave checkbox tally, the open-task
+  total, `check.sh`'s own numbered-section grep) and fails on mismatch.
+  The governing rule is duplication, not correctness: a number stated
+  once cannot drift, so count-free prose is the default and a marked
+  count is the deliberate exception where a reader needs the figure.
+  **The certification scope is the load-bearing part** — the guard
+  verifies the marked counts and NOTHING else, and must say so in its own
+  output. An unmarked count claim is invisible to it. Green here means
+  "the marked counts agree", not "no stale numbers in the docs", and this
+  repo's documented habit is reading the first as the second. /audit docs
+  keeps the judgment half: quickstart still true, exit criteria still
+  runnable, superseded vs merely stale. **Out of scope:** a regex sweep
+  for unmarked count-like prose — that is a denylist and cannot be
+  finished, per §13's 2026-08-02 ruling; if built at all it is noise
+  reduction, never certification. Also out of scope: having check.sh
+  invoke /audit docs, which is impossible — skills are model-invoked
+  prose, check.sh is bash, so the mechanical subset gets rewritten in
+  bash or it does not exist. **Acceptance:** a fixture whose marked count
+  disagrees with its derivable reality fails the guard with a `doc says /
+  reality is` line; the clean tree passes; the guard's output names which
+  counts it verified; and the whole thing is shown FAILING before it
+  passes, per verification rule 2 — three guards in this repo have
+  reported clean on a planted defect (the `sk-` secret regex, the
+  description guard, the palette check whose `\b` matched nothing), and a
+  count guard never seen failing is decoration.
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
