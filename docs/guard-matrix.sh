@@ -206,6 +206,13 @@ fullcase "marked count goes stale"        FAIL 'count' bash -c "sed -e 's/<!-- c
 fullcase "count-check implementation gone" FAIL 'count' bash -c "rm -f scripts/count-check.sh"
 fullcase "marker renamed to unknown count" FAIL 'count' bash -c "sed -e 's/count:skills/count:skillz/g' JOURNAL.md > t && mv t JOURNAL.md"
 fullcase "comparison neutered to accept-all" FAIL 'control' bash -c "sed -e 's/if \[ \"\$val\" != \"\$want\" \]; then/if false; then/' scripts/count-check.sh > t && mv t scripts/count-check.sh"
+# 4.45 eval-runner isolation. Three ways this rots: a site drops the rule,
+# a site drops the model pin, and the seeded unisolated runner quietly
+# acquires the flags it exists to lack (that last one surfaces as a control
+# failure, which is the layer that owns fixture integrity).
+fullcase "eval site drops isolation rule"  FAIL 'eval-isolation' bash -c "sed -e 's/[Ii]solat/redact/g' skills/eval-run/SKILL.md > t && mv t skills/eval-run/SKILL.md"
+fullcase "eval site drops the model pin"   FAIL 'eval-isolation' bash -c "sed -e 's/[Pp]in/anchor/g' skills/eval-spec/references/eval-spec-template.md > t && mv t skills/eval-spec/references/eval-spec-template.md"
+fullcase "unisolated fixture stops seeding" FAIL 'control' bash -c "sed -e 's|\"claude\", \"-p\", case\[\"input\"\]|\"claude\", \"-p\", case[\"input\"], \"--bare\"|' fixtures/eval-isolation/unisolated-runner.py > t && mv t fixtures/eval-isolation/unisolated-runner.py"
 
 echo
 echo "passed=$pass failed=$failed"

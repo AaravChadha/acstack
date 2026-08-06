@@ -42,6 +42,19 @@ Whatever the language, a runner MUST:
    number auditable by `/audit eval`.
 7. Exit non-zero when the run could not complete, so `/ship`'s gate 3
    cannot mistake a crash for a pass.
+8. **Isolate the subject from the operator's own agent configuration, and
+   pin the subject model.** A runner that invokes the subject with the
+   operator's ambient config is not measuring the subject: user-level
+   skills, hooks, memory and CLAUDE.md discovery, and output styles all
+   ride along, and they ride into the BASELINE arm too — where they can
+   make a candidate look better or worse than it is. An operator
+   evaluating their own skill pack is the worst case, since `~/.claude` is
+   the thing under test. An unpinned model is the same failure on a
+   different axis: the run silently uses whatever the operator or the CLI
+   release defaults to, so two runs are not comparable and the number
+   drifts without anyone editing anything. Record the pinned model
+   alongside every published result. See `run_subject` below for the
+   flags, and the spec template's Isolation section for what still leaks.
 
 ## Python — `eval/run.py`
 
@@ -53,6 +66,16 @@ import json, pathlib, sys, unicodedata, datetime, re
 ROOT = pathlib.Path(__file__).resolve().parent
 GOLDEN = ROOT / "golden.jsonl"
 RESULTS_DIR = ROOT / "results"
+
+# REQUIRED: the exact subject model id, pinned here and recorded with every
+# published number. Deliberately empty so an unpinned run STOPS instead of
+# silently using whatever the operator or the CLI release defaults to — a
+# default that varies between operators and drifts over time. No id is
+# hardcoded in this template on purpose: a shipped model id goes stale, and
+# a stale default is the same defect as no pin at all.
+SUBJECT_MODEL = ""
+if not SUBJECT_MODEL:
+    sys.exit("NO SCORE: SUBJECT_MODEL is unset — pin the subject model before running")
 
 def norm(s, fold_case=True):
     """NFKC folds NBSP and narrow-NBSP to spaces on its own; the en-dash
@@ -78,6 +101,37 @@ def run_subject(case):
 
     A model API call belongs here. It is the only place that spends money,
     and it is deliberately left unwired so a scaffold can never quietly bill.
+
+    ISOLATION AND MODEL PIN (contract item 8). When the subject is an agent
+    CLI, the invocation must drop the operator's ambient configuration and
+    name the model. For a Claude-CLI subject the flags are, each verified
+    against `claude --help` before being written here:
+
+      --setting-sources ""       load no user/project/local settings files
+      --bare                     skip hooks, plugin sync, auto-memory,
+                                 keychain reads, CLAUDE.md auto-discovery
+      --disable-slash-commands   disable all skills
+      --model <exact model id>   pin the subject; record it with results
+
+    `--bare` alone is NOT enough: its own help text states that skills
+    still resolve when typed by name, so a pack symlinked into
+    ~/.claude/skills stays reachable under it — `--disable-slash-commands`
+    is what closes that. Verify this against the CLI you actually run; it
+    is exactly the kind of claim that goes stale. Nor
+    is `--setting-sources ""`, which drops settings FILES, not the skills
+    directory. Use both, and know the residual: admin-managed policy
+    settings still apply, so this is isolation from the operator, not from
+    the machine.
+
+    Other stacks isolate differently — name the flags, say what each one
+    drops, and say what still gets through. An isolation claim with no
+    stated residual is a claim nobody checked.
+
+      CLI:      return subprocess.run(
+                    ["claude", "-p", case["input"],
+                     "--setting-sources", "", "--bare",
+                     "--disable-slash-commands", "--model", SUBJECT_MODEL],
+                    capture_output=True, text=True, check=True).stdout
     """
     raise NotImplementedError("wire run_subject to the system under test")
 

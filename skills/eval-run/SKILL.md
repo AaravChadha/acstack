@@ -94,6 +94,17 @@ about the wrong product is worse than no answer (conduct rule 8).
    unattended run stop and say what is missing. Never derive it from
    reading the subject's code: the code cannot distinguish its intended
    interface from an accident, so that is a guess wearing evidence.
+
+   **The invocation carries isolation flags and a pinned subject model, or
+   it is not measuring the subject.** Without isolation the operator's
+   user-level skills, hooks, memory and CLAUDE.md discovery, and output
+   styles all ride into the run — including into the BASELINE arm of an
+   A/B, where they can make a candidate look better or worse than it is.
+   Without a pin the run silently uses whatever the operator or the CLI
+   release defaults to, so two runs are not comparable. Flags per stack are
+   in `references/runner-template.md`; state what each drops AND what still
+   leaks. An unpinned model STOPS the run — see the template's
+   `SUBJECT_MODEL` guard.
 4. **Run it, then read the file.** The runner writes
    `eval/results/<UTC-timestamp>.jsonl`. The headline is computed from
    that file — overall %, per-category %, refusal % — and never

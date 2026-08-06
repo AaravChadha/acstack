@@ -374,6 +374,52 @@ else
   bad "/migrate-check no-DB fixture missing — the autodetect path has no control"
 fi
 
+# --- /eval-run: isolation flags catch the unisolated runner (4.45) ---
+# Flags are EXTRACTED from runner-template.md, so a doc edit that drops one
+# fails HERE rather than shipping as a false pass. Both directions checked:
+# the unisolated fixture must be rejected AND the isolated one accepted — a
+# guard that rejects everything proves nothing by rejecting the plant.
+iso_tmpl="skills/eval-run/references/runner-template.md"
+iso_fx="fixtures/eval-isolation"
+if [ ! -f "$iso_tmpl" ] || [ ! -d "$iso_fx" ]; then
+  bad "/eval-run isolation fixture or template missing — the contamination path has no control"
+else
+  iso_flags="$(grep -oE '^      --[a-z-]+' "$iso_tmpl" | tr -d ' ' | sort -u)"
+  iso_n="$(printf '%s\n' "$iso_flags" | grep -c . || true)"
+  if [ "${iso_n:-0}" -lt 4 ]; then
+    bad "/eval-run isolation flags not extractable from runner-template.md (found ${iso_n:-0}, want >= 4)"
+  else
+    miss=""; got=""
+    for fl in $iso_flags; do
+      grep -q -- "$fl" "$iso_fx/unisolated-runner.py" && miss="$miss $fl"
+      grep -q -- "$fl" "$iso_fx/isolated-runner.py"   || got="$got $fl"
+    done
+    if [ -n "$miss" ]; then
+      bad "/eval-run isolation: the UNISOLATED fixture already carries$miss — it no longer seeds the defect"
+    else
+      ok "/eval-run isolation detection rejects the unisolated runner"
+    fi
+    if [ -n "$got" ]; then
+      bad "/eval-run isolation: the ISOLATED fixture is MISSING$got — a documented flag stopped being applied"
+    else
+      ok "/eval-run isolation detection accepts the isolated runner"
+    fi
+  fi
+  # Fixture integrity: the seeded home must still carry all four leak
+  # classes the spec template names, or the fixture stops representing
+  # the contamination it exists to stand for.
+  leak=""
+  [ -f "$iso_fx/contaminating-home/.claude/skills/leaky-helper/SKILL.md" ] || leak="$leak user-skill"
+  [ -f "$iso_fx/contaminating-home/.claude/hooks/session-start.sh" ]       || leak="$leak hook"
+  [ -f "$iso_fx/contaminating-home/.claude/CLAUDE.md" ]                    || leak="$leak memory"
+  [ -f "$iso_fx/contaminating-home/.claude/settings.json" ]                || leak="$leak output-style"
+  if [ -n "$leak" ]; then
+    bad "/eval-run isolation fixture lost a leak class ($leak) — it no longer seeds the full contamination"
+  else
+    ok "/eval-run isolation fixture still carries all four leak classes"
+  fi
+fi
+
 # --- count-check: the guard must REJECT every seeded stale marker (4.48) ---
 # Inverted control. These fixtures are wrong on purpose, so a PASS here is
 # the failure: it means count-check.sh stopped comparing. Runs the same

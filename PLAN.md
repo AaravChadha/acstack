@@ -1561,7 +1561,41 @@ reordered, if any.
   the first thirty lines answer "what makes this different" without
   scrolling; `scripts/check.sh` stays clean.
 
-- [ ] **4.45** Isolate the eval runner from the operator's own agent
+- [x] **4.45** *(Done 2026-08-06. Three sites, one rule. (a) /eval-spec's
+  template gained an **Isolation** section naming all four leak classes —
+  user-level skills, hooks, memory/auto-memory/CLAUDE.md discovery, output
+  styles and user settings — plus a **Model pin** section; the baseline-arm
+  argument is stated where the spec author meets it, since ambient config
+  lands in BOTH arms and an operator evaluating their own pack is the worst
+  case. (b) The runner template gained contract item **8** and a worked CLI
+  invocation. **Flags verified against `claude --help` before being
+  written**, not recalled: `--setting-sources ""`, `--bare`,
+  `--disable-slash-commands`, `--model`. That check corrected the task's own
+  premise — `--bare`'s help text states skills still resolve when typed by
+  name, so settings isolation ALONE does not drop a pack symlinked into
+  `~/.claude/skills`; `--disable-slash-commands` is what closes it, and the
+  residual (admin-managed policy settings still apply) is stated rather than
+  implied. `SUBJECT_MODEL` ships **empty with a guard that exits** — an
+  unpinned run STOPS instead of silently taking the operator's or the CLI
+  release's default. No model id is hardcoded on purpose: a shipped id goes
+  stale, and a stale default is the same defect as no pin. (c)
+  `fixtures/eval-isolation/` seeds a contaminating `~/.claude` carrying all
+  four leak classes, plus paired runners identical except for the
+  invocation. controls.sh EXTRACTS the flags from the template at run time,
+  so a doc edit that drops one fails there. **Shown failing nine ways
+  before being trusted:** four controls (unisolated fixture acquires a flag,
+  a documented flag vanishes from the template, the isolated fixture loses
+  one, the seeded home loses a leak class), two §24 (a site drops the rule,
+  a site file is missing), three matrix. check.sh **26 → 27**; matrix
+  **94 → 97**; controls **75 → 78**. **Two guards caught this work
+  mid-build:** §8 rejected a verbatim quote of `--bare`'s help text because
+  `/skill-name` reads as a skill cross-reference (reworded, fact kept), and
+  4.48's count guard blocked twice — once when §24 made checks 27, once when
+  the three matrix cases made it 97, the second only surfacing inside the
+  matrix's own copied tree. **Honest scope: the behavioural half is NOT
+  verified** — that a live model scaffolding a runner actually emits these
+  flags is a shakedown, carried as a segment of 4.50.)* Isolate the eval
+  runner from the operator's own agent
   configuration. An eval that runs the subject through whatever the
   operator has installed is not measuring the subject; user-level skills,
   plugins, hooks, memory and output styles all leak into every condition,
@@ -1788,7 +1822,13 @@ reordered, if any.
   (c) **4.30's four behavioural acceptances** — /design's output judged
   by /design-audit plus ai-tells against `fixtures/design/`, which its
   own closing note flags as a shakedown and which no round has run.
-  **Out of scope:** new-ground exploration. A round that only looks
+  (d) **4.45's behavioural half** (added 2026-08-06 when 4.45 closed): a
+  live model scaffolding a runner from the template must actually emit the
+  isolation flags and refuse to run on an empty `SUBJECT_MODEL`. check.sh
+  §24 proves the rule is still *written* at all three sites and controls.sh
+  proves the documented flags still *catch* a seeded unisolated runner —
+  neither can prove a model reads them and complies, which is precisely
+  the gap rule 6 exists for. **Out of scope:** new-ground exploration. A round that only looks
   forward cannot catch these, because a fix becomes old ground the moment
   it is committed — that is the whole reason rule 6 exists. **Acceptance:**
   a fresh-session round on a blind venue covers all three segments and

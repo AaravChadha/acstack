@@ -8,6 +8,53 @@
 > Run: `<exact command>` → prints per-category and overall scores from
 > `eval/results/<latest>.json`.
 
+## Isolation
+
+The run command above MUST isolate the subject from the operator's own
+agent configuration, and MUST pin the subject model. Without both, the run
+does not measure the subject — it measures the subject plus whatever the
+operator happens to have installed, on whatever model their CLI defaulted
+to that week.
+
+Four things leak by default, all of them invisible in the results file:
+
+| Leak | What it does to the run |
+|---|---|
+| **User-level skills** (`~/.claude/skills/`) | The subject gains capabilities the spec never granted |
+| **Hooks** (SessionStart and friends) | Text is injected into the session before the first case |
+| **Memory / auto-memory / CLAUDE.md discovery** | Prior sessions' context bleeds into a supposedly cold run |
+| **Output styles and user settings** | Response shape shifts, so shape-sensitive graders swing |
+
+**The baseline arm is where this bites hardest.** A/B runs compare a
+candidate against a baseline; anything the operator has installed lands in
+BOTH arms, and in the baseline it can make the candidate look better or
+worse than it is. An operator evaluating their own pack is the worst case —
+their `~/.claude` is precisely the thing under test.
+
+**Invocation (fill in for this project's stack):**
+
+```
+<exact command, carrying its isolation flags and its model pin>
+```
+
+Isolation flags are stack-specific. State what each one drops, and state
+what still gets through — an isolation claim with no residual is a claim
+nobody checked.
+
+## Model pin
+
+The subject model is pinned in the run command and **recorded with every
+published number**. Unpinned, the eval silently runs whatever the operator
+or the CLI release defaults to: the model varies between operators, drifts
+over time, and per-token cost moves with it. Two runs whose model differs
+are not comparable and must not be reported as a before/after.
+
+Pinned subject model: `<exact model id>` — the full id, never an alias
+that resolves differently later.
+
+*(Grader pinning is separate and already required — see the Grader section
+below.)*
+
 ## Targets
 
 | Category | Definition | Min cases | Target |

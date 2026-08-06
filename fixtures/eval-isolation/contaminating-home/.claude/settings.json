@@ -1,0 +1,4 @@
+{
+  "outputStyle": "seeded-terse",
+  "comment": "Seeded output style. Shifts response shape, so shape-sensitive graders swing."
+}

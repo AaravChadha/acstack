@@ -17,7 +17,7 @@
 #   17 simplicity ladder keeps its floor   18 update msg re-links, not just pull
 #   19 /refactor keeps its proof rule      20 /design keeps its 8-item spine
 #   21 skill-hygiene rule set stays whole  22 grader case flag named at every site
-#   23 marked counts match derivations
+#   23 marked counts match derivations    24 eval isolation named at every site
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -675,6 +675,29 @@ else
   echo "FAIL count: scripts/count-check.sh is missing — every marked count is unverified"
   fail=1
 fi
+
+# 24. Eval-runner isolation named at every site. An eval that runs the
+#     subject through the operator's own agent configuration measures the
+#     operator, not the subject — and it lands hardest in the BASELINE arm,
+#     where ambient config can make a candidate look better or worse than
+#     it is. The rule has to hold across three files that are edited
+#     separately; the failure mode is a later edit dropping it from ONE,
+#     which is invisible in a green run because nothing errors and the
+#     numbers just quietly stop meaning what they claim. controls.sh
+#     proves the documented FLAGS still catch a seeded unisolated runner;
+#     this proves the rule is still stated where a reader would meet it.
+for f in \
+  skills/eval-spec/references/eval-spec-template.md \
+  skills/eval-run/SKILL.md \
+  skills/eval-run/references/runner-template.md; do
+  if [ ! -f "$f" ]; then
+    echo "FAIL eval-isolation: $f is missing — the isolation-site agreement check cannot run"; fail=1; continue
+  fi
+  grep -qiE 'isolat' "$f" \
+    || { echo "FAIL eval-isolation: $f no longer names runner isolation — an eval site dropped the rule"; fail=1; }
+  grep -qiE 'pin' "$f" \
+    || { echo "FAIL eval-isolation: $f no longer names the subject-model pin — an unpinned eval is not comparable"; fail=1; }
+done
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
