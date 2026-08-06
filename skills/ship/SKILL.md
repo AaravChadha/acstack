@@ -76,6 +76,15 @@ here so the rule stays true everywhere else.
    command and compare headline vs target. Below target BLOCKS the ship
    (this is what makes "the eval is the spec" bite at release time). No
    eval → one honest line, gate passes.
+   **Then the per-category non-regression floor**, which the headline
+   cannot give you: compare the new results file against the LAST
+   COMMITTED one and BLOCK when any category fell, naming the category and
+   both rates. A change that lifts the overall number while breaking every
+   refusal case clears the target comparison above — refusal is small, so
+   its collapse barely moves an average — and that is the case this floor
+   exists for. `/eval-run`'s `references/regression-gate.py` does the
+   comparison. No committed baseline passes and SAYS so; an absent
+   baseline reported as a clean pass is false confidence, not a pass.
 4. **Docs.** Cheap drift pass, not a full audit: README quickstart still
    true; the shipped work's PLAN exit criterion run if runnable; JOURNAL
    mentions the work (if not → propose /journal before shipping). Deep

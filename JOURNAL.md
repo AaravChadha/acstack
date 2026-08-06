@@ -44,7 +44,7 @@
   (**<!-- count:checks -->29<!-- /count -->** checks — numbered sections
   plus 3b, 3c and 13a, including positive controls over seeded
   `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
-  (**<!-- count:matrix-cases -->102<!-- /count -->** cases); `./setup`
+  (**<!-- count:matrix-cases -->105<!-- /count -->** cases); `./setup`
   links all of them. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI
@@ -64,11 +64,11 @@
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27); **public as of 2026-08-03**, `main` pushed.
 - Roadmap runs to 39 skills (those built, plus wave 5's 5, wave 6's 7 and
-  wave 7's 4), **<!-- count:open-scheduled -->21<!-- /count --> scheduled
+  wave 7's 4), **<!-- count:open-scheduled -->20<!-- /count --> scheduled
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,
-  **<!-- count:wave45-open -->5<!-- /count -->**) → 5 (5) → 6
+  **<!-- count:wave45-open -->4<!-- /count -->**) → 5 (5) → 6
   (7) → 7 (4), plus 5 unscheduled browser-layer items. Full detail in
   PLAN.md.
 - Next: **wave 4.5**, which reopened 2026-08-06 after being called done.
@@ -104,7 +104,7 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->26<!-- /count -->/<!-- count:wave45-total -->31<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06** — 4.45 eval-runner isolation, 4.46 per-dimension non-regression floor, 4.47 doc-set reachability (all from an external survey), **4.48 done same day** — the count-drift check moved out of /audit docs (which had carried it since it shipped and never once run) into check.sh §23, blocking on its own completion the moment 4.48 was ticked; and 4.49, progressive disclosure over the heavy skill bodies (35% of all body text sits in six files), gated behind 4.45. Still open: 4.45–4.47 and 4.49, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
+| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->27<!-- /count -->/<!-- count:wave45-total -->31<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06** — 4.45 eval-runner isolation, 4.46 per-dimension non-regression floor, 4.47 doc-set reachability (all from an external survey), **4.48 done same day** — the count-drift check moved out of /audit docs (which had carried it since it shipped and never once run) into check.sh §23, blocking on its own completion the moment 4.48 was ticked; and 4.49, progressive disclosure over the heavy skill bodies (35% of all body text sits in six files), gated behind 4.45. Still open: 4.45–4.47 and 4.49, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 

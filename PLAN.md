@@ -1625,7 +1625,34 @@ reordered, if any.
   user-level config demonstrates the check firing, shown failing before
   it passes (verification rule 2).
 
-- [ ] **4.46** Add a per-dimension non-regression floor to the eval
+- [x] **4.46** *(Done 2026-08-06. `skills/eval-run/references/regression-gate.py`
+  — an adopter-side comparator, since the runner is the project's file, not
+  the pack's. Reads the new results file and the last committed one,
+  computes per-category pass rates over `status: "scored"` records only
+  (the same exclusions the headline uses), and BLOCKS when any category
+  falls. The floor is stated at three sites and §24 keeps them in
+  agreement: /eval-spec's template (where the spec is written), /eval-run
+  (where the eval is run), /ship gate 3 (where the release decides).
+  **The fixture IS the discriminator, which is the whole point:** against
+  `previous.jsonl`, `current.jsonl` lifts the overall number **50.0% →
+  66.7%** while refusal **collapses 100% → 0%**. A gate reading only the
+  headline sees an improvement and ships it — refusal is small, so its
+  collapse barely moves the average, which is exactly why the aggregate
+  cannot be the floor. Blocked output names the category and both rates:
+  `refusal: 100.0% (2/2) -> 0.0% (0/2)`. The no-baseline path passes and
+  PRINTS `NO BASELINE … This run is not evidence that nothing regressed` —
+  a control asserts the message, not just the exit code, because a silent
+  pass is the false confidence this gate exists to remove. **Shown failing
+  in both directions before being trusted:** a comparison neutered to
+  accept-all fails the control, and one turned into a blanket rejector
+  fails it too — without the second, a gate that blocked everything would
+  score full marks on the plant. Four controls, three matrix cases.
+  matrix **102 → 105**; controls **81 → 85**. **The guard's first version
+  was weak and the fail-first caught it:** §24's new rule anchored on a
+  bare `regress`, which also matches `regression-gate.py`, so deleting the
+  rule statement still passed. Tightened to `non-regression` and re-proved
+  firing at all three sites — the same weak-pattern class the matrix caught
+  on 4.19 and 4.47.)* Add a per-dimension non-regression floor to the eval
   release gate. /ship gate 3 today compares one headline number against a
   fixed target ("Below target BLOCKS"), and /eval-spec's category
   minimums are floors on the GOLDEN SET's composition (≥10 happy-path, ≥5

@@ -420,6 +420,40 @@ else
   fi
 fi
 
+# --- regression gate: blocks a rising headline hiding a falling category (4.46) ---
+# The discriminator IS the fixture: current.jsonl lifts overall 50.0% ->
+# 66.7% while refusal collapses 100% -> 0%. A gate reading only the
+# headline sees an improvement. Both directions, since a gate that blocked
+# everything would score full marks on the plant alone.
+rg_py="skills/eval-run/references/regression-gate.py"
+rg_fx="fixtures/eval-regression"
+if [ ! -f "$rg_py" ] || [ ! -d "$rg_fx" ]; then
+  bad "regression gate or its fixture missing — the per-category floor has no control"
+elif ! command -v python3 >/dev/null 2>&1; then
+  skipped=$((skipped+1)); printf '  SKIP %s\n' "regression gate control (python3 not installed)"
+else
+  if python3 "$rg_py" "$rg_fx/current.jsonl" "$rg_fx/previous.jsonl" >/dev/null 2>&1; then
+    bad "regression gate ACCEPTED a run whose refusal category fell 100% -> 0% — the floor stopped comparing"
+  else
+    ok "regression gate blocks the rising headline that hides a falling category"
+  fi
+  if python3 "$rg_py" "$rg_fx/no-regression.jsonl" "$rg_fx/previous.jsonl" >/dev/null 2>&1; then
+    ok "regression gate accepts a run with no category down"
+  else
+    bad "regression gate REJECTED a clean run — the gate blocks everything and proves nothing"
+  fi
+  if python3 "$rg_py" "$rg_fx/current.jsonl" >/dev/null 2>&1; then
+    ok "regression gate passes with no baseline"
+  else
+    bad "regression gate FAILED with no baseline — a first run must pass, saying so"
+  fi
+  if python3 "$rg_py" "$rg_fx/current.jsonl" 2>&1 | grep -q 'NO BASELINE'; then
+    ok "regression gate NAMES the missing baseline instead of passing silently"
+  else
+    bad "regression gate passed with no baseline but did not say so — a silent pass is the false confidence it exists to remove"
+  fi
+fi
+
 # --- reach-check: orphaned carriers rejected, live ones accepted (4.47) ---
 # Inverted control plus its positive twin. Runs the SAME script check.sh
 # section 25 runs — a second implementation would be the duplication 4.48

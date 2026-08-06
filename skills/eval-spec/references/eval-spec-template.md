@@ -73,6 +73,15 @@ reference) — do not restate it here.
 criterion for <phase>. Refusal is never averaged away: its target stands
 alone.
 
+**Per-category non-regression floor.** No category may fall below its pass
+rate in the LAST COMMITTED results file. This is separate from the target
+above and from the minimums in the table: minimums constrain the golden
+set's composition, the target is one aggregate, and neither compares a run
+to the previous run. A change that lifts the overall percentage while
+breaking every refusal case clears both — refusal is small, so its collapse
+barely moves the average. A run with no committed baseline passes and says
+so; an absent baseline reported as a clean pass is false confidence.
+
 ## Grader
 
 | grade_rule | How it's judged |

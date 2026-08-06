@@ -231,6 +231,10 @@ fullcase "reach comparison neutered"        FAIL 'control' bash -c "sed -e 's/fa
 # all, and the reference body deleted out from under a live pointer.
 fullcase "mode section stranded, no pointer" FAIL 'modesection' bash -c "awk '/^Full procedure: .references\/mode-seed/{skip=3} skip>0{skip--; next} {print}' skills/plan/SKILL.md > t && mv t skills/plan/SKILL.md"
 fullcase "split reference body deleted"      FAIL 'crossref'    bash -c "rm -f skills/plan/references/mode-seed.md"
+# 4.46 per-category non-regression floor.
+fullcase "ship drops the regression floor"  FAIL 'eval-isolation' bash -c "sed -e 's/non-regression/aggregate/g' skills/ship/SKILL.md > t && mv t skills/ship/SKILL.md"
+fullcase "regression gate accepts-all"      FAIL 'control'        bash -c "sed -e 's/if rate < prate:/if False:/' skills/eval-run/references/regression-gate.py > t && mv t skills/eval-run/references/regression-gate.py"
+fullcase "regression gate rejects-all"      FAIL 'control'        bash -c "sed -e 's/if rate < prate:/if True:/' skills/eval-run/references/regression-gate.py > t && mv t skills/eval-run/references/regression-gate.py"
 
 echo
 echo "passed=$pass failed=$failed"

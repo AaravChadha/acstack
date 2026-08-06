@@ -105,6 +105,16 @@ about the wrong product is worse than no answer (conduct rule 8).
    in `references/runner-template.md`; state what each drops AND what still
    leaks. An unpinned model STOPS the run — see the template's
    `SUBJECT_MODEL` guard.
+
+   **Then the non-regression gate.** `references/regression-gate.py`
+   compares the new results file against the LAST COMMITTED one, per
+   category, and blocks when any category falls. The headline cannot see
+   this: a change that lifts the overall percentage while breaking every
+   refusal case passes both /ship's target gate and the spec's category
+   minimums, since minimums constrain the golden set's composition, not one
+   run against another. No committed baseline PASSES and says so — never
+   silently, because an absent baseline read as a clean pass is the false
+   confidence the gate exists to remove.
 4. **Run it, then read the file.** The runner writes
    `eval/results/<UTC-timestamp>.jsonl`. The headline is computed from
    that file — overall %, per-category %, refusal % — and never

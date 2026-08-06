@@ -699,6 +699,25 @@ for f in \
   grep -qiE 'pin' "$f" \
     || { echo "FAIL eval-isolation: $f no longer names the subject-model pin — an unpinned eval is not comparable"; fail=1; }
 done
+# Same shape, second rule (4.46): the per-category non-regression floor is
+# stated where the spec is written, where the eval is run, and where the
+# ship gate decides. Dropping it from one leaves a release gate that reads
+# one aggregate — which a run can lift while a category collapses.
+for f in \
+  skills/eval-spec/references/eval-spec-template.md \
+  skills/eval-run/SKILL.md \
+  skills/ship/SKILL.md; do
+  if [ ! -f "$f" ]; then
+    echo "FAIL eval-isolation: $f is missing — the non-regression site check cannot run"; fail=1; continue
+  fi
+  # Anchored on `non-regression`, not a bare `regress`. The looser pattern
+  # was tried first and was WEAK: every site also names `regression-gate.py`,
+  # so a mutation that deleted the rule statement still matched the tool's
+  # filename and the seeded defect passed. Same weak-pattern class the
+  # matrix caught on 4.19 and again on 4.47.
+  grep -qiE 'non-regression' "$f" \
+    || { echo "FAIL eval-isolation: $f no longer states the per-category non-regression floor — a release gate reading one aggregate"; fail=1; }
+done
 
 # 25. Owed-markers name a live carrier. AGENTS.md's third verification rule
 #     has been broken three times and caught by hand every time — most

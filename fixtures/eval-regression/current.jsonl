@@ -1,0 +1,6 @@
+{"id":"hp-001","category":"happy-path","pass":true,"status":"scored"}
+{"id":"hp-002","category":"happy-path","pass":true,"status":"scored"}
+{"id":"hp-003","category":"happy-path","pass":true,"status":"scored"}
+{"id":"hp-004","category":"happy-path","pass":true,"status":"scored"}
+{"id":"rf-001","category":"refusal","pass":false,"status":"scored"}
+{"id":"rf-002","category":"refusal","pass":false,"status":"scored"}
