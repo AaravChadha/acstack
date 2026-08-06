@@ -1643,7 +1643,38 @@ reordered, if any.
   the check names both with file:line, and reports zero on the clean
   tree. Shown failing before it passes.
 
-- [ ] **4.48** Move the count-drift check from /audit docs into
+- [x] **4.48** *(Done 2026-08-06. `scripts/count-check.sh` is the ONE
+  implementation — check.sh §23 runs it on the six standing docs, and
+  controls.sh runs the SAME script against seeded fixtures, because a
+  second copy would be exactly the duplication this guard exists to
+  catch. Seven derivations: `skills`, `checks`, `matrix-cases`,
+  `wave45-done`, `wave45-open`, `wave45-total`, `open-scheduled`.
+  JOURNAL's TL;DR and its wave table now carry
+  `<!-- count:NAME -->N<!-- /count -->` markers. **Shown failing four
+  ways BEFORE being wired:** a stale value, an unknown count name (a
+  typo'd marker must FAIL, never skip — a marker that silently verifies
+  nothing is the false-pass class), no markers at all in any file given,
+  and a marked-count file that no longer exists. Then end-to-end in the
+  consumed form: seeding `count:skills -->20` made check.sh exit **1**
+  with `FAIL count: JOURNAL.md:30  doc says 20 / reality is 23`, and
+  restoring it returned exit **0**. Matrix **90 → 94** — stale value,
+  implementation deleted, marker renamed to an underivable name, and the
+  comparison neutered to accept-all; that last one surfaces as
+  `FAIL control`, which proves the inverted control catches a neutered
+  comparison rather than the guard grading its own homework. Controls
+  **72 → 75**: two inverted (both fixtures must be REJECTED) plus one
+  positive (JOURNAL's correct markers must be ACCEPTED — without it a
+  guard that rejects everything would score full marks). check.sh **25 →
+  26** checks. **Two defects caught during the build, both by the new
+  guard's own paths:** §23's first file list named `ARCHITECTURE.md` at
+  the repo root when it lives in `docs/`, caught on the first run by the
+  missing-file path; and CONTRIBUTING.md's "22 numbered sections +
+  3b/3c/13a = 25 checks" sat inside a bash code block where an HTML
+  marker cannot render, so it went count-free and points at check.sh's
+  own header instead of duplicating it. **Honest scope, printed on every
+  run rather than swallowed:** `unmarked counts are NOT checked`. The
+  regex sweep for unmarked count-like prose stays declined per §13.)*
+  Move the count-drift check from /audit docs into
   `scripts/check.sh`. Coverage was never the problem: the check exists,
   is correctly written, and reads *"Stale counts vs greppable reality:
   tool counts, test counts, table counts, record counts"* at

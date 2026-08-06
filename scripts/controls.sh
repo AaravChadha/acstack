@@ -374,6 +374,32 @@ else
   bad "/migrate-check no-DB fixture missing — the autodetect path has no control"
 fi
 
+# --- count-check: the guard must REJECT every seeded stale marker (4.48) ---
+# Inverted control. These fixtures are wrong on purpose, so a PASS here is
+# the failure: it means count-check.sh stopped comparing. Runs the same
+# script check.sh §23 runs, not a copy — a second implementation would be
+# the exact duplication this guard exists to catch.
+if [ -f scripts/count-check.sh ]; then
+  for fx in stale-doc typo-name; do
+    if [ ! -f "fixtures/count-drift/$fx.md" ]; then
+      bad "count-check fixture $fx.md missing — the stale-count path has no control"
+    elif bash scripts/count-check.sh "fixtures/count-drift/$fx.md" >/dev/null 2>&1; then
+      bad "count-check ACCEPTED fixtures/count-drift/$fx.md — the seeded defect was not caught"
+    else
+      ok "count-check rejects the seeded $fx fixture"
+    fi
+  done
+  # And the other direction: a marker whose value is right must be accepted,
+  # or the guard is a blanket rejector and proves nothing by failing.
+  if bash scripts/count-check.sh JOURNAL.md >/dev/null 2>&1; then
+    ok "count-check accepts JOURNAL.md's correct markers"
+  else
+    bad "count-check REJECTED JOURNAL.md — either a real drift, or the guard rejects everything"
+  fi
+else
+  bad "scripts/count-check.sh missing — marked counts have no control"
+fi
+
 echo
 if [ "$fail" -eq 0 ] && [ "$skipped" -gt 0 ]; then
   echo "controls.sh: no failures, but $skipped control(s) SKIPPED — coverage is incomplete"

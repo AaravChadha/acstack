@@ -199,6 +199,13 @@ fullcase "preamble fails open on unresolved pack" FAIL 'runtime' bash -c "sed -e
 # runner template folding case unconditionally against the flag the spec
 # template documents — a verbatim scaffold silently ignored the spec.
 fullcase "grader site drops the case flag" FAIL 'grader-case' bash -c "sed -e 's/case_sensitive/caseflaggone/g' skills/eval-run/references/runner-template.md > t && mv t skills/eval-run/references/runner-template.md"
+# 4.48 marked-count drift. Four ways this guard can rot: a value going stale,
+# the implementation vanishing, a marker being renamed to a name with no
+# derivation, and the comparison being neutered into a blanket accept.
+fullcase "marked count goes stale"        FAIL 'count' bash -c "sed -e 's/<!-- count:skills -->23<!-- \\/count -->/<!-- count:skills -->99<!-- \\/count -->/' JOURNAL.md > t && mv t JOURNAL.md"
+fullcase "count-check implementation gone" FAIL 'count' bash -c "rm -f scripts/count-check.sh"
+fullcase "marker renamed to unknown count" FAIL 'count' bash -c "sed -e 's/count:skills/count:skillz/g' JOURNAL.md > t && mv t JOURNAL.md"
+fullcase "comparison neutered to accept-all" FAIL 'control' bash -c "sed -e 's/if \[ \"\$val\" != \"\$want\" \]; then/if false; then/' scripts/count-check.sh > t && mv t scripts/count-check.sh"
 
 echo
 echo "passed=$pass failed=$failed"

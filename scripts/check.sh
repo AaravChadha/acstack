@@ -17,6 +17,7 @@
 #   17 simplicity ladder keeps its floor   18 update msg re-links, not just pull
 #   19 /refactor keeps its proof rule      20 /design keeps its 8-item spine
 #   21 skill-hygiene rule set stays whole  22 grader case flag named at every site
+#   23 marked counts match derivations
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -651,6 +652,29 @@ for f in \
     echo "FAIL grader-case: $f is missing — the grader-site agreement check cannot run"; fail=1
   fi
 done
+
+# 23. Marked count claims agree with their derivations. A count duplicated
+#     outside its single enumeration goes stale: this repo produced six
+#     instances in three days, and /audit docs — which has carried "stale
+#     counts vs greppable reality" since it shipped — never once ran,
+#     because nobody types it without already suspecting drift. The one
+#     implementation lives in scripts/count-check.sh; controls.sh runs the
+#     SAME script against seeded fixtures, so a regressed comparison fails
+#     there rather than reporting clean here. HONEST SCOPE: marked claims
+#     only. A clean run means every marked count agrees with its
+#     derivation, NEVER that these documents have no stale numbers — which
+#     is why the verified list is printed rather than swallowed.
+if [ -f scripts/count-check.sh ]; then
+  if cnt_out="$(bash scripts/count-check.sh README.md PLAN.md JOURNAL.md CONTRIBUTING.md PRINCIPLES.md docs/ARCHITECTURE.md 2>&1)"; then
+    printf '%s\n' "$cnt_out"
+  else
+    printf '%s\n' "$cnt_out"
+    fail=1
+  fi
+else
+  echo "FAIL count: scripts/count-check.sh is missing — every marked count is unverified"
+  fail=1
+fi
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
