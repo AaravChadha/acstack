@@ -18,6 +18,7 @@
 #   19 /refactor keeps its proof rule      20 /design keeps its 8-item spine
 #   21 skill-hygiene rule set stays whole  22 grader case flag named at every site
 #   23 marked counts match derivations    24 eval isolation named at every site
+#   25 owed-markers name a live carrier
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -698,6 +699,28 @@ for f in \
   grep -qiE 'pin' "$f" \
     || { echo "FAIL eval-isolation: $f no longer names the subject-model pin — an unpinned eval is not comparable"; fail=1; }
 done
+
+# 25. Owed-markers name a live carrier. AGENTS.md's third verification rule
+#     has been broken three times and caught by hand every time — most
+#     recently b566654's regression debt, written as owed in two places with
+#     no open task carrying it. `[owed: N.NN]` must name a task that EXISTS
+#     and is OPEN; `[owed: declined — reason]` must carry an actual reason.
+#     scripts/reach-check.sh holds the one implementation and controls.sh
+#     runs the SAME script against seeded fixtures. HONEST SCOPE: marked
+#     obligations only — unmarked "this owes X" prose is invisible here, a
+#     limit measured rather than assumed (see the script's header for the
+#     rejected bare-numeric approach and its six false positives).
+if [ -f scripts/reach-check.sh ]; then
+  if reach_out="$(bash scripts/reach-check.sh PLAN.md JOURNAL.md AGENTS.md 2>&1)"; then
+    printf '%s\n' "$reach_out"
+  else
+    printf '%s\n' "$reach_out"
+    fail=1
+  fi
+else
+  echo "FAIL reach: scripts/reach-check.sh is missing — owed-markers are unverified"
+  fail=1
+fi
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then

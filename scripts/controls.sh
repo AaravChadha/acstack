@@ -420,6 +420,39 @@ else
   fi
 fi
 
+# --- reach-check: orphaned carriers rejected, live ones accepted (4.47) ---
+# Inverted control plus its positive twin. Runs the SAME script check.sh
+# section 25 runs — a second implementation would be the duplication 4.48
+# exists to catch.
+if [ -f scripts/reach-check.sh ]; then
+  if [ ! -f fixtures/reachability/orphaned-PLAN.md ]; then
+    bad "reach-check orphan fixture missing — the carrier path has no control"
+  elif bash scripts/reach-check.sh fixtures/reachability/orphaned-PLAN.md >/dev/null 2>&1; then
+    bad "reach-check ACCEPTED the orphaned fixture — broken carriers are no longer caught"
+  else
+    ok "reach-check rejects the seeded orphaned carriers"
+  fi
+  if [ ! -f fixtures/reachability/carried-PLAN.md ]; then
+    bad "reach-check positive fixture missing — a blanket rejector would score full marks"
+  elif bash scripts/reach-check.sh fixtures/reachability/carried-PLAN.md >/dev/null 2>&1; then
+    ok "reach-check accepts the well-formed carriers"
+  else
+    bad "reach-check REJECTED the well-formed fixture — the guard rejects everything"
+  fi
+  # Fixture integrity: the orphan fixture must still seed all four modes.
+  omiss=""
+  for pat in '4\.99' '4\.42' 'owed: declined\]' 'owed: someday'; do
+    grep -qE "$pat" fixtures/reachability/orphaned-PLAN.md 2>/dev/null || omiss="$omiss $pat"
+  done
+  if [ -n "$omiss" ]; then
+    bad "reach-check orphan fixture lost a seeded mode ($omiss) — it no longer covers every failure"
+  else
+    ok "reach-check orphan fixture still seeds all four failure modes"
+  fi
+else
+  bad "scripts/reach-check.sh missing — owed-markers have no control"
+fi
+
 # --- count-check: the guard must REJECT every seeded stale marker (4.48) ---
 # Inverted control. These fixtures are wrong on purpose, so a PASS here is
 # the failure: it means count-check.sh stopped comparing. Runs the same

@@ -91,6 +91,13 @@ Drift check — every claim a doc makes that reality can contradict:
   tree line by line).
 - Stale counts vs greppable reality: tool counts, test counts, table counts,
   record counts.
+- **Work named as owed with nobody owning it.** A doc that says something
+  "owes" a fix, a round, or a follow-up, without naming the open task that
+  will do it, is drift the moment the sentence is written — the obligation
+  reads as scheduled and is not. In an acstack repo the mechanical half of
+  this runs in `scripts/check.sh` on every commit and covers only MARKED
+  obligations (`[owed: N.NN]`); the judgment half is yours, and it is the
+  unmarked prose the guard cannot see. Read for the promise, not the tag.
 - Checkbox state, both directions: a `[x]` whose Acceptance command now
   fails, and a subtask `[ ]` whose artifact plainly exists. A phase heading
   `## [ ]` held open while its `**Exit criterion:**` is unmet is /do's gate,

@@ -213,6 +213,18 @@ fullcase "comparison neutered to accept-all" FAIL 'control' bash -c "sed -e 's/i
 fullcase "eval site drops isolation rule"  FAIL 'eval-isolation' bash -c "sed -e 's/[Ii]solat/redact/g' skills/eval-run/SKILL.md > t && mv t skills/eval-run/SKILL.md"
 fullcase "eval site drops the model pin"   FAIL 'eval-isolation' bash -c "sed -e 's/[Pp]in/anchor/g' skills/eval-spec/references/eval-spec-template.md > t && mv t skills/eval-spec/references/eval-spec-template.md"
 fullcase "unisolated fixture stops seeding" FAIL 'control' bash -c "sed -e 's|\"claude\", \"-p\", case\[\"input\"\]|\"claude\", \"-p\", case[\"input\"], \"--bare\"|' fixtures/eval-isolation/unisolated-runner.py > t && mv t fixtures/eval-isolation/unisolated-runner.py"
+# 4.47 owed-marker reachability. Three ways this rots: a live carrier gets
+# closed under a marker still pointing at it, the implementation vanishes,
+# and the comparison is neutered into a blanket accept (caught by the
+# control layer, not by section 25 itself).
+fullcase "owed-marker carrier gets closed"  FAIL 'reach'   bash -c "sed -e 's/^- \[ \] \*\*4\.50\*\*/- [x] **4.50**/' PLAN.md > t && mv t PLAN.md"
+fullcase "reach-check implementation gone"  FAIL 'reach'   bash -c "rm -f scripts/reach-check.sh"
+# NOTE: anchor-free on purpose. The first version of this case anchored on
+# '^  fail=1$', which matches nothing — every fail=1 in reach-check.sh sits
+# indented inside a case branch — so the case reported got=PASS want=FAIL
+# and never demonstrated the guard firing. Same weak-mutation class the
+# matrix caught on 4.19.
+fullcase "reach comparison neutered"        FAIL 'control' bash -c "sed -e 's/fail=1/fail=0/g' scripts/reach-check.sh > t && mv t scripts/reach-check.sh"
 
 echo
 echo "passed=$pass failed=$failed"

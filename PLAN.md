@@ -1487,7 +1487,7 @@ reordered, if any.
   falsification with zero broken claims (round 10's had two). One new
   finding: the runner template printed "run did not complete cleanly" on
   a COMPLETE run with one crashed-subject case — reworded in `b566654`,
-  owing a regression slot next round. Journal entry 2026-08-05 records
+  owing a regression slot next round [owed: 4.50]. Journal entry 2026-08-05 records
   the verdict per fix, closing this task's third acceptance clause.)*
   Shakedown 11 — live re-test of the shakedown-10 fix round
   (verification rule 6: every fix in commit `43cc1ca` is behavioural and
@@ -1658,7 +1658,36 @@ reordered, if any.
   with no committed baseline passes and says so in its output; both
   shown failing before they pass.
 
-- [ ] **4.47** Add a reachability check over the doc set — work named as
+- [x] **4.47** *(Done 2026-08-06. `scripts/reach-check.sh` + check.sh §25;
+  controls.sh runs the SAME script against seeded fixtures. The convention,
+  described here without its literal brackets so this sentence is not itself
+  read as a marker: an `owed:` tag naming a task number must name one that
+  EXISTS and is OPEN; an `owed: declined` tag must carry a reason. Both failure
+  modes the rule has really produced are covered — a carrier that does not
+  exist, and one that is already closed, which is `b566654`'s case exactly.
+  **The mechanism was chosen by measurement, not preference.** The plain
+  bare-numeric approach was built and tested first: matching `N.NN`
+  references across PLAN and JOURNAL returned six unresolved values on a
+  clean tree, every one an incidental numeric — `1.3% of a 200k window`,
+  VERSION `0.4.0`, a `1:1` ratio. Widening to catch real references means
+  chasing those forever, which is a denylist and cannot be finished (§13's
+  ruling), so explicit markers won on evidence and the rejected approach is
+  recorded in the script header rather than lost. **Three live obligations
+  annotated in the same edit**, including the one that motivated the task:
+  4.42's closed text and JOURNAL's shakedown-11 entry both now carry
+  `[owed: 4.50]`, so a reader of either learns where the debt went.
+  **Shown failing seven ways before being trusted:** four via the orphan
+  fixture (dangling carrier, closed carrier, reasonless decline,
+  unreadable carrier), the missing-file path, and three matrix cases — plus
+  the positive direction, since a guard that rejected every marker would
+  otherwise score full marks. /audit docs gained the judgment half, pointed
+  explicitly at what the guard cannot see. check.sh **27 → 28**; matrix
+  **97 → 100**; controls **78 → 81**. **The matrix caught a weak mutation
+  of mine:** the neutered-comparison case anchored on `^  fail=1$`, which
+  matches nothing — every `fail=1` sits indented inside a case branch — so
+  it reported got=PASS want=FAIL and never demonstrated the guard firing.
+  Strengthened and re-proved; the same weak-mutation class the matrix
+  caught on 4.19.)* Add a reachability check over the doc set — work named as
   owed with no open task owning it. AGENTS.md's third verification rule
   ("anything named as needed work gets a carrier task in the same edit")
   has now been broken three times, and every time a human-driven audit
@@ -1800,7 +1829,7 @@ reordered, if any.
   simply stops knowing how to do one thing; shown failing first; and (c)
   a live round drives each split skill in each of its modes and gets the
   same report shape as before the split — behavioural, so it owes a
-  shakedown slot under verification rule 6.
+  shakedown slot under verification rule 6 [owed: 4.50].
 
 - [ ] **4.50** The next shakedown's mandatory segments — everything a
   round is already known to owe. Verification rule 6 says a
