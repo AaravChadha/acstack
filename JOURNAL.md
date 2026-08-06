@@ -64,11 +64,11 @@
   repo's AGENTS.md, plus 4 repo-only verification rules added 2026-07-29.
 - Remote live (2026-07-27); **public as of 2026-08-03**, `main` pushed.
 - Roadmap runs to 39 skills (those built, plus wave 5's 5, wave 6's 7 and
-  wave 7's 4), **<!-- count:open-scheduled -->22<!-- /count --> scheduled
+  wave 7's 4), **<!-- count:open-scheduled -->23<!-- /count --> scheduled
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,
-  **<!-- count:wave45-open -->6<!-- /count -->**) → 5 (5) → 6
+  **<!-- count:wave45-open -->7<!-- /count -->**) → 5 (5) → 6
   (7) → 7 (4), plus 5 unscheduled browser-layer items. Full detail in
   PLAN.md.
 - Next: **wave 4.5**, which reopened 2026-08-06 after being called done.
@@ -83,8 +83,8 @@
   ~2,540 tokens, so the cost worth attacking is per-invocation body
   loading, not descriptions. 4.3 and 4.4 stay adopter-gated. Wave 5
   still needs a spec pass before code — 5.1–5.4 carry no acceptance
-  lines. Also owed: a carrier for `b566654`'s regression debt, and
-  4.46's baseline-source decision.
+  lines. 4.46's baseline decision is recorded (last committed results
+  file), and 4.50 now owns the three shakedown debts that had no carrier.
 
 ## How to run it right now
 
@@ -104,7 +104,7 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->24<!-- /count -->/<!-- count:wave45-total -->30<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06** — 4.45 eval-runner isolation, 4.46 per-dimension non-regression floor, 4.47 doc-set reachability (all from an external survey), **4.48 done same day** — the count-drift check moved out of /audit docs (which had carried it since it shipped and never once run) into check.sh §23, blocking on its own completion the moment 4.48 was ticked; and 4.49, progressive disclosure over the heavy skill bodies (35% of all body text sits in six files), gated behind 4.45. Still open: 4.45–4.47 and 4.49, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
+| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->24<!-- /count -->/<!-- count:wave45-total -->31<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06** — 4.45 eval-runner isolation, 4.46 per-dimension non-regression floor, 4.47 doc-set reachability (all from an external survey), **4.48 done same day** — the count-drift check moved out of /audit docs (which had carried it since it shipped and never once run) into check.sh §23, blocking on its own completion the moment 4.48 was ticked; and 4.49, progressive disclosure over the heavy skill bodies (35% of all body text sits in six files), gated behind 4.45. Still open: 4.45–4.47 and 4.49, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
@@ -229,12 +229,22 @@ which six carry 63,711 = **35%**. /plan holds five modes in one
 4.49 is gated behind 4.45, because without an isolated runner there is no
 way to show a split preserved behaviour.
 
-**Still owed, and named rather than fixed:** `b566654`'s regression debt
-(shakedown 11's runner-template reword) has now been named four times
-across two sessions with **no open task owning it** — the exact rule-3
-orphan 4.47 exists to detect, left open here deliberately so 4.47 has a
-real instance to catch. 4.46 stays unbuildable until its baseline-source
-line is decided.
+**Both outstanding decisions were taken at session end, not deferred
+again.** 4.46's baseline is **the last committed results file** — the
+spec-minimum alternative was rejected because /eval-spec already states
+per-category floors, so it would have added a gate catching nothing new,
+and the max-of-both ratchet as too likely to block on eval noise; the
+first-run-has-no-baseline path must pass *with a stated line*, since an
+absent baseline reported as a silent pass is the false confidence the
+gate exists to remove. And **4.50** now carries the three accumulated
+shakedown debts that had no owner between them: `b566654`'s
+runner-template reword (behaviourally found, never re-tested — rule 6),
+shakedown 11's never-exercised list (interactive halves of the
+unattended contracts, /retro's >500-line retrieval, tickets-mode
+deltas), and 4.30's four behavioural acceptances, which its own closing
+note flagged as a shakedown that no round has run. Filing rather than
+declining was the deliberate call: the rule gets discharged by a task,
+not by an argument that one print string was too small to bother with.
 
 Validation close: check.sh **26 checks** (25 → 26, §23 added), all clean;
 guard-matrix **90 → 94 cases**; controls **72 → 75**; **23 skills**; wave

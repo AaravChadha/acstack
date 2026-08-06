@@ -1609,11 +1609,20 @@ reordered, if any.
   file or the spec's stated target is the second half of that call.
   **Out of scope:** gating public comparison claims on identical
   cases/models/trials — the honesty half is already carried by the
-  never-inflate principle and /audit eval. **Acceptance:** TBD — needs
-  the baseline-source decision above, recorded on this task before build.
-  The demonstrable half is fixed regardless: a seeded results pair where
-  the headline RISES and one category's pass rate FALLS must block, shown
-  failing before it passes.
+  never-inflate principle and /audit eval.
+  **Verdict (2026-08-06) — the baseline is the LAST COMMITTED RESULTS
+  FILE.** The spec-minimum alternative was rejected because /eval-spec
+  already states per-category floors, so flooring against them again
+  would add a gate that catches nothing new; the max-of-both ratchet was
+  rejected as too likely to block on ordinary eval noise. Consequence
+  that must be built, not discovered: a first run has NO baseline, and
+  that path passes with a stated line rather than silently — an absent
+  baseline reported as a pass is the false-confidence this gate exists
+  to remove. **Acceptance:** a seeded results pair where the headline
+  RISES while one category's pass rate FALLS against the previous
+  committed run must BLOCK, naming the category and both rates; a run
+  with no committed baseline passes and says so in its output; both
+  shown failing before they pass.
 
 - [ ] **4.47** Add a reachability check over the doc set — work named as
   owed with no open task owning it. AGENTS.md's third verification rule
@@ -1758,6 +1767,36 @@ reordered, if any.
   a live round drives each split skill in each of its modes and gets the
   same report shape as before the split — behavioural, so it owes a
   shakedown slot under verification rule 6.
+
+- [ ] **4.50** The next shakedown's mandatory segments — everything a
+  round is already known to owe. Verification rule 6 says a
+  behaviourally-found fix stays unverified until a live run re-tests it,
+  and mechanical green never discharges it. Three debts have accumulated
+  with no task owning any of them, which is the rule-3 orphan 4.47 exists
+  to detect; **decided 2026-08-06 to file rather than decline**, so the
+  obligation is discharged by a task and not by an argument that it was
+  too small to bother with. (a) **`b566654` regression segment** — the
+  runner template printed `errors: N — run did not complete cleanly` on a
+  COMPLETE run where every case had a record and one subject crashed, so
+  the operator had to argue against the scaffold's own wording inside an
+  otherwise-honest report. Reworded, never re-tested live. Rule 6's
+  proportionality clause applies: this is one print string, so it is a
+  segment inside the next round, never a round of its own. (b) **The
+  never-exercised list** shakedown 11's operator wrote down and nothing
+  has covered since: the interactive halves of the unattended contracts,
+  /retro's >500-line retrieval rule (4.29), and the tickets-mode deltas.
+  (c) **4.30's four behavioural acceptances** — /design's output judged
+  by /design-audit plus ai-tells against `fixtures/design/`, which its
+  own closing note flags as a shakedown and which no round has run.
+  **Out of scope:** new-ground exploration. A round that only looks
+  forward cannot catch these, because a fix becomes old ground the moment
+  it is committed — that is the whole reason rule 6 exists. **Acceptance:**
+  a fresh-session round on a blind venue covers all three segments and
+  reports per-segment HELD or FAILED, each verified at `file:line`
+  against the venue on disk; (a) specifically requires a venue where at
+  least one case errors and the rest complete, with the scaffolded
+  runner's printed line naming the errored cases without claiming the run
+  was incomplete. Findings get carriers in the same edit.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
