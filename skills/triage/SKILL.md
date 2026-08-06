@@ -64,51 +64,16 @@ to decisions.
 Config: `stale-days` from a `## triage` section in `.claude/acstack.md`
 (default 30).
 
-## Tickets mode (`tracking: tickets`)
+## Mode: the sweep itself
 
-Preconditions — `gh` installed, `gh auth status` succeeding, and a
-GitHub remote present. Any failure names WHICH one failed and offers
-document mode; never guess. The sweep:
+The sweeps are mode-specific and mutually exclusive — read exactly one,
+chosen by the resolved `tracking` config, and not the other:
 
-1. **Stale.** Open issues with no activity in `stale-days` days → propose
-   close-with-reason (`superseded by #M` / `no longer planned — <reason>`)
-   or re-prioritize into a milestone. Staleness is evidence of drift, not
-   a death sentence — the proposal says which, per issue.
-2. **Duplicates.** Candidate pairs with the overlapping text QUOTED as
-   evidence. The newer closes as `duplicate of #N` — only after the user
-   confirms the pair is real.
-3. **Missing acceptance.** Issues without an `## Acceptance criteria`
-   section → listed, labeled `needs-acceptance`; the report proposes
-   acceptance lines where the issue body implies them.
-4. **Unblocked-but-unassigned.** In the current milestone, no `blocked`
-   label, no assignee → surfaced as ready work, ordered by milestone
-   position.
-5. **Milestone burn.** Per milestone: open/closed counts, the exit
-   criterion restated from its description, and an honest verdict on
-   whether what remains can meet it — "12 open, 3 weeks of history says
-   2/week" is a verdict; "tight but doable" is not.
+- `tracking: tickets` → `references/tickets-mode.md`
+- `tracking: document` (the default) → `references/document-mode.md`
 
-## Document mode
-
-**No PLAN.md → stop and say so.** There is no backlog to groom, and
-inventing one would be fiction. Name `/plan seed` and stop.
-
-The same rot, PLAN.md-shaped:
-
-1. **Checked but failing.** `[x]` whose `**Acceptance:**` command fails
-   now → propose re-open: `~~[x]~~ → **Verdict (date):** re-opened —
-   <what broke>`. Run cheap acceptance commands; name the expensive ones
-   skipped.
-2. **Done but unchecked.** `[ ]` whose artifact plainly exists → VERIFY
-   the acceptance actually passes before proposing the tick; existence is
-   not acceptance.
-3. **No acceptance line.** Task groups without `**Acceptance:**` → listed
-   with proposed runnable lines.
-4. **Stale open items.** `## Open items` entries dated older than
-   `stale-days` → propose: decide now, re-date with a reason, or record
-   as deliberately deferred.
-5. **Phase-state drift.** Phase headings whose `[ ]`/`[x]` disagrees with
-   their children's state or their exit criterion's reality.
+Root-cause clustering below runs in BOTH modes, after whichever sweep
+you read.
 
 ## Root-cause clustering (both modes)
 

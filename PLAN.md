@@ -1818,7 +1818,38 @@ reordered, if any.
   description guard, the palette check whose `\b` matched nothing), and a
   count guard never seen failing is decoration.
 
-- [ ] **4.49** *(PARTIAL 2026-08-06 — deliberately NOT ticked. One skill
+- [x] **4.49** *(Closed 2026-08-07 with a scope verdict. **Three skills
+  split, two measured and DECLINED** — the decline is half the result, so
+  a later reader does not see two unsplit heavy skills and assume the work
+  was abandoned. Net on the default (document) path:
+  `/plan` 12,181 → 7,175 (**−5,006**), `/do` 10,428 → 9,236 (**−1,192**,
+  tickets not loaded in document mode), `/triage` 9,625 → 8,890 (**−735**,
+  one mode reference always loads). **Total 32,234 → 25,301 bytes, −6,933
+  ≈ 1,733 tokens** — and `/plan` alone is 72% of it. Every split proved
+  **0 lines lost** by set difference, the prose analogue of /refactor's
+  same-test-count rule.
+  **Verdict — `/design` and `/eval-run` are declined, not deferred.**
+  Mapping their sections found **zero** conditional content: /design's
+  process, eight items, and verify-the-artifact apply to every invocation;
+  /eval-run's grading rules and report shape are consulted on every run.
+  Splitting either would put always-on text behind a pointer — two loads
+  instead of one, strictly worse. They are big, not splittable, and the
+  original 35%-of-body-text framing was a SIZE measurement that did not
+  survive contact with per-section conditionality.
+  **A correction inside this task:** /triage was first advised as the best
+  remaining candidate at ~101 conditional lines, counting root-cause
+  clustering's 56. Reading it corrected that — it says "run it last, over
+  the whole backlog", in BOTH modes, so it is a mandatory third pass and
+  splitting it would have violated this task's own rule. Real conditional
+  content was the mutually-exclusive mode pair, ~46 lines, and the saving
+  came in at a third of the estimate.
+  **Guard risk checked before touching /do:** check.sh greps
+  `skills/do/SKILL.md` by path in §17 (ladder floor terms) and §21
+  (hygiene's claim/requires table); its tickets section was confirmed
+  clear of both before the split, and the guards stayed green.
+  The behavioural half — a live model finding the moved procedure in each
+  mode — is unchanged and still owed [owed: 4.50].)* Split the heavy
+  skills so an invocation loads only the
   split, not the set, and the title says "the heavy skills". **`/plan`
   done: 12,181 → 7,175 bytes, 215 → 127 lines**, with `Mode: seed` (71
   lines) → `references/mode-seed.md` and `Tickets mode` (29) →
