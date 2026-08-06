@@ -19,8 +19,11 @@
 > preamble + `bin/` helpers, CI, dry-run honesty, `allowed-tools`, the
 > referral block, multi-product detection, **/eval-run as the 20th
 > skill**, and the four launch documents (PRINCIPLES, ARCHITECTURE,
-> CONTRIBUTING, README v2). check.sh 6 → **25 checks** (22 numbered + 3b + 3c + 13a); guard-matrix
-> 15 → **90 cases**; **23 skills**. Five review rounds ran; the last
+> CONTRIBUTING, README v2). check.sh started at 6 checks and the guard
+> matrix at 15; both have grown severalfold, and their current figures
+> live in the TL;DR below where check.sh §23 machine-checks them — stated
+> once, here by reference, because this blockquote carried a stale 25/90
+> until 2026-08-06. Five review rounds ran; the last
 > found a reproducible arbitrary-code-execution path in the runtime
 > preamble — now closed and locked by a matrix case.
 > /resume passed its true cold start (4.7 item 10, first half).
@@ -73,22 +76,24 @@
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
   reachability check for work named as owed with no open task owning it.
-  4.48 and 4.49 followed from the same session: the count-drift check
-  moves from /audit docs (opt-in, never typed) into check.sh (runs every
-  commit), and the heavy skill bodies get progressive disclosure — the
-  always-on listing is only ~2,540 tokens, so the cost worth attacking
-  is per-invocation body loading, not descriptions.
-  4.3 and 4.4 stay adopter-gated. Wave 5 still needs a spec pass before
-  code — 5.1–5.4 carry no acceptance lines.
+  **4.48 is done** — the count-drift check moved from /audit docs
+  (opt-in, never typed, never once fired) into check.sh §23, and blocked
+  its own completion commit. 4.49 is progressive disclosure over the
+  heavy skill bodies, gated behind 4.45: the always-on listing is only
+  ~2,540 tokens, so the cost worth attacking is per-invocation body
+  loading, not descriptions. 4.3 and 4.4 stay adopter-gated. Wave 5
+  still needs a spec pass before code — 5.1–5.4 carry no acceptance
+  lines. Also owed: a carrier for `b566654`'s regression debt, and
+  4.46's baseline-source decision.
 
 ## How to run it right now
 
 ```bash
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
-scripts/check.sh   # pack guard (25 checks, runs controls) — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # 90 seeded-defect cases proving the guards fire
-# then start a new Claude Code session; the twenty-three skills load at start
+scripts/check.sh   # pack guard; its header enumerates every section — clean before any commit
+bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
+# then start a new Claude Code session; the whole skill roster loads at start
 ```
 
 ## What's been built
@@ -104,6 +109,136 @@ bash docs/guard-matrix.sh "$PWD"   # 90 seeded-defect cases proving the guards f
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### An external survey became four carriers, and the count guard blocked its own commit (2026-08-06)
+
+**The survey: two high-star single-idea skills, and only one of them gave
+anything.** graphify (**103,229★**, 10,027 forks, created 2026-04-03) and
+i-have-adhd (**17,461★**, MIT, 142-line SKILL.md) were read at source.
+**Verdict on graphify: nothing taken.** Its "Honesty Rules" are five
+lines and mostly domain-specific; the transferable bit, `EXTRACTED` vs
+`INFERRED` provenance, acstack already has in better form as /audit's
+CONFIRMED/PLAUSIBLE and /secure's confidence gate. Its `worked/`
+directory is the right *idea* — a reader-runnable worked example — with
+an execution not worth copying (below). BENCHMARKS.md is genuinely
+rigorous (one model across every system, judge blind-validated at 90.6%
+agreement / Cohen's kappa 0.81, results reported against itself:
+supermemory 49.7% QA vs graphify's 45.3%) but the parts acstack needs —
+pinned grader, report unfavourable results — are already in /eval-spec
+and the never-inflate rule.
+
+**Method failure worth recording, because it produced a false accusation.**
+Every WebFetch went to `main`; graphify's default branch is **`v8`**.
+That single wrong assumption made four claims wrong at once — a
+1,247-line skill body (really 710), a pipeline-arrow description with no
+trigger sentence (v8's is a proper trigger sentence, so the "most-starred
+skill doesn't use model invocation" finding **inverted**), three `worked/`
+examples (four), and worst, a written claim that BENCHMARKS.md **did not
+exist and the page-summarising model had invented it**. It exists; the
+404 came from guessing `main`. All six corrected only after `git clone`.
+The rule that would have caught it: `git branch --show-current` before
+trusting any raw URL — a default branch is part of the consumed form.
+
+**graphify's negative datum, verified at source.** The 71.5× headline's
+reproduction recipe lists five arxiv papers; **two of the five IDs point
+at unrelated work** — `2505.03840` is *CoCoB: Adaptive Collaborative
+Combinatorial Bandits*, not "Neural Attention Residuals"; `2502.02593` is
+*Reconstructing 3D Flow from 2D Data with Diffusion Transformer*, not
+"NeuralWalker". A fourth corpus item is "any screenshot or diagram from
+the Attention paper" — unpinned — and expected output is "~285 nodes,
+~340 edges", approximate enough that a reader cannot separate a
+regression from variance. A 103k-star headline whose recipe cannot be
+followed to the same corpus. Evidence *for* the discipline this pack
+already has, so no carrier was opened.
+
+**Three carriers from i-have-adhd (`960f910`), each verified absent
+first.** 4.45 eval-runner isolation — its eval README names its own
+always-on flag file as the sharpest contamination case, injecting the
+skill's ruleset into the **baseline** arm so the comparison measures the
+skill against itself; acstack has that exposure by construction, since
+`./setup` symlinks the whole roster into `~/.claude/skills`. A grep over
+skills/eval-spec, eval-run and ship returned **zero hits** for isolation,
+leak, contamination or baseline language; grader pinning is covered, the
+subject side is not. 4.46 a per-dimension non-regression floor — /ship
+gate 3 is one headline against a fixed target and /eval-spec's category
+minimums constrain the golden set's *composition*, so neither compares a
+run to the previous run; acceptance left an honest **TBD** because the
+baseline-source call is genuinely unmade. 4.47 doc-set reachability.
+Plus a second dated note on 4.4 naming i-have-adhd's 25-line POSIX-sh
+SessionStart hook as a smaller working model than the 49-line one already
+recorded — opt-in gated on a flag file, exits 0 on every failure path,
+resolves its skill path from `$0`.
+
+**A false alarm I raised and then had to withdraw.** I reported that
+three skills carried `disable-model-invocation: true` while AGENTS.md's
+roster lists two, and called it a guard failure. Wrong: my `grep -l` was
+unanchored and matched **/health's own prose about the flag** at
+`skills/health/SKILL.md:79`. §14's grep is anchored (`^disable-model-`)
+and correct; roster and flag set match exactly. This is the pack's own
+documented bug class — *a fixture's prose trips its own detector* — hit
+live while auditing for exactly that kind of thing.
+
+**The count drift, five instances then three more of my own.** `de5e583`
+re-derived JOURNAL's standing surfaces by enumeration: "Twenty skills" →
+23, table `21/23` → the real tally, "35 open tasks" → 21 scheduled, plus
+PLAN's wave-4 risk note, which claimed 14 done and 3 remaining when all
+17 were done **and** said "3 remain" then "Those four" in the next
+clause — superseded with strikethrough, the off-by-one named rather than
+quietly corrected. Then filing 4.48 re-staled those counts, and filing
+4.49 re-staled them again. **Three self-inflicted drifts in one session,
+twice inside the edit that filed the anti-drift task.**
+
+**4.48 built and closed the same day (`d044b73`).** The check was never
+missing — `skills/audit/SKILL.md:92` has carried *"stale counts vs
+greppable reality"* since it shipped and **never once fired**, because
+/audit docs runs only when typed and nobody types it without already
+suspecting drift. `scripts/count-check.sh` is the single implementation;
+check.sh §23 runs it over six standing docs and controls.sh runs the
+*same script* against seeded fixtures, since a second copy would be the
+duplication the guard exists to catch. Seven derivations (`skills`,
+`checks`, `matrix-cases`, `wave45-done/-open/-total`, `open-scheduled`).
+Shown failing **four ways before wiring** — stale value, unknown count
+name, no markers at all, missing file — then end-to-end in the consumed
+form: seeding `count:skills -->20` made check.sh **exit 1** with
+`JOURNAL.md:30  doc says 20 / reality is 23`, restoring returned **0**.
+**The strongest evidence arrived free: ticking 4.48 invalidated three of
+its own markers and the guard blocked the commit, naming all three at
+file:line.** It also caught two defects while being built — §23's first
+file list pointed at `ARCHITECTURE.md` in the repo root when it lives in
+`docs/`, caught by the missing-file path on the first run; and
+CONTRIBUTING's "= 25 checks" sat inside a bash code block where an HTML
+marker cannot render, so that line went count-free.
+
+**Honest scope, printed on every run rather than swallowed:** `unmarked
+counts are NOT checked`. Demonstrated twice in its own commit — the
+table's "Open 7:" prose and this file's header blockquote (a stale 25/90)
+were both invisible to the guard; both duplicates were **removed** rather
+than updated. The regex sweep for unmarked count prose stays declined per
+§13's denylist ruling.
+
+**Token measurement, since "does the pack cost too much" came up.**
+Always-on cost is the skill listing: 9,523 bytes over 21 model-invocable
+descriptions ≈ **~2,540 tokens**, about 1.3% of a 200k window — not a
+burden, and 4.49 explicitly declines to attack it (descriptions are the
+discovery surface, and /ship already shipped one truncated). The cost
+that scales with use is the body: **182,421 bytes over 23 files**, of
+which six carry 63,711 = **35%**. /plan holds five modes in one
+12,181-byte body. Checking rather than assuming changed 4.49's scope:
+/audit looked like the worst offender and is in fact the **model** —
+8,975 bytes of dispatch with its four targets already in `references/`.
+4.49 is gated behind 4.45, because without an isolated runner there is no
+way to show a split preserved behaviour.
+
+**Still owed, and named rather than fixed:** `b566654`'s regression debt
+(shakedown 11's runner-template reword) has now been named four times
+across two sessions with **no open task owning it** — the exact rule-3
+orphan 4.47 exists to detect, left open here deliberately so 4.47 has a
+real instance to catch. 4.46 stays unbuildable until its baseline-source
+line is decided.
+
+Validation close: check.sh **26 checks** (25 → 26, §23 added), all clean;
+guard-matrix **90 → 94 cases**; controls **72 → 75**; **23 skills**; wave
+4.5 **24/30**. Five commits, CI green through `d044b73`.
 
 ### The front door: Karpathy's datum becomes a verdict, and the survey's last orphans get carriers (2026-08-05, later)
 
