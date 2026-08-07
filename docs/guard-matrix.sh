@@ -238,6 +238,10 @@ fullcase "regression gate rejects-all"      FAIL 'control'        bash -c "sed -
 # 4.51 partial-crash blindness. Neutering the coverage check must be caught:
 # the rate check still passes it, because 1-of-1 surviving reads as 100%.
 fullcase "regression gate coverage-blind"   FAIL 'control'        bash -c "sed -e 's/if n < pn:/if False:/' skills/eval-run/references/regression-gate.py > t && mv t skills/eval-run/references/regression-gate.py"
+# 4.53 exit-code merge. Reverting the runner to a two-valued code makes
+# "could not complete" and "completed with errored cases" both exit 1 —
+# the collision measured before the fix, and the one /ship's gate 3 reads.
+fullcase "eval-run exit codes merged"       FAIL 'control'        bash -c "sed -e 's/return 2 if errors else 0/return 1 if errors else 0/' fixtures/eval-run/eval/run.py > t && mv t fixtures/eval-run/eval/run.py"
 
 echo
 echo "passed=$pass failed=$failed"

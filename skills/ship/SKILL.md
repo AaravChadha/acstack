@@ -73,7 +73,22 @@ here so the rule stays true everywhere else.
    No suite and no `test-command` → say so plainly; a missing suite is
    never a silent pass.
 3. **Eval.** If `eval/spec.md` exists, run the eval by its own run
-   command and compare headline vs target. Below target BLOCKS the ship
+   command. **Read its exit code BEFORE its headline** — the code says
+   whether a number exists at all, and comparing a headline produced by a
+   half-dead run is how a crash gets shipped as a score. The runner
+   contract (`../eval-run/references/runner-template.md`, item 7) defines
+   three, and this gate reads the VALUE, not merely zero/non-zero:
+
+   | Exit | Gate 3 does |
+   |---|---|
+   | `0` | Compare headline vs target, then run the non-regression floor below. |
+   | `1` | **BLOCK — "the eval did not run."** Report it as a harness failure, never as a score. Quote the runner's own NO SCORE line. Do not compare a stale results file to the target: there is no new number. |
+   | `2` | **BLOCK — "completed with N errored cases."** Name N and the categories. The headline is computed over fewer graded cases than the golden set holds, so it is under-covered rather than wrong, and the remedy is the subject or the environment — not the target. |
+
+   A runner predating this contract may still exit `1` on a completed run
+   with errored cases; that reads as a BLOCK either way, so the gate stays
+   safe against an old runner — it just names the cause less precisely.
+   Below target BLOCKS the ship
    (this is what makes "the eval is the spec" bite at release time). No
    eval → one honest line, gate passes.
    **Then the per-category non-regression floor**, which the headline
@@ -82,7 +97,7 @@ here so the rule stays true everywhere else.
    both rates. A change that lifts the overall number while breaking every
    refusal case clears the target comparison above — refusal is small, so
    its collapse barely moves an average — and that is the case this floor
-   exists for. `/eval-run`'s `references/regression-gate.py` does the
+   exists for. `../eval-run/references/regression-gate.py` does the
    comparison. No committed baseline passes and SAYS so; an absent
    baseline reported as a clean pass is false confidence, not a pass.
 4. **Docs.** Cheap drift pass, not a full audit: README quickstart still

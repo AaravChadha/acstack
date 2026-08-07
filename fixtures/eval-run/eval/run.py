@@ -69,7 +69,12 @@ def grade(case, actual):
     raise ValueError(f"unknown grade_rule: {rule}")
 
 def main():
-    cases = [json.loads(l) for l in GOLDEN.read_text().splitlines() if l.strip()]
+    try:
+        cases = [json.loads(l) for l in GOLDEN.read_text().splitlines() if l.strip()]
+    except Exception as exc:
+        # exit 1 = COULD NOT COMPLETE: no results file, so no number exists.
+        # Explicit, because an uncaught traceback also exits 1 by accident.
+        sys.exit(f"NO SCORE: could not read {GOLDEN} — {exc}")
     cases = [c for c in cases if c.get("status") != "superseded"]
     records, errors = [], 0
     for c in cases:
@@ -140,8 +145,14 @@ def main():
         for r in forgiven:
             print(f"  {r['id']} ({r['category']}): {r.get('acceptable_failure_reason') or '(no reason recorded)'}")
     if errors:
-        print(f"errors: {errors} — run did not complete cleanly")
-    return 1 if errors else 0
+        # a run whose every case has a record IS complete, even when the
+        # subject crashed on one — so this is 2 (completed, under-covered),
+        # never 1 (never ran). See runner-template.md contract item 7.
+        print(f"errors: {errors} case(s) — subject crashed or could not be "
+              f"invoked; each has an error record in the results file")
+        print(f"exit 2: completed with {errors} errored case(s) — the "
+              f"headline is under-covered, not a clean score")
+    return 2 if errors else 0
 
 if __name__ == "__main__":
     sys.exit(main())

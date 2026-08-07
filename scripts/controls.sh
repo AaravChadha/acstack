@@ -170,7 +170,7 @@ else bad "/health multi-product fixture lost its workspace marker"; fi
 # Reviewing a fork branch? Read the fixtures/ and scripts/ diff BEFORE
 # running the guard — see CONTRIBUTING.md.
 if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; then
-  out="$( (cd fixtures/eval-run && python3 eval/run.py 2>&1) || true)"
+  out="$(cd fixtures/eval-run && python3 eval/run.py 2>&1)"; ev_c=$?
   head="$(printf '%s' "$out" | grep '^overall:' || true)"
   case "$head" in
     *"7/8 (87.5%)"*) ok "/eval-run control: seeded failure lands at 7/8 (87.5%)" ;;
@@ -194,6 +194,46 @@ if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; t
   printf '%s' "$out" | grep -q 'skipped (needs-data): 1' \
     || bad "/eval-run silently dropped the needs-data case from the report"
   rm -rf fixtures/eval-run/eval/results
+
+  # 4.53: the exit code is a THREE-state signal, and these read the VALUE
+  # rather than truthiness. Before 4.53, "could not complete" and
+  # "completed with errored cases" BOTH exited 1 (measured), so /ship's
+  # gate 3 could not tell a dead harness from a degraded subject — the
+  # distinction contract item 7 exists to carry. Scenario B is seeded
+  # through DATA (a golden case with an unknown grade_rule, which grade()
+  # raises on) so the control never patches the runner's code.
+  # C — the shipped fixture: completes with one real failure, zero errors.
+  [ "$ev_c" = 0 ] \
+    || bad "/eval-run: a completed run with a scored failure exited $ev_c, want 0 — a bad score is not a crash (4.53)"
+  e53="$(mktemp -d)"
+  cp -R fixtures/eval-run/eval "$e53/eval"
+  # A — cannot complete: no golden set, so no results file and no number.
+  rm -f "$e53/eval/golden.jsonl"
+  a53_out="$(cd "$e53" && python3 eval/run.py 2>&1)"; a53=$?
+  [ "$a53" = 1 ] \
+    || bad "/eval-run: an unreadable golden set exited $a53, want 1 — 'could not complete' must be its own code (4.53)"
+  # The code alone does NOT prove the guard exists: an uncaught traceback
+  # also exits 1, so reverting the explicit guard leaves a53 unchanged
+  # (verified by seeding it). The stated MESSAGE is what distinguishes a
+  # written contract from an accident, so it is asserted separately.
+  printf '%s' "$a53_out" | grep -q 'NO SCORE' \
+    || bad "/eval-run: a run that could not complete exited 1 by traceback, not by a written guard — no NO SCORE line (4.53)"
+  # B — completed, every case has a record, one errored.
+  cp -R fixtures/eval-run/eval "$e53/eval2"
+  printf '%s\n' '{"id":"x53","category":"edge","input":"capital of france","expected":"Paris","grade_rule":"bogus-rule-453"}' \
+    >> "$e53/eval2/golden.jsonl"
+  b53_out="$(cd "$e53" && python3 eval2/run.py 2>&1)"; b53=$?
+  [ "$b53" = 2 ] \
+    || bad "/eval-run: a run completing with an errored case exited $b53, want 2 — it is under-covered, not dead (4.53)"
+  [ "$a53" != "$b53" ] \
+    || bad "/eval-run: cannot-complete and completed-with-errors BOTH exited $a53 — indistinguishable by exit code alone (4.53)"
+  if printf '%s' "$b53_out" | grep -q 'did not complete cleanly'; then
+    bad "/eval-run: the errored-run line still says 'did not complete cleanly' — a run whose every case has a record IS complete (4.53)"
+  fi
+  if [ "$ev_c" = 0 ] && [ "$a53" = 1 ] && [ "$b53" = 2 ]; then
+    ok "/eval-run exit codes separate completed(0) / could-not-complete(1) / completed-with-errors(2)"
+  fi
+  rm -rf "$e53"
 else
   # a skipped control is NOT a pass — check.sh section 2 already learned
   # this lesson about a missing banned list. Say so and count it.

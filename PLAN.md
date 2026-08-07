@@ -2048,7 +2048,47 @@ reordered, if any.
   a comma-free multi-word expected grades the way the template says, shown
   failing first.
 
-- [ ] **4.53** Decide what a completed-with-failures run exits. The
+- [x] **4.53** *(Done 2026-08-08. **Verdict: three exit codes, because two
+  cannot carry the distinction.** `0` = completed, every case graded (the
+  score is irrelevant to the code); `1` = could not complete, so no results
+  file and no number exists; `2` = completed with N errored cases — every
+  case has a record, but the headline is computed over fewer graded cases
+  than the golden set holds. This is 4.51's decided position applied one
+  layer down: "the harness broke" and "the subject got worse" have
+  different causes and different fixes, and a two-valued code merges one
+  pair or the other. `2` is deliberately non-zero so a consumer testing
+  only zero/non-zero still blocks; the stated cost is that such a consumer
+  cannot tell `1` from `2`, which is why gate 3 tests the value.
+  Every-case-errored is the extreme of `2`, not a `1`.
+  **The write-up covered about half of one of four defects found by
+  re-deriving from the code:** (1) `runner-template.md:263-264` ruled that
+  a run whose every case has a record IS complete, and `:267` then returned
+  `1` — the code item 7 reserves for "could not complete" — a contradiction
+  three lines apart; (2) the Python block exited 1 **on errors** while the
+  Node paragraph told its author to exit 1 **"if the run could not
+  complete"**, so a Node runner written to the same file exited 0 where the
+  Python one exited 1; (3) `fixtures/eval-run/eval/run.py:143` still
+  printed the exact sentence the template had repudiated; (4) **the
+  largest — `/ship` gate 3 read no exit code at all.** Enumerated every
+  exit-code mention in `skills/`, `docs/`, `README.md`: three hits, all in
+  eval-run, none in `/ship`. Item 7 had promised a protection to a consumer
+  that never implemented it. **Shown failing first, measured before the
+  fix:** cannot-complete exited **1** and completed-with-one-errored-case
+  exited **1** — indistinguishable by exit code alone; completed-with-a-
+  scored-failure exited 0. After: 1 / 2 / 0. Three seeded reverts each
+  fired their control (the `return 1` revert fired two — the value
+  assertion and the indistinguishability assertion). A fourth seed proved
+  an honest limit: removing the explicit load guard leaves the code at 1
+  via traceback, so a separate assertion on the `NO SCORE` line covers
+  written-contract-vs-accident. **Fixed at five sites, enumerated:**
+  runner-template.md's item 7 (the contract statement), its Python
+  `main()` return, its Node paragraph, `fixtures/eval-run/eval/run.py`'s
+  return, and `/ship`'s gate 3 (the consumer). controls 86 -> 87.
+  check.sh caught the first draft's cross-skill citation
+  (`references/runner-template.md` resolving under `skills/ship/`), fixed
+  to `../eval-run/...`. **Still owed:** the behavioural half — a live run
+  confirming a model reads the three codes as specified — per rule 6
+  [owed: 4.50].)* Decide what a completed-with-failures run exits. The
   runner contract says "Exit non-zero when the run could not complete, so
   /ship's gate 3 cannot mistake a crash for a pass" (contract item 7, and
   again in the Node section) and says NOTHING about a run that completes
@@ -2093,10 +2133,10 @@ reordered, if any.
   project with `palette:` configured does NOT flag; and whatever ships
   states its review date.
 
-- [ ] **4.55** Pin down what each guard actually reads. Two instances of one
-  shape — **a guard's input surface is implicit** — folded here 2026-08-07
-  because they take the same fix and reading them apart hid the pattern
-  once already.
+- [ ] **4.55** Pin down what each guard actually reads. Three instances of
+  one shape — **a guard's input surface is implicit** — folded here
+  (a)+(b) 2026-08-07, (c) 2026-08-08, because they take the same fix and
+  reading them apart hid the pattern once already.
 
   **(a) guard-matrix reads a LIVE tree, per case.**
   `docs/guard-matrix.sh:56` and `:69` each run `cp -R "$REPO" "$FULL"`, so
@@ -2113,6 +2153,14 @@ reordered, if any.
   snapshot once and reuse, refuse to run against a dirty tree, or record
   the tree hash at start and fail if it moved. The third is cheapest and
   keeps the current dirty-tree workflow, which the pack relies on.
+  **Measured 2026-08-08, same mechanism:** `fullcase` copies the repo and
+  then deletes `.git` (`:56`), so every full-tree case copies **18M of
+  which 16M (89%) is `.git`** purely to throw it away — the guards
+  provably do not need it, since the case deletes it before running
+  check.sh. A full run clocked **31.3 s/case, 106 cases, ~55 min** against
+  a frozen snapshot, versus the "~15-minute run" this repo's own notes
+  record; that figure is stale. Snapshot-once (option 1) fixes the
+  staleness AND this cost together, which is a reason to prefer it.
 
   **(b) count-check's file list is an argument list, not a contract.**
   `scripts/check.sh:669` passes six files (README, PLAN,
@@ -2128,13 +2176,36 @@ reordered, if any.
   not "add a sweep"** — count-check's own header rules that out as an
   unfinishable denylist — **it is that the argument list is the contract
   and nothing says so.** **Out of scope:** regex-sweeping prose for
-  count-like strings. **Acceptance, both halves:** (a) a tree edited
+  count-like strings.
+
+  **(c) the crossref guard's extension list is an unstated contract, and it
+  was already hiding a dead link.** Found 2026-08-08 while closing 4.53.
+  `scripts/check.sh:259` matches `references/[A-Za-z0-9._-]+\.(md|sh)`, so
+  a cited `.py` reference is never resolved. Two exist —
+  `skills/eval-run/SKILL.md:109` (resolves) and `skills/ship/SKILL.md:100`
+  (**did not**: it cited `references/regression-gate.py`, which resolves
+  under `skills/ship/`, where only `ship-gates.md` lives). The dead link
+  was fixed in 4.53's commit to `../eval-run/references/regression-gate.py`
+  since it sat in a file that task was already editing; **the guard gap is
+  this half.** The demonstration is exact: check.sh caught the identical
+  defect in 4.53's own first draft within the same hour — the only
+  difference was the extension. A guard whose reach is set by an
+  undocumented regex class reports clean on the class it cannot see, which
+  is (a) and (b)'s shape a third time. **Not pre-decided:** widen the
+  extension class, drop the extension filter and resolve any
+  `references/<path>` token, or state the covered extensions where a
+  reader of the guard will find them.
+
+  **Acceptance, all three halves:** (a) a tree edited
   mid-run is DETECTED — seed it by touching a counted file while the matrix
   runs and show the run naming the change rather than reporting a phantom
   case failure; (b) the covered set is stated in one place with a reason
   per inclusion and per exclusion, a file added to `skills/` or `docs/`
   without a coverage decision is visible, and the guard is shown failing on
-  a marked count planted in a newly-covered file.
+  a marked count planted in a newly-covered file; (c) a `.py` reference
+  citation that does not resolve is shown FAILING the crossref guard, and
+  the set of extensions the guard resolves is stated where the guard is
+  read, not inferred from its regex.
 
 - [ ] **4.56** Decide acstack's Agent Skills conformance posture. Measured
   2026-08-07 by running the standard's own validator

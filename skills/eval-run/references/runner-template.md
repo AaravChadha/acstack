@@ -40,8 +40,28 @@ Whatever the language, a runner MUST:
    overall %, per-category %, refusal % — never accumulated in a
    variable along the way. Reading back the file is what makes the
    number auditable by `/audit eval`.
-7. Exit non-zero when the run could not complete, so `/ship`'s gate 3
-   cannot mistake a crash for a pass.
+7. **Exit with the code that names the outcome — three of them, because
+   two cannot carry the distinction.** `/ship`'s gate 3 reads this code,
+   and must mistake neither a crash for a pass nor a bad score for a crash:
+
+   | Code | Outcome | What the reader must do |
+   |---|---|---|
+   | `0` | Completed; every case graded | The number is real — judge it against the target. |
+   | `1` | Could not complete | No usable results file exists. There is no number; fix the harness and re-run. Never read a score off a `1`. |
+   | `2` | Completed, but N cases errored | Every case has a record, and the headline is computed over fewer graded cases than the golden set holds. Fix the subject or the environment: the number is under-covered, not wrong. |
+
+   **A run whose every case produced a record IS complete, even when the
+   subject crashed on some of them — so it is never `1`.** Separating `1`
+   from `2` is the rule the regression gate already applies on its own two
+   axes: "the harness broke" and "the subject got worse" have different
+   causes and different fixes, and one merged signal answers neither.
+   Every-case-errored is the extreme of `2`, not a `1` — the run completed,
+   it just graded nothing, and the NO SCORE line says so.
+
+   `2` is deliberately non-zero so a consumer testing only zero/non-zero
+   still blocks. The cost of that choice, stated: such a consumer cannot
+   tell `1` from `2`. That is why gate 3 tests the value rather than
+   truthiness.
 8. **Isolate the subject from the operator's own agent configuration, and
    pin the subject model.** A runner that invokes the subject with the
    operator's ambient config is not measuring the subject: user-level
@@ -184,7 +204,14 @@ def grade(case, actual):
     raise ValueError(f"unknown grade_rule: {rule}")
 
 def main():
-    cases = [json.loads(l) for l in GOLDEN.read_text().splitlines() if l.strip()]
+    try:
+        cases = [json.loads(l) for l in GOLDEN.read_text().splitlines() if l.strip()]
+    except Exception as exc:
+        # exit 1 = COULD NOT COMPLETE: no results file, so no number exists.
+        # Explicit, because an uncaught traceback also exits 1 — by accident.
+        # An exit code nobody wrote down is the implicit contract this item
+        # exists to close, and "it happens to be 1" is not a contract.
+        sys.exit(f"NO SCORE: could not read {GOLDEN} — {exc}")
     cases = [c for c in cases if c.get("status") != "superseded"]
     records, errors = [], 0
     for c in cases:
@@ -231,6 +258,8 @@ def main():
     if scored and all(r["status"] == "error" for r in scored):
         # zero graded cases: the number above measures the environment
         # (missing key, dead endpoint), never the subject — say so.
+        # This still exits 2, not 1: every case has a record, so the run
+        # completed. It graded nothing, which is the extreme of 2.
         print("NO SCORE: every case errored — nothing was graded; "
               "fix the environment and re-run before reading the number")
     by = {}
@@ -261,10 +290,15 @@ def main():
             print(f"  {r['id']} ({r['category']}): {r.get('acceptable_failure_reason') or '(no reason recorded)'}")
     if errors:
         # "did not complete cleanly" was wrong here: a run whose every case
-        # has a record IS complete, even when a subject crashed on one.
+        # has a record IS complete, even when a subject crashed on one — so
+        # this returns 2 (completed, under-covered), never 1 (never ran).
+        # Returning 1 here is what made a partial crash and a dead harness
+        # the same signal to /ship's gate 3.
         print(f"errors: {errors} case(s) — subject crashed or could not be "
               f"invoked; each has an error record in the results file")
-    return 1 if errors else 0
+        print(f"exit 2: completed with {errors} errored case(s) — the "
+              f"headline is under-covered, not a clean score")
+    return 2 if errors else 0
 
 if __name__ == "__main__":
     sys.exit(main())
@@ -276,7 +310,12 @@ Same contract, same structure: `norm()` with NFKC plus the lookalike
 folds, `runSubject(case)` as the single project-specific function,
 `grade()` switching on `grade_rule`, results written to
 `eval/results/<ts>.jsonl`, then **re-read** to compute the headline, and
-`process.exit(1)` if the run could not complete. Keep it dependency-free
+**the same three exit codes as item 7** — `process.exit(0)` when every case
+graded, `1` when the run could not complete, `2` when it completed with
+errored cases. This paragraph used to say only "`process.exit(1)` if the
+run could not complete", which made a Node runner written to it exit `0` on
+the exact run where the Python block above exited `1`: one file, two rules.
+Keep it dependency-free
 (`node:fs`, `node:path`) so the eval never drags in a package the project
 does not already have.
 
