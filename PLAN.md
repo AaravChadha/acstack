@@ -2093,8 +2093,29 @@ reordered, if any.
   project with `palette:` configured does NOT flag; and whatever ships
   states its review date.
 
-- [ ] **4.55** Make count-check's file list an explicit contract rather than
-  an argument list. `scripts/check.sh:669` passes six files (README, PLAN,
+- [ ] **4.55** Pin down what each guard actually reads. Two instances of one
+  shape — **a guard's input surface is implicit** — folded here 2026-08-07
+  because they take the same fix and reading them apart hid the pattern
+  once already.
+
+  **(a) guard-matrix reads a LIVE tree, per case.**
+  `docs/guard-matrix.sh:56` and `:69` each run `cp -R "$REPO" "$FULL"`, so
+  a ~15-minute run re-samples the working tree at every full-tree case
+  rather than snapshotting once. Any edit during the run desynchronises
+  what later cases see from what earlier ones saw. **Cost, measured:** two
+  runs wasted on 2026-08-07 and three phantom failures — `clean tree stays
+  clean` and `comments-only list SKIPs` twice — none of which was a defect.
+  Both times the trigger was a PLAN.md checkbox tick, reasoned as "inert
+  with respect to guard behaviour": true of the guard *logic*, false of its
+  *inputs*, since every full-tree case runs count-check and a tick moves a
+  derived count. **A matrix that cries wolf is one you stop reading**,
+  which is how a real `sk-proj-`-class miss survives. **Not pre-decided:**
+  snapshot once and reuse, refuse to run against a dirty tree, or record
+  the tree hash at start and fail if it moved. The third is cheapest and
+  keeps the current dirty-tree workflow, which the pack relies on.
+
+  **(b) count-check's file list is an argument list, not a contract.**
+  `scripts/check.sh:669` passes six files (README, PLAN,
   JOURNAL, CONTRIBUTING, PRINCIPLES, docs/ARCHITECTURE). **AGENTS.md,
   CONDUCT.md and `.github/` are off the list, and two of those three held a
   stale count on 2026-08-07**: `.github/workflows/check.yml` said "15
@@ -2107,11 +2128,13 @@ reordered, if any.
   not "add a sweep"** — count-check's own header rules that out as an
   unfinishable denylist — **it is that the argument list is the contract
   and nothing says so.** **Out of scope:** regex-sweeping prose for
-  count-like strings. **Acceptance:** the covered set is stated in one
-  place with a reason per inclusion and per exclusion; a file added to
-  `skills/` or `docs/` without a decision about coverage is visible; and
-  the guard is shown failing on a marked count planted in a
-  newly-covered file.
+  count-like strings. **Acceptance, both halves:** (a) a tree edited
+  mid-run is DETECTED — seed it by touching a counted file while the matrix
+  runs and show the run naming the change rather than reporting a phantom
+  case failure; (b) the covered set is stated in one place with a reason
+  per inclusion and per exclusion, a file added to `skills/` or `docs/`
+  without a coverage decision is visible, and the guard is shown failing on
+  a marked count planted in a newly-covered file.
 
 - [ ] **4.56** Decide acstack's Agent Skills conformance posture. Measured
   2026-08-07 by running the standard's own validator
