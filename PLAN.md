@@ -2184,6 +2184,41 @@ reordered, if any.
   threshold is stated as a number; and a fixture placed under `fixtures/`
   that would otherwise flag is shown passing because of the escape hatch.
 
+- [ ] **4.61** Re-run 4.49's selection with 4.49's own corrected criterion.
+  **4.49 fixed its selector mid-task and never regenerated the candidate
+  list.** Its closing verdict records the correction — "the original
+  35%-of-body-text framing was a SIZE measurement that did not survive
+  contact with per-section conditionality" — but the five candidates
+  (`/plan`, `/do`, `/triage`, `/design`, `/eval-run`) had already been
+  nominated BY size, and conditionality was only ever applied to them.
+  Measured 2026-08-07 across all 23 skills by conditional-branch ratio
+  (`## Mode:`, `## Target:`, `## Tickets mode`, `## Document mode`):
+
+  | skill | body | conditional | wasted per run | status |
+  |---|---|---|---|---|
+  | `/audit` | 164 | 108 (66%) | **79 lines ≈ 888 tokens** | never a candidate |
+  | `/plan` | 128 | 43 (34%) | 23 ≈ 258 tokens | split, residual |
+  | `/ticket` | 105 | 27 (26%) | 13 ≈ 146 tokens | never a candidate, 0 refs |
+
+  Total still on the table: **115 lines ≈ 1,293 tokens, against 4.49's
+  entire delivered saving of 1,733.** `/audit` is the miss: four
+  mutually-exclusive targets (`code|docs|eval|tests` — its own description
+  says "Audit one of four targets"), all four bodies inline, and it already
+  carries four reference files that map one-to-one onto them. It escaped
+  the shortlist because at 164 lines it was not "heavy" next to `/design`
+  (212) and `/eval-run` (206) — both then declined for having zero
+  conditional content, while the 66%-conditional skill was never looked at.
+  **Honest priority note:** this saves tokens per *invocation*, whereas
+  4.59's roster budget (2,301 tokens) is paid every *session* by every
+  user. If only one gets built, 4.59's is the bigger number.
+  **Out of scope:** re-opening `/design` and `/eval-run`; their decline was
+  measured on the right criterion and stands. **Acceptance:** the ratio
+  scan above is a script anyone can re-run, not a one-off measurement;
+  every skill it ranks above a stated threshold is split or carries a
+  reason; each split proves 0 lines lost by set difference per 4.49's rule;
+  and the behavioural half — a live model finding the moved procedure in
+  each target — is owed like 4.49's was [owed: 4.50].
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
