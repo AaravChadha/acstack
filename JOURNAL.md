@@ -3,7 +3,14 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-06. **PUBLIC as of 2026-08-03** — the repo was
+> **Last update**: 2026-08-07 (later). That session closed **4.51** (the
+> non-regression gate now blocks on coverage collapse, not only a falling
+> pass rate) and **4.52** (`concept` expecteds split on commas — two files
+> had shipped contradictory rules, so every multi-keyword expected in the
+> pack was mis-graded), surveyed the outside ecosystem into **eight
+> carriers (4.54–4.61)**, fixed three stale counts no guard was reading,
+> and gave CI a `workflow_dispatch` lever after a 16-hour GitHub outage
+> left no way to start a run. **PUBLIC as of 2026-08-03** — the repo was
 > flipped after the §13 falsification round closed and CI went green
 > (run 30765510782). Two pre-flip rechecks both returned NOT READY; the
 > second found the first's fix had reintroduced the bug it fixed, which
@@ -88,8 +95,17 @@
   carrier; count drift and stranded modes both block at commit time.
   **Shakedown 12 ran and closed five segments**; 4.50 stays open on the
   interactive contracts, tickets-mode deltas, /plan and /do splits, and
-  4.30's design acceptances. It also produced 4.51 (the gate's
-  partial-crash blindness), 4.52 and 4.53.
+  4.30's design acceptances. It produced 4.51, 4.52 and 4.53 — **4.51 and
+  4.52 are now done**, and both turned out larger than their write-ups,
+  which is the session's pattern. 4.53 (what a completed-with-failures run
+  exits) is next and inherits a decided position from 4.51.
+  **An outside survey on 2026-08-07 added 4.54–4.61**: the AI-default
+  palette denylist has gone stale, count-check's argument list is an
+  unstated contract (with guard-matrix's live-tree read folded in),
+  conformance posture against the Agent Skills spec, plugin packaging, a
+  prompt-strictness ladder for shakedowns, a ruling on the surveyed skill
+  gaps, `/design-audit`'s missing tell classes, and the split candidates
+  4.49's size-based selector never saw — `/audit` at 66% conditional.
   4.3 and 4.4 stay adopter-gated. Wave 5 still needs a spec pass before
   code — 5.1–5.4 carry no acceptance lines.
 
@@ -111,11 +127,148 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->30<!-- /count -->/<!-- count:wave45-total -->42<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. Still open: **4.50** (segments still owed), **4.51/4.52/4.53** (round-12 carriers), plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
+| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->30<!-- /count -->/<!-- count:wave45-total -->42<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. Still open: **4.50** (segments owed, now including 4.51's and 4.52's live re-tests), **4.53** (next), **4.54–4.61**, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### An outside survey, three stale counts, and two carrier tasks that were both bigger than their write-ups (2026-08-07, later)
+
+**Nine commits. Two tasks closed (4.51, 4.52), eight carriers filed
+(4.54–4.61), three stale counts fixed, and CI given a manual trigger it
+never had.** The through-line: *every* recorded claim checked today was
+wrong in the direction of "less work than it looks", including two written
+by me this morning.
+
+**CI was dead and we had no lever.** Run `31124191160` sat `queued` for 16
+hours ("not acquired by Runner of type hosted"). `gh run rerun` refused it
+as *already running*; `gh run cancel` refused the same run as *completed* —
+GitHub's backend disagreeing with itself. `check.yml` declared only `push`
+and `pull_request`, so there was no third move: **the outage cost us the
+ability to respond, which is the actual finding.** Added
+`workflow_dispatch` and verified it in the consumed form, not by re-reading
+— `gh workflow run check.yml --ref main` produced run `31175351707`,
+event `workflow_dispatch`, green. Actions had recovered by then (status
+page component updated after our run wedged), and the push run went green
+in 6m19s. The wedged run **is still stuck** and cannot be cleared from our
+side. Correction to a claim made mid-session: "three commits uncovered"
+overstated it — check.sh, the matrix and shellcheck are whole-tree checks,
+so one green run on the tip covers what those commits contain.
+
+**Three stale counts, none caught by a guard.** `.github/workflows/check.yml`
+said *"15 checks"* against 29; `JOURNAL.md:64` said *"4 repo-only
+verification rules"* against an enumerated 6; and the TL;DR still called
+4.49 PARTIAL and "deliberately not ticked" while PLAN.md had it `[x]` since
+that morning. The first is in a file `count-check` does not read; the other
+two are unmarked prose in files it does. The check.yml number was **deleted
+rather than corrected** — a count duplicated outside its single enumeration
+goes stale, and a marker would render literally in the Actions UI.
+
+**The outside survey: four strands, ~1,900 catalogued entries.** ECC
+(`affaan-m/ECC`, 238k stars — larger than `anthropics/skills` at 167k),
+the awesome-list ecosystem, the design-skill field, and the Agent Skills
+spec. Findings that produced carriers:
+
+| Finding | Verified how | Carrier |
+|---|---|---|
+| `banned-palette` is violet-only; Anthropic's own `frontend-design` names cream/serif, near-black/acid and broadsheet as the current clusters — none violet | fetched at source; palette read at `ai-tells.md:179` | 4.54 |
+| `count-check`'s argument list is the real contract, unstated | 2 of 3 uncovered files held a stale count | 4.55 |
+| 0/23 skills pass `skills-ref validate`; 23/23 pass after stripping `argument-hint` + `disable-model-invocation` | ran the standard's own validator | 4.56 |
+| no `.claude-plugin/`; 4 of 5 real packs ship one | `ls`, and the surveyed trees | 4.57 |
+| shakedowns test only cooperative prompts; ECC's `skill-comply` ladders supportive → neutral → **competing** | read its scenario generator | 4.58 |
+| skill-authoring is the field's most-recurring verb (8 sources) and acstack has zero coverage | recurrence across independent lists | 4.59 |
+| `/design-audit` has zero typography, component-default and imagery tells — the three `Inter` hits are substrings of "Internal"/"Interaction" | grep, then read | 4.60 |
+
+**acstack conforms to everything the spec actually constrains** — name and
+description limits, one-level references, bodies far under the "< 5000
+tokens" guidance, and a 500-line cap that turns out to be *the spec's own
+recommendation*, arrived at independently. The sole divergence is two
+Claude Code extension fields.
+
+**The budget nobody was watching.** The 23 descriptions total **9,204 chars
+≈ 2,301 tokens loaded at every session start**, ~100 per skill, permanently
+and per-user, and nothing checks it. The two budgets that *are* checked
+have never bound: largest SKILL.md is **212 lines against the 500 cap**,
+~3,000 tokens against 5,000. So **4.49 optimised the budget with 60%
+headroom while the monotonic one went unguarded.** ECC is the end state:
+282 skills, ~16k tokens of descriptions at startup, and a `context-budget`
+skill built to audit its own bloat. 4.59 now rules *mode-first* — `/audit`
+runs four modes in 163 lines, a mode costs zero at startup — and requires a
+check on the description total.
+
+**4.49's selector was corrected mid-task and the candidate list was never
+regenerated (4.61).** Its own verdict records the correction — *"a SIZE
+measurement that did not survive contact with per-section conditionality"* —
+but the five candidates had already been nominated BY size. Re-scanning all
+23 by conditional-branch ratio finds **`/audit` at 66% (108 of 164 lines,
+four mutually-exclusive targets, all inline, 79 wasted per run ≈ 888
+tokens)**, never a candidate, because at 164 lines it was not "heavy" beside
+`/design` (212) and `/eval-run` (206) — both then declined for having *zero*
+conditional content. 115 lines ≈ 1,293 tokens remain, against the 1,733 all
+of 4.49 delivered.
+
+**4.51 — the gate now blocks on coverage, not just rate.** Verdict on the
+question the task left open: **two axes, kept separate.** Folding errors
+into the denominator was rejected — one merged number answers neither "did
+the subject get worse" nor "did the harness break". `rates()` returns
+`(rate, passed, scored, errored)`; zero-scored categories still fall to the
+`gone` check; skipped and rubric rows count as neither, since treating a
+deliberate skip as lost coverage would block on ordinary spec maintenance.
+Both conditions shown failing first: the repro exited **0** with `no
+category regressed` before the fix, and seeding the check as `<=` blocked
+the unchanged-count run and was caught by the existing clean-run control.
+
+**4.52 — the task understated it, and this is the pattern of the day.** It
+recorded an unstated separator. Reality: **two files implementing
+contradictory rules.** `eval-spec-template.md` said *"expected lists concept
+keywordS; pass = ALL present"*; `runner-template.md` shipped
+`norm(expected) in norm(actual)`, one whole-string match. So
+`"destructive, data loss"` against *"this is destructive and will cause data
+loss"* passed by the spec and **FAILED** by the runner — **every**
+multi-keyword expected in the pack was mis-graded, not just the comma-free
+ones shakedown 12 caught. Verdict: commas and only commas; `;`, `/`, `+` are
+not separators; an empty expected returns False rather than auto-passing; a
+comma-free expected is one keyword and is documented as a trap, naming
+`decline: out-of-domain` as the shape that scores a correct refusal FAIL.
+Fixed at all three sites, **including the pack's own example row, which
+carried the trap string.** Discriminator `q10` isolates the separator alone
+(`unknown, not a country` vs the subject's `unknown - not a country`):
+fixture read **6/8 (75.0%)** before, **7/8 (87.5%)** after.
+
+**Eval classification (fixture, not a live eval).** `q10` FAIL → fixed —
+bucket **grader brittleness**, and the Read is that it failed in the
+*inflating* direction: a correct answer scored FAIL, which would have driven
+someone to "fix" a good subject. No golden case was altered to raise a
+number; `q10` was added to expose the grader, and `q3`/`q4` were left
+untouched as the comma-free controls.
+
+**Two self-inflicted findings, recorded because they cost real time.**
+(1) **I edited the tree twice while the guard matrix was reading it.**
+`guard-matrix.sh:56,69` each run `cp -R "$REPO"` **per case**, so a
+15-minute run re-samples the working tree continuously. Both times the
+trigger was a PLAN.md checkbox tick, reasoned as "inert with respect to
+guard behaviour" — true of the guard *logic*, false of its *inputs*, since
+every full-tree case runs count-check and a tick moves a derived count.
+Cost: two wasted runs and three phantom failures (`clean tree stays clean`,
+`comments-only list SKIPs` twice), none a defect. **A matrix that cries wolf
+is one you stop reading**, which is how a real `sk-proj-`-class miss
+survives. Folded into 4.55 as half (a) — same shape as the file-list half:
+*the guard's input surface is implicit*. (2) **I committed a count I had not
+derived** — "controls 86 → 88", because I had added two assertions. They are
+`bad`-on-failure branches with no `ok` on success, so the metric is
+**unchanged at 86**. Amended, with the error recorded in the task note
+rather than quietly corrected. Same class as the three doc counts fixed
+four hours earlier, committed by their fixer.
+
+**What did NOT change.** No skill bodies were split (4.61 is filed, not
+done). `/design` and `/eval-run` stay declined — their decline was measured
+on the right criterion and survives. 4.3/4.4 remain adopter-gated. Nothing
+was pushed after `631a035`; three commits sit local.
+
+Validation close: check.sh **29 checks**, all clean; guard-matrix **106
+cases, 0 failed** (on a frozen tree — see above); controls **86**; **23
+skills**; wave 4.5 **30/42**, 28 scheduled open tasks.
 
 ### Shakedown 12: five segments held, and the round found a hole in a guard built four hours earlier (2026-08-07)
 
