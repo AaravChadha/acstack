@@ -1955,7 +1955,30 @@ reordered, if any.
   runner's printed line naming the errored cases without claiming the run
   was incomplete. Findings get carriers in the same edit.
 
-- [ ] **4.51** Close the non-regression gate's partial-crash blindness.
+- [x] **4.51** *(Done 2026-08-07. **Verdict on the open design question:
+  two axes, kept separate — the divergence with the headline STAYS and is
+  now explicit.** The gate blocks on (1) pass rate falling, computed on
+  scored records only, or (2) coverage falling — fewer of a category's
+  cases scored than last run. Folding errors into the denominator was
+  rejected: one merged number answers neither "did the subject get worse"
+  nor "did the harness break", and those have different causes and
+  different fixes. Keeping them on separate lines preserves exactly the
+  distinction 4.53 needs from an exit code. `rates()` now returns
+  `(rate, passed, scored, errored)`; categories with zero scored records
+  are still dropped so a total crash stays with the `gone` check rather
+  than being reported twice; skipped and rubric-review rows count as
+  neither, since treating a deliberate skip as lost coverage would block on
+  ordinary spec maintenance. **Both acceptance conditions shown failing
+  first:** the repro exited 0 with `no category regressed` before the fix,
+  and seeding the coverage check as `<=` instead of `<` blocked the
+  unchanged-count run and was caught by the existing clean-run control —
+  so the negative control can fail, which is what makes its pass mean
+  anything. Fixtures `crash-previous.jsonl` / `partial-crash.jsonl` seed
+  the recorded reproduction exactly (refusal 4/4 -> 1 scored + 3 errored,
+  which the old gate read as 100% -> 100%). controls 85 -> 86, matrix
+  105 -> 106. **Still owed:** the behavioural half — a live run confirming
+  a model actually reads the new coverage line — per rule 6 [owed: 4.50].)*
+  Close the non-regression gate's partial-crash blindness.
   **Found behaviourally by shakedown 12, in code shipped the same day.**
   `regression-gate.py:44` filters to `status == "scored"` before computing
   per-category rates, so a category whose cases start CRASHING is compared

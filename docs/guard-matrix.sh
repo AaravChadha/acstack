@@ -235,6 +235,9 @@ fullcase "split reference body deleted"      FAIL 'crossref'    bash -c "rm -f s
 fullcase "ship drops the regression floor"  FAIL 'eval-isolation' bash -c "sed -e 's/non-regression/aggregate/g' skills/ship/SKILL.md > t && mv t skills/ship/SKILL.md"
 fullcase "regression gate accepts-all"      FAIL 'control'        bash -c "sed -e 's/if rate < prate:/if False:/' skills/eval-run/references/regression-gate.py > t && mv t skills/eval-run/references/regression-gate.py"
 fullcase "regression gate rejects-all"      FAIL 'control'        bash -c "sed -e 's/if rate < prate:/if True:/' skills/eval-run/references/regression-gate.py > t && mv t skills/eval-run/references/regression-gate.py"
+# 4.51 partial-crash blindness. Neutering the coverage check must be caught:
+# the rate check still passes it, because 1-of-1 surviving reads as 100%.
+fullcase "regression gate coverage-blind"   FAIL 'control'        bash -c "sed -e 's/if n < pn:/if False:/' skills/eval-run/references/regression-gate.py > t && mv t skills/eval-run/references/regression-gate.py"
 
 echo
 echo "passed=$pass failed=$failed"

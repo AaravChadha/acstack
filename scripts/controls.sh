@@ -442,6 +442,16 @@ else
   else
     bad "regression gate REJECTED a clean run — the gate blocks everything and proves nothing"
   fi
+  # 4.51: the rate check alone is blind to PARTIAL crashing. refusal goes
+  # 4/4 scored+passing -> 1 scored+passing + 3 errored; filtering to
+  # `scored` first makes that read 100% -> 100%. A category that crashes
+  # ENTIRELY was already caught by the `gone` check — this is the shape in
+  # between, and it is the likelier one.
+  if python3 "$rg_py" "$rg_fx/partial-crash.jsonl" "$rg_fx/crash-previous.jsonl" >/dev/null 2>&1; then
+    bad "regression gate ACCEPTED refusal collapsing 4/4 -> 1 scored + 3 errored — partial crashing is invisible again (4.51)"
+  else
+    ok "regression gate blocks a category whose coverage collapsed into errors"
+  fi
   if python3 "$rg_py" "$rg_fx/current.jsonl" >/dev/null 2>&1; then
     ok "regression gate passes with no baseline"
   else
