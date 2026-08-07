@@ -76,9 +76,11 @@
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
   reachability check for work named as owed with no open task owning it.
-  **4.45, 4.46, 4.47 and 4.48 are done**; 4.49 is PARTIAL (`/plan` split,
-  `do`/`triage`/`design`/`eval-run` still to go) and deliberately not
-  ticked. The eval layer now isolates the runner from the operator's
+  **4.45 through 4.49 are all done** — 4.49 closed 2026-08-07 with a scope
+  verdict (`/plan`, `/do` and `/triage` split; `/design` and `/eval-run`
+  measured and DECLINED, having zero conditional content), after landing
+  PARTIAL the day before. The eval layer now isolates the runner from the
+  operator's
   config, pins the subject model, and floors every category against the
   last committed run; the doc set checks that owed work names a live
   carrier; count drift and stranded modes both block at commit time.

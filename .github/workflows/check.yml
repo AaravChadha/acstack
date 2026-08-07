@@ -14,7 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: pack guard (15 checks, includes positive controls)
+      # No count in this label, deliberately. It read "15 checks" until
+      # 2026-08-07, when check.sh was at 29 — a count duplicated outside
+      # its single enumeration goes stale, and count-check.sh only reads
+      # marked claims in the six docs check.sh passes it, never this file.
+      # check.sh's own header enumerates every section; that is the count.
+      - name: pack guard (every section, includes positive controls)
         run: bash scripts/check.sh
       - name: guard matrix (every guard shown firing on seeded defects)
         run: bash docs/guard-matrix.sh "$PWD"
