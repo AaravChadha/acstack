@@ -2130,9 +2130,31 @@ reordered, if any.
   (Goodhart-gaming the verifier — bears on `/eval-run`), and the
   delivery-gate Stop hook that makes journaling unskippable, which is a
   harness-config departure from "the pack ships skills, not settings" and
-  may well be a decline. **Acceptance:** every named item above is either
-  a scheduled task or carries a dated decline with its reason in this
-  file; a later reader can tell which without re-running the survey.
+  may well be a decline.
+  **Rule against a budget, and mode-first.** Measured 2026-08-07: the 23
+  descriptions total **9,204 chars ~= 2,301 tokens loaded at EVERY session
+  start**, ~100 tokens per skill, permanently and for every user. That
+  budget only grows, and nothing checks it. The two budgets that ARE
+  checked have never bound — the largest SKILL.md is 212 lines against the
+  500 cap, and ~3,000 tokens against the spec's 5,000 — so **4.49 optimised
+  the budget with 60% headroom while the monotonic one went unguarded.**
+  ECC is the end state: 282 skills, ~16k tokens of descriptions at startup,
+  and a `context-budget` skill built to audit its own bloat. A new verb is
+  therefore the expensive answer, and this pack already ships the cheap
+  one: `/audit` runs four modes in 163 lines with one reference file each,
+  `/plan` runs three. **A mode costs zero at startup; a `references/` file
+  costs zero until cited.** First pass at applying that to the gaps above —
+  skill-authoring-from-the-verification-side is plausibly `/audit skills`
+  (a fifth mode, not a skill), unfamiliar-repo onboarding is plausibly a
+  `/resume` mode, changelog belongs inside `/ship`, and context-budget is
+  the one candidate with no existing home. **Acceptance:** every named item
+  above is either a scheduled task or carries a dated decline with its
+  reason in this file, and each scheduled one states whether it lands as a
+  skill, a mode, or a reference file, with the startup cost of that choice
+  named; a later reader can tell which without re-running the survey. Ships
+  with a check on the always-loaded description total, shown failing on a
+  seeded over-budget description — 2,301 tokens is the baseline, and the
+  budget it is checked against is decided in this task, not assumed.
 
 - [ ] **4.60** Close the tell-coverage gaps in `/design-audit`, and adopt
   the two method rules that outrank any single tell. Verified 2026-08-07:
