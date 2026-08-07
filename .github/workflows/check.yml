@@ -5,6 +5,12 @@ name: check
 # 1 check(s) SKIPPED" — the local pre-commit run is the enforcement point
 # for names. Everything else runs at full strength.
 on:
+  # Manual trigger, added 2026-08-07 after an outage left no move at all:
+  # run 31124191160 sat queued 16h ("not acquired by Runner of type
+  # hosted"), rerun refused it as already running, cancel refused it as
+  # completed, and with only push/pull_request there was no third lever.
+  # Runs against a ref's tip, so it re-covers the tree, not a past commit.
+  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
