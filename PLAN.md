@@ -2009,6 +2009,131 @@ reordered, if any.
   that completes with failures and one that cannot complete are
   distinguishable by exit code alone, shown failing first.
 
+- [ ] **4.54** Replace the AI-default-look palette denylist, which has gone
+  stale. `skills/design-audit/references/ai-tells.md:179` ships a pack
+  default of five violet hexes (`#8b5cf6, #a855f7, #7c3aed, #6366f1,
+  #d946ef`). **Anthropic's own `frontend-design` skill now names where
+  generated design actually clusters** — verified at source 2026-08-07,
+  `anthropics/skills/skills/frontend-design/SKILL.md`: "(1) a warm cream
+  background (near #F4F1EA) with a high-contrast serif display and a
+  terracotta accent; (2) a near-black background with a single bright
+  acid-green or vermilion accent; (3) a broadsheet-style layout with
+  hairline rules, zero border-radius, and dense newspaper-like columns."
+  None is violet. An independent source (educlopez/ui-craft,
+  `01-ai-tells.md`) is blunter: the cream/serif look "reads as AI faster
+  than purple does, precisely because it looks like a choice." `palette:`
+  IS an allowlist and catches cream when configured — but with no config
+  `skills/design-audit/SKILL.md:63-65` degrades to "obvious raw-hex
+  sprawl", so an unconfigured adopter gets violet-only detection.
+  **This is the third appearance of the denylist class** (§13's ruling;
+  the emoji denylist that reported clean on this pack's own before-page),
+  so a longer hex list is the wrong fix by the repo's own precedent.
+  **Design question, not pre-decided:** whether the pack default becomes a
+  cluster-shaped check (background+face+accent co-occurring) rather than
+  bare hexes, whether it is dated and reviewed, or whether the honest
+  answer is that an unconfigured project cannot get this check and the
+  degradation message should say so louder. **Acceptance:** a fixture page
+  in the current cream/serif default look is FLAGGED, shown failing first;
+  the existing violet fixture still flags; a legitimately cream-branded
+  project with `palette:` configured does NOT flag; and whatever ships
+  states its review date.
+
+- [ ] **4.55** Make count-check's file list an explicit contract rather than
+  an argument list. `scripts/check.sh:669` passes six files (README, PLAN,
+  JOURNAL, CONTRIBUTING, PRINCIPLES, docs/ARCHITECTURE). **AGENTS.md,
+  CONDUCT.md and `.github/` are off the list, and two of those three held a
+  stale count on 2026-08-07**: `.github/workflows/check.yml` said "15
+  checks" against 29 (fixed, `52f1349`), and `JOURNAL.md:64` said "4
+  repo-only verification rules" against 6 — the latter inside a file that
+  IS covered, invisible because it carries no marker. External
+  corroboration from the same day's survey: ECC's `scripts/ci/catalog.js`
+  gates seven files and every one is exact, while `SOUL.md` — off the list
+  — claims 30 agents / 135 skills against a true 67 / 282. **The lesson is
+  not "add a sweep"** — count-check's own header rules that out as an
+  unfinishable denylist — **it is that the argument list is the contract
+  and nothing says so.** **Out of scope:** regex-sweeping prose for
+  count-like strings. **Acceptance:** the covered set is stated in one
+  place with a reason per inclusion and per exclusion; a file added to
+  `skills/` or `docs/` without a decision about coverage is visible; and
+  the guard is shown failing on a marked count planted in a
+  newly-covered file.
+
+- [ ] **4.56** Decide acstack's Agent Skills conformance posture. Measured
+  2026-08-07 by running the standard's own validator
+  (`agentskills/agentskills`, `skills-ref validate`) against all 23 skills:
+  **0 passed, 23 failed**, then **23 passed, 0 failed** after stripping two
+  fields. Sole cause: `argument-hint` (23/23) and `disable-model-invocation`
+  (`/plan`, `/eval-spec`). Everything the spec constrains, acstack already
+  satisfies — name/description limits, the 500-line cap (which is the
+  spec's own recommendation), one-level references, and bodies far under
+  the "< 5000 tokens" guidance (max ~3,000, `/eval-run`). Field context:
+  `argument-hint` is ~3% adoption in a 378-file community census versus
+  100% here. The cost of the divergence is that the pack cannot be uploaded
+  to claude.ai, used via the Skills API, or packaged with the official
+  `package_skill.py`. **Not pre-decided, and keeping the fields is a
+  legitimate answer** — they are documented Claude Code features that work.
+  **Out of scope:** hiding the fields under `metadata:`; Claude Code will
+  not read them there. **Acceptance:** a dated verdict in this file naming
+  what acstack optimises for, and whichever way it goes, the divergence (or
+  its removal) is stated where an adopter reads it rather than discovered
+  by running someone else's validator.
+
+- [ ] **4.57** Decide whether acstack ships `.claude-plugin/`. Verified
+  2026-08-07: acstack has no `.claude-plugin/`, no `marketplace.json`, no
+  `plugin.json`; install is `./setup` symlinking into `~/.claude/skills`.
+  Four of the five surveyed packs that ship real skills carry the plugin
+  layout (obra/superpowers, mattpocock/skills, rohitg00 toolkit,
+  alirezarezvani), reducing install to one `/plugin marketplace add`.
+  Related signal: `hesreallyhim/awesome-claude-code` restructured and its
+  live list has **no Workflows category** — the slot acstack fits is gone,
+  and the surviving categories assume plugin-shaped artifacts. **Weigh
+  honestly against the counter-argument:** `./setup` is auditable, has
+  dry-run honesty and never deletes a real file, and those properties are
+  load-bearing for a pack whose pitch is verification. **Acceptance:** a
+  dated verdict; if adopted, a fresh machine installs the pack by the
+  documented one-liner and the skills resolve, demonstrated end-to-end and
+  not from `--dry-run` output (the /why precedent).
+
+- [ ] **4.58** Add a prompt-strictness ladder to the shakedown method.
+  Twelve rounds have each used a single blind prompt, which measures
+  whether a skill fires under *cooperative* framing only. ECC's
+  `skills/skill-comply/` generates scenarios at three levels —
+  supportive, neutral, and **competing** ("prompt includes instructions
+  that conflict with the skill") — and its grader ships a real positive
+  control (`fixtures/noncompliant_trace.jsonl` plants impl-before-test and
+  `tests/test_grader.py:96` asserts the grader fails it). The dimension
+  acstack has never tested is whether a conduct rule or a skill's own stop
+  condition survives a prompt actively pushing the other way — which is
+  the realistic case, since users ask for shortcuts. **Out of scope:**
+  building ECC's harness; this is a segment design for the existing
+  fresh-session method [owed: 4.50]. **Acceptance:** one skill with a hard
+  stop condition is run at all three strictness levels in a blind venue,
+  the level at which it first yields is recorded, and a level that yields
+  when it should not becomes a carrier.
+
+- [ ] **4.59** Rule on the skill-roster gaps the 2026-08-07 ecosystem survey
+  named, so none of them sits in prose without an owner (rule 3). Ranked by
+  recurrence across independent lists: **skill-authoring** (8 sources —
+  `anthropics/skill-creator`, `obra/writing-skills`, Microsoft, Apollo,
+  Sentry, plus the `agnix` and `Schliff` linters; the field's most-recurring
+  verb, and acstack already holds the methodology in AGENTS.md and
+  check.sh); **TDD / test-authoring** (8 sources — the pack audits suites
+  via `/audit tests` that it has no verb to create); **parallel agents and
+  worktrees** (6); **context budget / compaction / config GC** (ECC ships
+  three, acstack none, and it is the failure mode long sessions actually
+  hit); **brainstorm before a BRIEF** (3 — `/challenge` interrogates a
+  brief that already exists); **codebase onboarding for an unfamiliar
+  repo** (4 — `/resume` assumes the doc triad); **changelog generation**
+  (5 — `/ship` cuts releases and writes none). Also to rule on, from ECC
+  specifically: `council` (fresh subagents given only the question — the
+  falsification rule applied to a live decision), `loop-design-check`
+  (Goodhart-gaming the verifier — bears on `/eval-run`), and the
+  delivery-gate Stop hook that makes journaling unskippable, which is a
+  harness-config departure from "the pack ships skills, not settings" and
+  may well be a decline. **Acceptance:** every named item above is either
+  a scheduled task or carries a dated decline with its reason in this
+  file; a later reader can tell which without re-running the survey.
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
