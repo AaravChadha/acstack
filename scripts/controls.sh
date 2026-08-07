@@ -173,11 +173,18 @@ if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; t
   out="$( (cd fixtures/eval-run && python3 eval/run.py 2>&1) || true)"
   head="$(printf '%s' "$out" | grep '^overall:' || true)"
   case "$head" in
-    *"6/7 (85.7%)"*) ok "/eval-run control: seeded failure lands at 6/7 (85.7%)" ;;
+    *"7/8 (87.5%)"*) ok "/eval-run control: seeded failure lands at 7/8 (87.5%)" ;;
+    *"6/8 (75.0%)"*) bad "/eval-run: q10's comma-separated concept expected FAILED — the grader is matching the raw string again, so a correct answer scores FAIL (4.52)" ;;
     *100.0%*)        bad "/eval-run reported 100% with a seeded failing case - false pass" ;;
     "")              bad "/eval-run control produced no headline (runner did not complete)" ;;
-    *)               bad "/eval-run headline changed: $head (expected 6/7 (85.7%))" ;;
+    *)               bad "/eval-run headline changed: $head (expected 7/8 (87.5%))" ;;
   esac
+  # 4.52: the concept splitter, asserted per-case rather than only through
+  # the headline, so a revert names its own cause. q10's answer differs from
+  # its expected by the SEPARATOR alone ("unknown - not a country" vs
+  # "unknown, not a country"), so it passes only if the keywords are split.
+  printf '%s' "$out" | grep -q 'edge: 4/4' \
+    || bad "/eval-run: edge category not 4/4 — q10's multi-keyword concept case is not passing (4.52)"
   # a case excluded from the denominator MUST be named. Silent exclusion is
   # how a headline lies, and it is invisible in the percentage itself.
   printf '%s' "$out" | grep -q 'acceptable_failure applied to 2' \

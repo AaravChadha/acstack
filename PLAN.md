@@ -1999,7 +1999,39 @@ reordered, if any.
   failing before they pass; and rule 6 applies — the fix is
   behaviourally-found, so it owes a live re-test [owed: 4.50].
 
-- [ ] **4.52** Say what `concept` expecteds are separated by. The spec
+- [x] **4.52** *(Done 2026-08-07. **The task understated it: this was not an
+  unstated separator, it was two files implementing contradictory rules.**
+  `eval-spec-template.md` said "expected lists concept keywordS; pass = ALL
+  present", while `runner-template.md` shipped
+  `norm(expected) in norm(actual)` — a single whole-string match. So
+  `expected: "destructive, data loss"` against an answer reading "this is
+  destructive and will cause data loss" passed by the spec and FAILED by
+  the runner; only a literal echo of the comma and all could pass. Any
+  multi-keyword expected in the pack was mis-graded, not just comma-free
+  ones. **Verdict: commas, and only commas.** `expected` splits on `,`,
+  each keyword is matched as a normalized substring, pass = all present; an
+  empty expected returns False rather than auto-passing; `;`, `/` and `+`
+  are NOT separators, so a keyword may safely contain them. A comma-free
+  expected is therefore ONE keyword that must appear as a whole phrase —
+  stated as a trap, with `decline: out-of-domain` named as the shape that
+  scores a correct refusal FAIL, and "it declined appropriately" routed to
+  `rubric` where judgment belongs. Fixed at all three sites (4.45's rule),
+  including the pack's own example row, which carried the trap string.
+  **Shown failing first, on a discriminator that isolates the separator:**
+  fixture case `q10` expects `unknown, not a country` while the subject
+  answers `unknown - not a country` — identical but for the separator, so
+  it passes only if the keywords are split. Before the fix the fixture read
+  **6/8 (75.0%)** with q10 failing on a correct answer; after, **7/8
+  (87.5%)**. q3 (`unknown`) and q4 (`cannot help`) are the comma-free
+  controls, one word and one phrase, both unchanged. Two controls added
+  that name their own cause on a revert, both shown firing on a seeded
+  revert of the splitter. **The control COUNT is unchanged at 86** — both
+  are `bad`-on-failure branches with no `ok` on success, matching the
+  surrounding style, and the pack counts controls by `ok` lines. Recorded
+  because this note first claimed `86 -> 88` without deriving it: the same
+  unverified-count class this session already found three times in the
+  docs, committed by its author while fixing it.)*
+  Say what `concept` expecteds are separated by. The spec
   template documents the rule as "expected lists concept keywords; pass =
   all present in any phrasing (normalized substring)" and never says how
   the keywords are delimited, nor what a comma-free expected does. A

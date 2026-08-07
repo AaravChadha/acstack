@@ -9,6 +9,14 @@ for `concept` cases list the CONCEPTS ("destructive", "data loss",
 normalization. If you find yourself tightening wording to make a wrong
 answer fail, the case belongs in `rubric`, not `concept`.
 
+**Write them comma-separated**: `destructive, data loss, backup first`.
+The grader splits on commas and requires every keyword; it does NOT match
+the expected as one raw string, which would demand the commas themselves.
+A comma-free expected is therefore a SINGLE keyword that must appear as a
+whole phrase — fine for `cannot help`, a trap for `decline: out-of-domain`,
+which no correct refusal contains verbatim. When what you mean is "it
+declined appropriately", that is judgment: use `rubric`.
+
 ## Normalize before comparing
 
 Unicode NFKC first (NFC does NOT fold U+202F or U+00A0 — NFKC does); then trim, collapse internal whitespace. The classic

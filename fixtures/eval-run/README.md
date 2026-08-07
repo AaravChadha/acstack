@@ -1,6 +1,6 @@
-# /eval-run fixture — the false-pass control (PLAN 4.12 / 4.15)
+# /eval-run fixture — the false-pass control (PLAN 4.12 / 4.15 / 4.52)
 
-Nine golden cases against a deterministic lookup table, seeded to
+Ten golden cases against a deterministic lookup table, seeded to
 exercise every way a headline can lie:
 
 | case | what it seeds | effect on the headline |
@@ -12,8 +12,17 @@ exercise every way a headline can lie:
 | q7 | `rubric:` — machine-ungradeable | excluded, NOT counted, named |
 | q8 | a failure with `acceptable_failure: true` + a sibling `reason` | counted as ok, named with its reason |
 | q9 | the same, in the **object** form — the shape that crashed the runner | counted as ok, named with its reason |
+| q10 | a **comma-separated** `concept` expected (4.52) | counted, passes only if the grader splits the keywords |
 
-A correct runner reports **6/7 (85.7%)**, names both exclusions, and
+**q10 is the concept-splitter discriminator (4.52).** Its expected is
+`unknown, not a country`; the subject answers `unknown - not a country`.
+The two differ by the SEPARATOR alone, so a grader matching the raw
+expected string scores a correct answer FAIL, while one that splits on
+commas and checks each keyword passes it. q3 (`unknown`) and q4
+(`cannot help`) are the comma-free controls: one word and one multi-word
+phrase, both treated as a single keyword, both unchanged by the split.
+
+A correct runner reports **7/8 (87.5%)**, names both exclusions, and
 lists both forgiven failures with their reasons.
 
 Three ways a runner can be broken while looking green, all caught here:

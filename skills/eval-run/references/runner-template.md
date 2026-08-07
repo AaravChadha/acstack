@@ -154,11 +154,21 @@ def grade(case, actual):
         fold = not case.get("case_sensitive", False)
         return norm(actual, fold) == norm(expected, fold)
     if rule == "concept":
+        # `expected` is a COMMA-SEPARATED list of concept keywords; every
+        # one must be present. The split IS the rule: matching the raw
+        # string would demand the separators themselves, so
+        # "unknown, not a country" would fail an answer reading
+        # "unknown - not a country". A comma-free expected is therefore
+        # ONE keyword and must appear as a whole phrase — which is rarely
+        # what you want for a refusal, and /eval-spec says so.
         # Substring containment is the floor, not the ideal: it is literal
         # enough to produce grader brittleness. When a case fails here but
         # the answer is right, fix the GRADER (widen to the concept), never
         # the case — /audit eval calls that bucket "grader brittleness".
-        return norm(expected) in norm(actual)
+        keys = [k for k in (p.strip() for p in str(expected).split(",")) if k]
+        if not keys:                  # an empty expected must never auto-pass
+            return False
+        return all(norm(k) in norm(actual) for k in keys)
     if rule.startswith("numeric-tolerance:"):
         raw = rule.split(":", 1)[1].strip()
         relative = raw.endswith("%")           # the spec allows ±x and ±x%
