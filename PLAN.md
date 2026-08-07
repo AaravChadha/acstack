@@ -2134,6 +2134,34 @@ reordered, if any.
   a scheduled task or carries a dated decline with its reason in this
   file; a later reader can tell which without re-running the survey.
 
+- [ ] **4.60** Close the tell-coverage gaps in `/design-audit`, and adopt
+  the two method rules that outrank any single tell. Verified 2026-08-07:
+  `skills/design-audit/` has **zero typography tells, zero
+  component-library-default tells, zero imagery tells** (the three `Inter`
+  hits are substring matches on "Internal"/"Interaction"). Missing and
+  checked by multiple independent packs: Inter/Geist/system-stack as the
+  only face; the "tasteful free font" cluster (Space Grotesk — named
+  explicitly by Anthropic's frontend-design — Sora, Syne); a serif-italic
+  accent word inside a sans headline; untouched shadcn `zinc`/`slate` and
+  untouched `--radius: 0.5rem`; the Lucide-in-a-rounded-square chip and
+  `Sparkles`+"AI"; placeholder identities (DiceBear, `pravatar.cc`,
+  `aspect-video bg-muted`); arrow glyphs stapled to CTAs ("Get started →"),
+  which is the typographic sibling of the em-dash tell already shipped.
+  **The two method rules matter more:** (1) **presence vs concentration** —
+  ui-craft's "the floor: a lone utility-class hit is not a finding", which
+  turns this pack's prose ("one tell is a choice; the full set is a
+  signature") into a threshold; (2) **a self-reference escape hatch**
+  exempting `examples/`, `fixtures/`, `__mocks__/`, `stories/`. (2) is a
+  fix for a defect this repo has already shipped — the emoji denylist
+  reported clean on the pack's own before-page, and `fixtures/` is where
+  slop is seeded deliberately. **Out of scope:** anything needing a
+  rendered page; that stays with wave B. Credit rule from
+  `references/ai-tells.md` applies — re-express, never copy.
+  **Acceptance:** each added tell is shown firing on a seeded fixture and
+  NOT firing on a legitimate use of the same construct; the concentration
+  threshold is stated as a number; and a fixture placed under `fixtures/`
+  that would otherwise flag is shown passing because of the escape hatch.
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
