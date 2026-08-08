@@ -2133,7 +2133,65 @@ reordered, if any.
   project with `palette:` configured does NOT flag; and whatever ships
   states its review date.
 
-- [ ] **4.55** Pin down what each guard actually reads. Three instances of
+- [x] **4.55** *(Done 2026-08-08. **Three verdicts, one shape: a guard's
+  input surface is now written down instead of inferred.**
+  **(a) Snapshot once AND name a mid-run change** — chosen over the task's
+  own "cheapest" hash-and-abort, because aborting discards the run while
+  fixing nothing. `$WORK/src` is taken once with `.git` and
+  `.acstack-banned` stripped; all three copy sites read it. The run hashes
+  the live `$REPO` at start and end and prints a NOTE — never a failure —
+  if it moved, since results are valid for the snapshot they came from.
+  **What is measured, and what is NOT.** The copy reduction is structural
+  and verified: `du` on a live run's work dir shows `$SRC` at **1.4M**
+  against an 18M repo — 92% less copied per case, because `.git` was 16M
+  of every 18M and every case deleted it anyway. **The wall-clock benefit
+  is NOT established.** Three runs: old code **31.3 s/case** (106 cases,
+  ~55 min); new code **4.1 s/case** (107 cases, 7m15s); new code again
+  **28.3 s/case** (109 cases, 51m25s). Runs two and three differ ~7× on
+  near-identical code. System load averaged 10.25/14.04/12.05 during the
+  third, and one `scripts/check.sh` timed at **4,845 ms** under that load —
+  a 109-case floor of ~8.7 minutes on check.sh alone — but that does not
+  account for 51 minutes, and **the cause was not isolated.** The earlier
+  "~7× faster" claim in this session's report was retracted on the third
+  run's evidence; copying less is proven, going faster is not.
+  **Demonstrated live:** this very box was ticked WHILE the matrix
+  ran — moving `wave45-done` 31→32 against a JOURNAL marker still reading
+  31, the exact inconsistency that produced three phantom failures on
+  2026-08-07 — and the run returned **`passed=107 failed=0`** plus the
+  NOTE. Zero phantom failures; the change was named instead. A later full
+  run on the finished tree returned **`passed=109 failed=0`**.
+  **(b) The roster is the contract, and no arguments means the contracted
+  set.** `count-check.sh` now carries COVERED (six files, a reason each)
+  and EXEMPT (four files that contain marker SYNTAX but make no claim —
+  count-check's own header, guard-matrix's sed mutations, two count-drift
+  fixtures), and fails on any marked count outside both. check.sh:669 now
+  calls it with no arguments; `FILE...` stays for controls.sh, which
+  points the guard at one seeded fixture and would have broken under an
+  argv assertion. **Honest scope, stated in the header:** the scan finds
+  MARKED counts in unrostered files. Unmarked prose — `check.yml`'s "15
+  checks" — stays out of scope by the §13 denylist ruling, and the roster's
+  reasons are where an author learns to mark a claim instead. Derived while
+  writing it: **4 of the 6 covered files carry no marker at all today**, so
+  coverage is pre-emptive, which is why a stale plant in CONTRIBUTING.md
+  was caught immediately.
+  **(c) Any extension, not a named list.** Both crossref loops matched
+  `\.(md|sh)`; they now require an extension without naming it. A named
+  list is a denylist wearing an allowlist's clothes — it passes silently on
+  every extension nobody thought of. **The gap was hiding a live dead
+  link** (`skills/ship/SKILL.md` → `references/regression-gate.py`, fixed
+  in 4.53's commit), and re-deriving found a **fourth instance the write-up
+  missed: the `../` loop carried the same `(md|sh)` class**, so 4.53's own
+  fix — rewriting that citation to `../eval-run/...` — was itself
+  unverified until now. Widening introduced **zero** new failures on the
+  current tree; one apparent hit during analysis was my own test resolving
+  from the wrong base directory, not a defect.
+  **Controls 87 → 89, matrix 107 → 109.** Every new guard shown failing
+  first: a dead `.py` citation, a marker planted off-roster (with a
+  CORRECT value, so it fails for coverage and not staleness), a revert to
+  per-case live copying, and deletion of the NOTE. Both new matrix cases
+  verified in isolation against a clean twin. **Still owed:** nothing
+  behavioural — these are mechanical guards, and (a) was proven on a live
+  run rather than by inspection.)* Pin down what each guard actually reads. Three instances of
   one shape — **a guard's input surface is implicit** — folded here
   (a)+(b) 2026-08-07, (c) 2026-08-08, because they take the same fix and
   reading them apart hid the pattern once already.

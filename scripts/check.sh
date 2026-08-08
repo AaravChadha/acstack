@@ -256,10 +256,19 @@ for f in skills/*/SKILL.md skills/*/references/*.md; do
   done <<EOF
 $toks
 EOF
-  for r in $(grep -ohE '(^|[^./])references/[A-Za-z0-9._-]+\.(md|sh)' "$f" | sed -E 's|^[^r]*r|r|' | grep -E '^references/' | sort -u); do
+  # EXTENSION SCOPE (4.55c, 2026-08-08). Both loops below match ANY
+  # extension (`\.[A-Za-z0-9]+`), not a named list. They matched `(md|sh)`
+  # until a `.py` citation was found dead in the field:
+  # skills/ship/SKILL.md cited `references/regression-gate.py`, which
+  # resolves under skills/ship/ where no such file exists — invisible for
+  # as long as it shipped, purely because of the extension. A named list is
+  # a denylist wearing an allowlist's clothes: it silently passes every
+  # extension nobody thought of (the §13 ruling). An extension is still
+  # REQUIRED, so prose like "the references/ directory" is not a citation.
+  for r in $(grep -ohE '(^|[^./])references/[A-Za-z0-9._-]+\.[A-Za-z0-9]+' "$f" | sed -E 's|^[^r]*r|r|' | grep -E '^references/' | sort -u); do
     [ -f "$sdir/$r" ] || { echo "FAIL crossref: $f cites $r but $sdir/$r does not exist"; fail=1; }
   done
-  for r in $(grep -ohE '\.\./[A-Za-z0-9._/-]+\.(md|sh)' "$f" | sort -u); do
+  for r in $(grep -ohE '\.\./[A-Za-z0-9._/-]+\.[A-Za-z0-9]+' "$f" | sort -u); do
     [ -f "$d/$r" ] || { echo "FAIL crossref: $f cites $r but it does not resolve from $d/"; fail=1; }
   done
 done
@@ -666,7 +675,10 @@ done
 #     derivation, NEVER that these documents have no stale numbers — which
 #     is why the verified list is printed rather than swallowed.
 if [ -f scripts/count-check.sh ]; then
-  if cnt_out="$(bash scripts/count-check.sh README.md PLAN.md JOURNAL.md CONTRIBUTING.md PRINCIPLES.md docs/ARCHITECTURE.md 2>&1)"; then
+  # No arguments = the contracted set. The roster and the reason for every
+  # inclusion and exclusion live in count-check.sh, which is where the guard
+  # is read; passing the list here made it an unstated contract (4.55b).
+  if cnt_out="$(bash scripts/count-check.sh 2>&1)"; then
     printf '%s\n' "$cnt_out"
   else
     printf '%s\n' "$cnt_out"

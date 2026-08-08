@@ -570,6 +570,28 @@ else
   bad "scripts/count-check.sh missing — marked counts have no control"
 fi
 
+# --- guard-matrix: cases read a FROZEN snapshot, not the live tree (4.55a) ---
+# Structural, and grep-shaped on purpose: the matrix cannot test its own
+# harness, because every case runs INSIDE it. Reverting to a per-case
+# `cp -R "$REPO"` reintroduces the phantom-failure class — a run re-samples
+# the working tree, so an edit mid-run desynchronises later cases from
+# earlier ones and reports defects that are not there.
+if [ -f docs/guard-matrix.sh ]; then
+  if grep -qE 'cp -R "\$REPO" "\$FULL"' docs/guard-matrix.sh; then
+    bad "guard-matrix copies the LIVE tree per case again — a mid-run edit will produce phantom failures (4.55a)"
+  else
+    ok "guard-matrix cases copy from the frozen snapshot, not the live tree"
+  fi
+  # the snapshot alone is silent; the run must still SAY the tree moved.
+  if grep -q 'tree changed during this run' docs/guard-matrix.sh; then
+    ok "guard-matrix still names a mid-run tree change"
+  else
+    bad "guard-matrix no longer names a mid-run tree change — the operator cannot tell stale results from current ones (4.55a)"
+  fi
+else
+  bad "docs/guard-matrix.sh missing — the snapshot contract has no control"
+fi
+
 echo
 if [ "$fail" -eq 0 ] && [ "$skipped" -gt 0 ]; then
   echo "controls.sh: no failures, but $skipped control(s) SKIPPED — coverage is incomplete"

@@ -30,6 +30,42 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 1
 fail=0
 verified=""
 
+# --- THE COVERAGE CONTRACT (4.55b) ---------------------------------------
+# Until 2026-08-08 the covered set was check.sh's argument list and NOTHING
+# SAID SO. A marked count in a file nobody passed was silently unverified,
+# and the argument list could be edited with no signal. The roster below is
+# now the contract, stated where the guard is read, with a reason per
+# inclusion AND per exclusion — an exclusion with no reason is how a list
+# rots into a denylist.
+#
+# Run with NO ARGUMENTS to check the contracted set and scan for strays;
+# run with FILE... to check exactly those files (what controls.sh does when
+# it points the guard at one seeded fixture).
+#
+# COVERED — documents that make marked count claims to a reader:
+#   README.md            the front door; its numbers are the first ones read
+#   PLAN.md              the roadmap; every wave/task count derives from it
+#   JOURNAL.md           the status snapshot; carried a stale 25/90 once
+#   CONTRIBUTING.md      tells contributors how many checks they must pass
+#   PRINCIPLES.md        enumerates its own sections
+#   docs/ARCHITECTURE.md enumerates guards and components
+COVERED="README.md PLAN.md JOURNAL.md CONTRIBUTING.md PRINCIPLES.md docs/ARCHITECTURE.md"
+#
+# EXEMPT — files that contain the marker SYNTAX but make no claim. Each is
+# listed with why, so adding one is a decision rather than a silent drop:
+#   scripts/count-check.sh    documents the marker format in its own header
+#   docs/guard-matrix.sh      seeds marker strings inside sed mutations
+#   fixtures/count-drift/*    seeded fixtures; being stale IS their job
+EXEMPT="scripts/count-check.sh docs/guard-matrix.sh fixtures/count-drift/stale-doc.md fixtures/count-drift/typo-name.md"
+#
+# HONEST SCOPE OF THE STRAY SCAN. It finds files carrying a MARKER that are
+# on neither list. A new file making count claims in unmarked prose is still
+# invisible — sweeping prose is the unfinishable denylist ruled out above,
+# and `.github/workflows/check.yml`'s "15 checks" was exactly that shape.
+# The roster's reasons are where an author learns to mark a claim instead.
+contract=0
+if [ "$#" -eq 0 ]; then contract=1; set -- $COVERED; fi
+
 w45() { awk '/^## \[[ x]\] Wave 4\.5/,/^## \[[ x]\] Wave 5/' PLAN.md; }
 
 # The enumerated set of derivable counts. Adding a marker with a name not
@@ -76,6 +112,22 @@ for f in "$@"; do
     fi
   done < <(grep -noE '<!-- count:[a-z0-9-]+ -->[0-9]+<!-- /count -->' "$f" || true)
 done
+
+# Stray scan: a marked count living outside the roster is a claim nobody
+# checks. This is what makes the argument list self-enforcing rather than
+# a convention — the defect it exists to catch is a NEW covered-looking
+# file, added with a marker, that nobody remembered to pass.
+if [ "$contract" -eq 1 ]; then
+  known=" $COVERED $EXEMPT "
+  while IFS= read -r m; do
+    [ -n "$m" ] || continue
+    case "$known" in *" $m "*) continue ;; esac
+    echo "FAIL count: $m carries a marked count but is on neither count-check roster"
+    echo "            — add it to COVERED (it makes a claim) or to EXEMPT (with a reason)"
+    fail=1
+  done < <(grep -rl --exclude-dir=.git --exclude-dir=results '<!-- count:' . 2>/dev/null \
+             | sed 's|^\./||' | sort)
+fi
 
 if [ "$fail" -eq 0 ]; then
   if [ -n "$verified" ]; then

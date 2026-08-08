@@ -5,7 +5,31 @@
 set -uo pipefail
 REPO="${1:?usage: guard-matrix.sh <repo>}"
 WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
-cp -R "$REPO" "$WORK/pack" 2>/dev/null
+
+# --- SNAPSHOT ONCE (4.55a) -----------------------------------------------
+# Every case used to `cp -R "$REPO"` afresh, so a long run re-sampled the
+# LIVE working tree per case and later cases saw a different tree than
+# earlier ones. Editing anything mid-run — a PLAN.md checkbox is enough,
+# since it moves a count-check-derived number — produced phantom failures:
+# two wasted runs and three bogus case failures on 2026-08-07, none a
+# defect. A matrix that cries wolf is one you stop reading.
+#
+# .git and .acstack-banned are dropped HERE, once, because every case
+# deleted them anyway — and .git was 16M of every 18M copied, measured
+# 2026-08-08 against a 31.3 s/case, ~55-minute run.
+SRC="$WORK/src"
+cp -R "$REPO" "$SRC" 2>/dev/null
+rm -rf "$SRC/.git" "$SRC/.acstack-banned"
+
+# The run still records what the live tree looked like at start, so a
+# mid-run edit is NAMED rather than silently ignored. It is a NOTE, not a
+# failure: the results are valid for the snapshot they were taken from, and
+# aborting a ~15-minute run over an unrelated edit is the cure being worse
+# than the disease.
+tree_hash() { find "$1" -name .git -prune -o -type f -exec shasum {} + 2>/dev/null | sort | shasum | awk '{print $1}'; }
+H0="$(tree_hash "$REPO")"
+
+cp -R "$SRC" "$WORK/pack" 2>/dev/null
 cd "$WORK/pack" || exit 1
 rm -rf skills/*/ 2>/dev/null
 # keep one known-good skill so principles/budget checks have something valid
@@ -53,8 +77,7 @@ FULL="$WORK/full"
 
 fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
   local n="$1" exp="$2" cls="$3"; shift 3
-  rm -rf "$FULL"; cp -R "$REPO" "$FULL"; rm -rf "$FULL/.git"
-  rm -f "$FULL/.acstack-banned"   # never carry the private roster into /tmp copies
+  rm -rf "$FULL"; cp -R "$SRC" "$FULL"   # $SRC: frozen at start, no .git/.acstack-banned
   ( cd "$FULL" && "$@" ) >/dev/null 2>&1
   out="$(cd "$FULL" && ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
   if printf '%s' "$out" | grep -qE "FAIL ($cls)"; then got=FAIL; else got=PASS; fi
@@ -66,7 +89,7 @@ fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
 # on the OUTPUT TEXT (these cases are about the sweep's own error handling).
 bannedcase() { # name listfile-content required-regex [second-required-regex]
   local n="$1" content="$2" want="$3" want2="${4:-}"
-  rm -rf "$FULL"; cp -R "$REPO" "$FULL"; rm -rf "$FULL/.git" "$FULL/.acstack-banned"
+  rm -rf "$FULL"; cp -R "$SRC" "$FULL"   # $SRC: frozen at start, no .git/.acstack-banned
   printf '%s\n' "$content" > "$WORK/blist"
   out="$(cd "$FULL" && ACSTACK_BANNED_FILE="$WORK/blist" bash scripts/check.sh 2>&1)" || true
   if printf '%s' "$out" | grep -qE "$want" && { [ -z "$want2" ] || printf '%s' "$out" | grep -qE "$want2"; }; then
@@ -242,7 +265,23 @@ fullcase "regression gate coverage-blind"   FAIL 'control'        bash -c "sed -
 # "could not complete" and "completed with errored cases" both exit 1 —
 # the collision measured before the fix, and the one /ship's gate 3 reads.
 fullcase "eval-run exit codes merged"       FAIL 'control'        bash -c "sed -e 's/return 2 if errors else 0/return 1 if errors else 0/' fixtures/eval-run/eval/run.py > t && mv t fixtures/eval-run/eval/run.py"
+# 4.55b a marked count in a file on neither roster is a claim nobody checks.
+# The planted VALUE is correct; only its location is wrong, so this case
+# fails for coverage and not for staleness.
+fullcase "marked count off the roster"      FAIL 'count' bash -c "printf 'skills: <!-- count:skills -->23<!-- /count -->\n' > docs/off-roster.md"
+# 4.55c a dead .py citation. Identical to the .md case one line of regex
+# away, and invisible for as long as the extension list was named.
+fullcase "dead .py reference citation"      FAIL 'crossref' bash -c "printf '\nSee references/no-such-gate.py for details.\n' >> skills/ship/SKILL.md"
 
 echo
+# 4.55a: name a mid-run tree change. Not a failure — every case above read
+# the SAME frozen snapshot, so the results stand; this tells the operator
+# the live tree has moved on, which is the fact that used to arrive
+# disguised as a phantom case failure.
+if [ "$(tree_hash "$REPO")" != "$H0" ]; then
+  echo "NOTE: the tree changed during this run. Every case above read the"
+  echo "      snapshot taken at start, so these results are internally"
+  echo "      consistent — but they describe the tree as it was, not as it is."
+fi
 echo "passed=$pass failed=$failed"
 [ "$failed" -eq 0 ]
