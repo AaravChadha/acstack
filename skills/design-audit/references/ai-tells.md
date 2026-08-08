@@ -16,6 +16,35 @@ full set is a signature. Report `file:line`, the tell, and the fix — and
 when a project has *deliberately* chosen a look, say so and drop it rather
 than reporting taste as a defect.
 
+## Two rules that outrank every tell below
+
+**1. Concentration, not presence. The threshold is a number: THREE.** A
+surface — one file, or one route's files — needs **three or more distinct
+tells** before it is reported as machine-generated. One or two are listed
+as candidates with their `file:line`, and the report says explicitly that
+the count is below the bar. Within a named cluster (see Config) the bar is
+**two of the cluster's three signals**, because the signals are chosen to
+be independent.
+
+Why a number at all: "one tell is a choice, the full set is a signature"
+was already written here and did nothing, because it left every reader to
+pick their own bar — and a checker with no threshold reports a lone
+`animate-pulse` as evidence of a generated interface. That is the finding
+nobody trusts, and an audit nobody trusts is not run.
+
+**2. Self-reference escape hatch.** Skip `examples/`, `fixtures/`,
+`__mocks__/`, `stories/`, `__fixtures__/` and `*.stories.*` when auditing a
+project. Those directories are where slop is planted ON PURPOSE — a design
+system's story file exists to render the ugly state, and reporting it is
+noise that trains the reader to ignore the whole report.
+
+> **This pack's own controls deliberately bypass rule 2, and must.**
+> `scripts/controls.sh` runs these greps directly against
+> `fixtures/design-audit/`, because the seeded plant IS the thing under
+> test. If a future reader "fixes" the controls to honour the escape hatch,
+> every positive control goes dark while still printing `ok`. The hatch is
+> a rule for auditing SOMEONE'S PROJECT, not a rule for the grep.
+
 **Severity order is fixed: accessibility, then honesty, then everything
 else.** A violet gradient is embarrassing. Unreadable text and a fabricated
 statistic are harm. Report in that order regardless of hit count.
@@ -168,6 +197,62 @@ git grep -nE 'position:[[:space:]]*sticky'
 The first two are read together: click handlers far outnumbering `:active`
 rules is the signal.
 
+## 7. Typography — the face nobody chose
+
+| Tell | Signature |
+|---|---|
+| Inter or Geist as the only face | One `font-family`, no pairing, no display face. The default of every generated interface since 2023 |
+| The "tasteful free font" cluster | `Space Grotesk`, `Sora`, `Syne`, `Outfit` — reached for to look deliberate, which is what makes them a tell |
+| Serif-italic accent word inside a sans headline | "Build something *beautiful*" — the one flourish, in every generated hero |
+| Arrow glyph stapled to a CTA | `Get started →`. The typographic sibling of the em-dash tell in §3: punctuation doing the work the copy should |
+
+```bash
+git grep -nE 'font-family:[^;]*(Inter|Geist)|font-(sans|display):[^;]*(Inter|Geist)'
+git grep -nE '(Space Grotesk|Sora|Syne|Outfit)'
+git grep -nE '(italic|<em)[^<]{0,40}(serif)|(serif)[^<]{0,40}(italic|<em)'
+git grep -nE '(Get started|Learn more|Read more|Explore|Get in touch)[[:space:]]*(→|&rarr;)'
+```
+
+The first is an **entry point, not a verdict**: Inter is a good face and
+using it is not a defect. The finding is Inter as the ONLY face, so read
+what else the file declares before reporting it. The third is likewise a
+locator — find the pairing, then look at whether it is one accent word in a
+headline or a real editorial voice.
+
+## 8. Component-library defaults left untouched
+
+Shipping the starter's defaults is the tell — not the library.
+
+| Tell | Signature |
+|---|---|
+| The default radius, never revisited | `--radius: 0.5rem` verbatim from the shadcn init |
+| `zinc`/`slate` as the entire neutral ramp | No project ever chose both and nothing else |
+| Icon in a rounded square chip | A Lucide glyph inside `rounded-lg` + `bg-primary/10`, repeated per feature |
+| `Sparkles` meaning "AI" | The single most-reached-for icon in generated product UI |
+
+```bash
+git grep -nE '\-\-radius:[[:space:]]*0\.5rem'
+git grep -nE '(bg|text|border)-(zinc|slate)-[0-9]{2,3}'
+git grep -nE 'Sparkles'
+git grep -nE 'rounded-(lg|xl)[^"]*bg-primary/10|bg-primary/10[^"]*rounded-(lg|xl)'
+```
+
+## 9. Imagery — placeholders wearing a product's face
+
+The §2 honesty tells applied to pixels rather than numbers.
+
+| Tell | Signature |
+|---|---|
+| Generated-avatar services in shipped UI | `dicebear`, `pravatar.cc`, `ui-avatars.com` |
+| An empty media box standing in for a screenshot | `aspect-video` over a flat `bg-muted` with no child |
+| Stock hotlinks as product imagery | `images.unsplash.com` referenced directly from markup |
+
+```bash
+git grep -niE '(dicebear|pravatar\.cc|ui-avatars\.com)'
+git grep -nE 'aspect-video[^"]*bg-(muted|gray|zinc|slate)'
+git grep -nE 'images\.unsplash\.com'
+```
+
 ## Config
 
 `banned-palette:` in a `## design-audit` section lists hex values that are
@@ -177,6 +262,47 @@ what is never allowed even if someone adds it to the palette.
 
 Pack default (the violet-gradient family):
 `#8b5cf6, #a855f7, #7c3aed, #6366f1, #d946ef`
+
+### The default-look clusters — reviewed 2026-08-08
+
+**A hex denylist cannot be finished, and this one went stale.** The list
+above is violet, which is where generated design clustered in 2024–25. It
+is no longer where it clusters, and a longer list would fail the same way
+next year — the third appearance of the denylist class in this repo. So the
+list stays for what it still catches, and **the pack default is a cluster
+check instead**: a *shape*, matched by co-occurrence rather than by
+enumeration.
+
+**A cluster is a finding only when TWO of its three signals co-occur** in
+the same surface (method rule 1). Its signals are chosen to be independent,
+so two together are already unlikely by accident.
+
+| Cluster | Signal A | Signal B | Signal C |
+|---|---|---|---|
+| Cream editorial | background near `#F4F1EA` / `#FAF7F0` / `oklch(0.97…)` cream | serif display face | terracotta / rust accent (`#C', '#B` warm mid-tones) |
+| Dark acid | near-black background (`#0A0A0A`–`#111`) | a single acid-green or vermilion accent | no third hue anywhere |
+| Broadsheet | hairline rules (`1px` borders as structure) | `border-radius: 0` throughout | dense multi-column text |
+| Violet gradient | `#8b5cf6`-family accent | gradient text or orb | icon-tile feature grid |
+
+```bash
+git grep -niE '(#F4F1EA|#FAF7F0|#FDFBF7|bg-\[#F[0-9A-Fa-f]{5}\]|cream)'
+git grep -niE '[Ff]ont-?[Ff]amily[^;]*(Playfair|Fraunces|Instrument Serif|Lora|EB Garamond)'
+git grep -niE '(#C1[0-9A-Fa-f]{4}|#B[0-9A-Fa-f]{5}|terracotta|rust|clay)'
+git grep -nE 'border-radius:[[:space:]]*0(px)?;|rounded-none'
+```
+
+**Review date is load-bearing.** This table describes where generated
+design clustered on **2026-08-08**, sourced from Anthropic's own
+`frontend-design` skill and an independent tells list that both named the
+cream/serif look. It will go stale. Re-read it at each pack version and
+move the date, or delete the table rather than let it quietly misinform —
+an undated aesthetic claim is a stale claim with no expiry printed on it.
+
+**With `palette:` configured, clusters are NOT reported.** A project that
+chose cream and said so has made a decision, and reporting a decision back
+as a defect is exactly the taste-as-defect failure this file opens by
+forbidding. The cluster check exists for the unconfigured case, where the
+alternative is no signal at all.
 
 ## Credits
 

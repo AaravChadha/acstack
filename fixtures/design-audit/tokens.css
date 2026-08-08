@@ -1,0 +1,8 @@
+/* SEEDED FIXTURE — the shadcn init defaults, never revisited (PLAN 4.60 §8).
+   The tell is not the library; it is that nothing here was ever chosen. */
+:root {
+  font-family: Inter, sans-serif;
+  --radius: 0.5rem;
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+}

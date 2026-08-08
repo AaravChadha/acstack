@@ -272,6 +272,10 @@ fullcase "marked count off the roster"      FAIL 'count' bash -c "printf 'skills
 # 4.55c a dead .py citation. Identical to the .md case one line of regex
 # away, and invisible for as long as the extension list was named.
 fullcase "dead .py reference citation"      FAIL 'crossref' bash -c "printf '\nSee references/no-such-gate.py for details.\n' >> skills/ship/SKILL.md"
+# 4.60 the negative twin. A tell leaking into the legitimate fixture means
+# the detector now reports taste as a defect — the failure direction that
+# ai_check alone could never see, since it only ever asserts a hit.
+fullcase "tell fires on legitimate use"     FAIL 'control' bash -c "printf '// <a>Get started →</a>\n' >> fixtures/design-audit/legitimate-look.tsx"
 
 echo
 # 4.55a: name a mid-run tree change. Not a failure — every case above read

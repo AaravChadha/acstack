@@ -61,8 +61,15 @@ Read a `## design-audit` section from `.claude/acstack.md`:
 
 Config always wins over the brand-neutral defaults in
 `references/design-conventions.md`. No config → use the defaults and say
-so in scope: "no palette configured; flagged only obvious raw-hex
-sprawl, not brand conformance."
+so in scope, naming what the reader is and is NOT getting: "no palette
+configured; flagged raw-hex sprawl and the dated default-look clusters
+(`references/ai-tells.md` Config), **not** brand conformance — nothing here
+knows what your brand is." Without a `palette:` there is no allowed set, so
+conformance is unanswerable rather than merely unchecked; saying only
+"flagged obvious sprawl" undersold both halves.
+
+With `palette:` configured, the cluster check is suppressed: a look a
+project chose and declared is a decision, not a defect.
 
 ## The four checks
 

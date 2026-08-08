@@ -134,6 +134,69 @@ else
   bad "/design-audit ai-tells fixtures missing — the rule classes have no control"
 fi
 
+# --- /design-audit: the 4.54/4.60 tell classes, WITH negative twins --------
+# ai_check above proves a grep fires on a plant. It cannot prove the grep
+# stays silent on legitimate use, and a detector that flags everything is
+# worthless in the opposite direction — it trains the reader to ignore the
+# report. ai_pair asserts BOTH against a seeded file and its legitimate twin.
+ai_pair() { # label anchor positive-fixture
+  local label="$1" anchor="$2" pos="$3" neg="fixtures/design-audit/legitimate-look.tsx" line pat
+  line="$(grep -F "$anchor" skills/design-audit/references/ai-tells.md | head -1 || true)"
+  pat="${line#*\'}"; pat="${pat%%\'*}"
+  if [ -z "$pat" ] || [ "$pat" = "$line" ]; then
+    bad "/design-audit $label pattern not extractable (anchor: $anchor)"
+  elif ! grep -rqE "$pat" "$pos" 2>/dev/null; then
+    bad "/design-audit $label grep MISSED its plant in $pos (pattern: $pat)"
+  elif grep -rqE "$pat" "$neg" 2>/dev/null; then
+    bad "/design-audit $label grep FIRED on legitimate use — it reports taste as a defect (pattern: $pat)"
+  else
+    ok "/design-audit $label fires on the plant and stays silent on legitimate use"
+  fi
+}
+if [ -f fixtures/design-audit/default-look.tsx ] && [ -f fixtures/design-audit/legitimate-look.tsx ]; then
+  DL=fixtures/design-audit/default-look.tsx
+  ai_pair "arrow-cta"      "git grep -nE '(Get started|Learn more"      "$DL"
+  ai_pair "avatar-service" "git grep -niE '(dicebear"                   "$DL"
+  ai_pair "empty-media"    "git grep -nE 'aspect-video"                 "$DL"
+  ai_pair "unsplash"       "git grep -nE 'images\\.unsplash\\.com'"     "$DL"
+  ai_pair "serif-italic"   "git grep -nE '(italic|<em)"                 "$DL"
+  ai_pair "radius-default" "git grep -nE '\\-\\-radius:"                fixtures/design-audit/tokens.css
+  # 4.54 cluster signals. Two of three co-occurring is the bar; each signal
+  # is asserted separately so a single stale one is named, not averaged away.
+  ai_pair "cluster-cream"  "git grep -niE '(#F4F1EA"                    "$DL"
+  ai_pair "cluster-serif"  "git grep -niE '[Ff]ont-?[Ff]amily"          "$DL"
+  ai_pair "cluster-rust"   "git grep -niE '(#C1"                        "$DL"
+  # ENTRY POINTS — no negative twin is possible: these fire on legitimate
+  # use BY DESIGN and a human adjudicates. Asserting silence would be a
+  # check that cannot fail, so only the plant side is claimed.
+  ai_check "sparkles-chip" "git grep -nE 'Sparkles'"                    "$DL"
+  ai_check "neutral-ramp"  "git grep -nE '(bg|text|border)-(zinc|slate)" "$DL"
+  ai_check "default-face"  "git grep -nE 'font-family:[^;]*(Inter|Geist)" fixtures/design-audit/tokens.css
+else
+  bad "/design-audit 4.54/4.60 fixtures missing — the new tell classes have no control"
+fi
+
+# --- /design-audit: the self-reference escape hatch (4.60 method rule 2) ---
+# Two halves, asserted separately because they regress independently: the
+# story fixture must still CONTAIN slop, and the documented hatch must still
+# match its path. Asserting only the second would pass on an empty file.
+hatch_fx="fixtures/design-audit/stories/hero.stories.tsx"
+if [ ! -f "$hatch_fx" ]; then
+  bad "/design-audit escape-hatch fixture missing — method rule 2 has no control"
+else
+  if grep -qE 'dicebear|aspect-video|eyebrow' "$hatch_fx"; then
+    ok "/design-audit escape-hatch fixture still carries the slop it exists to hide"
+  else
+    bad "/design-audit escape-hatch fixture lost its slop — the hatch now proves nothing"
+  fi
+  if grep -qE 'stories/' skills/design-audit/references/ai-tells.md \
+     && printf '%s' "$hatch_fx" | grep -qE '(examples|fixtures|__mocks__|stories|__fixtures__)/'; then
+    ok "/design-audit escape-hatch path list still covers the story fixture"
+  else
+    bad "/design-audit escape-hatch no longer lists the directory its own fixture sits in (4.60)"
+  fi
+fi
+
 # --- /health: pointer test + tracked .env-class plant (inline) ---
 if [ "$(tr -d '\n' < fixtures/health/CLAUDE.md | head -c 12)" != "@AGENTS.md" ]; then
   ok "/health pointer test flags the non-pointer CLAUDE.md"

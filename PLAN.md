@@ -2104,7 +2104,25 @@ reordered, if any.
   that completes with failures and one that cannot complete are
   distinguishable by exit code alone, shown failing first.
 
-- [ ] **4.54** Replace the AI-default-look palette denylist, which has gone
+- [x] **4.54** *(Done 2026-08-08. **Verdict: the pack default becomes a
+  dated CLUSTER check; the hex list stays for what it still catches.** A
+  longer hex list was rejected on this repo's own precedent — the third
+  appearance of the denylist class — because it would go stale exactly as
+  the violet list did. A cluster is a *shape*: four named clusters (cream
+  editorial, dark acid, broadsheet, violet gradient), each with three
+  independent signals, and **a finding requires TWO of three co-occurring**,
+  which is 4.60's concentration rule doing the work. Reviewed-on date is
+  printed in the table and the file says to move it or delete the table
+  rather than let it quietly misinform — an undated aesthetic claim is a
+  stale claim with no expiry on it. **Configured `palette:` suppresses the
+  cluster check entirely**: a look a project chose and declared is a
+  decision, and reporting it back is the taste-as-defect failure the file
+  opens by forbidding. SKILL.md's degradation line was rewritten to name
+  what an unconfigured adopter does and does NOT get — it had undersold
+  both halves, and conformance is *unanswerable* without a palette, not
+  merely unchecked. **Shown failing first:** cream-bg, serif-display and
+  rust-accent all HIT `default-look.tsx` and all stay silent on
+  `legitimate-look.tsx`; the existing violet fixture still flags.)* Replace the AI-default-look palette denylist, which has gone
   stale. `skills/design-audit/references/ai-tells.md:179` ships a pack
   default of five violet hexes (`#8b5cf6, #a855f7, #7c3aed, #6366f1,
   #d946ef`). **Anthropic's own `frontend-design` skill now names where
@@ -2154,6 +2172,14 @@ reordered, if any.
   account for 51 minutes, and **the cause was not isolated.** The earlier
   "~7× faster" claim in this session's report was retracted on the third
   run's evidence; copying less is proven, going faster is not.
+  **Resolved 2026-08-08 (later), on a clean machine:** CI run
+  `31270737987` completed **109 cases plus check.sh plus shellcheck in
+  413s** — an upper bound of **3.8 s/case** including the other two steps.
+  That matches the second local run and not the third, so the third was
+  local contention (load averaged 10–14 with two Cursor renderers at 37.7%
+  and 14.2%), not the change. The speedup is real; **the laptop is not a
+  timing instrument**, and the retraction stands as written because it was
+  the honest reading of what was measured at the time.
   **Demonstrated live:** this very box was ticked WHILE the matrix
   ran — moving `wave45-done` 31→32 against a JOURNAL marker still reading
   31, the exact inconsistency that produced three phantom failures on
@@ -2363,7 +2389,39 @@ reordered, if any.
   seeded over-budget description — 2,301 tokens is the baseline, and the
   budget it is checked against is decided in this task, not assumed.
 
-- [ ] **4.60** Close the tell-coverage gaps in `/design-audit`, and adopt
+- [x] **4.60** *(Done 2026-08-08. **Three tell sections added (§7
+  typography, §8 component-library defaults, §9 imagery) and both method
+  rules adopted.** Threshold stated as a NUMBER: **three** distinct tells in
+  one surface before it is called machine-generated, **two of three** within
+  a named cluster. The prose bar that shipped before — "one tell is a
+  choice, the full set is a signature" — did nothing, because it left every
+  reader to pick their own, and a checker with no threshold reports a lone
+  `animate-pulse` as evidence. **Escape hatch** exempts `examples/`,
+  `fixtures/`, `__mocks__/`, `stories/`, `__fixtures__/`, `*.stories.*`.
+  **The escape hatch contradicts this pack's own controls, and the file now
+  says so in a blockquote:** controls.sh greps `fixtures/design-audit/`
+  deliberately, because the seeded plant IS the thing under test — if a
+  future reader "fixes" the controls to honour the hatch, every positive
+  control goes dark while still printing `ok`. That is the 4.52 shape (two
+  files, contradictory rules) caught before shipping rather than after.
+  **A new control shape was needed:** `ai_check` only ever asserts a hit,
+  so it structurally cannot see a detector that flags everything. `ai_pair`
+  asserts BOTH — fires on `default-look.tsx`, silent on
+  `legitimate-look.tsx` — for the nine tells where a negative is meaningful.
+  **Three tells are declared ENTRY POINTS with no negative twin** (the
+  default sans faces, the neutral ramps, the AI-chip glyph): they fire on
+  legitimate use by design and a human adjudicates, so asserting silence
+  would be a check that cannot fail. Named as such in controls.sh rather
+  than faked. **Every seed fired, both directions:** a tell leaked into the
+  legitimate fixture → `FIRED on legitimate use`; the plant removed →
+  `MISSED its plant`; `stories/` dropped from the hatch list → the hatch
+  control failed. **Two defects in my own fixtures, caught by running them:**
+  the negative fixture's comment named the tell tokens literally and tripped
+  its own detector (the fixture-prose bug class, again), and `default-face`
+  was pointed at `ai-tells.md` as its own fixture, where a literal `;` in
+  the documented pattern made `[^;]*` unable to reach the match. Controls
+  89 → 103, matrix 109 → 110. **Out of scope as filed:** anything needing a
+  rendered page.)* Close the tell-coverage gaps in `/design-audit`, and adopt
   the two method rules that outrank any single tell. Verified 2026-08-07:
   `skills/design-audit/` has **zero typography tells, zero
   component-library-default tells, zero imagery tells** (the three `Inter`
