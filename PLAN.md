@@ -2122,8 +2122,57 @@ reordered, if any.
   for a section the prompt does not supply, with the TBDs listed together at
   the top of the report, and no invented figure in that section. Mechanical
   green does not discharge this (verification rule 6).
+  *(**Fix built and re-tested 2026-08-12 — NOT discharged.** The never-guess
+  rule was hoisted above the unsupplied-sections block so it binds on every
+  path, with a `Deriving is not guessing` carve-out protecting the thing
+  both original runs did right; the branch was re-keyed off the judgement
+  "is this unattended" onto the observable **"you did not ask, or you asked
+  and no answer came back"**. `check.sh §31` pins the rule's POSITION —
+  re-nesting it is the regression — and all three of its branches were
+  watched failing; three matrix cases added.
+  **It works where the run is unambiguously unattended.** `run-rt4` meets
+  this acceptance to the letter: the literal five times, a `## Open TBDs`
+  list at the top tagged by source section, `Milestone time budget: TBD`
+  in the Constraints section, and the carve-out holding rather than
+  over-correcting — 12 `file.py:NN` citations and a header stating the
+  landmines were *derived, not guessed*. `run-rt3`, given no unattended
+  cue, **stopped and asked rather than invent**, quoting the new condition
+  back: *"A declined/blank answer is treated the same as 'not supplied' …
+  I won't guess them either way."*
+  **It does NOT work in the condition that found the defect.** `run-rt1`
+  and `run-rt2` reproduce the original failure exactly: `AskUserQuestion`
+  returns its placeholder, the model reads it as a deliberate skip rather
+  than as no answer, and fills the sections itself — including a numeric
+  scale range nobody supplied, in both. Ticking this on `run-rt4` alone
+  would be the inflation the pack forbids.
+  **Acceptance sharpened, and this is what remains:** a live headless run
+  in which `AskUserQuestion` is called and returns its placeholder — no
+  unattended cue in the prompt — must still produce the literal for an
+  underivable unsupplied section and invent no figure. Venue
+  `~/shakedown-15/venue-seed2` already isolates this: Constraints is
+  underivable there, verified by 0 residual constraint signals in
+  `CLAUDE.md`, `README.md` and the source.
+  **A defect in the round's own bar, recorded rather than buried:** the
+  first venue omitted only sections a model can legitimately *derive*
+  (landmines from source, open questions from analysis), so `TBD` was
+  arguably never warranted there and the first two re-test runs were
+  scored against a bar they should have failed. Venue 2 exists because of
+  that error.)*
 
-- [ ] **4.68** `mode-seed.md` and `brief-template.md` contradict each other
+- [x] **4.68** *(Done 2026-08-12. The rule now has one home:
+  `mode-seed.md` states both states — `none known yet; expect to discover
+  during <phase>` for **asked and nothing yet**, `TBD — not supplied at
+  seed time` for **not supplied at all** — and `brief-template.md`'s note
+  points at it instead of carrying a second copy. The distinction is the
+  point, not the wording: conflating them destroys the difference between
+  *we looked and found none* and *nobody has looked*, and only the second
+  is a reason to go back and ask. **check.sh §30** guards all three drift
+  modes and **each was watched failing** on a seeded defect — template
+  restates the rule (the defect as it shipped), canonical site drops a
+  state, template stops pointing — plus three matrix cases; matrix
+  110 → 117, 0 failed. Re-tested live per rule 6: the template's
+  `expect to discover` phrasing is absent from **4/4** re-test BRIEFs,
+  where `run-b2` had used it.)* `mode-seed.md` and `brief-template.md` contradicted each other
   on unsupplied sections. Predicted by reading before shakedown 15 ran (H1),
   then **confirmed live**. `references/mode-seed.md:13` says write
   `TBD — not supplied at seed time`; `references/brief-template.md:78-80`

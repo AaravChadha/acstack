@@ -1,21 +1,59 @@
 # /plan — mode: seed
 
-Loaded when the dispatch selects `seed`. Split out of SKILL.md by 4.49 so the four other modes do not pay for it; the text is unchanged.
+Loaded when the dispatch selects `seed`. Split out of SKILL.md by 4.49 so the four other modes do not pay for it; the text was unchanged by that split, and has since been edited by 4.67 and 4.68.
 
 ## Mode: seed — write the frozen BRIEF
+
+**Before anything else: never guess.** Never invent a constraint, an
+audience, a domain landmine, a volume, or a cadence. Those are the fields
+whose fabrication costs the most, and the BRIEF is the document every later
+decision is measured against. **This binds on every path through this mode,
+attended or not** — it is deliberately NOT part of the unsupplied-sections
+rule below, because guessing does not become acceptable just because
+somebody happened to be around to ask. It sat inside that branch until
+2026-08-12, when a headless run decided the branch did not apply to it and
+took the never-guess rule out of scope along with it (4.67).
+
+**Deriving is not guessing.** Reading a domain landmine out of the repo's
+own source and saying that is where it came from is exactly right, and the
+best part of a good BRIEF. Stating a number nobody supplied is not. If you
+cannot name where a fact came from, it does not go in.
 
 Interview the user (or take their brain-dump) and write `BRIEF.md` following
 `references/brief-template.md`. Required sections — if the user hasn't
 supplied one, ask; never silently skip:
 
-**When nobody can answer** — a non-interactive or unattended run — asking is
-not an option and inventing is worse. Write the section as
-`TBD — not supplied at seed time`, list every TBD together at the top of the
-report, and say plainly that the BRIEF is incomplete until they are filled.
+**Unsupplied sections — one rule, stated once, here.** Two states look alike
+and are not. Keep them apart:
+
+- **Asked, and the user has nothing yet.** Record it as a finding in the
+  section's own words — `none known yet; expect to discover during <phase>`
+  — rather than omitting the section. Someone looked and found none, and
+  that is information.
+- **Not supplied at all** — **you did not ask, or you asked and no answer
+  came back.** Write the section as `TBD — not supplied at seed time`, list
+  every TBD together at the top of the report, and say plainly that the
+  BRIEF is incomplete until they are filled.
+
+**Do not try to classify why the answer is missing.** A declined question, a
+skipped one, an unattended run, and a harness that returns a placeholder are
+indistinguishable from where you are standing, and they are all handled the
+same way. In particular: asking a question does not discharge this rule —
+**only an answer does.** In a headless run `AskUserQuestion` does not error;
+it returns a placeholder. Reading that as "the user skipped, so I'll fill it
+in myself" is the exact failure this rule exists to stop, and it is what
+happened on 2026-08-12 (4.67). If you asked and are about to write the
+section anyway, you are in this branch.
+
+Conflating the two states destroys the difference between *we looked and
+found none* and *nobody has looked* — and only the second is a reason to go
+back and ask. `references/brief-template.md` carries this rule by pointer
+and must never restate it: on 2026-08-12 the two sites disagreed about
+exactly this field, and a live run followed the template over this file
+(4.68).
+
 A BRIEF with honest gaps is a usable frozen record; one with invented
-context is a lie that later work is measured against. Never guess a
-constraint, an audience, or a domain landmine — those are exactly the fields
-whose fabrication costs the most.
+context is a lie that later work is measured against.
 
 - **Context** — who this is for, why now, what stage, solo or team.
 - **Source data / domain landmines** — the gotchas an implementer must know

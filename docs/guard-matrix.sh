@@ -280,6 +280,25 @@ fullcase "tell fires on legitimate use"     FAIL 'control' bash -c "printf '// <
 # SKILL.md is the regression: the skill still works, it just costs every
 # invocation the branches it will not read.
 fullcase "conditional waste over budget"    FAIL 'ratio' bash -c "for i in 1 2 3 4 5 6 7 8 9 10; do printf '\n## Target: bloat%s\n\n' \"\$i\" >> skills/audit/SKILL.md; for j in 1 2 3 4 5 6 7 8 9 10; do printf 'padding line %s\n' \"\$j\" >> skills/audit/SKILL.md; done; done"
+# 4.68 unsupplied-section rule, one home. Three ways this rots, and the
+# first is the defect as it actually shipped: the template grew its own
+# half of the rule, the halves disagreed, and shakedown 15 watched a live
+# run follow the template over the procedure.
+fullcase "template restates the seed rule"  FAIL 'seed-rule' bash -c "printf '\n- If the user cannot fill Domain landmines, record \"none known yet\".\n' >> skills/plan/references/brief-template.md"
+fullcase "canonical site drops a state"     FAIL 'seed-rule' bash -c "sed -e 's/none known yet/nothing recorded/g' skills/plan/references/mode-seed.md > t && mv t skills/plan/references/mode-seed.md"
+fullcase "template stops pointing"          FAIL 'seed-rule' bash -c "sed -e 's/mode-seed\.md/the seed procedure/g' skills/plan/references/brief-template.md > t && mv t skills/plan/references/brief-template.md"
+# 4.67 never-guess stays unconditional. Three ways this rots, and the first
+# is how it shipped: the rule nested inside the unsupplied-sections branch,
+# so a run that decided the branch did not apply took the rule with it.
+# Position is the contract, so re-nesting is the regression to catch.
+fullcase "never-guess re-nested in branch"  FAIL 'never-guess' bash -c "python3 - <<'EOF'
+p='skills/plan/references/mode-seed.md'; t=open(p,encoding='utf-8').read()
+i=t.index('**Before anything else: never guess.**'); j=t.index('Interview the user')
+b=t[i:j]; t=t[:i]+t[j:]
+open(p,'w',encoding='utf-8').write(t.replace('A BRIEF with honest gaps', b+'A BRIEF with honest gaps',1))
+EOF"
+fullcase "every-path clause dropped"        FAIL 'never-guess' bash -c "sed -e 's/every path through this mode/REDACTED/' skills/plan/references/mode-seed.md > t && mv t skills/plan/references/mode-seed.md"
+fullcase "deriving carve-out dropped"       FAIL 'never-guess' bash -c "sed -e 's/Deriving is not guessing/REDACTED/' skills/plan/references/mode-seed.md > t && mv t skills/plan/references/mode-seed.md"
 
 echo
 # 4.55a: name a mid-run tree change. Not a failure — every case above read

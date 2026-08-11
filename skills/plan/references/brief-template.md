@@ -75,8 +75,11 @@ order. Be direct, push back where I'm wrong, and don't be sycophantic.
 ```
 
 Notes for the skill:
-- If the user can't fill "Domain landmines" yet, that is itself a finding —
-  record "none known yet; expect to discover during <phase>" rather than
-  omitting the section.
+- A section the user has not filled — Domain landmines included — is handled
+  by the unsupplied-sections rule in `mode-seed.md`, which distinguishes
+  *asked and nothing yet* from *not supplied at all*. Follow it there; do
+  not restate it here. This note used to carry its own half of that rule,
+  the two halves disagreed, and a live run followed this file over the
+  procedure (4.68).
 - The final line's directness instruction is load-bearing: it licenses the
   gate. Never soften it.

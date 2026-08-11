@@ -20,7 +20,8 @@
 #   23 marked counts match derivations    24 eval isolation named at every site
 #   25 owed-markers name a live carrier   26 no mode section left without a procedure
 #   27 plugin manifests agree with pack  28 startup description budget
-#   29 conditional-branch waste per skill
+#   29 conditional-branch waste per skill  30 unsupplied-section rule has one home
+#   31 never-guess rule stays unconditional
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -866,6 +867,59 @@ if [ -x scripts/conditional-ratio.sh ] || [ -f scripts/conditional-ratio.sh ]; t
     echo "FAIL ratio: scripts/conditional-ratio.sh did not run"
     fail=1
   fi
+fi
+
+# 30. The unsupplied-section rule has exactly ONE home (4.68). mode-seed.md
+#     and brief-template.md each carried half of it and the halves
+#     disagreed — the procedure said write `TBD — not supplied at seed
+#     time`, the template said record "none known yet" instead of omitting
+#     the section. A session reaches the template THROUGH the procedure
+#     (mode-seed.md cites it), so it reads both and gets two instructions
+#     for one field; shakedown 15 watched a live run follow the template.
+#     Same class as 4.52, where two files shipped contradictory grading
+#     rules and every multi-keyword expected was mis-graded. The canonical
+#     site must hold BOTH states; the template must hold NEITHER and point
+#     instead. Token-presence only, stated honestly (as §22): this makes a
+#     silent RE-STATEMENT loud, and cannot prove the two agree in meaning.
+seed_ms=skills/plan/references/mode-seed.md
+seed_bt=skills/plan/references/brief-template.md
+if [ -f "$seed_ms" ] && [ -f "$seed_bt" ]; then
+  for tok in 'TBD — not supplied at seed time' 'none known yet'; do
+    grep -qF "$tok" "$seed_ms" \
+      || { echo "FAIL seed-rule: $seed_ms no longer states '$tok' — the canonical unsupplied-section rule must carry BOTH states, or the template's half becomes load-bearing again"; fail=1; }
+    grep -qF "$tok" "$seed_bt" \
+      && { echo "FAIL seed-rule: $seed_bt restates '$tok' — it must point at mode-seed.md, not carry a second copy that can drift (4.68)"; fail=1; }
+  done
+  grep -qF 'mode-seed.md' "$seed_bt" \
+    || { echo "FAIL seed-rule: $seed_bt does not cite mode-seed.md — a pointer that stops pointing is how the two halves diverged"; fail=1; }
+else
+  echo "FAIL seed-rule: $seed_ms or $seed_bt is missing — the unsupplied-section agreement check cannot run"; fail=1
+fi
+
+# 31. The never-guess rule stays UNCONDITIONAL (4.67). It shipped nested
+#     inside mode-seed.md's "when nobody can answer" paragraph, so a
+#     headless run that decided the branch did not apply to it took the
+#     never-guess rule out of scope too — and invented a volume, a cadence
+#     and a domain landmine, the last being the field the rule names as
+#     costliest to fabricate. Position IS the contract here: a rule that
+#     binds on every path must be read before the branch that does not.
+#     Same floor-erosion class as §17/§19/§21/§22, and checked the only way
+#     prose position can be — by line order. It cannot prove the rule is
+#     obeyed; only that it has not been re-nested.
+if [ -f "$seed_ms" ]; then
+  ng="$(grep -nEi 'never (guess|invent)' "$seed_ms" | head -1 | cut -d: -f1)"
+  br="$(grep -nF 'Unsupplied sections' "$seed_ms" | head -1 | cut -d: -f1)"
+  if [ -z "$ng" ]; then
+    echo "FAIL never-guess: $seed_ms no longer states a never-guess rule at all (4.67)"; fail=1
+  elif [ -z "$br" ]; then
+    echo "FAIL never-guess: $seed_ms no longer has the 'Unsupplied sections' block — §30 and §31 are both anchored on it"; fail=1
+  elif [ "$ng" -ge "$br" ]; then
+    echo "FAIL never-guess: $seed_ms states never-guess at line $ng, AFTER the unsupplied-sections block at line $br — it has been re-nested inside the branch it escaped in 4.67"; fail=1
+  fi
+  grep -qF 'every path through this mode' "$seed_ms" \
+    || { echo "FAIL never-guess: $seed_ms no longer says the rule binds on every path — without that clause a reader re-scopes it to one branch (4.67)"; fail=1; }
+  grep -qEi 'deriving is not guessing' "$seed_ms" \
+    || { echo "FAIL never-guess: $seed_ms dropped the deriving-is-not-guessing carve-out — suppressing landmines read out of the source is a regression, not a fix (4.67)"; fail=1; }
 fi
 
 if [ "$fail" -eq 0 ]; then
