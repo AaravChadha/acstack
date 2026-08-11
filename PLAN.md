@@ -1953,7 +1953,36 @@ reordered, if any.
   honesty) and is shown catching a seeded defect in a fixture skill;
   `/audit`'s description grows by less than 40 chars.
 
-- [ ] **4.63** Add an unfamiliar-repo mode to `/resume`. **Scheduled by 4.59**
+- [x] **4.63** *(Done 2026-08-12. **Shipped as a MODE; description
+  322 -> 361 chars (+39), and `/resume` sits at 10 wasted lines, far under
+  4.61's 40 threshold.** `references/mode-cold.md` replaces the doc-triad
+  reads with README, manifest, layout, SHAPED git history (activity and
+  ownership, not a commit list), CI, and the config surface. The default
+  path now hands off explicitly — all three documents missing means an
+  unfamiliar repo, not a broken one — because a mode nothing routes to is
+  a mode nobody reaches.
+  **The mode is defined by what it REFUSES**, and both prohibitions are
+  controlled: no scaffolding, and no invented "next 3 tasks" list. A
+  stranger's repo is where a confident invented plan does the most damage,
+  because it reads as knowledge and is a guess. `no recorded rationale` is
+  the `/why` stance applied to structure.
+  **Demonstrated live, headless, against a blind no-doc-triad venue**
+  (`~/shakedown-13/venue-cold`, a small Python CLI with README, manifest,
+  src, tests, CI and two commits). Fact-based discriminators:
+  **file count 7 -> 7**, and no BRIEF/PLAN/JOURNAL/CLAUDE.md created — no
+  scaffolding. It produced the orientation brief and **offered two options
+  rather than listing invented tasks**.
+  **It also found a defect I had put in the venue by accident:**
+  `pyproject.toml` declares `tempo.cli:main` and the README says
+  `python -m tempo`, but the code lives in `src/` — so both documented
+  entry points would fail. That is the reference's own "a broken quickstart
+  is the most useful thing you can report on day one" rule firing on an
+  unplanted inconsistency.
+  **Honest scope:** the literal phrase `no recorded rationale` was not
+  exercised, because the venue posed no why-question. What was demonstrated
+  is the absence of invention, not the presence of that sentence.
+  controls 110 -> 111, shown failing when the no-scaffolding rule is
+  removed.)* Add an unfamiliar-repo mode to `/resume`. **Scheduled by 4.59**
   (2026-08-11) as a MODE: 4 independent sources ship codebase onboarding,
   and `/resume` already owns "get oriented in five minutes" but assumes the
   BRIEF/PLAN/JOURNAL triad, which an unfamiliar repo does not have.

@@ -1,6 +1,6 @@
 ---
 name: resume
-description: Resume a project in five minutes - read BRIEF/PLAN/JOURNAL plus git state, deliver a short where-we-are brief, divergence flags (uncommitted work, unjournaled commits, acceptance drift), and the next three unblocked tasks. Use at session start or when the user asks where were we, what's next, or to catch up on a project.
+description: Resume a project in five minutes - read BRIEF/PLAN/JOURNAL plus git state, deliver a short where-we-are brief, divergence flags (uncommitted work, unjournaled commits, acceptance drift), and the next three unblocked tasks. Use at session start or when the user asks where were we, what's next, to catch up on a project, or to get oriented in an unfamiliar repo.
 argument-hint: "[notes]"
 allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git status:*), Bash(git rev-parse:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(gh issue list:*)
 ---
@@ -56,7 +56,9 @@ about the wrong product is worse than no answer (conduct rule 8).
    `journal-commit-format`.
 2. BRIEF.md, PLAN.md, JOURNAL.md (legacy names per the principles block).
    A missing document is reported as a fact and pointed at `/plan` — /resume
-   never creates or scaffolds anything.
+   never creates or scaffolds anything. **All three missing → this is an
+   unfamiliar repo, not a broken one: switch to `references/mode-cold.md`
+   rather than reporting an empty brief.**
    **Retrieve, don't ingest.** Once JOURNAL.md is past roughly 500 lines,
    stop reading it whole: read its blockquote and TL;DR, then its `###`
    entry headings, then fetch the FULL text of only the newest entry (plus
@@ -105,6 +107,14 @@ is still listed, flagged as `no acceptance recorded` — the sibling of
 `/do`'s stop on the same gap. Do not invent one to fill the column: a task
 whose done-condition is unwritten is a real finding about the plan, and
 `/plan-review` or `/triage` is where it gets fixed.
+
+## Mode: cold — no doc triad
+
+Full procedure: `references/mode-cold.md` — read it when BRIEF/PLAN/JOURNAL
+are all absent, and not otherwise. It replaces the document reads with
+README, manifest, layout, shaped git history and CI, and it forbids the
+two things a stranger's repo punishes: scaffolding, and a "next 3 tasks"
+list invented from nothing.
 
 ## Tickets mode (`tracking: tickets`)
 

@@ -633,6 +633,24 @@ else
   bad "scripts/count-check.sh missing — marked counts have no control"
 fi
 
+# --- /resume cold mode: the two prohibitions are the point (4.63) ---
+# The mode's value is what it REFUSES to do in a stranger's repo. A
+# reference that keeps its reading list but loses "do not scaffold" or
+# "do not invent a task list" is worse than none: it reads as permission.
+if [ ! -f skills/resume/references/mode-cold.md ]; then
+  bad "4.63: /resume cold-mode reference missing"
+elif ! grep -q 'references/mode-cold.md' skills/resume/SKILL.md; then
+  bad "4.63: /resume no longer cites the cold mode — it is stranded"
+elif ! grep -qi 'do not scaffold' skills/resume/references/mode-cold.md; then
+  bad "4.63: the cold mode lost its no-scaffolding prohibition — in a stranger's repo that is the one thing it must refuse"
+elif ! grep -qi 'next 3 unblocked' skills/resume/references/mode-cold.md; then
+  bad "4.63: the cold mode no longer forbids the invented next-3 list — a guessed plan reads as knowledge"
+elif ! grep -qi 'no recorded rationale' skills/resume/references/mode-cold.md; then
+  bad "4.63: the cold mode lost the no-recorded-rationale stance"
+else
+  ok "4.63 cold mode cited and keeps both prohibitions plus the /why stance"
+fi
+
 # --- /ship changelog + /eval-spec Goodhart references (4.64, 4.65) ---
 # Both are reference files, so the failure mode is silent: a pointer that
 # stops resolving, or a reference that loses the rule it exists for. §8
