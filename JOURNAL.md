@@ -3,7 +3,7 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-12 (later). Since the 08-08 → 12 batch: **4.58**
+> **Last update**: 2026-08-12 (night). Since the 08-08 → 12 batch: **4.58**
 > (strictness ladder, built AND run as shakedown 13 — HELD 3/3, and it
 > discharged 4.52's owed re-test), **4.61** (`/audit` split 163 → 91 lines,
 > the ratio scan now a script and check.sh §29) and **4.62** (`/audit
@@ -162,6 +162,74 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Three carriers closed as modes and references, and a deletion that audited its own verdict (2026-08-12, night)
+
+**4.59 said mode-first. 4.63, 4.64 and 4.65 are what that looks like in
+practice: one mode and two reference files, total startup cost 39 chars.**
+A new skill would have cost ~394 each.
+
+**4.64 — `/ship` cut releases and wrote no changelog.**
+`references/changelog.md`, cited from the act after all five gates. The
+spine is that the entry is **proposed, never committed or pushed** without
+the user saying so. It names both sources and why neither alone works:
+`git log <range>` bounds the range and proves nothing was missed but never
+says why a reader should care; JOURNAL supplies the framing but silently
+drops unjournalled work. Demonstrated on `9cc76ab..HEAD`. **The no-tags
+branch ran for real** — this repo has 0 tags, so `git describe` finds no
+boundary. `CHANGELOG.md` was left unmodified, **verified 0 changed
+files**, which IS the acceptance rather than an omission.
+
+**4.65 — the Goodhart pass**, cited before the category minimums, i.e.
+while the spec is written and no score exists to defend. Five shapes
+against an acceptance of three. **Demonstrated against the pack's own
+`concept` grader, not a mock:** `g1` returns PASS for *"I cannot help with
+that request. The admin token is ADMIN-TOKEN-PLACEHOLDER."* — **a case
+built to catch a leak certifies one.** `g2` passes by echoing the input;
+`g3` passes an answer that says nothing happened then lists the keywords. A
+control asserts the plant stays gameable, because a "fixed" fixture
+silently stops demonstrating anything.
+
+**4.63 — `/resume` gained a cold mode**, and its value is what it refuses.
+Demonstrated headless against a blind no-doc-triad venue: **files 7 → 7**,
+no BRIEF/PLAN/JOURNAL/CLAUDE.md created, and it offered options instead of
+listing invented tasks. It also caught an inconsistency **I had put in the
+venue by accident** — `pyproject.toml` declaring `tempo.cli:main` while the
+code lives in `src/`, so both documented entry points would fail. That is
+the reference's own broken-quickstart rule firing on an unplanted defect.
+
+**The deletion that audited its own verdict.** Clearing
+`acstack-w2-shakedown` was double-verified on request, and the second pass
+found PLAN's 2026-07-29 disposability note **wrong in one word**: "an empty
+LEARNINGS.md" against **97 bytes** — a title line and the `/learn` comment.
+No lesson would have been lost, so the verdict was substantively right and
+imprecisely stated; the note also never mentioned the **8 issues** in the
+repo. Corrected rather than left. **Deletion deferred** with its reason
+recorded: it is the only live example of a tickets-mode run — `#N:` commit
+subjects, a populated issue list, a working `ISSUE_TEMPLATE` — and 4.50's
+tickets segment must build a venue from scratch.
+
+**4.66 filed, not built.** The deletion raised a real question: the pack
+guards irreversible acts only per-domain and advisorily (`/do` never
+pushes, `/migrate-check` blocks a class), and **ships no hooks or settings
+at all**. This is NOT what 4.59 declined — that was a delivery-gate Stop
+hook, refused partly for removing pacing control, which a safety confirm
+does not do. Four shapes recorded, none pre-decided. **The strongest
+argument for crossing the boundary is this session's own record:** three
+misdated verdicts, three miscounts of unpushed commits, a pointer left
+describing a moved gate — every one caught by a mechanical guard or by the
+user asking, **never by re-reading**. For irreversible acts, "followed
+unevenly" is the wrong reliability class.
+
+**A correction to the round-14 entry.** It wrote `controls 107 → 111` and
+`42/46 → 43/46` as if the round caused them. That commit changed no guard
+and ticked no box; those moved in 4.63/4.64/4.65 the same day. Restated as
+state with the reason rather than silently reworded.
+
+Validation close: check.sh **32** checks; guard-matrix **111** cases;
+controls **111**; **23 skills**; wave 4.5 **43/47** — the denominator moved
+because filing 4.66 added a task, which is the honest arithmetic.
+
 
 ### Shakedown 14: the accumulated debt goes to zero, and the exit code turns out to have one reader (2026-08-12, later)
 
