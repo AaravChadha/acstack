@@ -94,6 +94,16 @@ about the wrong product is worse than no answer (conduct rule 8).
    is set NOW, before code, while nobody is tempted to set it at whatever
    the system happens to score.
 
+## Goodhart pass — before the spec is done
+
+`references/goodhart.md`. One question per case: **write the worst answer
+that still passes it.** If that answer would not be acceptable to ship,
+the case is gameable and the CASE is what changes — while no score exists
+and nobody has an interest in the number. Five shapes with a detection
+question each; the refusal-that-isn't is the one that bites hardest,
+because a disclaimer followed by compliance passes a `concept` grader
+looking for the disclaimer.
+
 ## Category minimums
 
 Floors the spec states and the dataset must meet. Default floor set —

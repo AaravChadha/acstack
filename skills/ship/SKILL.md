@@ -124,6 +124,13 @@ direct` a missing `gh` blocks nothing: check the precondition where it
 applies, and on failure name which one failed and stop with the branch
 pushed.
 
+**Then propose the changelog entry** — `references/changelog.md`. `/ship`
+cut releases and wrote none until 4.64. It is PROPOSED and never committed
+or pushed without the user saying so: a changelog is outward-facing text
+with their name on it. The reference carries where the facts come from
+(commits bound the range, the journal supplies the framing — neither alone
+is enough) and what never goes in.
+
 Under `push: branch-pr`, the PR body is report-shaped: what-and-why lede,
 a per-gate evidence table (the test/eval numbers, the doc checks), and an
 out-of-scope line. Under `push: direct` the same content is delivered as

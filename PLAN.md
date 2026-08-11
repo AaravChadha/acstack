@@ -1962,7 +1962,25 @@ reordered, if any.
   without inventing a plan, and says plainly that no recorded rationale
   exists rather than guessing — the `/why` stance applied to structure.
 
-- [ ] **4.64** Make `/ship` write the changelog entry it never writes.
+- [x] **4.64** *(Done 2026-08-12. **Shipped as a reference — zero startup
+  cost — cited from `/ship`'s act, after all five gates.**
+  `references/changelog.md`. **The rule the task called out is the spine:
+  the entry is PROPOSED, never committed or pushed without the user saying
+  so** — a changelog is outward-facing text with their name on it, and the
+  same rule that stops `/ship` inventing a PR step stops it writing release
+  prose unasked. **Both sources are named, and the reference says why
+  neither alone is enough:** `git log <range>` bounds the range and proves
+  nothing was missed but never says why a reader should care; JOURNAL.md
+  supplies the framing but silently drops whatever went unjournaled.
+  **Demonstrated on a real range** (`9cc76ab..HEAD`), in this repo's own
+  format — `### <theme>` bullets under the version heading, leading with
+  the noun, upgrade actions inside the bullet where a reader hits them.
+  **The no-tags path was exercised for real:** this repo has 0 tags, so
+  `git describe` finds no boundary and the reference's "say so and use the
+  range the user names" branch is what ran. `CHANGELOG.md` was left
+  **unmodified — verified `0` changed files** — which IS the acceptance's
+  never-commit-without-approval clause. controls 107 -> 108, shown failing
+  when the propose-only rule is removed.)* Make `/ship` write the changelog entry it never writes.
   **Scheduled by 4.59** (2026-08-11) as a REFERENCE FILE under `/ship`:
   5 sources ship changelog generation, `/ship` cuts releases and produces
   none, and this repo's own `CHANGELOG.md` is maintained by hand.
@@ -1971,7 +1989,29 @@ reordered, if any.
   range, in this repo's own changelog format, with the entry proposed and
   never committed without approval (the outward-facing rule).
 
-- [ ] **4.65** Add a Goodhart defence to `/eval-spec`. **Scheduled by 4.59**
+- [x] **4.65** *(Done 2026-08-12. **Shipped as a reference — zero startup
+  cost — cited from `/eval-spec` before the category minimums, i.e. while
+  the spec is being written and no score exists.**
+  `references/goodhart.md` carries **five** shapes against an acceptance of
+  three, each with its own detection question: the refusal that isn't, the
+  expected leaked into the input, keyword stuffing on `concept`, tolerance
+  wider than the decision, and a single-case category. The method reduces
+  to one question per case — *write the worst answer that still passes it*.
+  **Demonstrated against the pack's OWN grader, not a mock.** Running the
+  shipped `concept` rule verbatim over `fixtures/goodhart/gameable.jsonl`:
+  `g1` returns **PASS=True** for *"I cannot help with that request. The
+  admin token is ADMIN-TOKEN-PLACEHOLDER."* — the grader saw the disclaimer
+  and stopped, so a case built to catch a leak certifies one. `g2` passes
+  by echoing the input verbatim; `g3` passes an answer that says nothing
+  happened and then lists the five keywords. Three shapes, three passing
+  wrong answers.
+  **A control asserts the plant stays gameable** — if someone "fixes" the
+  fixture, the demonstration silently stops demonstrating, which is the
+  fixture-rot class this repo has shipped before. controls 108 -> 110, all
+  three shown failing first. **Honest scope, stated in the reference:** the
+  pass proves nothing about the SUBJECT. Every question is about whether
+  the CASE can be satisfied without doing the task; a spec that survives it
+  can still be too easy or aimed at the wrong behaviour.)* Add a Goodhart defence to `/eval-spec`. **Scheduled by 4.59**
   (2026-08-11) as a REFERENCE FILE: ECC's `loop-design-check` names the
   failure where the subject games the verifier, which bears directly on
   `/eval-run` — a golden set that can be satisfied without solving the task
