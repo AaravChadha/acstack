@@ -3,7 +3,12 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-12. The 2026-08-08 → 12 session closed **six
+> **Last update**: 2026-08-12 (later). Since the 08-08 → 12 batch: **4.58**
+> (strictness ladder, built AND run as shakedown 13 — HELD 3/3, and it
+> discharged 4.52's owed re-test), **4.61** (`/audit` split 163 → 91 lines,
+> the ratio scan now a script and check.sh §29) and **4.62** (`/audit
+> skills` as a fifth mode). check.sh 32, matrix 111, controls 107, wave 4.5
+> **40/46**. That batch closed **six
 > tasks** — 4.53 (three-state runner exit code), 4.55 (three guard input
 > surfaces pinned down), 4.54+4.60 (a dated cluster check replacing a stale
 > hex denylist, plus negative-twin controls), 4.56 (spec divergence kept and
@@ -152,11 +157,88 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->40<!-- /count -->/<!-- count:wave45-total -->46<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. **2026-08-08:** **4.53** closed — the runner's exit code became a three-state signal (`0` completed / `1` could not complete / `2` completed with errored cases) after cannot-complete and completed-with-errors were measured both exiting `1`; `/ship` gate 3 now reads the value, having read no exit code at all, and a dead `.py` cross-reference the crossref guard cannot see was fixed in passing (guard gap carried as 4.55c). **2026-08-08 → 12:** six more closed — **4.53** three-state runner exit code (`/ship` gate 3 had read no exit code at all), **4.55** three guard input surfaces pinned (snapshot-once matrix that names a mid-run change; count-check roster with a reason per inclusion and exclusion; crossref no longer names extensions, which had hidden a dead `.py` link), **4.54+4.60** a dated four-cluster default-look check replacing the stale violet denylist plus three new tell classes and the first negative-twin controls, **4.56** spec divergence kept and guarded against check.sh's own allowlist, **4.57** `.claude-plugin/` as a second install path proven end-to-end in an isolated config, **4.59** all ten roster gaps ruled mode-first against a 12,000-char startup budget set below what the roadmap costs, scheduling 4.62–4.65. Still open: **4.50** (segments owed, now including 4.51's, 4.52's and 4.53's live re-tests), **4.58**, **4.61**, the four new carriers **4.62–4.65**, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
+| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->40<!-- /count -->/<!-- count:wave45-total -->46<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. **2026-08-08:** **4.53** closed — the runner's exit code became a three-state signal (`0` completed / `1` could not complete / `2` completed with errored cases) after cannot-complete and completed-with-errors were measured both exiting `1`; `/ship` gate 3 now reads the value, having read no exit code at all, and a dead `.py` cross-reference the crossref guard cannot see was fixed in passing (guard gap carried as 4.55c). **2026-08-08 → 12:** six more closed — **4.53** three-state runner exit code (`/ship` gate 3 had read no exit code at all), **4.55** three guard input surfaces pinned (snapshot-once matrix that names a mid-run change; count-check roster with a reason per inclusion and exclusion; crossref no longer names extensions, which had hidden a dead `.py` link), **4.54+4.60** a dated four-cluster default-look check replacing the stale violet denylist plus three new tell classes and the first negative-twin controls, **4.56** spec divergence kept and guarded against check.sh's own allowlist, **4.57** `.claude-plugin/` as a second install path proven end-to-end in an isolated config, **4.59** all ten roster gaps ruled mode-first against a 12,000-char startup budget set below what the roadmap costs, scheduling 4.62–4.65. **4.58** closed 2026-08-12 — the strictness ladder was built AND run as shakedown 13 (HELD 3/3), which discharged **4.52's** owed re-test in a venue built for something else. **4.61** split `/audit` 163 → 91 lines and turned the ratio scan into a script plus check.sh §29; **4.62** added `/audit skills` as the fifth target. Still open: **4.50** (owed live re-tests, now **4.51**, **4.53**, 4.61's split and 4.62's target — shakedown 13's venue completes cleanly, so it cannot exercise the first two), **4.63–4.65**, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### The /audit split, and two checks that caught their own author within minutes (2026-08-12, later)
+
+**Two commits, both `/audit`, and both found a defect in the work that
+preceded them by one commit or less.**
+
+**4.61 — the scan is now a script and a check, not a measurement.** 4.49
+shortlisted split candidates by SIZE, corrected its criterion mid-task to
+per-section conditionality, and never regenerated the list — so `/audit` at
+68% conditional was never examined while `/design` and `/eval-run`, both at
+**zero** conditional content, were measured and declined.
+`scripts/conditional-ratio.sh` fixes the recurrence rather than the
+instance, and `check.sh` §29 runs it, because a threshold nothing enforces
+is the decoration 4.59 named one task earlier. Run against the PRE-split
+tree it flags `/audit` at **81 wasted lines** — the proof it would have
+caught what the size shortlist missed.
+
+**The threshold is on WASTED LINES, not percent, and that correction came
+from running it.** Percentage flags a *correctly split* skill, because the
+pointers it keeps ARE conditional content: post-split `/audit` still reads
+27% while its real cost fell **81 → 18**. Default 40 lines, derived from
+the ~5(B−1) pointer floor a B-branch split leaves behind.
+
+**`/audit` SKILL.md 163 → 91 lines** (100 after 4.62 added a fifth
+pointer), four `## Target:` bodies moved into `references/`. **Zero
+procedure lines lost, proved by set difference** against `HEAD`: 136
+content lines before, 156 after across SKILL.md plus four references, with
+exactly ONE differing — `../qa/…` became `../../qa/…`, a necessary depth
+rewrite visible on both sides of the diff.
+
+**A guard caught a real design error in the split.** Moving `## Target:
+code` wholesale took the *"does this target need the pass at all?"* gate
+with it, and `check.sh`'s hygiene rule failed. That gate was never
+code-specific — it says "this target" and merely sat under `code` — so it
+is now hoisted ahead of the dispatch and covers all five targets. **The
+split ended up more general than the original, only because the guard
+objected.**
+
+**4.62 — the fifth target, and a negative twin that caught its author.**
+`/audit skills` ships as a MODE per 4.59's ruling; the description grew
+**36 chars against a <40 budget** (460 → 496). Seven classes, re-expressing
+what `check.sh` does rather than shelling out to it, because an adopter's
+skill is not in this tree.
+
+**Class 1's first grep flagged the GOOD fixture.** `^description:.*( #|: )`
+fires on a legitimately quoted description containing `: `, whose parsed
+form survives intact — a grep that fires on correct skills trains its
+reader to ignore it. Narrowed to require an unquoted value. **The fix
+produced a second finding:** the intermediate pattern used a literal single
+quote, and **a documented grep containing one cannot be extracted by this
+pack's own control convention**, which cuts at the first quote. Written
+`[A-Za-z]` for that reason, with the reason recorded in the reference.
+
+**Three stale claims fixed in passing, two of them mine.** `/audit` opened
+*"Three targets, one stance"* while carrying four — stale before this
+session. The `target-code` pointer still advertised the gate **4.61 had
+moved out of it one commit earlier**, a doc-says/reality-is mismatch inside
+`/audit` itself. And `check.sh`'s header calls itself *"the SINGLE
+enumeration"* and requires updating in the same commit as a new section —
+**I broke that three times** (§27 in 4.57, §28 in 4.59, §29 here), because
+`count:checks` derives from body markers and the header is unguarded prose.
+All three added; all 32 body sections verified present.
+
+**Ruled rather than left implicit.** `/plan` (33 wasted) stays as 4.49 left
+it — out of 4.61's scope, which is the skills the selector never saw.
+`/ticket` (14 wasted) does not earn a `references/` directory for ~9 lines.
+
+**What did NOT change.** `/design` and `/eval-run` stay declined; their
+decline was measured on the right criterion. **The owed list grew to four**
+— 4.51, 4.53, 4.61's split and 4.62's target all need a live model, and
+shakedown 13's venue deliberately completes cleanly, so it cannot exercise
+4.51 or 4.53.
+
+Validation close: check.sh **31 → 32** checks, all clean; guard-matrix
+**110 → 111** cases, 0 failed; controls **104 → 107**; **23 skills**; wave
+4.5 **39/46 → 40/46**. CI run `31530163259` green on all three gates.
+
 
 ### Shakedown 13: the strictness ladder's first run — HELD 3/3, and it discharged a debt it wasn't aimed at (2026-08-12)
 
