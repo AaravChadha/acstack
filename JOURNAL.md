@@ -3,7 +3,14 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-07 (later). That session closed **4.51** (the
+> **Last update**: 2026-08-12. The 2026-08-08 → 12 session closed **six
+> tasks** — 4.53 (three-state runner exit code), 4.55 (three guard input
+> surfaces pinned down), 4.54+4.60 (a dated cluster check replacing a stale
+> hex denylist, plus negative-twin controls), 4.56 (spec divergence kept and
+> documented), 4.57 (**a second install path: `.claude-plugin/`, proven
+> end-to-end in an isolated config**), and 4.59 (mode-first roster ruling
+> against a startup budget that bites). check.sh 29 → 31, matrix 106 → 110,
+> controls 86 → 104. The session before it closed **4.51** (the
 > non-regression gate now blocks on coverage collapse, not only a falling
 > pass rate) and **4.52** (`concept` expecteds split on commas — two files
 > had shipped contradictory rules, so every multi-keyword expected in the
@@ -103,13 +110,27 @@
   were measured BOTH exiting `1`, the template contradicted itself three
   lines apart, and `/ship`'s gate 3 — the consumer the contract named —
   read no exit code at all.
-  **An outside survey on 2026-08-07 added 4.54–4.61**: the AI-default
-  palette denylist has gone stale, count-check's argument list is an
-  unstated contract (with guard-matrix's live-tree read folded in),
-  conformance posture against the Agent Skills spec, plugin packaging, a
-  prompt-strictness ladder for shakedowns, a ruling on the surveyed skill
-  gaps, `/design-audit`'s missing tell classes, and the split candidates
-  4.49's size-based selector never saw — `/audit` at 66% conditional.
+  **The 2026-08-07 survey's carriers 4.54–4.61 are now six-sevenths
+  closed** (2026-08-08 → 12): **4.55** pinned three guard input surfaces —
+  the matrix snapshots the tree once and NAMES a mid-run change instead of
+  reporting phantom failures, count-check's roster is stated with a reason
+  per inclusion and exclusion, and the crossref guard no longer names
+  extensions (it was hiding a dead `.py` link); **4.54+4.60** replaced the
+  stale violet hex denylist with a dated four-cluster check (two of three
+  signals to fire) and gave `/design-audit` typography, component-default
+  and imagery tells plus a numeric concentration threshold and the first
+  negative-twin controls; **4.56** kept `argument-hint` and
+  `disable-model-invocation` — the latter is load-bearing, since check.sh
+  derives the typed-only roster from it — with the divergence stated in
+  README and guarded against the allowlist; **4.57** shipped
+  `.claude-plugin/`, proven end-to-end in an isolated `CLAUDE_CONFIG_DIR`
+  (all 23 skills enumerated by `plugin details`, not inferred from install
+  output); **4.59** ruled all ten surveyed roster gaps mode-first and set a
+  startup budget of 12,000 chars that is deliberately BELOW what the
+  roadmap costs, scheduling **4.62–4.65** as modes and references rather
+  than skills. **Still open from that batch: 4.58** (prompt-strictness
+  ladder, designed into 4.50) and **4.61** (the `/audit` split, which now
+  wants to land with 4.62 — same file).
   4.3 and 4.4 stay adopter-gated. Wave 5 still needs a spec pass before
   code — 5.1–5.4 carry no acceptance lines.
 
@@ -131,11 +152,145 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->37<!-- /count -->/<!-- count:wave45-total -->46<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. **2026-08-08:** **4.53** closed — the runner's exit code became a three-state signal (`0` completed / `1` could not complete / `2` completed with errored cases) after cannot-complete and completed-with-errors were measured both exiting `1`; `/ship` gate 3 now reads the value, having read no exit code at all, and a dead `.py` cross-reference the crossref guard cannot see was fixed in passing (guard gap carried as 4.55c). Still open: **4.50** (segments owed, now including 4.51's, 4.52's and 4.53's live re-tests), **4.54–4.61**, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
+| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->37<!-- /count -->/<!-- count:wave45-total -->46<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. **2026-08-08:** **4.53** closed — the runner's exit code became a three-state signal (`0` completed / `1` could not complete / `2` completed with errored cases) after cannot-complete and completed-with-errors were measured both exiting `1`; `/ship` gate 3 now reads the value, having read no exit code at all, and a dead `.py` cross-reference the crossref guard cannot see was fixed in passing (guard gap carried as 4.55c). **2026-08-08 → 12:** six more closed — **4.53** three-state runner exit code (`/ship` gate 3 had read no exit code at all), **4.55** three guard input surfaces pinned (snapshot-once matrix that names a mid-run change; count-check roster with a reason per inclusion and exclusion; crossref no longer names extensions, which had hidden a dead `.py` link), **4.54+4.60** a dated four-cluster default-look check replacing the stale violet denylist plus three new tell classes and the first negative-twin controls, **4.56** spec divergence kept and guarded against check.sh's own allowlist, **4.57** `.claude-plugin/` as a second install path proven end-to-end in an isolated config, **4.59** all ten roster gaps ruled mode-first against a 12,000-char startup budget set below what the roadmap costs, scheduling 4.62–4.65. Still open: **4.50** (segments owed, now including 4.51's, 4.52's and 4.53's live re-tests), **4.58**, **4.61**, the four new carriers **4.62–4.65**, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Six tasks closed, a second install path proven end-to-end, and a budget set below what the roadmap costs (2026-08-08 → 12)
+
+**Eight commits across four days. 4.53, 4.55, 4.54+4.60, 4.56, 4.57, 4.59 —
+every one of the first three larger than its write-up, continuing the
+pattern.** Five CI runs, all green. The session's through-line: *the thing
+that reads a claim is where the defect lives*, not the claim.
+
+**4.53 — the write-up covered about half of one of four defects.** Filed as
+"the contract says nothing about completing with failures". Reality, derived
+from code: (1) `runner-template.md:263` ruled that a run whose every case has
+a record IS complete and `:267` returned `1` anyway — the code item 7 reserves
+for "could not complete", a contradiction three lines apart; (2) the Python
+block exited 1 **on errors** while the Node paragraph told its author to exit
+1 **"if the run could not complete"** — one file, two rules, so a Node runner
+exits 0 where the Python one exits 1; (3) the fixture still printed the exact
+sentence the template had repudiated; (4) **the largest — `/ship` gate 3 read
+no exit code at all.** Enumerated every exit-code mention across `skills/`,
+`docs/`, `README.md`: three hits, all in eval-run, none in `/ship`. Item 7
+had promised a protection to a consumer that never implemented it.
+**Verdict: three codes** — `0` completed and every case graded, `1` could not
+complete, `2` completed with N errored cases. This is 4.51's position one
+layer down: two values necessarily merge either "harness broke" with "subject
+degraded", or "degraded" with "ordinary bad score". `2` is non-zero so a
+zero/non-zero consumer still blocks. **Measured before: cannot-complete and
+completed-with-errors BOTH exited 1.** After: 1 / 2 / 0.
+
+**4.55 — three instances of one shape, and a fourth found while fixing it.**
+(a) `guard-matrix.sh` copied the LIVE tree per case; now snapshotted once into
+`$WORK/src` with `.git` stripped, plus a start/end hash that prints a NOTE —
+never a failure — if the tree moved. **Proven by ticking 4.55's own box WHILE
+the matrix ran**, moving `wave45-done` 31→32 against a JOURNAL marker still
+reading 31 — the exact inconsistency behind three phantom failures on
+2026-08-07. Result: `passed=107 failed=0` **plus the NOTE**. (b) count-check's
+file list was check.sh's argv and nothing said so; the roster now lives in
+`count-check.sh` with a reason per inclusion **and** per exclusion, no-args
+means the contracted set, and a marked count outside both rosters fails.
+(c) both crossref loops matched `\.(md|sh)`; they now require *an* extension
+without naming one. **The fourth instance: the `../` loop carried the same
+class**, so 4.53's own fix — rewriting a dead citation to `../eval-run/…` —
+was itself unverified until this task.
+
+**A retraction, and then its resolution.** I reported the snapshot change as
+"~7× faster, 4.1 s/case". A third run came in at **28.3 s/case** and the
+claim was retracted in writing: copying less was proven (`$SRC` measures
+**1.4M against an 18M repo**, 92% less per case), going faster was not.
+**Then CI settled it** — run `31270737987` did 109 cases *plus* check.sh
+*plus* shellcheck in **413s**, an upper bound of **3.8 s/case**. The third
+run was local contention (load 10–14, two editor renderers at 37.7% and
+14.2%). The speedup is real; **the laptop is not a timing instrument.** The
+retraction stands as written because it was the honest reading at the time.
+
+**4.54 + 4.60 — co-occurrence beats enumeration.** The `banned-palette`
+default was five violet hexes, which is not where generated design clusters
+any more. A longer list was rejected on this repo's own precedent — third
+appearance of the denylist class. The default is now a **dated cluster
+check**: four clusters, three independent signals each, **two of three
+co-occurring** to be a finding, with the review date printed and an
+instruction to move it or delete the table. A configured `palette:`
+suppresses clusters entirely. 4.60 added typography, component-default and
+imagery tells (all three previously at literal zero) and set the threshold as
+a **number** — three tells per surface, two per cluster.
+**Two findings worth keeping.** First, the escape hatch (skip `fixtures/`,
+`stories/`, …) **contradicts this pack's own controls**, which grep
+`fixtures/design-audit/` deliberately; the file now says so in a blockquote,
+because honouring the hatch in controls.sh would take every positive control
+dark while still printing `ok`. That is 4.52's shape, caught before shipping.
+Second, `ai_check` could only ever assert a hit, so it structurally could not
+see a detector that flags everything — new `ai_pair` asserts both directions
+across nine tells, and **three tells are declared entry points with no
+negative twin** rather than faked with a check that cannot fail.
+
+**4.56 — keep both fields, and guard the claim from the other side.**
+`disable-model-invocation` turned out **load-bearing**: `check.sh:513` derives
+the typed-only roster from it and fails if AGENTS.md's referral table
+disagrees, so stripping it deletes a guard. `skills-ref` is not installed
+here, so the 0/23 → 23/23 figure is carried from the survey and is **not**
+re-run by CI; instead a control derives the non-spec field set from check.sh's
+own frontmatter allowlist and fails if README omits any, or if the count stops
+being two.
+
+**4.57 — adopt the plugin path, demonstrated end-to-end.** Manifest schema
+read off the live CLI (`claude plugin init`, 2.1.170), never recalled. In an
+**isolated `CLAUDE_CONFIG_DIR`**: `marketplace add` → `install` → **`plugin
+details` enumerated all 23 skills by name.** The install message was not
+accepted as proof; the inventory was — the `/why` precedent. The live
+`~/.claude` was verified untouched before and after, because installing there
+would double-load skills already symlinked by `./setup`. check.sh §27 guards
+version/name/path drift; its name-mismatch branch fired on my own first draft,
+which grabbed the **owner's** name because the entry's name is the third
+`"name"` in the file.
+
+**4.59 — mode-first, against a budget that bites.** All ten surveyed items
+ruled: four scheduled (**4.62** `/audit skills`, **4.63** a `/resume` mode,
+**4.64** a `/ship` changelog reference, **4.65** an `/eval-spec` Goodhart
+reference), six declined with reasons. **Budget decided here: 12,000 chars
+total (~3,000 tokens), 600 per description**, enforced by check.sh §28.
+Baseline: 23 descriptions, **9,064 chars ≈ 2,266 tokens**, mean 394, max 510.
+Three figures exist for this quantity — mine, the survey's 2,301, and
+**~2,353 reported by `claude plugin details` itself** — and the tool's is what
+an adopter sees. **The cap is deliberately BELOW what the roadmap costs if
+every planned skill ships as a skill** (39 skills ≈ 15,400 chars). That is the
+ruling, not an oversight: a budget with headroom is decoration, which is how
+4.49 came to optimise a 212-line body against a 500 cap while this one grew
+unwatched.
+
+**Self-indicting, and the reason this entry spans four days.** Three verdicts
+(4.56, 4.57, 4.59) and both README claims were dated **2026-08-08** when they
+landed **2026-08-11/12** — I kept writing the session's opening date after the
+calendar moved. Found while gathering for this entry by diffing dated claims
+against `git log`. Same class as the three stale counts fixed on 2026-08-07:
+**a date is a claim, and nothing in the pack checks prose dates.** Corrected
+in `fdbd5db`; the 08-08 dates on 4.53/4.54/4.55/4.60 are correct and untouched.
+Also mine: two defects in my own new fixtures (a comment naming the tell
+tokens literally, tripping its own detector — the fixture-prose class again;
+and a control pointed at `ai-tells.md` as its own fixture, where a literal `;`
+in the documented pattern stopped `[^;]*` reaching the match), and a miscount
+of unpushed commits stated three times before being checked each time.
+
+**Eval classification.** No eval was run this session. The `/eval-run` fixture
+headline is **unchanged at 7/8 (87.5%)**; 4.53's error scenarios were seeded
+in scratch copies, never in the golden set, and no case was altered.
+
+**What did NOT change.** 4.3/4.4 remain adopter-gated. `/design` and
+`/eval-run` stay declined for splitting. 4.50 is still open and now carries
+live re-tests owed by **4.51, 4.52 and 4.53** under verification rule 6 —
+none of this session's behavioural fixes has been re-tested in a live venue.
+`~/shakedown-12/` is still on disk.
+
+Validation close: check.sh **29 → 31** checks, all clean; guard-matrix
+**106 → 110** cases, 0 failed; controls **86 → 104**; **23 skills**; wave 4.5
+**30/42 → 37/46** (the denominator moved because 4.59 scheduled four
+carriers). Five CI runs, all green, latest `31523289174`.
+
 
 ### An outside survey, three stale counts, and two carrier tasks that were both bigger than their write-ups (2026-08-07, later)
 
