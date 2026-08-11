@@ -813,6 +813,38 @@ if [ -f .claude-plugin/plugin.json ]; then
   done
 fi
 
+# 28. Startup description budget (4.59). Every skill's `description:` is
+#     loaded at EVERY session start, for every user, whether or not anything
+#     is invoked. It is the only budget in this pack that grows
+#     MONOTONICALLY, and it was unguarded until 2026-08-08 — while 4.49 spent
+#     a task optimising a body budget that sat at 212 lines against a 500
+#     cap, i.e. with 60% headroom. Caps are decided in PLAN 4.59, not here:
+#     12000 chars total (~3000 tok) and 600 per description. The total cap is
+#     deliberately BELOW what the current roadmap would cost if every planned
+#     skill shipped as a skill — that is the point, and 4.59 rules mode-first
+#     because of it. Chars, not tokens: chars are deterministic.
+BUDGET_TOTAL=12000
+BUDGET_ONE=600
+desc_tot=0
+for f in skills/*/SKILL.md; do
+  [ -f "$f" ] || continue
+  dl="$(awk '/^description:[[:space:]]/{s=$0; sub(/^description:[[:space:]]*/,"",s); print length(s); exit}' "$f")"
+  if [ -z "$dl" ]; then
+    echo "FAIL budget: $f has no single-line description: — the startup cost cannot be measured"
+    fail=1; continue
+  fi
+  desc_tot=$((desc_tot + dl))
+  if [ "$dl" -gt "$BUDGET_ONE" ]; then
+    echo "FAIL budget: $f description is $dl chars (cap $BUDGET_ONE) — one description must not eat the shared startup budget"
+    fail=1
+  fi
+done
+if [ "$desc_tot" -gt "$BUDGET_TOTAL" ]; then
+  echo "FAIL budget: skill descriptions total $desc_tot chars (cap $BUDGET_TOTAL, ~$((desc_tot/4)) tokens loaded at EVERY session start)"
+  echo "             Adding a skill is not free. Make it a mode of an existing skill, or trim."
+  fail=1
+fi
+
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
     echo "check.sh: no failures, but $skipped check(s) SKIPPED — coverage is incomplete"

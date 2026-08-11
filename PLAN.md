@@ -1911,6 +1911,45 @@ reordered, if any.
   same report shape as before the split — behavioural, so it owes a
   shakedown slot under verification rule 6 [owed: 4.50].
 
+- [ ] **4.62** Add `/audit skills` as a fifth mode — skill-authoring from the
+  verification side. **Scheduled by 4.59** (2026-08-08) as a MODE, not a
+  skill: the field's most-recurring verb across 8 independent sources, and
+  acstack already holds the methodology in AGENTS.md and `check.sh` rather
+  than in prose. **Startup cost of this choice: ~10 chars** on `/audit`'s
+  existing description (460 -> ~470) against ~394 for a new skill's
+  description — a mode costs one list item, a skill costs a permanent
+  roster entry. **Acceptance:** the mode audits a SKILL.md the way
+  `check.sh` does (frontmatter, budgets, reference resolution, allowed-tools
+  honesty) and is shown catching a seeded defect in a fixture skill;
+  `/audit`'s description grows by less than 40 chars.
+
+- [ ] **4.63** Add an unfamiliar-repo mode to `/resume`. **Scheduled by 4.59**
+  (2026-08-08) as a MODE: 4 independent sources ship codebase onboarding,
+  and `/resume` already owns "get oriented in five minutes" but assumes the
+  BRIEF/PLAN/JOURNAL triad, which an unfamiliar repo does not have.
+  **Startup cost: ~15 chars** on `/resume`'s description. **Acceptance:**
+  run against a repo with NO doc triad, it produces an orientation brief
+  without inventing a plan, and says plainly that no recorded rationale
+  exists rather than guessing — the `/why` stance applied to structure.
+
+- [ ] **4.64** Make `/ship` write the changelog entry it never writes.
+  **Scheduled by 4.59** (2026-08-08) as a REFERENCE FILE under `/ship`:
+  5 sources ship changelog generation, `/ship` cuts releases and produces
+  none, and this repo's own `CHANGELOG.md` is maintained by hand.
+  **Startup cost: ZERO** — a `references/` file costs nothing until cited.
+  **Acceptance:** shown generating an entry from the commits in a release
+  range, in this repo's own changelog format, with the entry proposed and
+  never committed without approval (the outward-facing rule).
+
+- [ ] **4.65** Add a Goodhart defence to `/eval-spec`. **Scheduled by 4.59**
+  (2026-08-08) as a REFERENCE FILE: ECC's `loop-design-check` names the
+  failure where the subject games the verifier, which bears directly on
+  `/eval-run` — a golden set that can be satisfied without solving the task
+  measures nothing. **Startup cost: ZERO** (reference, cited from the
+  spec-writing step). **Acceptance:** the reference names at least three
+  concrete gaming shapes with a detection question each, and one is shown
+  against a seeded golden case that passes while getting the task wrong.
+
 - [ ] **4.50** The next shakedown's mandatory segments — everything a
   round is already known to owe. Verification rule 6 says a
   behaviourally-found fix stays unverified until a live run re-tests it,
@@ -2396,7 +2435,40 @@ reordered, if any.
   the level at which it first yields is recorded, and a level that yields
   when it should not becomes a carrier.
 
-- [ ] **4.59** Rule on the skill-roster gaps the 2026-08-07 ecosystem survey
+- [x] **4.59** *(Done 2026-08-08. **Verdict: MODE-FIRST, against a budget
+  that bites.** All ten named items are ruled below — four scheduled, six
+  declined with reasons — so none sits in prose without an owner.
+
+  **The budget, decided here and not assumed: 12,000 chars total
+  (~3,000 tokens) and 600 chars per description**, enforced by check.sh
+  section 28. Baseline derived 2026-08-08: 23 descriptions, **9,064 chars
+  ~= 2,266 tokens**, mean 394, max 510 (`/design`). Two other figures exist
+  for the same thing — 2,301 from the survey, and **~2,353 reported by
+  `claude plugin details` itself** during 4.57 — and the tool's is the one
+  an adopter sees. The check measures CHARS because chars are deterministic
+  and tokens are not.
+  **The total cap is deliberately BELOW what the roadmap would cost if
+  every planned skill shipped as a skill:** 39 skills at the current mean
+  is ~15,400 chars, over the cap. That is the ruling, not an oversight — a
+  budget with headroom is decoration, which is precisely how 4.49 came to
+  optimise a body budget sitting at 212 lines against a 500 cap while this
+  one grew unwatched. Both caps shown failing first: one padded description
+  (739 > 600) and every description padded (12,537 > 12,000).
+
+  | Item | Sources | Ruling |
+  |---|---|---|
+  | skill-authoring | 8 | **SCHEDULED — 4.62**, as `/audit skills`, a fifth mode (~10 chars) |
+  | codebase onboarding | 4 | **SCHEDULED — 4.63**, as a `/resume` mode (~15 chars) |
+  | changelog generation | 5 | **SCHEDULED — 4.64**, reference under `/ship` (zero startup) |
+  | `loop-design-check` (Goodhart) | ECC | **SCHEDULED — 4.65**, reference under `/eval-spec` (zero startup) |
+  | TDD / test-authoring | 8 | **DECLINED** — 8 independent sources already ship it, so an adopter is well served elsewhere and the value-add would be thin. Partial coverage already exists: `/refactor` refuses to start on a suite too thin to detect a behaviour change and names what to test first, and `/eval-spec` is test-first for LLM-shaped work |
+  | parallel agents / worktrees | 6 | **DECLINED** — orchestration is the harness's job, not a verification verb. Claude Code ships agents and worktrees natively; wrapping them would buy a roster entry and no method |
+  | context budget / compaction | ECC ships 3 | **DECLINED as a skill; the mechanical half SHIPS HERE.** A skill that costs startup budget to talk about startup budget is self-defeating at 23 skills. ECC needed one at 282 skills and ~16k tokens; revisit if this roster ever passes the cap above |
+  | brainstorm before a BRIEF | 3 | **DECLINED** — lowest recurrence, and generating options is what an agent does natively. The pack's edge is the adversarial pass, which `/challenge` already holds |
+  | `council` | ECC | **DECLINED as a skill** — it is a method, and the method already binds here as AGENTS.md's falsification rule. Promotion into shipped CONDUCT.md is governed by the existing bar (proves out across projects), so it has a path and needs no verb |
+  | delivery-gate Stop hook | ECC | **DECLINED** — harness config, and the pack ships skills, not settings. An unskippable hook also removes the user's pacing control, contradicting conduct rule 2 |
+
+  Checks 30 -> 31.)* Rule on the skill-roster gaps the 2026-08-07 ecosystem survey
   named, so none of them sits in prose without an owner (rule 3). Ranked by
   recurrence across independent lists: **skill-authoring** (8 sources —
   `anthropics/skill-creator`, `obra/writing-skills`, Microsoft, Apollo,
