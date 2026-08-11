@@ -16,7 +16,7 @@ PRINCIPLES.md         why the discipline is shaped this way
 VERSION, CHANGELOG.md release record; check.sh enforces their agreement
 setup                 symlink installer / uninstaller
 bin/                  three runtime helpers (bash 3.2+)
-scripts/check.sh      the guard — its header enumerates all 15 sections
+scripts/check.sh      the guard — its header enumerates all 31 sections
 scripts/controls.sh   positive controls: documented checks vs seeded fixtures
 fixtures/<skill>/     one known planted defect per check-shaped skill
 docs/guard-matrix.sh  seeded-defect cases proving each guard fires
@@ -156,7 +156,7 @@ rule `/secure` applies to any untrusted-in-trusted-position path.
 
 Three layers, each answering a different question.
 
-**`scripts/check.sh` — is the pack internally consistent?** Twenty-two numbered sections plus 3b, 3c and 13a — **25 checks**; the header comment is their single enumeration, updated in the
+**`scripts/check.sh` — is the pack internally consistent?** 28 numbered sections plus 3b, 3c and 13a — **<!-- count:checks -->31<!-- /count --> checks**; the header comment is their single enumeration, updated in the
 same commit as any new section. That list went stale twice when copies
 lived elsewhere — and a partial copy that used to sit in this paragraph
 went stale a third time (it enumerated sixteen items, claimed fifteen,
@@ -175,7 +175,7 @@ produce 6/7 (85.7%), and it also asserts that every case excluded
 from the denominator is NAMED — silent exclusion moves no percentage,
 so it is invisible in the number alone.
 
-**`docs/guard-matrix.sh` — does each guard fire?** 90 cases, each
+**`docs/guard-matrix.sh` — does each guard fire?** <!-- count:matrix-cases -->110<!-- /count --> cases, each
 seeding one defect into a copy of the real tree and asserting the
 expected failure class, plus must-pass cases so a guard cannot pass by
 failing everything. **Extend the matrix first, watch the case fail, then
