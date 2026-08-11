@@ -633,6 +633,35 @@ else
   bad "scripts/count-check.sh missing — marked counts have no control"
 fi
 
+# --- Agent Skills divergence: README's claim vs the real allowlist (4.56) ---
+# README tells adopters that exactly TWO frontmatter fields diverge from the
+# Agent Skills spec. That is a claim about check.sh's allowlist, and adding a
+# sixth key there would silently make it false — the stale-count class, in
+# prose no count-check marker covers. Derived from the allowlist, not trusted.
+fm_allow="$(grep -oE '\^\(name\|[a-z|-]+\):' scripts/check.sh | head -1 | sed -E 's/^\^\(//; s/\):$//')"
+if [ -z "$fm_allow" ]; then
+  bad "/design frontmatter allowlist not extractable from check.sh — the 4.56 divergence claim cannot be checked"
+else
+  spec_keys=" name description allowed-tools "   # what the spec itself defines
+  diverge=""
+  for k in $(printf '%s' "$fm_allow" | tr '|' ' '); do
+    case "$spec_keys" in *" $k "*) continue ;; esac
+    diverge="$diverge $k"
+  done
+  dn=$(printf '%s' "$diverge" | wc -w | tr -d ' ')
+  miss=""
+  for k in $diverge; do
+    grep -q -- "$k" README.md || miss="$miss $k"
+  done
+  if [ -n "$miss" ]; then
+    bad "4.56: README does not name diverging frontmatter field(s):$miss — an adopter learns them from someone else's validator instead"
+  elif [ "$dn" != "2" ]; then
+    bad "4.56: the allowlist now has $dn non-spec field(s) ($diverge) but README's divergence section is written for two — update it or the claim is false"
+  else
+    ok "4.56 divergence claim matches the frontmatter allowlist (exactly 2 non-spec fields, both named in README)"
+  fi
+fi
+
 # --- guard-matrix: cases read a FROZEN snapshot, not the live tree (4.55a) ---
 # Structural, and grep-shaped on purpose: the matrix cannot test its own
 # harness, because every case runs INSIDE it. Reverting to a per-case

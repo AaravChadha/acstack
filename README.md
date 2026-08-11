@@ -93,6 +93,30 @@ Nothing leaves your machine except `git fetch` in the once-a-day update
 check, and `gh` calls you initiate in tickets mode. There is no
 telemetry — the `telemetry` key is reserved and unimplemented.
 
+### Agent Skills spec: where acstack diverges, and what it costs you
+
+**Verdict 2026-08-08 — acstack targets Claude Code, and keeps two fields
+the Agent Skills spec does not define.** Stated here so you learn it from
+us rather than from someone else's validator.
+
+| Field | Used by | Why it stays |
+|---|---|---|
+| `argument-hint` | all 23 skills | Typed invocation is the primary path here; the hint is what makes `/do 3.2.1` legible in the CLI |
+| `disable-model-invocation` | `/plan`, `/eval-spec` | Load-bearing, not cosmetic: `scripts/check.sh` derives the typed-only roster from this field and fails if `AGENTS.md`'s referral table disagrees. Removing it deletes a guard |
+
+Everything the spec actually constrains, acstack already satisfies — name
+and description limits, one-level `references/`, and bodies well under the
+"< 5000 tokens" guidance. The 500-line SKILL.md cap this pack enforces
+turns out to be the spec's own recommendation, arrived at independently.
+
+**What the divergence costs:** the pack cannot be uploaded to claude.ai,
+consumed through the Skills API, or packaged with the official
+`package_skill.py`. If you need any of those, strip the two fields — you
+lose the typed-only roster guard and the CLI hints, nothing else. **This
+cost is carried from a 2026-08-07 measurement with the standard's own
+validator (0/23 passing, 23/23 after stripping) and is not re-run by our
+CI**, which has no dependency on that validator.
+
 ## See it work
 
 A real session on a small Python project. Every command was run and every

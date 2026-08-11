@@ -2291,7 +2291,31 @@ reordered, if any.
   the set of extensions the guard resolves is stated where the guard is
   read, not inferred from its regex.
 
-- [ ] **4.56** Decide acstack's Agent Skills conformance posture. Measured
+- [x] **4.56** *(Done 2026-08-08. **Verdict: KEEP both fields. acstack
+  targets Claude Code, and the divergence is now stated where an adopter
+  reads it instead of discovered by running someone else's validator.**
+  Re-derived from the tree: 23/23 carry `argument-hint`, 2 carry
+  `disable-model-invocation` (`/plan`, `/eval-spec`) — the survey's figures
+  hold. **The deciding fact the write-up did not carry:
+  `disable-model-invocation` is load-bearing, not cosmetic.**
+  `scripts/check.sh:513` derives the typed-only roster FROM that field and
+  fails when AGENTS.md's referral table disagrees, so stripping it deletes
+  a guard and the typed-only design with it. `argument-hint` is weaker —
+  ~3% field adoption — but typed invocation is this pack's primary path and
+  the hint is what makes `/do 3.2.1` legible. Everything the spec
+  substantively constrains is already satisfied, including a 500-line cap
+  that turns out to be the spec's own recommendation. The cost is real and
+  named in README: no claude.ai upload, no Skills API, no official
+  `package_skill.py` — all channels acstack does not use, and an adopter who
+  needs them is told exactly which two fields to strip and what they lose.
+  **Honesty about the measurement:** `skills-ref` is NOT installed here, so
+  the 0/23 -> 23/23 figure is carried from 2026-08-07 and is not re-run by
+  CI. Rather than assert an unverifiable claim, the divergence is now
+  **guarded from the other side**: a control derives the non-spec field set
+  from check.sh's own frontmatter allowlist and fails if README does not
+  name every one, or if the count stops being two. Both branches shown
+  failing first — a sixth field unnamed, a named field removed from README,
+  and a sixth field named (the count branch). controls 103 -> 104.)* Decide acstack's Agent Skills conformance posture. Measured
   2026-08-07 by running the standard's own validator
   (`agentskills/agentskills`, `skills-ref validate`) against all 23 skills:
   **0 passed, 23 failed**, then **23 passed, 0 failed** after stripping two
