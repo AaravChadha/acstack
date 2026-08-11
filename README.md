@@ -55,7 +55,7 @@ Start a new Claude Code session; the twenty-three skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 
-**Or install it as a plugin** (added 2026-08-08; `./setup` remains the
+**Or install it as a plugin** (added 2026-08-11; `./setup` remains the
 primary path and is not going away):
 
 ```bash
@@ -115,7 +115,7 @@ telemetry — the `telemetry` key is reserved and unimplemented.
 
 ### Agent Skills spec: where acstack diverges, and what it costs you
 
-**Verdict 2026-08-08 — acstack targets Claude Code, and keeps two fields
+**Verdict 2026-08-11 — acstack targets Claude Code, and keeps two fields
 the Agent Skills spec does not define.** Stated here so you learn it from
 us rather than from someone else's validator.
 

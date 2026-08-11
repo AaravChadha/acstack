@@ -1912,7 +1912,7 @@ reordered, if any.
   shakedown slot under verification rule 6 [owed: 4.50].
 
 - [ ] **4.62** Add `/audit skills` as a fifth mode — skill-authoring from the
-  verification side. **Scheduled by 4.59** (2026-08-08) as a MODE, not a
+  verification side. **Scheduled by 4.59** (2026-08-11) as a MODE, not a
   skill: the field's most-recurring verb across 8 independent sources, and
   acstack already holds the methodology in AGENTS.md and `check.sh` rather
   than in prose. **Startup cost of this choice: ~10 chars** on `/audit`'s
@@ -1924,7 +1924,7 @@ reordered, if any.
   `/audit`'s description grows by less than 40 chars.
 
 - [ ] **4.63** Add an unfamiliar-repo mode to `/resume`. **Scheduled by 4.59**
-  (2026-08-08) as a MODE: 4 independent sources ship codebase onboarding,
+  (2026-08-11) as a MODE: 4 independent sources ship codebase onboarding,
   and `/resume` already owns "get oriented in five minutes" but assumes the
   BRIEF/PLAN/JOURNAL triad, which an unfamiliar repo does not have.
   **Startup cost: ~15 chars** on `/resume`'s description. **Acceptance:**
@@ -1933,7 +1933,7 @@ reordered, if any.
   exists rather than guessing — the `/why` stance applied to structure.
 
 - [ ] **4.64** Make `/ship` write the changelog entry it never writes.
-  **Scheduled by 4.59** (2026-08-08) as a REFERENCE FILE under `/ship`:
+  **Scheduled by 4.59** (2026-08-11) as a REFERENCE FILE under `/ship`:
   5 sources ship changelog generation, `/ship` cuts releases and produces
   none, and this repo's own `CHANGELOG.md` is maintained by hand.
   **Startup cost: ZERO** — a `references/` file costs nothing until cited.
@@ -1942,7 +1942,7 @@ reordered, if any.
   never committed without approval (the outward-facing rule).
 
 - [ ] **4.65** Add a Goodhart defence to `/eval-spec`. **Scheduled by 4.59**
-  (2026-08-08) as a REFERENCE FILE: ECC's `loop-design-check` names the
+  (2026-08-11) as a REFERENCE FILE: ECC's `loop-design-check` names the
   failure where the subject games the verifier, which bears directly on
   `/eval-run` — a golden set that can be satisfied without solving the task
   measures nothing. **Startup cost: ZERO** (reference, cited from the
@@ -2330,7 +2330,7 @@ reordered, if any.
   the set of extensions the guard resolves is stated where the guard is
   read, not inferred from its regex.
 
-- [x] **4.56** *(Done 2026-08-08. **Verdict: KEEP both fields. acstack
+- [x] **4.56** *(Done 2026-08-11. **Verdict: KEEP both fields. acstack
   targets Claude Code, and the divergence is now stated where an adopter
   reads it instead of discovered by running someone else's validator.**
   Re-derived from the tree: 23/23 carry `argument-hint`, 2 carry
@@ -2374,7 +2374,7 @@ reordered, if any.
   its removal) is stated where an adopter reads it rather than discovered
   by running someone else's validator.
 
-- [x] **4.57** *(Done 2026-08-08. **Verdict: ADOPT, as a SECOND path.
+- [x] **4.57** *(Done 2026-08-11. **Verdict: ADOPT, as a SECOND path.
   `./setup` stays primary and is not deprecated.** The counter-argument in
   the task weighs setup's auditability against the plugin layout, but
   nobody proposed replacing setup — the layout is additive, so the real
@@ -2435,13 +2435,13 @@ reordered, if any.
   the level at which it first yields is recorded, and a level that yields
   when it should not becomes a carrier.
 
-- [x] **4.59** *(Done 2026-08-08. **Verdict: MODE-FIRST, against a budget
+- [x] **4.59** *(Done 2026-08-11. **Verdict: MODE-FIRST, against a budget
   that bites.** All ten named items are ruled below — four scheduled, six
   declined with reasons — so none sits in prose without an owner.
 
   **The budget, decided here and not assumed: 12,000 chars total
   (~3,000 tokens) and 600 chars per description**, enforced by check.sh
-  section 28. Baseline derived 2026-08-08: 23 descriptions, **9,064 chars
+  section 28. Baseline derived 2026-08-11: 23 descriptions, **9,064 chars
   ~= 2,266 tokens**, mean 394, max 510 (`/design`). Two other figures exist
   for the same thing — 2,301 from the survey, and **~2,353 reported by
   `claude plugin details` itself** during 4.57 — and the tool's is the one
