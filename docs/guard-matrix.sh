@@ -276,6 +276,10 @@ fullcase "dead .py reference citation"      FAIL 'crossref' bash -c "printf '\nS
 # the detector now reports taste as a defect — the failure direction that
 # ai_check alone could never see, since it only ever asserts a hit.
 fullcase "tell fires on legitimate use"     FAIL 'control' bash -c "printf '// <a>Get started →</a>\n' >> fixtures/design-audit/legitimate-look.tsx"
+# 4.61 conditional-branch waste. Inlining a split target's body back into
+# SKILL.md is the regression: the skill still works, it just costs every
+# invocation the branches it will not read.
+fullcase "conditional waste over budget"    FAIL 'ratio' bash -c "for i in 1 2 3 4 5 6 7 8 9 10; do printf '\n## Target: bloat%s\n\n' \"\$i\" >> skills/audit/SKILL.md; for j in 1 2 3 4 5 6 7 8 9 10; do printf 'padding line %s\n' \"\$j\" >> skills/audit/SKILL.md; done; done"
 
 echo
 # 4.55a: name a mid-run tree change. Not a failure — every case above read

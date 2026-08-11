@@ -2631,7 +2631,53 @@ reordered, if any.
   threshold is stated as a number; and a fixture placed under `fixtures/`
   that would otherwise flag is shown passing because of the escape hatch.
 
-- [ ] **4.61** Re-run 4.49's selection with 4.49's own corrected criterion.
+- [x] **4.61** *(Done 2026-08-12. **`/audit` split; the scan is now a script
+  and a check, not a measurement.**
+  **`scripts/conditional-ratio.sh`** ranks all 23 skills by conditional
+  branch content and is wired into `check.sh` §29 — because a threshold
+  nothing enforces is the decoration 4.59 named one task earlier. Run
+  against the PRE-split tree it flags `/audit` at **81 wasted lines**,
+  which is the proof it would have caught what 4.49's size-based shortlist
+  missed.
+  **The threshold is on WASTED LINES, not percent — a methodology
+  correction found by running it.** Ranking by percentage flags a
+  *correctly split* skill, because the pointers it is left with ARE
+  conditional content: post-split `/audit` still scores 27% while its real
+  cost fell from 81 wasted lines to 18. Percent is scale-dependent; wasted
+  lines are what an invocation pays. Default **40 lines (~450 tokens)**,
+  derived: a B-branch split leaves ~5 pointer lines each, so the floor is
+  ~5(B-1) = 15 at B=4, and below ~40 the net saving does not earn a new
+  file and a new indirection.
+  **`/audit`: SKILL.md 163 -> 91 lines**, four `## Target:` bodies moved to
+  `references/target-{code,docs,eval,tests}.md`. **Zero procedure lines
+  lost, proved by set difference** against `HEAD`: 136 content lines before,
+  156 after across SKILL.md + the four references, with exactly ONE line
+  differing — `../qa/references/adversarial-inputs.md` became
+  `../../qa/...`, a necessary depth rewrite that appears on both sides of
+  the diff.
+  **A guard caught a real design error in the split.** Moving `## Target:
+  code` wholesale took the *"does this target need the pass at all?"*
+  triage gate with it, and `check.sh`'s hygiene rule failed. The gate was
+  never code-specific — it says "this target" and merely sat under `code` —
+  so it is now hoisted into SKILL.md ahead of the dispatch, where it covers
+  all four. The split made it MORE general, not less, only because the
+  guard objected.
+  **Ruled, above the old percent threshold but under the wasted one:**
+  `/plan` (33 wasted) — split by 4.49 with a recorded scope verdict; its
+  residual is two pointers plus the `build`/`replan` bodies, and re-opening
+  it is out of 4.61's scope, which is the skills the selector never saw.
+  `/ticket` (14 wasted) — two ~13-line branches and no `references/`
+  directory at all; splitting saves ~9 lines and costs a new directory and
+  two pointers, which does not pay.
+  **Self-indicting:** `check.sh`'s header calls itself "the SINGLE
+  enumeration" and says a new section must update it in the same commit. I
+  broke that three times — §27 (4.57), §28 (4.59) and §29 — because
+  `count:checks` derives from the body markers, so the header is unguarded
+  prose. All three added; every one of the 32 body sections now appears in
+  the header, verified programmatically.
+  Checks 31 -> 32, matrix 110 -> 111. **Still owed:** the behavioural half —
+  a live model finding the moved procedure in each target — like 4.49's
+  [owed: 4.50].)* Re-run 4.49's selection with 4.49's own corrected criterion.
   **4.49 fixed its selector mid-task and never regenerated the candidate
   list.** Its closing verdict records the correction — "the original
   35%-of-body-text framing was a SIZE measurement that did not survive

@@ -54,7 +54,7 @@ about the wrong product is worse than no answer (conduct rule 8).
 (`grep -n`), not from counting or recall: a wrong line number turns a
 real finding into one the author can dismiss.
 
-## Target: code
+## Before any target — does this need the pass at all?
 
 **First: does this target need the pass at all?** A diff that only moves
 files, bumps a version, or changes generated output has nothing to audit —
@@ -62,102 +62,30 @@ say so in one line and stop. A review that manufactures findings because it
 was invoked is worse than no review: it spends the reader's attention on
 noise and trains them to skim the next one.
 
-Hunt defects in the named path, diff range, or PR. Consult
-`references/known-bug-classes.md` — check every class that applies to the
-stack. **Check the do-not-flag list in
-`references/code-report-template.md` before writing any finding.** Report
-per that template:
+That gate is not code-specific; it was written "this target" and merely sat
+under `code` until 4.61 moved it here. Each target's reference adds its own
+stop condition (no results file, no test suite) on top of it.
 
-- **Lede** — the verdict with concrete evidence (a failing input, a number),
-  never adjectives.
-- **Numbered sections**, each stating the rejected alternative and why.
-- **Defects** with root cause, exact `file:line`, and the input that fails.
-- **`Safety checks:`** — the exact commands run and what they matched.
-- **`## Verification`** — concrete inputs → observed outputs, including
-  adversarial cases from the canonical bank in
-  `../qa/references/adversarial-inputs.md` (garbage strings, oversized
-  input, regex-special chars, out-of-range values, empty query).
-- **`Known gap:`** — what was not verified and why.
-- **Scope** — what was deliberately not touched.
+## Target: code
 
-/audit reports; it does not fix. If the user wants fixes, they say so, and
-fixes land as separate, reviewable commits.
+Full procedure: `references/target-code.md` — read it when the
+invocation names `code`, and not otherwise. It carries the does-this-need-
+auditing gate, the report shape, and the reports-never-fixes rule.
 
 ## Target: docs
 
-Drift check — every claim a doc makes that reality can contradict:
-
-- Project-structure blocks vs the actual tree (`ls`/glob against the ASCII
-  tree line by line).
-- Stale counts vs greppable reality: tool counts, test counts, table counts,
-  record counts.
-- **Work named as owed with nobody owning it.** A doc that says something
-  "owes" a fix, a round, or a follow-up, without naming the open task that
-  will do it, is drift the moment the sentence is written — the obligation
-  reads as scheduled and is not. In an acstack repo the mechanical half of
-  this runs in `scripts/check.sh` on every commit and covers only MARKED
-  obligations (`[owed: N.NN]`); the judgment half is yours, and it is the
-  unmarked prose the guard cannot see. Read for the promise, not the tag.
-- Checkbox state, both directions: a `[x]` whose Acceptance command now
-  fails, and a subtask `[ ]` whose artifact plainly exists. A phase heading
-  `## [ ]` held open while its `**Exit criterion:**` is unmet is /do's gate,
-  not drift — flag it only when the flip condition is met (the criterion
-  passes, or none is declared and every child is checked).
-- File-location tables vs actual paths.
-- Run the README quickstart where cheap; a broken quickstart is drift.
-
-Output: a verdict first — `NO DRIFT` or `<N> drift findings` — then a
-numbered list of `doc says / reality is / fix` triples. Nothing else
-counts as a docs finding. Close with scope: which documents and which
-claims were checked, and which were too expensive to verify.
+Full procedure: `references/target-docs.md` — read it when the
+invocation names `docs`, and not otherwise. It carries the drift classes,
+the owed-work rule, and the doc-says/reality-is output shape.
 
 ## Target: eval
 
-Read the eval report or results file. **No results file → say so and
-stop**; there is nothing to audit and a report written from the spec
-alone would be fiction.
-
-Output opens with the verdict — `headline verified` or
-`<N> findings (headline overstated by <x>)` — then the evidence below,
-and closes with scope (which cases were reviewed, which were not). Rules
-per `references/eval-review-rules.md`:
-
-- Every failure classified: prompt issue / grader brittleness / provider
-  flake / data issue / parser issue / genuinely ambiguous.
-- **The never-inflate rule is absolute:** never adjust a test case or its
-  expected values to raise the score. `acceptable_failure` survives only
-  with a written justification. A real miss is logged and left standing.
-- Grader brittleness is distinct from subject failure and its remedy IS
-  legitimate (asserting the concept instead of the literal wording;
-  Unicode normalization before substring compare). Recommending a grader
-  fix is not inflation — but the report says which remedy it recommends
-  and why. /audit still does not apply it.
-- Verify the report's own arithmetic and that its headline number matches
-  the raw results file.
+Full procedure: `references/target-eval.md` — read it when the
+invocation names `eval`, and not otherwise. It carries the no-results-file
+stop, the failure buckets, and the never-inflate rule.
 
 ## Target: tests
 
-A green suite is evidence only if its tests could have failed. This target
-sweeps an existing suite for tests that pass without catching anything —
-the never-inflate rule pointed at tests instead of eval scores.
-
-**No test suite found → say so and stop.** A test audit written from the
-source alone would be fiction, the same way an eval audit without a results
-file would be.
-
-Output opens with the verdict — `suite has teeth` or `<N> findings` — then
-the evidence, then scope (which files were swept, which were not, and
-whether the mutation spot-check ran). Rules and detection commands live in
-`references/test-audit-rules.md`; the five classes are assertion-free
-tests, tautological assertions, mocks stubbing the unit under test, unread
-snapshots plus accumulating skips, and the mutation spot-check.
-
-The spot-check is the only one that proves rather than suggests: break the
-production code deliberately and confirm the suite goes red. A mutation
-that leaves it green is a confirmed coverage hole. **Revert every mutation
-before reporting, say that you did, and verify it** — a mutation left
-behind is a defect this audit introduced. Never mutate a tree that was
-already dirty; you could not prove a clean revert.
-
-Nothing here is fixed: a bad test is reported and left standing, because
-deleting it hides the coverage gap it was proving.
+Full procedure: `references/target-tests.md` — read it when the
+invocation names `tests`, and not otherwise. It carries the five
+no-teeth classes, the mutation spot-check, and the revert discipline.

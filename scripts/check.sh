@@ -19,6 +19,8 @@
 #   21 skill-hygiene rule set stays whole  22 grader case flag named at every site
 #   23 marked counts match derivations    24 eval isolation named at every site
 #   25 owed-markers name a live carrier   26 no mode section left without a procedure
+#   27 plugin manifests agree with pack  28 startup description budget
+#   29 conditional-branch waste per skill
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -843,6 +845,27 @@ if [ "$desc_tot" -gt "$BUDGET_TOTAL" ]; then
   echo "FAIL budget: skill descriptions total $desc_tot chars (cap $BUDGET_TOTAL, ~$((desc_tot/4)) tokens loaded at EVERY session start)"
   echo "             Adding a skill is not free. Make it a mode of an existing skill, or trim."
   fail=1
+fi
+
+# 29. Conditional-branch waste (4.61). 4.49 shortlisted split candidates by
+#     SIZE, corrected its criterion mid-task, and never regenerated the list
+#     — so /audit at 68% conditional was never examined while two skills with
+#     ZERO conditional content were measured and declined. The scan is a
+#     script precisely so that cannot recur, and it is run HERE because a
+#     threshold nothing enforces is decoration (4.59's lesson, one task old).
+#     Threshold and its derivation live in the script.
+if [ -x scripts/conditional-ratio.sh ] || [ -f scripts/conditional-ratio.sh ]; then
+  if ratio_out="$(bash scripts/conditional-ratio.sh 2>&1)"; then
+    if printf '%s' "$ratio_out" | grep -q 'OVER'; then
+      echo "FAIL ratio: a skill wastes more conditional content per invocation than the threshold allows:"
+      printf '%s\n' "$ratio_out" | grep 'OVER'
+      echo "            Split it into references/, or record a reason in PLAN.md and raise the threshold deliberately."
+      fail=1
+    fi
+  else
+    echo "FAIL ratio: scripts/conditional-ratio.sh did not run"
+    fail=1
+  fi
 fi
 
 if [ "$fail" -eq 0 ]; then
