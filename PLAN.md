@@ -2335,7 +2335,35 @@ reordered, if any.
   its removal) is stated where an adopter reads it rather than discovered
   by running someone else's validator.
 
-- [ ] **4.57** Decide whether acstack ships `.claude-plugin/`. Verified
+- [x] **4.57** *(Done 2026-08-08. **Verdict: ADOPT, as a SECOND path.
+  `./setup` stays primary and is not deprecated.** The counter-argument in
+  the task weighs setup's auditability against the plugin layout, but
+  nobody proposed replacing setup — the layout is additive, so the real
+  question was only whether a second path can be kept honest. It can, and
+  it now is.
+  **Demonstrated end-to-end, not from `--dry-run` (the /why precedent):**
+  `.claude-plugin/plugin.json` + `marketplace.json` written to the schema
+  the live CLI itself scaffolds (`claude plugin init`, CLI 2.1.170 —
+  schema read from the tool, not from recall), then in an ISOLATED
+  `CLAUDE_CONFIG_DIR`: `marketplace add <path>` -> added, `install
+  acstack@acstack` -> installed, and **`plugin details` enumerated all 23
+  skills by name**. Install output was NOT accepted as proof; the component
+  inventory was. The live `~/.claude` was never touched — verified before
+  and after — because installing there would double-load skills already
+  symlinked by `./setup`, which README now warns about explicitly.
+  **A number this bought for 4.59:** the CLI reports **~2,353 tokens
+  always-on** for the pack. That is the tool's own figure, against 2,301
+  from the survey and 2,266 from my extraction — 4.59 should use the tool's.
+  **Guarded, because a second install route that silently rots is worse
+  than none** — an adopter installs a version that does not exist. check.sh
+  section 27 asserts plugin.json's version equals VERSION, that plugin.json
+  and marketplace.json name the same plugin, and that the declared skills
+  path exists. Checks 29 -> 30. All three branches shown failing: version
+  drift, a dead skills path, and the name mismatch — the last fired on my
+  own first draft, which grabbed the OWNER's name because the entry's name
+  is the third `"name"` in the file, not the second.
+  **Not adopted:** hooks, agents, MCP or LSP entries; the inventory
+  correctly reports 0 of each, and the pack ships skills, not settings.)* Decide whether acstack ships `.claude-plugin/`. Verified
   2026-08-07: acstack has no `.claude-plugin/`, no `marketplace.json`, no
   `plugin.json`; install is `./setup` symlinking into `~/.claude/skills`.
   Four of the five surveyed packs that ship real skills carry the plugin

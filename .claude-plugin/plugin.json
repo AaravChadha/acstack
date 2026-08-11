@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "acstack",
+  "version": "0.4.0",
+  "description": "A skill pack for shipping software with an agent: plan, build, verify, and ship with the receipts attached.",
+  "author": {
+    "name": "aaravchadha"
+  },
+  "homepage": "https://github.com/AaravChadha/acstack",
+  "license": "MIT",
+  "skills": [
+    "./skills"
+  ]
+}

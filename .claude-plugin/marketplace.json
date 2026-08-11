@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "acstack",
+  "owner": {
+    "name": "aaravchadha"
+  },
+  "plugins": [
+    {
+      "name": "acstack",
+      "source": "./",
+      "description": "A skill pack for shipping software with an agent: plan, build, verify, and ship with the receipts attached."
+    }
+  ]
+}

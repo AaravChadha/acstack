@@ -55,6 +55,26 @@ Start a new Claude Code session; the twenty-three skills above load as slash
 commands. Uninstall with `./setup --uninstall` — it removes only symlinks
 that point into this repo.
 
+**Or install it as a plugin** (added 2026-08-08; `./setup` remains the
+primary path and is not going away):
+
+```bash
+claude plugin marketplace add AaravChadha/acstack
+claude plugin install acstack@acstack
+```
+
+`claude plugin details acstack@acstack` then prints the component
+inventory and the projected token cost — which is the honest way to see
+what a pack costs you before you keep it. For acstack that is **23 skills
+and ~2,353 tokens always-on**, added to every session whether you invoke
+anything or not.
+
+Pick `./setup` if you want the install to be auditable — it is a readable
+shell script with a real `--dry-run` and it never deletes a file it did not
+create. Pick the plugin if you want one command and managed updates. They
+install the same 23 skills; **do not run both**, or every skill resolves
+twice.
+
 **To install and run the core:** git and bash 3.2+ (the version macOS
 ships). No runtime, no package manager, no build step. macOS/Linux; on
 Windows, copy the `skills/*` directories into `~/.claude/skills/`

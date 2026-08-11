@@ -787,6 +787,32 @@ done < <(
   done
 )
 
+# 27. Plugin manifests agree with the pack (4.57). The plugin path is a
+#     SECOND install route, and a second route that silently rots is worse
+#     than none — an adopter installs a version that does not exist. These
+#     are the three facts that can drift without anyone noticing, since
+#     nothing else in the tree reads .claude-plugin/.
+if [ -f .claude-plugin/plugin.json ]; then
+  pv="$(grep -oE '"version"[[:space:]]*:[[:space:]]*"[^"]+"' .claude-plugin/plugin.json | head -1 | sed -E 's/.*"([^"]+)"$/\1/')"
+  rv="$(tr -d '[:space:]' < VERSION 2>/dev/null)"
+  if [ "$pv" != "$rv" ]; then
+    echo "FAIL plugin: .claude-plugin/plugin.json says version $pv but VERSION says $rv"
+    fail=1
+  fi
+  pn="$(grep -oE '"name"[[:space:]]*:[[:space:]]*"[^"]+"' .claude-plugin/plugin.json | head -1 | sed -E 's/.*"([^"]+)"$/\1/')"
+  # the entry's name lives INSIDE "plugins"; a positional grab picks the
+  # owner's name instead — which is exactly what the first draft did.
+  mn="$(sed -n '/"plugins"/,$p' .claude-plugin/marketplace.json 2>/dev/null | grep -oE '"name"[[:space:]]*:[[:space:]]*"[^"]+"' | head -1 | sed -E 's/.*"([^"]+)"$/\1/')"
+  if [ -n "$mn" ] && [ "$pn" != "$mn" ]; then
+    echo "FAIL plugin: plugin.json name '$pn' and marketplace.json entry '$mn' disagree — install resolves neither"
+    fail=1
+  fi
+  # the declared skills root must exist, or every skill silently vanishes
+  for sp in $(grep -oE '"\./[A-Za-z0-9_/-]*"' .claude-plugin/plugin.json | tr -d '"'); do
+    [ -e "$sp" ] || { echo "FAIL plugin: plugin.json declares skills path $sp which does not exist"; fail=1; }
+  done
+fi
+
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
     echo "check.sh: no failures, but $skipped check(s) SKIPPED — coverage is incomplete"
