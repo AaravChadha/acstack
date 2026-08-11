@@ -228,8 +228,12 @@ remainder (interactive contracts, tickets-mode deltas, `/plan` and `/do`
 splits) and (c) (4.30's design acceptances) remain untouched; **every round
 to date has run in document mode.**
 
-Validation close: check.sh **32** checks; guard-matrix **111** cases;
-controls **107 → 111**; **23 skills**; wave 4.5 **42/46 → 43/46**.
+Validation close, stated as STATE not delta — **this round changed no
+guard and ticked no box**, it only wrote PLAN and JOURNAL prose. check.sh
+**32** checks; guard-matrix **111** cases; controls **111**; **23 skills**;
+wave 4.5 **43/46**. The controls and the checkbox moved in 4.63/4.64/4.65
+earlier the same day; writing them here with arrows would credit this round
+with work it did not do.
 
 
 ### The /audit split, and two checks that caught their own author within minutes (2026-08-12, later)
