@@ -2049,6 +2049,44 @@ reordered, if any.
   concrete gaming shapes with a detection question each, and one is shown
   against a seeded golden case that passes while getting the task wrong.
 
+- [ ] **4.66** Decide how the pack guards IRREVERSIBLE acts, and whether that
+  crosses into harness config. Raised 2026-08-12 after a repo deletion was
+  double-verified by hand and the second pass found a recorded verdict
+  wrong (`"an empty LEARNINGS.md"` against 97 bytes). **Surveyed before
+  filing:** the pack already has destructive-act discipline, but it is
+  per-domain and advisory — `/do` never pushes because "a push cannot be
+  undone quietly", `/migrate-check` is an entire skill that blocks a
+  destructive class with a written GO/NO-GO. **Nothing ships hooks or
+  settings**; the only `settings` mentions are `/eval-run` isolating AWAY
+  from the operator's. There is no general rule for "about to do something
+  irreversible".
+  **This is NOT what 4.59 declined.** That was ECC's delivery-gate Stop
+  hook, refused as (a) harness config rather than skills and (b) an
+  unskippable gate removing pacing control. **(b) does not apply to a
+  safety confirm; (a) still does**, so the boundary is the whole question.
+  **The evidence for crossing it:** advisory rules were followed unevenly
+  by a model *in the session that raised this* — three misdated verdicts,
+  three miscounts of unpushed commits, a pointer left describing a moved
+  gate. For irreversible acts, "followed unevenly" is the wrong
+  reliability class, and that is precisely the gap a hook closes and a rule
+  cannot. **The evidence against:** it makes the pack write `settings.json`
+  — a new install surface, a new uninstall surface, and a global silent
+  behaviour firing in projects where the user wants `gh repo delete` to
+  just work.
+  **Four shapes, none pre-decided.** (1) A `PreToolUse` hook intercepting a
+  named destructive set — enforced, crosses the boundary. (2) A new skill
+  in `/migrate-check`'s shape — costs ~394 chars of the startup budget
+  4.59 capped, against ~2,900 chars of headroom. (3) An 11th conduct rule —
+  zero startup cost, advisory, and the count has been held at ten
+  deliberately once before. (4) Nothing: the harness already prompts on
+  hard-to-reverse actions, and this session's double-check happened because
+  the user asked. **Acceptance:** a dated verdict naming which shape and
+  why the other three lose; if a hook ships, `./setup` installs and
+  `--uninstall` removes it with the same never-delete-a-real-file property
+  the symlink path has, shown on a machine where the user already has a
+  populated `settings.json`; if a rule ships, it is shown changing a model's
+  behaviour in a live run, not merely written down.
+
 - [ ] **4.50** The next shakedown's mandatory segments — everything a
   round is already known to owe. *(**Updated 2026-08-12:** round 13 ran
   4.58's ladder and **discharged 4.52's re-test** — `q10` graded correctly
@@ -3201,7 +3239,17 @@ existing contract — not a redesign.
   Deletion of `acstack-w2-shakedown` is owner: user (needs
   `gh auth refresh -s delete_repo`); contents verified disposable
   2026-07-29 — the only non-generated artifacts were 25 golden cases
-  hardcoded to a 4-row toy fixture, and an empty LEARNINGS.md.
+  hardcoded to a 4-row toy fixture, and a LEARNINGS.md carrying its
+  scaffold header and no captured lesson. *(**Re-verified 2026-08-12**
+  before deletion, and one word was wrong: LEARNINGS.md is **97 bytes**,
+  not "empty" — a title line and the `/learn` comment. Substantively
+  disposable, imprecisely stated. The other two figures are exact: 25
+  golden cases, and `sample.csv` at 5 lines = header + 4 rows. Also found:
+  **8 issues** the note never mentioned, all synthetic `csvsum` items.
+  **Deletion deferred** — this is the only live example of a tickets-mode
+  run (`#N:` commit subjects, a populated issue list, a working
+  `.github/ISSUE_TEMPLATE/task.md`), and 4.50's tickets segment has to
+  build a venue from scratch. Delete it after that round, not before.)*
 - [x] **Referral block / discoverability (NEW 2026-07-29).** Typed-only
   skills (`disable-model-invocation: true`) are invisible to the agent,
   so it cannot recommend what it cannot see — a user who never discovers
