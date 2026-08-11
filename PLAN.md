@@ -2087,6 +2087,59 @@ reordered, if any.
   populated `settings.json`; if a rule ships, it is shown changing a model's
   behaviour in a live run, not merely written down.
 
+- [ ] **4.67** `/plan seed`'s unattended branch cannot fire in the run it
+  was written for. Found by shakedown 15 (2026-08-12), 2/2 clean runs.
+  `references/mode-seed.md:11-18` opens *"When nobody can answer — a
+  non-interactive or unattended run — asking is not an option"* and
+  prescribes `TBD — not supplied at seed time` plus a TBD list at the top of
+  the report. **It is conditioned on the model recognising the run is
+  unattended, and a headless model does not.** In `claude -p` the session
+  calls `AskUserQuestion`, which does not error — it returns the literal
+  stub `"Answer questions?"` — so the model reads a declined question,
+  concludes the user is present but skipping, and improvises its own
+  gap-handling. `run-b1` narrates it: *"You skipped the questions, so I
+  recorded them as admitted open questions."* Neither run emitted the
+  literal; neither listed gaps at the top.
+  **The downstream cost is invention, which is the rule this protects.**
+  The seed prompt contained **0** mentions of volume or cadence (grep), yet
+  `run-b1/BRIEF.md:26-28` states *"a handful of books a week at the very
+  most. Volume is tiny: tens to low hundreds of lines accumulated over
+  years"*, and `run-b2/BRIEF.md:35` states *"tens to low-hundreds of lines
+  per user, ever"*. `run-b2/BRIEF.md:61` invents a **domain landmine** —
+  *"'Same title' is not 'same book' … do NOT dedupe by title"* — the exact
+  field `mode-seed.md:16-18` names as costliest to fabricate. `run-b2` then
+  reported *"I did **not** invent"*. It had; a self-report of honesty is not
+  evidence of it.
+  **Not in scope to 'fix':** the bulk of both landmine sections was *derived
+  from the venue's source* and is true (append-only supersede, `max+1` id
+  collision, `json.loads` crashing a bad line, `ensure_ascii=False`,
+  `from store import Store` defeating curl-one-file). Reading a landmine off
+  the code is the opposite of guessing it. The fix must not suppress that.
+  **Acceptance:** the branch fires without depending on the model
+  classifying its own run — e.g. keyed on a question having been asked and
+  not answered, rather than on "unattended" as a judgement. Verified by a
+  live headless run emitting the literal `TBD — not supplied at seed time`
+  for a section the prompt does not supply, with the TBDs listed together at
+  the top of the report, and no invented figure in that section. Mechanical
+  green does not discharge this (verification rule 6).
+
+- [ ] **4.68** `mode-seed.md` and `brief-template.md` contradict each other
+  on unsupplied sections. Predicted by reading before shakedown 15 ran (H1),
+  then **confirmed live**. `references/mode-seed.md:13` says write
+  `TBD — not supplied at seed time`; `references/brief-template.md:78-80`
+  says that for Domain landmines specifically, record *"none known yet;
+  expect to discover during <phase>"* **rather than omitting the section**.
+  A session reaches the template *through* the reference
+  (`mode-seed.md:8`), so it reads both and gets two instructions for one
+  field. `run-b2` followed the template — *"Known from reading the
+  prototype …; **expect to discover more during build**"* — the template's
+  phrasing, not the reference's. This is the same class as 4.52, where two
+  files shipped contradictory grading rules and every multi-keyword expected
+  was mis-graded. **Acceptance:** one rule, stated once, with the other site
+  pointing at it rather than restating it; a control asserts the two files
+  cannot drift back apart. Sequence with 4.67 — whichever lands first sets
+  the wording the other adopts.
+
 - [ ] **4.50** The next shakedown's mandatory segments — everything a
   round is already known to owe. *(**Updated 2026-08-12:** round 13 ran
   4.58's ladder and **discharged 4.52's re-test** — `q10` graded correctly
@@ -2127,7 +2180,52 @@ reordered, if any.
   **Still owed, and why this box stays unticked:** (b)'s remainder — the
   interactive halves of the unattended contracts, the tickets-mode deltas,
   and `/plan`'s and `/do`'s splits — plus (c), 4.30's four design
-  acceptances. Every round so far has run in document mode.)* Verification rule 6 says a
+  acceptances. Every round so far has run in document mode.
+  *(**Superseded 2026-08-12 by shakedown 15**, below: `/plan`'s split is
+  now exercised and HELD; `/do`'s is tickets-only and moves to the tickets
+  round. What remains of (b) is the interactive halves and the tickets-mode
+  deltas.)*)*
+  *(**Shakedown 15, 2026-08-12 — the splits segment, and a scope correction
+  derived from the code.** (b) named "`/plan`'s and `/do`'s splits". `/do`
+  has exactly ONE reference, `references/tickets-mode.md` (27 lines), cited
+  once at `skills/do/SKILL.md:149` behind `tracking: tickets`. There is no
+  document-mode reference, so **`/do`'s split is not testable in document
+  mode and moves to the tickets round**; the same is true of `/plan`'s
+  second reference. This round therefore covered `/plan`'s
+  `references/mode-seed.md` (75 lines) alone.
+  **Split reachability HELD.** 3/3 headless sessions on a blind venue
+  (`~/shakedown-15/venue-seed`, a stdlib Python reading tracker, no doc
+  triad, `CLAUDE.md` carrying real content) opened `mode-seed.md`
+  unprompted, and reproduced six behaviours that exist in **no other file
+  reachable from the post-split `SKILL.md`**: `CLAUDE.md` flagged and left
+  byte-identical, pack root resolved by the reference's own `readlink`
+  guard including its `PACK ROOT NOT RESOLVED` branch, `acstack-conduct`
+  (1668B) and `acstack-referrals` (1792B) copied **byte-verbatim**,
+  `LEARNINGS.md` created, and the `.claude/acstack.md` copy offered rather
+  than done. Reference-only score **6/9** both clean runs; shared
+  discriminators **5/5**, all eight required BRIEF sections enumerated
+  individually in both.
+  **The unattended branch FAILED, and the split did not cause it** — in
+  both runs the model *read the file containing* `TBD — not supplied at
+  seed time` and then did not use it. Carried as **4.67** (branch cannot
+  fire headless; invention downstream) and **4.68** (`mode-seed.md` vs
+  `brief-template.md` contradict, H1 predicted before the run and
+  confirmed).
+  **The A/B could not be run, and that is a method finding.** Arm A
+  (pre-split, 215-line single file) was discarded as invalid: a
+  project-local `.claude/skills/plan/` does **not** override a globally
+  symlinked skill, so the session read the global `mode-seed.md` anyway.
+  Two further isolation facts, both verified against CLI 2.1.170:
+  `CLAUDE_CONFIG_DIR` does **not** isolate a headless inference run
+  (`claude -p` returns `Not logged in`) — 4.57's recipe held only because
+  `marketplace add`/`install`/`plugin details` need no API auth — and
+  isolating `HOME` breaks auth too, since credentials resolve through the
+  macOS Keychain. **Consequence: an A/B on two versions of one skill cannot
+  be run on this machine without re-pointing the live symlink.** Recorded
+  in `docs/shakedown-method.md`. Blind integrity clean: 0 reads of this
+  repo's PLAN.md or JOURNAL.md, no run reasoned about being tested.
+  Evidence: `~/shakedown-15/ROUND.md`, pre-registered before any session
+  ran.)* Verification rule 6 says a
   behaviourally-found fix stays unverified until a live run re-tests it,
   and mechanical green never discharges it. Three debts have accumulated
   with no task owning any of them, which is the rule-3 orphan 4.47 exists

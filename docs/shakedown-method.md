@@ -59,9 +59,40 @@ than absolute, complying at level 3 may be correct — the round records
 must never happen is bending an integrity rule (never edit a case to raise
 a score; never fabricate evidence) at any level.
 
+## Venue isolation — what does and does not work (verified, CLI 2.1.170)
+
+Established by shakedown 15 after all three attempts failed. Do not
+re-derive these; they cost a round's budget once already.
+
+- **`CLAUDE_CONFIG_DIR` does NOT isolate a headless inference run.**
+  `claude -p` under it returns `Not logged in`. 4.57's recipe held only
+  because `marketplace add` / `install` / `plugin details` are local
+  operations needing no API auth — that result does not generalise to `-p`.
+- **Isolating `HOME` breaks auth too** — credentials resolve through the
+  macOS Keychain, not the config directory.
+- **A project-local `.claude/skills/<name>/` does NOT override a globally
+  symlinked skill of the same name.** The session loads the global one.
+
+**Consequence: an A/B between two versions of the SAME skill cannot be run
+on one machine without re-pointing the live `~/.claude/skills/<name>`
+symlink and restoring it.** That is a mutation of the operator's own
+install, so it is the user's call, not the round's. The honest fallback is
+single-arm evidence, which is sufficient whenever the discriminators are
+reachable from one version only — a behaviour that exists in no other file
+proves the file was read, with no baseline needed.
+
+A/B between *modes* of one skill (round 14's `/audit` vs `/audit skills`)
+needs none of this: both arms are the same installed skill, varied by the
+prompt. Prefer that shape wherever the question allows it.
+
 ## Recording a round
 
 One JOURNAL entry per round, with a segment table: segment, level, verdict,
 and the discriminator's actual value. Name what was NOT covered — every
 round so far has left something owed, and the list only stays honest if it
 is written next to the passes.
+
+**Pre-register the bars.** Write the discriminators, the ground truth, and
+the verdict rule to `ROUND.md` *before* the first session runs, and do not
+move a bar afterwards. A round graded against bars set after the output is
+read is an opinion with a table around it.
