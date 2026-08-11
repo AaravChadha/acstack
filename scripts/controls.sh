@@ -633,6 +633,49 @@ else
   bad "scripts/count-check.sh missing — marked counts have no control"
 fi
 
+# --- /audit skills: the fifth target's classes vs a seeded skill (4.62) ---
+# Both directions, like ai_pair: the documented grep must catch the planted
+# defect AND stay silent on the legitimate twin. The class-1 grep originally
+# flagged the twin — a quoted description may contain ": " safely — and that
+# false positive was caught HERE, not by reading it.
+AS_BAD=fixtures/audit-skills/bad-skill/SKILL.md
+AS_GOOD=fixtures/audit-skills/good-skill/SKILL.md
+AS_REF=skills/audit/references/target-skills.md
+if [ ! -f "$AS_BAD" ] || [ ! -f "$AS_GOOD" ] || [ ! -f "$AS_REF" ]; then
+  bad "/audit skills fixtures or reference missing — the fifth target has no control"
+else
+  # class 1, pattern EXTRACTED from the reference so a regression fails here
+  as_line="$(grep -F "grep -nE '^description:" "$AS_REF" | head -1 || true)"
+  as_pat="${as_line#*\'}"; as_pat="${as_pat%%\'*}"
+  if [ -z "$as_pat" ] || [ "$as_pat" = "$as_line" ]; then
+    bad "/audit skills class-1 pattern not extractable from target-skills.md"
+  elif ! grep -qE "$as_pat" "$AS_BAD"; then
+    bad "/audit skills class-1 grep MISSED the YAML-truncation plant (pattern: $as_pat)"
+  elif grep -qE "$as_pat" "$AS_GOOD"; then
+    bad "/audit skills class-1 grep FIRED on a legitimately quoted description — it flags correct skills (pattern: $as_pat)"
+  else
+    ok "/audit skills class-1 catches the truncating description and spares the quoted one"
+  fi
+  # class 2: name vs directory
+  as_n="$(grep -m1 '^name:' "$AS_BAD" | sed 's/^name:[[:space:]]*//')"
+  if [ "$as_n" = "bad-skill" ]; then
+    bad "/audit skills fixture lost its name/dir mismatch plant"
+  else
+    ok "/audit skills class-2 plant intact (name '$as_n' != dir bad-skill)"
+  fi
+  # class 5: the dead citation must be dead, and the twin's must resolve
+  if [ -f fixtures/audit-skills/bad-skill/references/ghost-procedure.md ]; then
+    bad "/audit skills class-5 plant lost — the ghost reference now exists"
+  elif [ ! -f fixtures/audit-skills/good-skill/references/real-procedure.md ]; then
+    bad "/audit skills class-5 negative twin broken — the good skill cites a file that is missing"
+  else
+    ok "/audit skills class-5 plant dead and its twin resolves"
+  fi
+  # the target must be reachable from SKILL.md at all
+  grep -q 'references/target-skills.md' skills/audit/SKILL.md \
+    || bad "/audit SKILL.md does not cite the skills target — the fifth mode is stranded"
+fi
+
 # --- Agent Skills divergence: README's claim vs the real allowlist (4.56) ---
 # README tells adopters that exactly TWO frontmatter fields diverge from the
 # Agent Skills spec. That is a claim about check.sh's allowlist, and adding a

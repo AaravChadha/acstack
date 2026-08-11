@@ -1,13 +1,13 @@
 ---
 name: audit
-description: Audit one of four targets. code - defect hunt producing a report with safety checks and adversarial verification evidence; docs - drift check of README/PLAN/JOURNAL against the actual tree, counts, and checkbox reality; eval - failure classification with the never-inflate rule; tests - finds tests that pass without catching, including a mutation spot-check. Use when the user asks to audit or review code, a PR, project docs, an eval report, or a test suite.
-argument-hint: "code|docs|eval|tests [path | PR# | diff range]"
+description: Audit one of five targets. code - defect hunt producing a report with safety checks and adversarial verification evidence; docs - drift check of README/PLAN/JOURNAL against the actual tree, counts, and checkbox reality; eval - failure classification with the never-inflate rule; tests - finds tests that pass without catching, including a mutation spot-check; skills - SKILL.md hygiene. Use when the user asks to audit or review code, a PR, project docs, an eval report, a test suite, or a skill.
+argument-hint: "code|docs|eval|tests|skills [path | PR# | diff range]"
 allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git diff:*), Bash(git check-ignore:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(gh pr view:*), Bash(gh pr diff:*)
 ---
 
 # /audit — find what's wrong and report it honestly
 
-Three targets, one stance: verdicts backed by evidence, misses logged rather
+Five targets, one stance: verdicts backed by evidence, misses logged rather
 than massaged, and scope stated so the reader knows what was NOT checked.
 
 `Adjacent skills:` /secure (security-only findings with exploit scenarios) ·
@@ -49,7 +49,7 @@ its path in the report's scope line. If more than one candidate set exists
 list the candidates and STOP. Never pick one silently: a confident answer
 about the wrong product is worse than no answer (conduct rule 8).
 
-**Every line number is pasted, never counted — all four targets.** A
+**Every line number is pasted, never counted — all five targets.** A
 `file:line` in any report comes from line-numbered tool output
 (`grep -n`), not from counting or recall: a wrong line number turns a
 real finding into one the author can dismiss.
@@ -69,8 +69,9 @@ stop condition (no results file, no test suite) on top of it.
 ## Target: code
 
 Full procedure: `references/target-code.md` — read it when the
-invocation names `code`, and not otherwise. It carries the does-this-need-
-auditing gate, the report shape, and the reports-never-fixes rule.
+invocation names `code`, and not otherwise. It carries the known-bug-class
+sweep, the report shape, and the reports-never-fixes rule. (The
+does-this-need-auditing gate moved OUT of it in 4.61 and is above.)
 
 ## Target: docs
 
@@ -89,3 +90,11 @@ stop, the failure buckets, and the never-inflate rule.
 Full procedure: `references/target-tests.md` — read it when the
 invocation names `tests`, and not otherwise. It carries the five
 no-teeth classes, the mutation spot-check, and the revert discipline.
+
+## Target: skills
+
+Full procedure: `references/target-skills.md` — read it when the
+invocation names `skills`, and not otherwise. It carries the seven
+classes: YAML-truncating frontmatter, name/dir match, description
+trigger surface, body budget, citation resolution, allowed-tools
+honesty, and conditional-branch waste.

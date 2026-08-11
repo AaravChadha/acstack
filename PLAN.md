@@ -1911,7 +1911,37 @@ reordered, if any.
   same report shape as before the split — behavioural, so it owes a
   shakedown slot under verification rule 6 [owed: 4.50].
 
-- [ ] **4.62** Add `/audit skills` as a fifth mode — skill-authoring from the
+- [x] **4.62** *(Done 2026-08-12. **Shipped as a MODE, and the description
+  grew 36 chars against a <40 budget** — 460 -> 496, well inside 4.59's 600
+  per-description cap. `references/target-skills.md` carries seven classes:
+  YAML-truncating frontmatter, name/dir match, the description as trigger
+  surface, body budget, citation resolution, `allowed-tools` honesty, and
+  conditional-branch waste. It re-expresses what `check.sh` does rather
+  than shelling out to it, because **an adopter's skill is not in this
+  tree** — that is the whole point of the target.
+  **The negative twin caught a false positive in a check written minutes
+  earlier.** Class 1's first grep was `^description:.*( #|: )`, which
+  flagged the GOOD fixture: a quoted description may legitimately contain
+  `: `, and the parsed form confirmed it survives intact. A grep that fires
+  on correct skills trains its reader to ignore it. Narrowed to
+  `^description:[[:space:]]*[A-Za-z].*( #|: )` — unquoted values only.
+  **Second finding, from the same fix:** the intermediate pattern used
+  `[^"'... ]`, and **a documented grep containing a literal single quote
+  cannot be extracted by this pack's own control convention**, which cuts
+  at the first quote. Written as `[A-Za-z]` for that reason, and the
+  reference says so.
+  **Two stale claims fixed in passing, one of them mine:** `/audit` opened
+  "Three targets, one stance" while carrying four (stale before this task),
+  and the `target-code` pointer still advertised the does-this-need-auditing
+  gate that **4.61 moved out of it one commit earlier** — a
+  doc-says/reality-is mismatch inside `/audit` itself.
+  Fixtures `bad-skill` (four plants) and `good-skill` (the twin) added;
+  controls 104 -> 107, all four shown failing first — the naive pattern
+  firing on the twin, the plant repaired so the grep misses, the ghost
+  reference created, and the fifth target stranded. `/audit` sits at 26
+  wasted lines, under 4.61's 40 threshold, with five pointers.
+  **Still owed:** the behavioural half — a live model actually running
+  `/audit skills` against a defective skill — [owed: 4.50].)* Add `/audit skills` as a fifth mode — skill-authoring from the
   verification side. **Scheduled by 4.59** (2026-08-11) as a MODE, not a
   skill: the field's most-recurring verb across 8 independent sources, and
   acstack already holds the methodology in AGENTS.md and `check.sh` rather
