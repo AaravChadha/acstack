@@ -2157,7 +2157,36 @@ reordered, if any.
   (landmines from source, open questions from analysis), so `TBD` was
   arguably never warranted there and the first two re-test runs were
   scored against a bar they should have failed. Venue 2 exists because of
-  that error.)*
+  that error.
+  **Sharpened test run 2026-08-12 (`run-rt5`) — branch NOT REACHED, and
+  the residual is narrower than this task states.** On the stub path with
+  no unattended cue the session called `AskUserQuestion` 4 times, wrote no
+  BRIEF, and asked: *"The picker didn't get an answer back. I won't invent
+  these … fabricating an audience or a constraint is the one thing this
+  step must not do. But you're right here, so let me not freeze a BRIEF
+  full of TBDs either."* It reads the stub as **no answer** — the re-keyed
+  observable — quotes the hoisted rule with its field list, weighs the TBD
+  freeze, and deliberately chooses to ask. 2/2 on venue 2 (`rt3`, `rt5`);
+  2/2 on venue 1 the model freezes instead, because venue 1's gaps are
+  derivable. Asking is correct conduct, so the branch is hard to reach by
+  design. Graded N/A, not FAILED.
+  **What the fix demonstrably changed:** the fabricated domain landmine did
+  not recur — `run-b2`'s "'Same title' is not 'same book' … do NOT dedupe
+  by title" appears in b2 alone, **0 of 4 post-fix runs** — and sourcing
+  density inside the landmine section roughly tripled (pre-fix b1 5 refs /
+  10 landmines, b2 2/7; post-fix rt1 17/8, rt2 9/7, rt4 13/10; a density
+  proxy counting matching lines, not one audit per bullet).
+  **What remains, restated honestly:** not "invents when it cannot ask" —
+  that is fixed and demonstrated. What remains is that when the model does
+  freeze, it prefers its own Open-questions representation to the `TBD`
+  literal and tolerates a soft quantity estimate. That is a representation
+  preference, not an invention defect, and forcing TBD over asking may be
+  the wrong trade. **Three shapes, none pre-decided, and the ruling is the
+  user's:** (1) close this with the claim narrowed to what is proven;
+  (2) fold the residual into **4.66** as a second dated instance of
+  advisory prose followed unevenly, on a non-destructive path; (3) keep it
+  open and change the representation rule itself. CI green on the fix as
+  shipped: run 31620556834.)*
 
 - [x] **4.68** *(Done 2026-08-12. The rule now has one home:
   `mode-seed.md` states both states — `none known yet; expect to discover
