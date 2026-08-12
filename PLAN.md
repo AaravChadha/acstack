@@ -2080,14 +2080,57 @@ reordered, if any.
   zero startup cost, advisory, and the count has been held at ten
   deliberately once before. (4) Nothing: the harness already prompts on
   hard-to-reverse actions, and this session's double-check happened because
-  the user asked. **Acceptance:** a dated verdict naming which shape and
+  the user asked.
+  **Counter-evidence, added 2026-08-12 from 4.67 — and it does NOT widen
+  this task.** This task is scoped to IRREVERSIBLE acts; writing a BRIEF is
+  not one, and nothing below asks for a shape covering advisory rules in
+  general. What the datum bears on is the *evidence* above, which argues
+  that advisory prose is "followed unevenly" and therefore the wrong
+  reliability class. 4.67 is a dated instance pointing the other way. Given
+  a rule it had just read, a live model **quoted its field list back**
+  (*"fabricating an audience or a constraint is the one thing this step
+  must not do"*), recognised the harness condition the rule was re-keyed
+  onto (*"The picker didn't get an answer back"*), **explicitly weighed the
+  prescribed form and declined it** (*"let me not freeze a BRIEF full of
+  TBDs either"*), and asked instead — which is what conduct rule 8 wants.
+  Across four post-fix runs the fabrication the rule exists to stop
+  occurred **zero** times. So on a non-destructive path, advisory prose was
+  not followed unevenly; it was followed thoughtfully, and the one
+  deviation was of FORM and was better than compliance.
+  **Which shape this argues for:** it weakens (1), the enforced hook, as a
+  general instrument — a `PreToolUse` gate cannot tell "deviating because
+  it read the rule and judged well" from "ignoring the rule", and here it
+  would have blocked the better answer. It leaves (1) untouched for
+  genuinely destructive acts, where there is no better answer to block, and
+  it modestly strengthens (3), the conduct rule. **The distinction to rule
+  on is therefore reversibility, not compliance rates** — the evidence for
+  crossing the boundary is strong exactly where an act cannot be undone and
+  weak everywhere else.
+  **Acceptance:** a dated verdict naming which shape and
   why the other three lose; if a hook ships, `./setup` installs and
   `--uninstall` removes it with the same never-delete-a-real-file property
   the symlink path has, shown on a machine where the user already has a
   populated `settings.json`; if a rule ships, it is shown changing a model's
   behaviour in a live run, not merely written down.
 
-- [ ] **4.67** `/plan seed`'s unattended branch cannot fire in the run it
+- [x] **4.67** *(Done 2026-08-12. The never-guess rule is hoisted above
+  the unsupplied-sections block and binds on every path, with a
+  `Deriving is not guessing` carve-out; the branch is re-keyed off the
+  judgement "is this unattended" onto the observable **"you did not ask,
+  or you asked and no answer came back"**. check.sh §31 pins the rule's
+  POSITION — re-nesting is the regression — and all three of its branches
+  were watched failing before being trusted; three matrix cases added.
+  **Proven at file:line, not by summary:** the fabricated domain landmine
+  appears in `run-b2` alone, **0 of 4 post-fix runs**; every post-fix run
+  attributes its volume estimate and names the gap, where pre-fix `b1`
+  asserted it flat. `run-rt4` emits the literal 5 times under a
+  `## Open TBDs` heading. `run-rt5` on the bare stub path reads it as no
+  answer — *"The picker didn't get an answer back. I won't invent
+  these"* — and asks rather than freeze, which is conduct rule 8 working,
+  not a defect. What is NOT claimed: that a frozen BRIEF always uses the
+  `TBD` literal rather than an Open-questions section. It does not, and
+  that residual is filed to 4.66 as counter-evidence, not as owed work.)*
+  `/plan seed`'s unattended branch could not fire in the run it
   was written for. Found by shakedown 15 (2026-08-12), 2/2 clean runs.
   `references/mode-seed.md:11-18` opens *"When nobody can answer — a
   non-interactive or unattended run — asking is not an option"* and
@@ -2177,16 +2220,28 @@ reordered, if any.
   10 landmines, b2 2/7; post-fix rt1 17/8, rt2 9/7, rt4 13/10; a density
   proxy counting matching lines, not one audit per bullet).
   **What remains, restated honestly:** not "invents when it cannot ask" —
-  that is fixed and demonstrated. What remains is that when the model does
-  freeze, it prefers its own Open-questions representation to the `TBD`
-  literal and tolerates a soft quantity estimate. That is a representation
-  preference, not an invention defect, and forcing TBD over asking may be
-  the wrong trade. **Three shapes, none pre-decided, and the ruling is the
-  user's:** (1) close this with the claim narrowed to what is proven;
-  (2) fold the residual into **4.66** as a second dated instance of
-  advisory prose followed unevenly, on a non-destructive path; (3) keep it
-  open and change the representation rule itself. CI green on the fix as
-  shipped: run 31620556834.)*
+  that is fixed and demonstrated. What remains is only that when the model
+  does freeze, it prefers its own Open-questions representation to the
+  `TBD` literal. That is a representation preference, not an invention
+  defect, and forcing TBD over asking may be the wrong trade.
+  **A correction to this note, made before closing it.** An earlier draft
+  said `rt1`'s volume estimate was unattributed. It is not:
+  `run-rt1/BRIEF.md:31-33` reads *"(That bound is derived from the
+  single-user personal-tracker use case, not supplied by me; exact counts
+  were not given and are not load-bearing for the design at this scale.)"*
+  All four post-fix runs attribute the estimate and name the gap, or route
+  it to the TBD list; pre-fix `b1` asserts *"Volume is tiny: tens to low
+  hundreds of lines accumulated over years"* flat, with no source and no
+  gap named. The error understated the fix, and it was caught by re-reading
+  the artifact rather than trusting the summary — which is why the closing
+  claim below is stated against `file:line`, not against this note.
+  **Verdict (2026-08-12): CLOSED on shape (1), with the residual filed to
+  4.66 as scoped counter-evidence rather than left as owed work.** Shapes
+  (2) and (3) lose: (3) would change a rule to force `TBD` over asking,
+  and asking is what conduct rule 8 wants — the deviation observed was
+  better than compliance would have been; (2) as originally phrased would
+  have moved an open obligation into a task scoped to *irreversible acts*,
+  silently widening it. What moves to 4.66 is the datum, not the debt.)*
 
 - [x] **4.68** *(Done 2026-08-12. The rule now has one home:
   `mode-seed.md` states both states — `none known yet; expect to discover
