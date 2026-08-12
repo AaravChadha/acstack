@@ -2273,6 +2273,57 @@ reordered, if any.
   cannot drift back apart. Sequence with 4.67 — whichever lands first sets
   the wording the other adopts.
 
+- [ ] **4.69** Rule how `/design` and `/design-audit` pair, because 4.30's
+  acceptance as written can never pass. Found by shakedown 16 (2026-08-13),
+  the first run of 4.30's behavioural acceptances. A3 says *"/design-audit +
+  ai-tells run on /design's output returns no findings — the pairing is this
+  skill's positive control."* A blind audit of a genuinely good `/design`
+  output returned **3 findings, all verified true at `file:line`, 0 false
+  positives** — and the headline one had been **explicitly disclosed by
+  /design in its own Scope section** (`"First-paint hydration… state is
+  hardcoded as a stand-in for server-rendered/injected data"`).
+  **Both skills behaved correctly and the acceptance still failed.**
+  `/design`'s honest-scope rule — *"a design that cannot answer all eight
+  items is reported as incomplete with the gaps named"* — deliberately ships
+  artifacts carrying disclosed gaps; `/design-audit` sees only the artifact,
+  so it flags them. A zero-findings bar is unreachable for any design with a
+  scope boundary, which is every honest one. **Acceptance:** a dated verdict
+  choosing the shape — e.g. the bar becomes "no findings **other than ones
+  /design named in Scope**", verified by feeding the auditor that Scope list;
+  or the pairing stops being a pass/fail control and becomes a diff. Whatever
+  is chosen must be re-run against `~/shakedown-16` and produce a defensible
+  verdict on the same three findings.
+
+- [ ] **4.70** `/design`'s report is not verified against its own artifact.
+  Three instances in one run (shakedown 16, 2026-08-13). (a) It claims *"only
+  `transform`/`opacity`/`background-color` animated"*; the real set is
+  `{background-color, border-color, box-shadow, transform}` — `opacity`
+  claimed but never animated, `box-shadow` (the expensive repaint) and
+  `border-color` animated and unclaimed. **A claim about a set that does not
+  enumerate the set**, which is this repo's own rule, broken by its own
+  skill. (b) It reported item 8 (UX writing) as answered while shipping a
+  header reading *"Changes save as you make them"* over an email field that
+  only persists on an explicit button — a promise the UI does not keep. (c)
+  Same item, a merely-disabled row painted in `--danger-text`, the same
+  colour as a real write failure. **Not every claim was wrong** — "zero raw
+  hex in component CSS" is true (0 hex after line 67) and all 39 token
+  aliases resolve — so the fix is verification, not distrust.
+  **Acceptance:** the eight-item section's checkable claims are derived from
+  the artifact rather than asserted, and a live run reproduces the animated
+  property set correctly on a page that animates something outside the
+  compositor-friendly three. Mechanical green does not discharge it (rule 6).
+
+- [ ] **4.71** `ai-tells.md:102` misses the reserved `.example` TLD. The
+  fabricated-content grep is `@example\.(com|org)`; RFC 2606 reserves
+  `.example` as a **TLD** as well as `example.com/net/org` as domains, and a
+  seeded address ending `.example` sailed past it in shakedown 16. The model
+  caught it by reading and citing the RFC — the grep did not. **Fifth
+  instance of the denylist class in this repo**, after the seven-emoji list,
+  the `sk-` secret regex, the violet-hex palette list, and the `\b` POSIX
+  hazard. **Acceptance:** the pattern covers the reserved set enumerated
+  rather than sampled, and a control seeds a `.example` address and is
+  watched failing before the fix, per the prove-it-fires rule.
+
 - [ ] **4.50** The next shakedown's mandatory segments — everything a
   round is already known to owe. *(**Updated 2026-08-12:** round 13 ran
   4.58's ladder and **discharged 4.52's re-test** — `q10` graded correctly
@@ -2358,7 +2409,40 @@ reordered, if any.
   in `docs/shakedown-method.md`. Blind integrity clean: 0 reads of this
   repo's PLAN.md or JOURNAL.md, no run reasoned about being tested.
   Evidence: `~/shakedown-15/ROUND.md`, pre-registered before any session
-  ran.)* Verification rule 6 says a
+  ran.)*
+  *(**Shakedown 16, 2026-08-13 — segment (c) COVERED, and it did not
+  pass.** 4.30's four behavioural acceptances were run for the first time,
+  on a blind venue: `fixtures/design/index.html` with every comment
+  stripped, because the fixture's comments name the plants outright
+  (`item 7`, `no reduced-motion — item 4`, `the write has no failure
+  path`). 139 → 105 lines, all 9 plant tokens verified intact after the
+  strip, 0 revealing comments left. The prompt was checked against 14 leak
+  terms and hit none, because A4 requires the failure path **unprompted**.
+  **A1 HELD** — `tokens.json` carries 99 DTCG `$value` tokens in three
+  layers, 39 aliases, **0 unresolved** (checked with a resolver, not taken
+  on the report's word); the self-critique names all three seeded tells and
+  sits before the artifact sections, the ordering 4.32 found `/design`
+  contradicting itself about. **A2 HELD 8/8**, with `zero/one/many`
+  explicitly marked N/A and carried into Scope rather than dropped.
+  **A4 HELD** — `onToggle` does `const prev = ch.on`, flips optimistically,
+  and reverts in `catch` while announcing what it restored. Removal proved
+  rather than absence assumed: violet gradient, eyebrow, 🔔, `width: 680px`,
+  `transition: all` and placeholder-as-label are all gone.
+  **A3 FAILED — and the acceptance is what broke.** A blind `/design-audit`
+  returned **3 findings** against a bar of 0; every one verified true at
+  `file:line`, **0 false positives**. The headline finding was one
+  `/design` had **already disclosed in its own Scope section**. Both skills
+  were correct and the acceptance still failed, because `/design`'s
+  honest-scope rule ships artifacts with named gaps and `/design-audit`
+  only sees the artifact. Carried as **4.69**. The other two findings were
+  genuine misses inside item 8, the item `/design` reported answered —
+  carried with a third self-report defect as **4.70**. A gap in
+  `ai-tells.md:102`'s fabricated-content grep is **4.71**.
+  **Not covered, stated plainly:** the widened emoji-as-icon check was
+  never exercised — `/design` removed the 🔔, so there was nothing to
+  catch. That detector still awaits a page that keeps one. Evidence:
+  `~/shakedown-16/ROUND.md`, pre-registered before any session ran.)*
+  Verification rule 6 says a
   behaviourally-found fix stays unverified until a live run re-tests it,
   and mechanical green never discharges it. Three debts have accumulated
   with no task owning any of them, which is the rule-3 orphan 4.47 exists
