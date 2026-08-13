@@ -3659,6 +3659,18 @@ existing contract — not a redesign.
   run (`#N:` commit subjects, a populated issue list, a working
   `.github/ISSUE_TEMPLATE/task.md`), and 4.50's tickets segment has to
   build a venue from scratch. Delete it after that round, not before.)*
+  *(**Closed 2026-08-13.** Shakedown 17 ran the tickets segment and built
+  its own venue, `acstack-s17-tickets`, which supersedes w2 as the live
+  example — richer, and rigged for the paths that round left uncovered
+  (`/ticket`, `/investigate`, the failing-acceptance path, `Fixes #N`).
+  `acstack-w2-shakedown` was then **deleted by the user**, verified gone.
+  The `delete_repo` scope was granted and **removed again in the same
+  sitting** — scopes confirmed back to `gist, read:org, repo, workflow` —
+  which is the narrow-capability-window shape 4.66 should weigh: the
+  control that bounded the blast radius was the short-lived grant plus
+  `gh`'s own requirement that the target be named in full, not a hook.
+  `acstack-s17-tickets` is **kept deliberately**, and is the venue the
+  uncovered paths need.)*
 - [x] **Referral block / discoverability (NEW 2026-07-29).** Typed-only
   skills (`disable-model-invocation: true`) are invisible to the agent,
   so it cannot recommend what it cannot see — a user who never discovers
