@@ -2383,7 +2383,7 @@ reordered, if any.
   bare form and is watched failing first, and a live run confirms a skill
   no longer disagrees with the binary.
 
-- [ ] **4.73** The tickets bootstrap has no owning mode, and a shipped fix
+- [x] **4.73** The tickets bootstrap had no owning mode, and a shipped fix
   command names the wrong one. `plan/references/tickets-mode.md:18` lists
   "**One-time bootstrap**" as a sibling bullet with NO mode attached,
   directly after "**seed** is unchanged".
@@ -2407,14 +2407,22 @@ reordered, if any.
   rules-out-`seed` clause, the fix line naming no mode, and the fix line
   pointing at `/plan seed` — the exact wrong guess observed live. Two
   matrix cases added, both seeds verified to mutate; matrix 119 → 121.
-  **Why it stays open:** 4.73 was found behaviourally, so verification rule
-  6 applies whatever this task's own acceptance says — mechanical green
-  proves the authored fix, never that a model now behaves differently. The
-  re-test was attempted (`~/shakedown-17/run-health2`, local
-  `ISSUE_TEMPLATE/task.md` removed so check 8 fails without touching the
-  remote) and **died incomplete inside a five-hour rate-limit window** — 26
-  events, no result. Re-run that venue and confirm the prescribed fix reads
-  `/plan build`; nothing else is owed.)*
+  ~~**Why it stays open:** … the re-test died incomplete inside a five-hour
+  rate-limit window — 26 events, no result.~~
+  **Verdict (2026-08-14): that was wrong, and the correction matters more
+  than the conclusion.** The run had not died; it was still streaming when
+  I read its transcript at 26 events, and the `rate_limit_event` in it
+  reads `status: allowed` — informational, not a kill. It finished at **80
+  events with a result**. Reading a live log mid-stream and treating the
+  snapshot as final is the same class as verifying the authored form
+  instead of the consumed one.
+  **Re-tested live, HELD.** Venue `~/shakedown-17/run-health2` with the
+  local `ISSUE_TEMPLATE/task.md` removed so check 8 fails without touching
+  the remote. `/health` check 8 now reports
+  `✗ → /plan build` — the correct mode. The four remaining `/plan seed`
+  fixes in that report are checks 2 (Pointer), 3 (Conduct) and 3b
+  (Referrals), where `seed` genuinely is the fix; **no tickets fix points
+  at `seed`**. Rule 6 discharged.)*
 
 - [ ] **4.74** Rule the half-remote bootstrap. Labels, milestones and issues
   are created REMOTELY via `gh` and exist immediately; `.github/ISSUE_TEMPLATE/task.md`
