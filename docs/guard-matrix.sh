@@ -304,6 +304,12 @@ fullcase "deriving carve-out dropped"       FAIL 'never-guess' bash -c "sed -e '
 # the DEFAULT; or the warning is silenced, restoring the silent-fallback that
 # made an unreadable config indistinguishable from no config at all.
 fullcase "config resolver needs the dash again" FAIL 'control' bash -c "sed -e 's|s/\\^\\[\\[:space:\\]\\]\\*-\\\\{0,1\\\\}\\[\\[:space:\\]\\]\\*|s/^-[[:space:]]*|' bin/acstack-config > t && mv t bin/acstack-config && chmod +x bin/acstack-config"
+# 4.74 issue template: on disk is not in effect. GitHub serves templates from
+# the default branch, so the bootstrap's local task.md governs nobody until
+# pushed. Both rot directions: the bootstrap stops saying so, and /health goes
+# back to `ls` alone (which reported present on a template the API 404s for).
+fullcase "bootstrap drops the commit caveat" FAIL 'control' bash -c "sed -e 's/until it is committed and/once written, and/' -e 's/not yet in effect/written/' skills/plan/references/tickets-mode.md > t && mv t skills/plan/references/tickets-mode.md"
+fullcase "health template check back to ls" FAIL 'control' bash -c "grep -v 'contents/.github/ISSUE_TEMPLATE/task.md' skills/health/references/health-checks.md > t && mv t skills/health/references/health-checks.md"
 # 4.73 bootstrap ownership. The bullet shipped with no owning mode and
 # /health's fix line named none either, so a live session guessed `/plan
 # seed`. Both directions: the definition loses its mode, and the consumer

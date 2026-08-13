@@ -796,6 +796,34 @@ else
   bad "docs/guard-matrix.sh missing — the snapshot contract has no control"
 fi
 
+# --- issue template: on disk is not in effect (4.74) ---
+# GitHub serves issue templates from the DEFAULT BRANCH, so the bootstrap's
+# locally-written task.md governs nobody until it is committed and pushed —
+# while the labels and milestones beside it exist immediately. /health ran
+# `ls` alone and reported the template present while the API returned 404.
+# Both sites must name the distinction, and /health must actually query it.
+ms=skills/plan/references/tickets-mode.md
+hc=skills/health/references/health-checks.md
+if [ -f "$ms" ] && [ -f "$hc" ]; then
+  if grep -qiE 'until it is committed|not yet in effect' "$ms"; then
+    ok "tickets bootstrap says the template is not in effect until pushed"
+  else
+    bad "tickets bootstrap no longer says the template needs a commit — 4.74's silent asymmetry is back"
+  fi
+  if grep -qF 'contents/.github/ISSUE_TEMPLATE/task.md' "$hc"; then
+    ok "/health queries whether the template is IN EFFECT, not just on disk"
+  else
+    bad "/health checks the template with ls alone again — it will report present on a template GitHub serves 404 for (4.74)"
+  fi
+  if grep -qiE 'not in effect|in effect' "$hc"; then
+    ok "/health names on-disk vs in-effect as distinct states"
+  else
+    bad "/health no longer distinguishes on-disk from in-effect for the issue template (4.74)"
+  fi
+else
+  bad "tickets-mode.md or health-checks.md missing — the template-in-effect contract has no control"
+fi
+
 # --- tickets bootstrap: one owning mode, named at both sites (4.73) ---
 # The bootstrap bullet shipped with NO mode attached, directly under a bullet
 # reading "seed is unchanged", and /health's fix line named no mode either.

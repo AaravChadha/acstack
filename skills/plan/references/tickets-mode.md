@@ -30,6 +30,16 @@ the exact missing precondition and offer document mode; never guess.
   - `.github/ISSUE_TEMPLATE/task.md`: scaffold with `## Acceptance
     criteria`, `## Files touched`, `## Out of scope` — so hand-filed
     issues arrive well-formed too.
+    **This one is a FILE, and it governs nobody until it is committed and
+    pushed** — GitHub serves issue templates from the default branch, so a
+    local copy shapes nothing for anyone else. Labels, milestones and
+    issues are API objects and exist the moment they are created; the
+    template is not, and `/plan` does not push (that is `/ship`'s job).
+    **The split is imposed by GitHub, not chosen** — it cannot be designed
+    away, so the bootstrap must NAME it: report the template as written but
+    **not yet in effect**, with the commit as the outstanding step. Left
+    unsaid until 2026-08-14, when a live bootstrap produced a template that
+    `ls` found and the API returned 404 for (4.74).
 - **Task → issue mapping:** title = task title; body = acceptance criteria
   (runnable where possible) + file paths + out-of-scope; subtasks → a
   checklist in the issue body; milestone = the task's phase.

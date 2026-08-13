@@ -163,9 +163,19 @@ check never fails the project.
 ```bash
 gh auth status
 gh label list --json name --jq '.[].name'    # expect blocked, needs-acceptance, bug, feature, chore
-ls .github/ISSUE_TEMPLATE/task.md
+ls .github/ISSUE_TEMPLATE/task.md                    # present on disk
+gh api "repos/{owner}/{repo}/contents/.github/ISSUE_TEMPLATE/task.md" --jq .name
+                                                     # ...and IN EFFECT? 404 = not
 gh issue list --state open --json number,updatedAt   # stale count vs stale-days
 ```
+
+**Present on disk is not in effect.** GitHub serves issue templates from the
+default branch, so an uncommitted template governs nobody — and `/plan`'s
+bootstrap writes it locally without pushing, by design. Until 2026-08-14
+this check ran `ls` alone and reported ✓ on a template the API returned 404
+for, which is the doc-says/reality-is shape /health exists to catch (4.74).
+Report it as its own state: on disk but **not in effect**, fix = commit and
+push it.
 
 Missing labels/template → ✗ with the fix **`/plan build`** (idempotent) —
 name the mode, not just "the bootstrap". This line said only "re-run

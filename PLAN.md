@@ -2424,7 +2424,30 @@ reordered, if any.
   (Referrals), where `seed` genuinely is the fix; **no tickets fix points
   at `seed`**. Rule 6 discharged.)*
 
-- [ ] **4.74** Rule the half-remote bootstrap. Labels, milestones and issues
+- [x] **4.74** *(Done 2026-08-14. **Verdict: the split cannot be removed, so
+  it must be named — option (b) was impossible, not merely worse.** GitHub
+  serves issue templates from the DEFAULT BRANCH, so a locally-written
+  `task.md` governs nobody until committed and pushed; labels, milestones
+  and issues are API objects that exist on creation; and `/plan` does not
+  push by deliberate design. The asymmetry is imposed by GitHub, not chosen
+  by the pack.
+  **Re-derivation widened it past the write-up.** The task named only the
+  bootstrap. `/health` check 8 ran `ls .github/ISSUE_TEMPLATE/task.md`
+  **alone**, so it reported the template PRESENT while
+  `gh api repos/{owner}/{repo}/contents/...` returned **404** — demonstrated
+  live on `run-build` before any edit. A doc-says/reality-is mismatch inside
+  the skill whose job is catching exactly that.
+  **Both sites fixed:** the bootstrap now states the template is written but
+  **not yet in effect**, with the commit as the outstanding step; `/health`
+  queries the default branch as well as the disk and reports on-disk and
+  in-effect as distinct states. Three controls, **each watched failing** —
+  one seed of mine was too weak (`COMMITTEDXX` still contains `committed`)
+  and proved nothing until corrected. Two matrix cases, both seeds verified
+  to mutate; matrix 121 → 123.
+  **Live re-tested per rule 6** on the venue that exposed it: `/health` now
+  reports *"Issue template on disk but NOT in effect — `.github/` is
+  untracked, API returns 404 on the default branch, so it governs
+  nobody"*, where the same check previously reported ✓.)* Rule the half-remote bootstrap. Labels, milestones and issues
   are created REMOTELY via `gh` and exist immediately; `.github/ISSUE_TEMPLATE/task.md`
   is written LOCALLY and never pushed — correct on its own terms, since
   `/plan` does not push and that is `/ship`'s job. Verified in shakedown 17:
