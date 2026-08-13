@@ -102,7 +102,12 @@ audit (a full sweep is /triage's job):
 From PLAN.md in plan order: ID, task text, and its acceptance line.
 Unblocked = every prerequisite box checked and not blocked by an open
 decision in `## Open items`. Fewer than three exist → list what's there and
-say why the rest are blocked. A task carrying **no `**Acceptance:**` line**
+say why the rest are blocked. **Never pad the list to three.** A blocked
+item does not become ready work by being annotated: listing one under a
+heading that says "unblocked" is a false ready-signal, and "three" is a cap,
+not a quota. This applies in **both** modes — tickets mode below relies on
+this paragraph rather than restating it (4.75).
+A task carrying **no `**Acceptance:**` line**
 is still listed, flagged as `no acceptance recorded` — the sibling of
 `/do`'s stop on the same gap. Do not invent one to fill the column: a task
 whose done-condition is unwritten is a real finding about the plan, and
@@ -125,7 +130,12 @@ checkbox scan becomes a tracker query:
 - `gh issue list` open issues in the current milestone; milestone burn
   stated as open/closed counts against its exit criterion.
 - Next 3 = top unblocked open issues (no `blocked` label) in the current
-  milestone, each with its acceptance section's first line.
+  milestone, each with its acceptance section's first line. **The
+  fewer-than-three rule in "Next 3 unblocked subtasks" above governs here
+  too — three is a cap, not a quota, and a `blocked` issue is never listed
+  to reach it.** This section omitted that clause until 2026-08-14; with one
+  unblocked issue in the milestone, a live run padded to three by including
+  the `blocked` one under an "unblocked" heading (4.75).
 - Read-only here too: no issue edits, no labels, no comments.
 
 ## Hard rules

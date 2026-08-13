@@ -796,6 +796,40 @@ else
   bad "docs/guard-matrix.sh missing — the snapshot contract has no control"
 fi
 
+# --- /resume next-3: three is a cap, not a quota (4.75) ---
+# Document mode carried "fewer than three exist -> list what's there"; the
+# tickets section omitted it. With one unblocked issue in the milestone a live
+# run padded to three by listing the `blocked` issue under a heading reading
+# "unblocked" — a false ready-signal. /triage, same data, excluded it. The
+# rule now lives once in the document-mode paragraph and tickets mode points
+# at it; both the prohibition and the pointer are asserted.
+rs=skills/resume/SKILL.md
+if [ -f "$rs" ]; then
+  if grep -qiE 'never pad the list to three' "$rs"; then
+    ok "/resume forbids padding the next-3 list"
+  else
+    bad "/resume no longer forbids padding next-3 — a blocked item can be listed to reach three again (4.75)"
+  fi
+  # flattened: the canonical phrase wraps across a line in the document-mode
+  # paragraph, so a line-wise grep silently matched only the tickets copy —
+  # this control tested the wrong site until 2026-08-14.
+  doc="$(awk '/^## Next 3 unblocked subtasks/{f=1} /^## Mode: cold/{f=0} f' "$rs" | tr '\n' ' ')"
+  if printf '%s' "$doc" | grep -qiE 'cap, *not a quota'; then
+    ok "/resume's DOCUMENT-mode paragraph states three is a cap, not a quota"
+  else
+    bad "/resume's document-mode next-3 dropped the cap-not-a-quota framing — the canonical copy is gone (4.75)"
+  fi
+  # tickets mode must POINT at the shared rule, not carry a second copy
+  tk="$(awk '/^## Tickets mode/{f=1} f' "$rs" | tr '\n' ' ')"
+  if printf '%s' "$tk" | grep -qiE 'governs here'; then
+    ok "/resume tickets mode points at the shared fewer-than-three rule"
+  else
+    bad "/resume tickets mode no longer points at the shared next-3 rule — the two modes can drift again (4.75)"
+  fi
+else
+  bad "skills/resume/SKILL.md missing — the next-3 contract has no control"
+fi
+
 # --- issue template: on disk is not in effect (4.74) ---
 # GitHub serves issue templates from the DEFAULT BRANCH, so the bootstrap's
 # locally-written task.md governs nobody until it is committed and pushed —

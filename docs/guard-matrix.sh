@@ -304,6 +304,11 @@ fullcase "deriving carve-out dropped"       FAIL 'never-guess' bash -c "sed -e '
 # the DEFAULT; or the warning is silenced, restoring the silent-fallback that
 # made an unreadable config indistinguishable from no config at all.
 fullcase "config resolver needs the dash again" FAIL 'control' bash -c "sed -e 's|s/\\^\\[\\[:space:\\]\\]\\*-\\\\{0,1\\\\}\\[\\[:space:\\]\\]\\*|s/^-[[:space:]]*|' bin/acstack-config > t && mv t bin/acstack-config && chmod +x bin/acstack-config"
+# 4.75 next-3 is a cap, not a quota. Tickets mode lacked document mode's
+# fewer-than-three clause, so a live run padded to three by listing a
+# `blocked` issue under an "unblocked" heading. Both rot directions.
+fullcase "next-3 padding prohibition dropped" FAIL 'control' bash -c "sed -e 's/\*\*Never pad the list to three\.\*\*/Keep it short./' skills/resume/SKILL.md > t && mv t skills/resume/SKILL.md"
+fullcase "tickets next-3 stops pointing"      FAIL 'control' bash -c "sed -e 's/governs here/applies/' skills/resume/SKILL.md > t && mv t skills/resume/SKILL.md"
 # 4.74 issue template: on disk is not in effect. GitHub serves templates from
 # the default branch, so the bootstrap's local task.md governs nobody until
 # pushed. Both rot directions: the bootstrap stops saying so, and /health goes

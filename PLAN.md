@@ -2458,7 +2458,30 @@ reordered, if any.
   plainly that the template needs a commit before it governs anyone, or the
   split is removed. Not left as an undocumented asymmetry.
 
-- [ ] **4.75** `/resume` and `/triage` disagree about whether a `blocked`
+- [x] **4.75** *(Done 2026-08-14, and re-derivation corrected the diagnosis.
+  **The two specs never disagreed about what "unblocked" means** — both say
+  "no `blocked` label". The real gap: `/resume`'s DOCUMENT mode carries
+  *"Fewer than three exist → list what's there and say why the rest are
+  blocked"* (`SKILL.md:104`) and the TICKETS section omitted it entirely.
+  With one unblocked issue in M1 and a bare "Next 3" instruction, the live
+  run had no permission to return fewer, so it padded — listing the
+  `blocked` issue under an "unblocked" heading. A missing escape valve, not
+  a contradiction.
+  **Fixed one-home:** the document-mode paragraph gains *"Never pad the
+  list to three… three is a cap, not a quota"* and says it governs both
+  modes; the tickets section points at it rather than restating it.
+  **Three controls, each watched failing — and two of them were wrong
+  first.** The cap-not-a-quota phrase wraps across a line in the canonical
+  paragraph, so a line-wise grep silently matched only the *tickets* copy:
+  the control was testing the wrong site and duplicating its neighbour.
+  Retargeted with whitespace flattened and re-seeded so each control now
+  trips on its own site with the other intact. Two matrix cases; matrix
+  123 → 125.
+  **Live re-tested per rule 6** in the venue that produced the padding:
+  the heading is now *"Next unblocked work (M1)"*, the report says *"Only
+  **one** unblocked open issue in the current milestone — not padding to
+  three"*, and #2 sits under a separate "Blocked/held behind it" section
+  marked "Not listed as ready".)* `/resume` and `/triage` disagreed about whether a `blocked`
   issue is ready work. Found in shakedown 17 (2026-08-13) on identical data.
   `/resume`'s spec says next-3 is "top unblocked open issues (**no
   `blocked` label**) in the current milestone"; the live run listed issue #2
