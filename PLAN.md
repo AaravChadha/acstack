@@ -2324,7 +2324,35 @@ reordered, if any.
   rather than sampled, and a control seeds a `.example` address and is
   watched failing before the fix, per the prove-it-fires rule.
 
-- [ ] **4.72** `bin/acstack-config` silently ignores un-bulleted `## Settings`
+- [x] **4.72** *(Done 2026-08-14. Two halves, because either alone leaves the
+  silent path open. **(a) The leading `- ` is now optional** —
+  `value_from`'s pattern went `s/^-[[:space:]]*$1:` →
+  `s/^[[:space:]]*-\{0,1\}[[:space:]]*$1:`, so bare `key: value` resolves.
+  Re-derivation widened the fix: `value_from` is called at ALL THREE
+  precedence levels (global, project `## Settings`, per-skill section), so
+  the bug was three-fold, not the one site the write-up named.
+  **(b) A known key that is present but unreadable now WARNS on stderr**
+  instead of falling back silently — the condition that made an unreadable
+  config indistinguishable from no config. Unknown keys stay quiet, because
+  ignoring them is README's documented extension mechanism.
+  **The warning's first version was wrong and a control caught it:** it
+  required a colon, so `tracking = tickets` warned about nothing — the same
+  silent default, one layer up. Now separator-agnostic (`:`, `=`, or
+  whitespace).
+  **Five controls, every one watched failing on a seeded defect** —
+  restoring the mandatory dash, muting the warning, and making the warning
+  unconditional (which fires the two negative twins, unknown-key and
+  prose-naming-a-key). One seed of mine was itself wrong and proved nothing
+  until corrected. Two matrix cases added, both seeds verified to mutate;
+  matrix 117 → 119.
+  **README now documents the line format**, which had lived only inside
+  `templates/acstack.md` while the key table implied bare `key: value`.
+  **Live re-tested per rule 6** in the venue that exposed it: `/triage`
+  re-run reports **zero** config-mismatch lines where the first run opened
+  with a "Config caveat, read first" warning, and operated in tickets mode
+  throughout — proposing issue actions, never PLAN.md checkboxes. The
+  binary in that venue now reports `tracking=tickets (project)`,
+  `stale-days=0 (project)`.)* `bin/acstack-config` silently ignored un-bulleted `## Settings`
   keys. Found live by shakedown 17 (2026-08-13) — a `/triage` session
   reported the resolver saying `tracking=document (default)` while
   `.claude/acstack.md` plainly set `tracking: tickets`, and proceeded off

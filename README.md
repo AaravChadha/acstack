@@ -260,6 +260,22 @@ Copy `templates/acstack.md` to `.claude/acstack.md` in a project (or
 default → personal global → project `## Settings` → per-skill section.
 Unknown keys and sections are ignored — that's the extension mechanism.
 
+**The line format**, which used to live only in the template: one key per
+line under a `## Settings` heading, as `key: value`. A leading `- ` is
+optional, so both of these resolve identically:
+
+```markdown
+## Settings
+
+tracking: tickets
+- stale-days: 14      # inline comments are stripped
+```
+
+A key the pack ships that appears under `## Settings` but yields no readable
+value is reported on stderr rather than silently falling back to the default
+— an unreadable config used to be indistinguishable from no config at all.
+*Unknown* keys stay silent, because ignoring them is the extension mechanism.
+
 | Key | Values (default first) | Consumed by |
 |---|---|---|
 | `mode` | `standard` \| `hackathon` | /plan |

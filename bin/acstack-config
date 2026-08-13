@@ -35,9 +35,35 @@ section_of() { # file section-name
   awk -v s="## $2" '$0 == s {f=1; next} /^## / {f=0} f' "$1"
 }
 
-# value of key from a section dump on stdin; strips inline comments/space
+# value of key from a section dump on stdin; strips inline comments/space.
+# The leading `- ` is OPTIONAL (4.72). It was mandatory until 2026-08-13, so a
+# `## Settings` written as bare `tracking: tickets` — the natural markdown, and
+# the only form README's key table implies — resolved to the DEFAULT with no
+# warning. Three separate live sessions caught the pack disagreeing with its
+# own config file before anyone caught the regex.
 value_from() { # key
-  sed -n "s/^-[[:space:]]*$1:[[:space:]]*//p" | head -1 | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//'
+  sed -n "s/^[[:space:]]*-\{0,1\}[[:space:]]*$1:[[:space:]]*//p" | head -1 | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//'
+}
+
+# A known key that is PRESENT in a section but yields no value is the silent
+# failure this guard exists to stop: unknown keys are ignored by design
+# (README's extension mechanism), but a key the pack ships must never be read
+# as absent. Warns to stderr; never changes the exit code.
+warn_unparsed() { # file section-name
+  [ -f "$1" ] || return 0
+  local dump k bad=""
+  dump="$(section_of "$1" "$2")"
+  [ -n "$dump" ] || return 0
+  for k in $KEYS; do
+    # separator-agnostic on purpose: `key: v`, `key = v` and `key v` must all
+    # be caught. Requiring a colon here let `tracking = tickets` warn about
+    # nothing, which is the same silent default this guard exists to kill.
+    printf '%s\n' "$dump" | grep -qE "^[[:space:]]*-?[[:space:]]*$k([[:space:]:=]|\$)" || continue
+    [ -n "$(printf '%s\n' "$dump" | value_from "$k")" ] && continue
+    bad="$bad $k"
+  done
+  [ -n "$bad" ] && printf 'acstack-config: WARNING %s [## %s] names%s but no value could be read — check the line format (`key: value`, optionally `- key: value`)\n' "$1" "$2" "$bad" >&2
+  return 0
 }
 
 resolve() { # key [skill] -> sets VAL and SRC
@@ -52,6 +78,10 @@ resolve() { # key [skill] -> sets VAL and SRC
     [ -n "$v" ] && { VAL="$v"; SRC="project:$skill"; }
   fi
 }
+
+warn_unparsed "$GLOBAL_CFG" "Settings"
+warn_unparsed "$PROJECT_CFG" "Settings"
+[ "$#" -ge 2 ] && warn_unparsed "$PROJECT_CFG" "$2"
 
 if [ "$#" -ge 1 ]; then
   resolve "$1" "${2:-}"

@@ -11,6 +11,7 @@
 # fixtures/qa/README.md as a shakedown procedure instead.
 set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 1
+REPO_ABS="$PWD"   # controls that cd into a temp dir need an absolute path back
 fail=0
 skipped=0
 ok()  { printf '  ok   %s\n' "$1"; }
@@ -793,6 +794,47 @@ if [ -f docs/guard-matrix.sh ]; then
   fi
 else
   bad "docs/guard-matrix.sh missing — the snapshot contract has no control"
+fi
+
+# --- acstack-config: bare keys resolve, broken keys are LOUD (4.72) ---
+# The bug this replaces was silent by construction: `## Settings` written as
+# bare `tracking: tickets` resolved to the DEFAULT with no output of any kind,
+# so an unreadable config was indistinguishable from no config. Three separate
+# live sessions caught the pack disagreeing with its own file before anyone
+# read the regex. Both directions are asserted, plus two negative twins — a
+# guard that warns about unknown keys would break README's extension mechanism.
+if [ -x bin/acstack-config ]; then
+  cfg_probe() { # settings-body -> prints "VALUE|WARNED"
+    local d v w
+    d="$(mktemp -d)"; mkdir -p "$d/.claude"
+    printf '## Settings\n\n%s\n' "$1" > "$d/.claude/acstack.md"
+    v="$( cd "$d" && ACSTACK_GLOBAL_CONFIG=/nonexistent "$REPO_ABS/bin/acstack-config" tracking 2>/dev/null )"
+    w="$( cd "$d" && ACSTACK_GLOBAL_CONFIG=/nonexistent "$REPO_ABS/bin/acstack-config" tracking 2>&1 >/dev/null )"
+    rm -rf "$d"
+    printf '%s|%s' "$v" "$([ -n "$w" ] && echo WARNED || echo quiet)"
+  }
+  case "$(cfg_probe 'tracking: tickets')" in
+    "tracking=tickets (project)|quiet") ok "acstack-config resolves a BARE 'key: value' (the 4.72 defect)" ;;
+    *) bad "acstack-config no longer resolves a bare 'key: value' — 4.72 has regressed: $(cfg_probe 'tracking: tickets')" ;;
+  esac
+  case "$(cfg_probe '- tracking: tickets')" in
+    "tracking=tickets (project)|quiet") ok "acstack-config still resolves the template's bulleted form" ;;
+    *) bad "acstack-config broke the bulleted form the template ships: $(cfg_probe '- tracking: tickets')" ;;
+  esac
+  case "$(cfg_probe 'tracking = tickets')" in
+    *"|WARNED") ok "acstack-config WARNS on a known key it cannot read" ;;
+    *) bad "acstack-config fell back to the default SILENTLY on an unreadable known key — the 4.72 failure mode is back" ;;
+  esac
+  case "$(cfg_probe 'foo: bar')" in
+    *"|quiet") ok "acstack-config stays quiet on an unknown key (README's extension mechanism)" ;;
+    *) bad "acstack-config warns about an UNKNOWN key — that breaks the documented extension mechanism" ;;
+  esac
+  case "$(cfg_probe 'Use the tracking key to pick a mode.')" in
+    *"|quiet") ok "acstack-config stays quiet on prose that merely names a key" ;;
+    *) bad "acstack-config warns on prose naming a key — false positives train the reader to ignore it" ;;
+  esac
+else
+  bad "bin/acstack-config missing or not executable — the config contract has no control"
 fi
 
 echo

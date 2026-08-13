@@ -299,6 +299,12 @@ open(p,'w',encoding='utf-8').write(t.replace('A BRIEF with honest gaps', b+'A BR
 EOF"
 fullcase "every-path clause dropped"        FAIL 'never-guess' bash -c "sed -e 's/every path through this mode/REDACTED/' skills/plan/references/mode-seed.md > t && mv t skills/plan/references/mode-seed.md"
 fullcase "deriving carve-out dropped"       FAIL 'never-guess' bash -c "sed -e 's/Deriving is not guessing/REDACTED/' skills/plan/references/mode-seed.md > t && mv t skills/plan/references/mode-seed.md"
+# 4.72 config resolver. Two ways this rots, and the first is how it shipped:
+# the leading `- ` becomes mandatory again, so a bare `key: value` resolves to
+# the DEFAULT; or the warning is silenced, restoring the silent-fallback that
+# made an unreadable config indistinguishable from no config at all.
+fullcase "config resolver needs the dash again" FAIL 'control' bash -c "sed -e 's|s/\\^\\[\\[:space:\\]\\]\\*-\\\\{0,1\\\\}\\[\\[:space:\\]\\]\\*|s/^-[[:space:]]*|' bin/acstack-config > t && mv t bin/acstack-config && chmod +x bin/acstack-config"
+fullcase "config unreadable-key warning muted" FAIL 'control' bash -c "sed -e 's|\\[ -n \"\\\$bad\" \\] \&\&|[ -n \"\" ] \&\&|' bin/acstack-config > t && mv t bin/acstack-config && chmod +x bin/acstack-config"
 
 echo
 # 4.55a: name a mid-run tree change. Not a failure — every case above read
