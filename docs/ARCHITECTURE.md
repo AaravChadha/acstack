@@ -175,7 +175,7 @@ produce 6/7 (85.7%), and it also asserts that every case excluded
 from the denominator is NAMED — silent exclusion moves no percentage,
 so it is invisible in the number alone.
 
-**`docs/guard-matrix.sh` — does each guard fire?** <!-- count:matrix-cases -->119<!-- /count --> cases, each
+**`docs/guard-matrix.sh` — does each guard fire?** <!-- count:matrix-cases -->121<!-- /count --> cases, each
 seeding one defect into a copy of the real tree and asserting the
 expected failure class, plus must-pass cases so a guard cannot pass by
 failing everything. **Extend the matrix first, watch the case fail, then

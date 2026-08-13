@@ -2396,6 +2396,25 @@ reordered, if any.
   as 4.68: an instruction that never says when it fires. **Acceptance:** the
   bootstrap names its owning mode at its definition; `/health`'s fix
   command names that mode; a control asserts the two cannot disagree.
+  *(**Fix built 2026-08-14 — NOT closed, one live run owed.**
+  `tickets-mode.md`'s bullet now reads "**One-time bootstrap — performed by
+  `build`, never by `seed`**" and carries the derivation rather than just a
+  label: milestones are one-per-phase, and phases do not exist until
+  `build` has written them, so `seed` — which produces only BRIEF.md — has
+  nothing to map. `health-checks.md` now prescribes **`/plan build`** by
+  name. Four controls, **each watched failing** on a seeded defect: the
+  definition losing its mode, the definition dropping its explicit
+  rules-out-`seed` clause, the fix line naming no mode, and the fix line
+  pointing at `/plan seed` — the exact wrong guess observed live. Two
+  matrix cases added, both seeds verified to mutate; matrix 119 → 121.
+  **Why it stays open:** 4.73 was found behaviourally, so verification rule
+  6 applies whatever this task's own acceptance says — mechanical green
+  proves the authored fix, never that a model now behaves differently. The
+  re-test was attempted (`~/shakedown-17/run-health2`, local
+  `ISSUE_TEMPLATE/task.md` removed so check 8 fails without touching the
+  remote) and **died incomplete inside a five-hour rate-limit window** — 26
+  events, no result. Re-run that venue and confirm the prescribed fix reads
+  `/plan build`; nothing else is owed.)*
 
 - [ ] **4.74** Rule the half-remote bootstrap. Labels, milestones and issues
   are created REMOTELY via `gh` and exist immediately; `.github/ISSUE_TEMPLATE/task.md`

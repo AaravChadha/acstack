@@ -15,8 +15,14 @@ the exact missing precondition and offer document mode; never guess.
   bury close-reasons in comments, the doc keeps them visible),
   cross-cutting risks, and open items. Tasks live as issues, not
   checkboxes.
-- **One-time bootstrap**, idempotent — existing objects are left
-  untouched, never overwritten:
+- **One-time bootstrap — performed by `build`, never by `seed`.** It is
+  idempotent, so re-running `build` is the way to repair a partial
+  bootstrap. **Why `build` owns it:** milestones are one-per-phase and
+  phases do not exist until `build` has written them; `seed` produces
+  BRIEF.md, which has no phases to map. This bullet carried no owning mode
+  until 2026-08-14, and a live `/health` filled the gap by guessing
+  `/plan seed` — the one mode the bullet above rules out (4.73).
+  Existing objects are left untouched, never overwritten:
   - Labels, created only if absent: `blocked`, `needs-acceptance`, `bug`,
     `feature`, `chore`.
   - Milestones: one per phase; the phase's exit criterion becomes the

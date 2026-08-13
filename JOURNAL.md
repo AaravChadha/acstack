@@ -63,7 +63,7 @@
   (**<!-- count:checks -->34<!-- /count -->** checks — numbered sections
   plus 3b, 3c and 13a, including positive controls over seeded
   `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
-  (**<!-- count:matrix-cases -->119<!-- /count -->** cases); `./setup`
+  (**<!-- count:matrix-cases -->121<!-- /count -->** cases); `./setup`
   links all of them. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI

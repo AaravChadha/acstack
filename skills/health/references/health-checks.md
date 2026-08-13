@@ -167,9 +167,12 @@ ls .github/ISSUE_TEMPLATE/task.md
 gh issue list --state open --json number,updatedAt   # stale count vs stale-days
 ```
 
-Missing labels/template → ✗ with the fix "re-run /plan's tickets
-bootstrap (idempotent)". The stale count is reported as a number and a
-pointer to /triage — /health counts rot, it does not groom it.
+Missing labels/template → ✗ with the fix **`/plan build`** (idempotent) —
+name the mode, not just "the bootstrap". This line said only "re-run
+/plan's tickets bootstrap" until 2026-08-14, and with no mode to read a
+live /health told the user `/plan seed`, which does not bootstrap anything
+(4.73). The stale count is reported as a number and a pointer to /triage
+— /health counts rot, it does not groom it.
 
 ## 9. Agent-instruction quality (2026-08-03, task 4.13)
 

@@ -796,6 +796,41 @@ else
   bad "docs/guard-matrix.sh missing — the snapshot contract has no control"
 fi
 
+# --- tickets bootstrap: one owning mode, named at both sites (4.73) ---
+# The bootstrap bullet shipped with NO mode attached, directly under a bullet
+# reading "seed is unchanged", and /health's fix line named no mode either.
+# With nothing to read, a live /health invented one and told the user
+# `/plan seed` — the mode the same file rules out. Both sites must name
+# `build`, and neither may point at `seed`.
+ms=skills/plan/references/tickets-mode.md
+hc=skills/health/references/health-checks.md
+if [ -f "$ms" ] && [ -f "$hc" ]; then
+  boot="$(awk '/One-time bootstrap/{f=1} f&&/^- \*\*|^  - /{print} /^  - Labels/{exit}' "$ms")"
+  if printf '%s' "$boot" | grep -q 'build'; then
+    ok "tickets bootstrap names \`build\` as its owning mode"
+  else
+    bad "tickets bootstrap names no owning mode — the 4.73 gap that made /health guess \`/plan seed\`"
+  fi
+  if printf '%s' "$boot" | grep -qE 'never by .?seed|not by .?seed'; then
+    ok "tickets bootstrap rules \`seed\` OUT explicitly"
+  else
+    bad "tickets bootstrap no longer rules out \`seed\` — the wrong guess is reachable again (4.73)"
+  fi
+  fixline="$(grep -n -A2 'Missing labels/template' "$hc" | head -3)"
+  if printf '%s' "$fixline" | grep -q 'plan build'; then
+    ok "/health's tickets fix command names \`/plan build\`"
+  else
+    bad "/health's tickets fix command no longer names \`/plan build\` — it will be guessed again (4.73)"
+  fi
+  if printf '%s' "$fixline" | grep -qE 'fix .{0,12}.?/plan seed'; then
+    bad "/health's tickets fix command points at \`/plan seed\`, which bootstraps nothing (4.73)"
+  else
+    ok "/health's tickets fix does not point at \`/plan seed\`"
+  fi
+else
+  bad "tickets-mode.md or health-checks.md missing — the bootstrap-ownership contract has no control"
+fi
+
 # --- acstack-config: bare keys resolve, broken keys are LOUD (4.72) ---
 # The bug this replaces was silent by construction: `## Settings` written as
 # bare `tracking: tickets` resolved to the DEFAULT with no output of any kind,
