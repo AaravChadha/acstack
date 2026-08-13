@@ -3,26 +3,22 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-12 (night). Since the 08-08 → 12 batch: **4.58**
-> (strictness ladder, built AND run as shakedown 13 — HELD 3/3, and it
-> discharged 4.52's owed re-test), **4.61** (`/audit` split 163 → 91 lines,
-> the ratio scan now a script and check.sh §29) and **4.62** (`/audit
-> skills` as a fifth mode). check.sh 32, matrix 111, controls 107, wave 4.5
-> **40/46**. That batch closed **six
-> tasks** — 4.53 (three-state runner exit code), 4.55 (three guard input
-> surfaces pinned down), 4.54+4.60 (a dated cluster check replacing a stale
-> hex denylist, plus negative-twin controls), 4.56 (spec divergence kept and
-> documented), 4.57 (**a second install path: `.claude-plugin/`, proven
-> end-to-end in an isolated config**), and 4.59 (mode-first roster ruling
-> against a startup budget that bites). check.sh 29 → 31, matrix 106 → 110,
-> controls 86 → 104. The session before it closed **4.51** (the
-> non-regression gate now blocks on coverage collapse, not only a falling
-> pass rate) and **4.52** (`concept` expecteds split on commas — two files
-> had shipped contradictory rules, so every multi-keyword expected in the
-> pack was mis-graded), surveyed the outside ecosystem into **eight
-> carriers (4.54–4.61)**, fixed three stale counts no guard was reading,
-> and gave CI a `workflow_dispatch` lever after a 16-hour GitHub outage
-> left no way to start a run. **PUBLIC as of 2026-08-03** — the repo was
+> **Last update**: 2026-08-14. Since 08-12: **three shakedown rounds and
+> nine carriers closed** — 15 (`/plan`'s split reachable, its unattended
+> branch not), 16 (4.30's design acceptances; A3 could not pass by
+> construction), 17 (the tickets round, nine skills, on a purpose-built
+> venue). The round's biggest find is **4.72**: `bin/acstack-config`
+> required a leading `-` on `## Settings` keys, so a config written as bare
+> `tracking: tickets` resolved to `document (default)` with **zero**
+> warning — caught only because `/triage`, `/resume` and `/ship`
+> independently noticed the binary disagreeing with the file. Also closed:
+> **4.67/4.68** (never-guess hoisted out of its branch; one home for the
+> unsupplied-section rule), **4.69/4.70/4.71** (the `/design` pairing
+> becomes a three-bucket diff; set claims derived from the artifact; RFC
+> 2606 enumerated), **4.73/4.74/4.75** (bootstrap ownership,
+> template-in-effect, next-3 as a cap). check.sh 32 → 34, matrix 111 → 129,
+> controls 131, wave 4.5 **52/56**. Four venue-design errors and two no-op
+> matrix seeds were mine; one reached CI. **PUBLIC as of 2026-08-03** — the repo was
 > flipped after the §13 falsification round closed and CI went green
 > (run 30765510782). Two pre-flip rechecks both returned NOT READY; the
 > second found the first's fix had reintroduced the bug it fixed, which
@@ -157,11 +153,166 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | 2 — Gate/eval/tickets | ✅ | 7 new skills + tickets mode (12 SKILL.md files now total 1080 lines; 14 reference files); specs → build → independent review (6 findings fixed) → scratch-repo shakedown passed |
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
-| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->52<!-- /count -->/<!-- count:wave45-total -->56<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. **2026-08-08:** **4.53** closed — the runner's exit code became a three-state signal (`0` completed / `1` could not complete / `2` completed with errored cases) after cannot-complete and completed-with-errors were measured both exiting `1`; `/ship` gate 3 now reads the value, having read no exit code at all, and a dead `.py` cross-reference the crossref guard cannot see was fixed in passing (guard gap carried as 4.55c). **2026-08-08 → 12:** six more closed — **4.53** three-state runner exit code (`/ship` gate 3 had read no exit code at all), **4.55** three guard input surfaces pinned (snapshot-once matrix that names a mid-run change; count-check roster with a reason per inclusion and exclusion; crossref no longer names extensions, which had hidden a dead `.py` link), **4.54+4.60** a dated four-cluster default-look check replacing the stale violet denylist plus three new tell classes and the first negative-twin controls, **4.56** spec divergence kept and guarded against check.sh's own allowlist, **4.57** `.claude-plugin/` as a second install path proven end-to-end in an isolated config, **4.59** all ten roster gaps ruled mode-first against a 12,000-char startup budget set below what the roadmap costs, scheduling 4.62–4.65. **4.58** closed 2026-08-12 — the strictness ladder was built AND run as shakedown 13 (HELD 3/3), which discharged **4.52's** owed re-test in a venue built for something else. **4.61** split `/audit` 163 → 91 lines and turned the ratio scan into a script plus check.sh §29; **4.62** added `/audit skills` as the fifth target. Still open: **4.50** (owed live re-tests, now **4.51**, **4.53**, 4.61's split and 4.62's target — shakedown 13's venue completes cleanly, so it cannot exercise the first two), **4.63–4.65**, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
+| 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->52<!-- /count -->/<!-- count:wave45-total -->56<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. **2026-08-08:** **4.53** closed — the runner's exit code became a three-state signal (`0` completed / `1` could not complete / `2` completed with errored cases) after cannot-complete and completed-with-errors were measured both exiting `1`; `/ship` gate 3 now reads the value, having read no exit code at all, and a dead `.py` cross-reference the crossref guard cannot see was fixed in passing (guard gap carried as 4.55c). **2026-08-08 → 12:** six more closed — **4.53** three-state runner exit code (`/ship` gate 3 had read no exit code at all), **4.55** three guard input surfaces pinned (snapshot-once matrix that names a mid-run change; count-check roster with a reason per inclusion and exclusion; crossref no longer names extensions, which had hidden a dead `.py` link), **4.54+4.60** a dated four-cluster default-look check replacing the stale violet denylist plus three new tell classes and the first negative-twin controls, **4.56** spec divergence kept and guarded against check.sh's own allowlist, **4.57** `.claude-plugin/` as a second install path proven end-to-end in an isolated config, **4.59** all ten roster gaps ruled mode-first against a 12,000-char startup budget set below what the roadmap costs, scheduling 4.62–4.65. **4.58** closed 2026-08-12 — the strictness ladder was built AND run as shakedown 13 (HELD 3/3), which discharged **4.52's** owed re-test in a venue built for something else. **4.61** split `/audit` 163 → 91 lines and turned the ratio scan into a script plus check.sh §29; **4.62** added `/audit skills` as the fifth target. **2026-08-13 → 14:** three shakedown rounds and nine carriers closed — **15** (`/plan`'s `mode-seed.md` split reachable 3/3; its unattended branch not, because `AskUserQuestion` returns a stub rather than erroring), **16** (4.30's four design acceptances run for the first time: A1/A2/A4 held, **A3 unreachable by construction** since `/design`'s honest-scope rule ships disclosed gaps a blind audit must flag), **17** (the tickets round — nine skills, cold baseline, two-turn gate test, `/health` + bootstrap + `/triage` + `/do` + `/retro` all held). Closed: **4.67** never-guess hoisted above the branch that had scoped it out, **4.68** one home for the unsupplied-section rule, **4.69** the `/design` pairing becomes a blind audit plus a three-bucket diff (and one audit run proved not to be an enumeration — 3 findings then 1 on a byte-identical artifact), **4.70** set claims derived from the artifact, **4.71** RFC 2606 enumerated not sampled, **4.72** **the config resolver had been reporting defaults for any `## Settings` written without a leading `-`, silently, to every skill** — three independent sessions caught it, **4.73** the bootstrap names `build` as its owning mode, **4.74** the template is on disk but not in effect until pushed, **4.75** next-3 is a cap not a quota. Still open: **4.50** (step 4's interactive halves, now testable via `--session-id`/`-r`, plus `/ticket`, `/investigate`, the failing-acceptance path and `Fixes #N`), **4.66** (irreversible acts, user's ruling), plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
 | 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Three rounds, nine carriers closed, and a resolver that had been lying to every skill (2026-08-13 → 14)
+
+**Seventeen commits, three shakedowns, nine tasks closed — and the biggest
+find was a bug the pack had shipped since the runtime landed.**
+
+**Shakedown 15 — is `/plan`'s `mode-seed.md` split reachable?** HELD. 3/3
+headless sessions on a blind venue opened the reference unprompted and
+reproduced six behaviours reachable from **no other file**: `CLAUDE.md`
+flagged and left byte-identical, the pack-root `readlink` guard run
+including its `PACK ROOT NOT RESOLVED` branch, `acstack-conduct` (1668B)
+and `acstack-referrals` (1792B) copied **byte-verbatim**, `LEARNINGS.md`
+created, `.claude/acstack.md` offered not done. **Scope corrected from the
+code first:** `/do`'s only split is `references/tickets-mode.md` behind
+`tracking: tickets`, so "/do's split" was never testable in document mode
+and moved to the tickets round.
+**The unattended branch FAILED, and the split did not cause it** — both
+runs read the file containing `TBD — not supplied at seed time` and did
+not use it. `AskUserQuestion` does not error headless; it returns the stub
+`"Answer questions?"`, so the model reads a declined question and
+improvises. Carried as **4.67** and **4.68**.
+
+**4.68 — one home for the unsupplied-section rule.** `mode-seed.md` and
+`brief-template.md` each carried half and the halves disagreed; a live run
+followed the template. The rule now states **both** states —
+`none known yet; expect to discover during <phase>` for asked-and-nothing,
+`TBD — not supplied at seed time` for not-supplied — and the template
+points instead of restating. check.sh **§30**, three drift modes, each
+watched failing.
+
+**4.67 — never-guess hoisted out of the branch it was trapped in.** The
+rule sat *inside* the "when nobody can answer" paragraph, so a run that
+decided the branch did not apply took the rule out of scope with it. Now
+above the dispatch, binding on every path, with a **`Deriving is not
+guessing`** carve-out protecting what both runs did right. The branch is
+re-keyed off the judgement "is this unattended" onto the observable **"you
+did not ask, or you asked and no answer came back"**. check.sh **§31**
+pins the rule's POSITION, since re-nesting is the regression.
+**Closed on the artifacts, not the summary:** the fabricated landmine
+appears in `run-b2` alone — **0 of 4** post-fix runs — and every post-fix
+run attributes its volume estimate and names the gap. What is explicitly
+NOT claimed: that a frozen BRIEF always uses the literal. It does not.
+
+**Shakedown 16 — 4.30's four design acceptances, run for the first time.**
+Venue: the `/design` fixture with **every comment stripped**, because the
+comments name the plants outright (139 → 105 lines, all 9 plant tokens
+verified intact). Prompt checked against 14 leak terms, 0 hits, because A4
+requires the failure path unprompted.
+A1 HELD (99 DTCG values, 3 layers, 39 aliases, **0 unresolved**, checked
+with a resolver). A2 HELD **8/8**. A4 HELD — `onToggle` takes `const prev`,
+flips optimistically, reverts in `catch`, announces what it restored.
+**A3 FAILED, and the acceptance is what broke.** A blind `/design-audit`
+returned **3 findings** against a bar of 0, all verified true at
+`file:line`, **0 false positives** — and the headline one had been
+**disclosed by `/design`'s own Scope section**. Both skills were correct
+and the acceptance still failed.
+
+**4.69 — the pairing becomes a blind audit plus a three-bucket diff.**
+Unclaimed (the only failure signal) / claimed-and-agreed (pass) /
+**claimed-but-disputed (reported, never silently passed)**. Feeding the
+auditor the Scope list was rejected: it destroys the independence that made
+the pairing worth running. **The required re-run then changed the method
+itself** — on a **byte-identical** artifact (`md5` equal) the same blind
+audit returned **3 findings once and 1 the next**, missing two still-true
+items. A single-run diff would have scored zero unclaimed and PASSED,
+honestly and wrongly. One audit run is not an enumeration.
+
+**4.70 — `/design` derives its set claims.** It claimed *"only
+transform/opacity/background-color animated"* while the file animated
+`background-color`, `border-color`, `box-shadow`, `transform` — a property
+named that was never animated, the expensive one omitted. Its *unchecked*
+claims were all true, so the fix is derivation, not distrust. Re-tested by
+comparing claim to artifact mechanically: actual `animation,
+background-color, border-color, color, transform`; report *"enumerated from
+the file, not intent"* — exact match.
+
+**4.71 — RFC 2606 enumerated, not sampled.** `@example\.(com|org)` missed
+the reserved `.example` TLD. Now `example.com/net/org` plus `.example`,
+`.invalid`, `.test`, `.localhost`, each closed by `([^A-Za-z0-9.-]|$)`:
+**6/6 caught, 0/5 false positives** against `sub.test.com` and
+`localhost.example-corp.com`. The control was watched failing *before* the
+fix, and the only line the old grep matched in the new fixture was **the
+fixture's own comment describing the bug** — a named bug class here,
+rewritten to spell out no address.
+
+**Shakedown 17 — the tickets round, nine skills, on a venue built for it.**
+`acstack-s17-tickets`, cold baseline captured first: 10 default labels, 0
+milestones, 0 issues, no template. GitHub's default `bug` label made
+"created only if absent, never overwritten" testable on the **first** run.
+HELD: `/health` cold (evidence matched the baseline independently); the
+gate under a **two-turn** `--session-id`/`-r` test — turn 1 created nothing,
+verified against the API; the bootstrap (labels **10 → 14** adding exactly
+the four absent, `bug` byte-identical, 4 milestones, 7 issues, **7/7**
+template sections); `/triage` (both seeded duplicates, both
+missing-acceptance, **negative twin held**, plus four true unseeded
+findings); `/do 1` (branch `feature/1-anchored-remainder-guard`, commit
+`#1: …`, checklist ticked via the API, issue left OPEN, **no push**);
+`/retro` (burn M1 0/2 M2 0/2 M3 0/1 **M4 1/1**, velocity correctly
+declined).
+
+**4.72 — the config resolver had been lying to every skill.**
+`bin/acstack-config:40` required a leading `-`, so `## Settings` written as
+bare `tracking: tickets` resolved to `document (default)` with **zero**
+warning. The bullet syntax existed in exactly one place, `templates/`;
+README documented the keys as a table and never showed the line form.
+**Three independent sessions caught it unprompted** — `/triage`, `/resume`,
+`/ship` — each proceeding off the file rather than the binary. `/retro`
+read the file directly and never consulted the binary, which is precisely
+how the bug survived: the model routes around it. Fixed both ways — the
+dash is optional, and a known key present but unreadable now WARNS.
+**The warning's first version required a colon**, so `tracking = tickets`
+warned about nothing; a control caught it.
+
+**4.73, 4.74, 4.75.** The bootstrap had **no owning mode**, so a live
+`/health` guessed `/plan seed` — the mode the same file rules out; settled
+behaviourally (`build` bootstraps) and named at both sites. The bootstrap
+is **half-remote** and cannot be otherwise: GitHub serves issue templates
+from the default branch, so `ls` reported the template present while the
+API returned **404**; `/health` now queries both and reports on-disk and
+in-effect as distinct states. `/resume`'s tickets next-3 lacked document
+mode's fewer-than-three clause, so a run **padded to three** by listing a
+`blocked` issue under an "unblocked" heading — three is now a cap, not a
+quota, stated once and pointed at.
+
+**What went wrong in my own work, recorded because it is the useful part.**
+Four venue-design errors, all one shape — a bar assuming a condition the
+venue never established: shakedown 15's first venue and 16's RT1 omitted
+only *derivable* sections; 17's `stale-days: 0` made `/triage`'s stale
+class **degenerate rather than testable**, and the session rightly refused
+to manufacture nine findings about five-minute-old issues; 17's T7 demanded
+a PR while the venue left `push: direct`, so the PR path was never enabled.
+**Twice a live session diagnosed the rig for me.** Three controls were
+wrong first — two from a phrase wrapping across a markdown line, fixed by
+squeezing whitespace. **Two matrix seeds were no-ops**, one caught only by
+CI (`passed=128 failed=1`), and chasing it exposed the coarse control
+underneath: `ai_check` passes if ANY fixture line matches, so narrowing one
+branch of an alternation stayed invisible. Replaced with a per-address
+check. **The procedural lesson: twelve matrix cases were added and the full
+matrix was never run locally, because `check.sh` does not run it.** And I
+reported a completed run as rate-limit-killed after reading its log
+mid-stream at 26 events; it finished at 80. Struck through in PLAN, not
+deleted.
+
+**What did NOT happen.** No golden set edited. `/ticket`, `/investigate`,
+the failing-acceptance path and `/ship`'s `Fixes #N` wiring were **not
+run** — the last needs `push: branch-pr`, which the venue never set.
+`/triage`'s stale class is **not testable in a fresh repo at all**.
+`acstack-w2-shakedown` was deleted by the user, `delete_repo` granted and
+removed in the same sitting; `acstack-s17-tickets` is kept deliberately and
+is rigged for exactly those uncovered paths.
+
+Validation close: check.sh **32 → 34**; guard-matrix **111 → 129**, 0
+failed (verified locally AND on CI run 31745930187, green on all steps);
+controls **131**; **23 skills**; wave 4.5 **43/47 → 52/56**.
+
 
 ### Three carriers closed as modes and references, and a deletion that audited its own verdict (2026-08-12, night)
 
