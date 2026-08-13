@@ -85,6 +85,45 @@ A/B between *modes* of one skill (round 14's `/audit` vs `/audit skills`)
 needs none of this: both arms are the same installed skill, varied by the
 prompt. Prefer that shape wherever the question allows it.
 
+## Pairing two skills as a control (4.69)
+
+`/design` + `/design-audit` is the pack's one generate-then-check pairing,
+and its original bar — "the audit returns no findings" — was **unreachable
+by construction**. `/design`'s honest-scope rule ships artifacts with
+disclosed gaps on purpose; `/design-audit` sees only the artifact. Any
+design with a scope boundary fails a no-findings bar, and every honest
+design has one.
+
+**Run the audit BLIND and diff afterward.** Do not hand the auditor the
+generator's Scope list: it destroys the independence that makes the pairing
+worth running, and an auditor told "the author already scoped this out" may
+swallow a real blocker. Sort its findings into three buckets:
+
+| bucket | meaning | verdict |
+|---|---|---|
+| **unclaimed** | the audit found what the generator never named | **the only failure signal** |
+| **claimed, agreed** | named in Scope, auditor rates it non-blocking | pass |
+| **claimed, disputed** | scoped out by the generator, rated blocking by the auditor | **report it — do not silently pass** |
+
+Bucket 3 is the one a naive diff misses, and it is the bucket shakedown 16
+produced: `/design` scoped out first-paint hydration, and the blind auditor
+called shipping it a blocker. Both were right; the disagreement is the
+finding.
+
+**One audit run is not an enumeration — use at least two.** Re-running the
+identical artifact (verified byte-identical by `md5`) through the same blind
+audit produced **3 findings once and 1 the next time**. The second run
+missed a copy contradiction at `:316`/`:340` and a misused danger colour at
+`:501`, both still true in the file. A one-run diff would have scored zero
+unclaimed findings and passed the pairing — the wrong answer, reached
+honestly. Bucket 1 is the failure signal, so it is exactly the bucket that
+run-to-run variance erases. Union the findings across runs before diffing,
+and treat a single run's silence as unmeasured rather than clean.
+
+**Generalises past this pair.** Any generate-then-check control needs the
+same three buckets, because a generator that honestly declares its gaps
+will always leave the checker something true to say.
+
 ## Recording a round
 
 One JOURNAL entry per round, with a segment table: segment, level, verdict,

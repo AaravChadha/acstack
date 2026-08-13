@@ -1309,8 +1309,27 @@ reordered, if any.
   AI-default look it avoided; **every one of the eight
   production-readiness items above is answered or explicitly named as a
   gap** (a surface with no error state is reported, never silently
-  omitted); and /design-audit + ai-tells (4.27) run on /design's output
-  returns no findings — the pairing is this skill's positive control.
+  omitted); and ~~/design-audit + ai-tells (4.27) run on /design's output
+  returns no findings — the pairing is this skill's positive control.~~
+  **Verdict (2026-08-14, task 4.69): the zero-findings bar is superseded —
+  it was unreachable by construction.** `/design`'s honest-scope rule
+  deliberately ships artifacts with disclosed gaps, `/design-audit` sees
+  only the artifact, so any design with a scope boundary — every honest one
+  — fails a no-findings bar. Shakedown 16 proved it: three findings, all
+  true at `file:line`, and the headline one had been **disclosed by
+  /design's own Scope section**. Both skills were correct and the
+  acceptance still failed.
+  **The pairing is now a DIFF, and the audit stays BLIND.** Feeding the
+  auditor the Scope list was rejected: it destroys the independence that
+  made the finding worth having, and an auditor told "the author already
+  scoped this out" may swallow a genuine blocker — exactly the case here.
+  Findings are diffed against Scope *afterward*, into three buckets:
+  **(1) unclaimed** — the audit found what /design never named; this alone
+  fails the pairing. **(2) claimed and agreed** — named in Scope, auditor
+  rates it non-blocking; passes. **(3) claimed but disputed** — /design
+  scoped it out, the auditor rates it blocking; **reported to the user, not
+  silently passed.** Bucket 3 is what neither originally-filed shape had,
+  and it is the bucket shakedown 16 actually produced.
   Second control, the one that proves production-grade rather than
   pretty: a seeded flow whose write can fail must come back with its
   error and rollback states designed, unprompted.
@@ -2273,7 +2292,33 @@ reordered, if any.
   cannot drift back apart. Sequence with 4.67 — whichever lands first sets
   the wording the other adopts.
 
-- [ ] **4.69** Rule how `/design` and `/design-audit` pair, because 4.30's
+- [x] **4.69** *(Done 2026-08-14. **Verdict: the zero-findings bar is
+  superseded; the pairing becomes a blind audit plus an after-the-fact
+  diff into three buckets** — unclaimed (the only failure signal), claimed
+  and agreed (pass), claimed but disputed (**reported, never silently
+  passed**). Feeding the auditor `/design`'s Scope was rejected outright:
+  it destroys the independence that made the pairing worth running, and an
+  auditor told the author already scoped something out may swallow a real
+  blocker — precisely the case here. Recorded against 4.30's acceptance as
+  a dated supersession, and as method in `docs/shakedown-method.md`.
+  **Re-run against `~/shakedown-16` as this task required, and the verdict
+  on the same three findings holds:** hardcoded seed state → **bucket 3**
+  (named in `/design`'s Scope as "first-paint hydration… not designed",
+  yet the blind auditor calls shipping it a blocker — both correct, and the
+  disagreement IS the finding); the copy contradiction at `:316`/`:340`
+  and the danger-coloured hint at `:501` → **bucket 1**, unclaimed by
+  Scope, genuine misses inside item 8.
+  **The re-run also produced a finding that changes how the pairing must be
+  used.** On a **byte-identical** artifact (`md5` equal), the same blind
+  audit returned **3 findings the first time and 1 the second** — the
+  second missed both bucket-1 items, which are still true in the file. A
+  single-run diff would have scored zero unclaimed and PASSED, honestly and
+  wrongly. **One audit run is not an enumeration:** union across at least
+  two, and treat one run's silence as unmeasured rather than clean.
+  **4.71 converged here:** the re-run's safety-check block shows the new
+  RFC 2606 pattern, and the finding cites *"the `.example` TLD is RFC 2606
+  reserved"* — caught by the fixed grep rather than by reading, which is
+  what 4.71 was for.)* Rule how `/design` and `/design-audit` pair, because 4.30's
   acceptance as written can never pass. Found by shakedown 16 (2026-08-13),
   the first run of 4.30's behavioural acceptances. A3 says *"/design-audit +
   ai-tells run on /design's output returns no findings — the pairing is this
