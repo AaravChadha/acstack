@@ -2339,7 +2339,29 @@ reordered, if any.
   is chosen must be re-run against `~/shakedown-16` and produce a defensible
   verdict on the same three findings.
 
-- [ ] **4.70** `/design`'s report is not verified against its own artifact.
+- [x] **4.70** *(Done 2026-08-14. **The fix is derivation, not distrust** —
+  the run's unchecked claims were all true (zero hex in component CSS, 39
+  token aliases resolving); the one it *enumerated* was wrong. `/design`'s
+  report shape now requires that **any claim naming a SET is derived from
+  the artifact, not asserted from memory**, and item 7 says to extract the
+  animated property set "from the artifact, never from intent". Item 7 also
+  keeps the distinction that matters: animating `box-shadow` does not break
+  the item; *saying you did not* breaks the honesty rule, which is worse.
+  Without that clause an honesty fix silently becomes a ban.
+  Three controls, each watched failing on its own seed. **The controls were
+  wrong first** — the phrase wraps across a markdown line, so flattening
+  newlines alone left `this    item` and a single-space grep missed it;
+  fixed by squeezing whitespace, the **third line-wrap miss** in this
+  file's controls. Two matrix cases; matrix 127 → 129.
+  **Live re-tested per rule 6**, comparing the report's claim against the
+  artifact mechanically. Artifact animates `animation`,
+  `background-color`, `border-color`, `color`, `transform`; the report
+  states *"animated set **enumerated from the file, not intent**:
+  `transform`, `background-color`, `border-color`, `color` (+ a `spin`
+  keyframe)"* — an exact match, where the first run claimed "only
+  transform/opacity/background-color" while animating four including
+  `box-shadow`. It also names what it does NOT animate, which is the
+  falsifiable form.)* `/design`'s report was not verified against its own artifact.
   Three instances in one run (shakedown 16, 2026-08-13). (a) It claims *"only
   `transform`/`opacity`/`background-color` animated"*; the real set is
   `{background-color, border-color, box-shadow, transform}` — `opacity`

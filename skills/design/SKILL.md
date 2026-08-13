@@ -127,7 +127,13 @@ the gap is the deliverable; silently shipping the happy path is the defect.
    its dark counterpart; inverted tokens are why light themes read grey.
 7. **Performance-shaped choices.** Compositor-friendly properties
    (`transform`/`opacity`), no layout thrash on interaction, no animating
-   `width`/`height`/`top`/`left`.
+   `width`/`height`/`top`/`left`. **Report the animated property set by
+   extracting it from the artifact, never from intent** — read every
+   `transition`/`animation` declaration you shipped and list what is
+   actually there. A design that animates `box-shadow` has not broken this
+   item; a report that says it animated only `transform` and `opacity`
+   when it also animated `box-shadow` has broken the honesty rule, which
+   is worse (4.70).
 8. **UX writing.** Button verbs that say what happens. Error messages that
    say what to do next, not what went wrong. Empty states that teach the
    feature rather than apologising for being empty.
@@ -195,6 +201,14 @@ Verdict first: `production-ready` or `<N> gaps`. Then:
 - **Token system** — the DTCG block, with the layer each value sits in.
 - **The eight items** — one line each: how it is answered, or
   `GAP: <what is missing>`. Never silently omitted.
+  **Any claim that names a SET is derived from the artifact, not asserted
+  from memory** — the properties you animated, the states you shipped, the
+  tokens you used. Re-read the file and enumerate; do not report the plan
+  you had. On 2026-08-14 a run claimed it animated "only
+  transform/opacity/background-color" while the file animated
+  `background-color`, `border-color`, `box-shadow` and `transform` — it
+  named a property it never animated and omitted the expensive one it did
+  (4.70). Its unchecked claims were fine; the enumerated one was wrong.
 - **Verification** — what was loaded, what the console said.
 - **Scope** — what was NOT designed (surfaces skipped, states deferred),
   so nobody reads a component as a system.

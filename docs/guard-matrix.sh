@@ -304,6 +304,11 @@ fullcase "deriving carve-out dropped"       FAIL 'never-guess' bash -c "sed -e '
 # the DEFAULT; or the warning is silenced, restoring the silent-fallback that
 # made an unreadable config indistinguishable from no config at all.
 fullcase "config resolver needs the dash again" FAIL 'control' bash -c "sed -e 's|s/\\^\\[\\[:space:\\]\\]\\*-\\\\{0,1\\\\}\\[\\[:space:\\]\\]\\*|s/^-[[:space:]]*|' bin/acstack-config > t && mv t bin/acstack-config && chmod +x bin/acstack-config"
+# 4.70 /design set claims. Two directions: the derive-don't-assert rule goes,
+# and item 7 loses the design-choice-vs-false-claim distinction (which would
+# turn an honesty fix into a ban on animating anything else).
+fullcase "design set-claim rule dropped"     FAIL 'control' bash -c "sed -e 's/names a SET is derived from the artifact/asserts what it did/' skills/design/SKILL.md > t && mv t skills/design/SKILL.md"
+fullcase "design item7 loses the distinction" FAIL 'control' bash -c "sed -e 's/has not broken this/violates this/' skills/design/SKILL.md > t && mv t skills/design/SKILL.md"
 # 4.71 fabricated-domain grep. Two directions: narrowed back to the shipped
 # sample (misses reserved TLDs), and widened past its boundary guard (flags
 # sub.test.com, which is a plausible real domain).

@@ -814,6 +814,38 @@ else
   bad "docs/guard-matrix.sh missing — the snapshot contract has no control"
 fi
 
+# --- /design: set claims are derived, not asserted (4.70) ---
+# A live run reported it animated "only transform/opacity/background-color"
+# while the file animated background-color, border-color, box-shadow and
+# transform — a property named that was never animated, and the expensive one
+# omitted. Its UNCHECKED claims were fine; the enumerated one was wrong, so
+# the fix is derivation, not distrust.
+ds=skills/design/SKILL.md
+if [ -f "$ds" ]; then
+  flat="$(tr '\n' ' ' < "$ds" | tr -s ' ')"
+  if printf '%s' "$flat" | grep -qiE 'names a SET is derived from the artifact'; then
+    ok "/design requires set claims to be derived from the artifact"
+  else
+    bad "/design no longer requires set claims to be derived — reports can assert an enumeration again (4.70)"
+  fi
+  # squeeze runs of whitespace: flattening newlines alone leaves the markdown
+  # indent behind, so a wrapped phrase reads "this    item" and a single-space
+  # grep misses it. Third line-wrap miss in this file's controls (4.70).
+  item7="$(awk '/^7\. \*\*Performance-shaped/{f=1} f; /^8\. \*\*UX writing/{exit}' "$ds" | tr '\n' ' ' | tr -s ' ')"
+  if printf '%s' "$item7" | grep -qiE 'extracting it from the artifact, never from intent'; then
+    ok "/design item 7 extracts the animated property set from the artifact"
+  else
+    bad "/design item 7 no longer says to extract the animated set from the artifact (4.70)"
+  fi
+  if printf '%s' "$item7" | grep -qiE 'has not broken this item'; then
+    ok "/design item 7 separates animating an extra property from misreporting it"
+  else
+    bad "/design item 7 lost the distinction between a design choice and a false claim — the fix becomes a ban (4.70)"
+  fi
+else
+  bad "skills/design/SKILL.md missing — the derived-claims contract has no control"
+fi
+
 # --- /resume next-3: three is a cap, not a quota (4.75) ---
 # Document mode carried "fewer than three exist -> list what's there"; the
 # tickets section omitted it. With one unblocked issue in the milestone a live
