@@ -99,13 +99,23 @@ look like evidence.
 
 ```bash
 git grep -nE '(99\.9[0-9]*%|100% (uptime|accurate|secure)|[0-9]+x (faster|better|more))'
-git grep -niE '(john (doe|smith)|jane doe|acme (corp|inc)|nexus|@example\.(com|org))'
+git grep -niE '(john (doe|smith)|jane doe|acme (corp|inc)|nexus|@example\.(com|net|org)|@[A-Za-z0-9.-]+\.(example|invalid|test|localhost)([^A-Za-z0-9.-]|$)|@localhost([^A-Za-z0-9.-]|$))'
 git grep -niE 'trusted by [0-9,]+|[0-9,]+\+ (users|customers|developers)'
 git grep -nE '<input[^>]*placeholder=' -- '*.html' '*.jsx' '*.tsx' '*.vue'
 ```
 
 The `<input>` grep is a **pairing** check: an input with a placeholder and
 no associated `<label>` is the finding, not the placeholder itself.
+
+The address half of the fabricated-content grep **enumerates RFC 2606**
+rather than sampling it: `example.com/net/org` as second-level names, and
+`.example`, `.invalid`, `.test`, `.localhost` as reserved TLDs. It sampled
+two second-level forms and no TLD until 2026-08-14, so a `.example` address
+in a live audit was caught by a model citing the RFC and not by this
+pattern (4.71) — the fifth time a denylist here has shipped a hole. The
+trailing `([^A-Za-z0-9.-]|$)` is what keeps `sub.test.com` and
+`localhost.example-corp.com` out; both are plausible real domains and a
+grep that flags them trains its reader to ignore it.
 
 ## 3. The visual signature — impeccable's detector set, re-expressed
 

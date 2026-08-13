@@ -2313,7 +2313,23 @@ reordered, if any.
   property set correctly on a page that animates something outside the
   compositor-friendly three. Mechanical green does not discharge it (rule 6).
 
-- [ ] **4.71** `ai-tells.md:102` misses the reserved `.example` TLD. The
+- [x] **4.71** *(Done 2026-08-14. The address half of the fabricated-content
+  grep now **enumerates RFC 2606** instead of sampling it —
+  `example.com/net/org` plus the reserved TLDs `.example`, `.invalid`,
+  `.test`, `.localhost`, each closed by `([^A-Za-z0-9.-]|$)` so
+  `sub.test.com` and `localhost.example-corp.com` stay out. Measured, not
+  reasoned: 6/6 reserved forms caught, 0/5 false positives.
+  **The control was watched failing BEFORE the fix, as this task required.**
+  Against the shipped pattern it reported `MISSED its plant`, and the only
+  line the old grep matched in the new fixture was **my own comment
+  describing the bug** — `fixtures/design-audit/reserved-domains.tsx`
+  tripping its own detector, which is a named bug class in this pack. The
+  comment was rewritten to spell out no address at all.
+  Two controls (catch + negative twin), both watched failing in both
+  directions: narrowed back to the sample, and widened past the boundary
+  guard. Two matrix cases; **the second was a no-op on its first draft** —
+  `$` did not survive the nested shell quoting — and was rewritten as a
+  python mutation, verified to mutate. matrix 125 → 127.)* `ai-tells.md:102` missed the reserved `.example` TLD. The
   fabricated-content grep is `@example\.(com|org)`; RFC 2606 reserves
   `.example` as a **TLD** as well as `example.com/net/org` as domains, and a
   seeded address ending `.example` sailed past it in shakedown 16. The model

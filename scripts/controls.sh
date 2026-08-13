@@ -107,6 +107,24 @@ if [ -d fixtures/design-audit ]; then
   ai_check "numbered-label"  "git grep -nE '>[[:space:]]*0[1-9]" fixtures/design-audit/ai-slop.tsx
   ai_check "pulsing-dot"     "git grep -nE 'animate-pulse'" fixtures/design-audit/ai-slop.tsx
   ai_check "ai-orb"          "git grep -niE '(ai|assistant|magic|intelligen)" fixtures/design-audit/ai-slop.tsx
+  # 4.71: the fabricated-content grep sampled example.com/org and no reserved
+  # TLD, so a `.example` address sailed past it in shakedown 17 — caught by a
+  # model citing RFC 2606, not by the pattern. Fifth denylist instance here.
+  ai_check "fabricated-domain" "git grep -niE '(john (doe|smith)" fixtures/design-audit/reserved-domains.tsx
+  # negative twin: the same pattern must NOT flag plausible real domains.
+  # `sub.test.com` and `localhost.example-corp.com` are the traps — both
+  # contain a reserved word without being reserved.
+  fabpat="$(grep -F "git grep -niE '(john (doe|smith)" skills/design-audit/references/ai-tells.md | head -1)"
+  fabpat="${fabpat#*\'}"; fabpat="${fabpat%%\'*}"
+  fabfp=""
+  for addr in 'hello@mycompany.io"' 'a@sub.test.com"' 'c@localhost.example-corp.com"' 'b@invalid-name.io"'; do
+    printf '%s\n' "$addr" | grep -qE "$fabpat" && fabfp="$fabfp $addr"
+  done
+  if [ -n "$fabfp" ]; then
+    bad "/design-audit fabricated-domain grep flags REAL domains ($fabfp) — false positives train the reader to ignore it (4.71)"
+  else
+    ok "/design-audit fabricated-domain grep leaves plausible real domains alone"
+  fi
   ai_check "emoji-icon"      "git grep -nE '<(button|a|h[1-6])" fixtures/design-audit/ai-slop.tsx
   # the emoji rule is NOT an enumerated list: prove it on the OTHER fixture,
   # whose 🔔 the previous seven-emoji denylist missed entirely (shakedown 7).
