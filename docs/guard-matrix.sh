@@ -312,7 +312,10 @@ fullcase "design item7 loses the distinction" FAIL 'control' bash -c "sed -e 's/
 # 4.71 fabricated-domain grep. Two directions: narrowed back to the shipped
 # sample (misses reserved TLDs), and widened past its boundary guard (flags
 # sub.test.com, which is a plausible real domain).
-fullcase "fabricated-domain grep re-narrowed" FAIL 'control' bash -c "sed -e 's/@example\\\\.(com|net|org)/@example\\\\.(com|org)/' skills/design-audit/references/ai-tells.md > t && mv t skills/design-audit/references/ai-tells.md"
+fullcase "fabricated-domain grep re-narrowed" FAIL 'control' bash -c "python3 - <<'EOF'
+p='skills/design-audit/references/ai-tells.md'; t=open(p).read()
+open(p,'w').write(t.replace('@example\\\\.(com|net|org)','@example\\\\.(com|org)'))
+EOF"
 fullcase "fabricated-domain loses its boundary" FAIL 'control' bash -c "python3 - <<'EOF'
 p='skills/design-audit/references/ai-tells.md'; t=open(p).read()
 open(p,'w').write(t.replace('(example|invalid|test|localhost)([^A-Za-z0-9.-]|\$)','(example|invalid|test|localhost)'))

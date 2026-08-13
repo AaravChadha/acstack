@@ -2396,7 +2396,21 @@ reordered, if any.
   directions: narrowed back to the sample, and widened past the boundary
   guard. Two matrix cases; **the second was a no-op on its first draft** —
   `$` did not survive the nested shell quoting — and was rewritten as a
-  python mutation, verified to mutate. matrix 125 → 127.)* `ai-tells.md:102` missed the reserved `.example` TLD. The
+  python mutation, verified to mutate. matrix 125 → 127.
+  **CI then caught a third defect, and it was the deeper one (2026-08-14,
+  run 31743799656, `passed=128 failed=1`).** The *first* matrix seed was
+  ALSO a no-op — `sed` mutated it on BSD and not on GNU, so it passed
+  locally and reported `got=PASS want=FAIL` on Linux. Converting it to a
+  python mutation made it fire, and that exposed the real problem
+  underneath: **the control was too coarse.** It used `ai_check`, which
+  passes if ANY line of the fixture matches, so narrowing one branch of
+  the alternation stayed invisible while the other branch still caught
+  something. Replaced with a **per-address** check over all seven reserved
+  forms; the narrowing seed now fails naming exactly the address lost
+  (`ops@example.net`). **The lesson is procedural:** twelve matrix cases
+  were added across this session and the full matrix was never run
+  locally — `check.sh` does not run it. Full local run after the fix:
+  **129/129, 0 failed.**)* `ai-tells.md:102` missed the reserved `.example` TLD. The
   fabricated-content grep is `@example\.(com|org)`; RFC 2606 reserves
   `.example` as a **TLD** as well as `example.com/net/org` as domains, and a
   seeded address ending `.example` sailed past it in shakedown 16. The model

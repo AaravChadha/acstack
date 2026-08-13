@@ -110,7 +110,22 @@ if [ -d fixtures/design-audit ]; then
   # 4.71: the fabricated-content grep sampled example.com/org and no reserved
   # TLD, so a `.example` address sailed past it in shakedown 17 — caught by a
   # model citing RFC 2606, not by the pattern. Fifth denylist instance here.
-  ai_check "fabricated-domain" "git grep -niE '(john (doe|smith)" fixtures/design-audit/reserved-domains.tsx
+  # per-address, NOT ai_check: ai_check passes if ANY line of the fixture
+  # matches, so narrowing one branch of the alternation stayed invisible while
+  # the other branch still caught something. CI caught the resulting no-op
+  # seed; chasing it exposed the coarse control underneath (4.71).
+  fabpat0="$(grep -F "git grep -niE '(john (doe|smith)" skills/design-audit/references/ai-tells.md | head -1)"
+  fabpat0="${fabpat0#*\'}"; fabpat0="${fabpat0%%\'*}"
+  fabmiss=""
+  for addr in 'x@really-long-subsidiary.example"' 'ops@example.net"' 'qa@staging.invalid"' \
+              'dev@sandbox.test"' 'root@localhost"' 'a@example.com"' 'b@example.org"'; do
+    printf '%s\n' "$addr" | grep -qE "$fabpat0" || fabmiss="$fabmiss $addr"
+  done
+  if [ -n "$fabmiss" ]; then
+    bad "/design-audit fabricated-domain grep MISSES reserved address(es):$fabmiss — RFC 2606 is sampled, not enumerated (4.71)"
+  else
+    ok "/design-audit fabricated-domain grep catches every RFC 2606 reserved form"
+  fi
   # negative twin: the same pattern must NOT flag plausible real domains.
   # `sub.test.com` and `localhost.example-corp.com` are the traps — both
   # contain a reserved word without being reserved.
