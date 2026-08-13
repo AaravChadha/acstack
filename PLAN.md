@@ -2344,7 +2344,11 @@ reordered, if any.
   **Why it survived this long:** skills that read the file themselves get
   it right — `/health` reported `tracking: tickets` prereqs met in the same
   round the binary said `document`. The model compensates, so the bug
-  hides. **Acceptance:** either the parser accepts both forms, or it
+  hides. **Corroborated 2026-08-13: THREE independent sessions caught it
+  unprompted** — `/triage`, `/resume` and `/ship`, each in a separate run,
+  each proceeding off the file rather than the binary. `/retro` read the
+  file directly and never consulted the binary, so it was unaffected,
+  which is precisely how the bug survives. **Acceptance:** either the parser accepts both forms, or it
   rejects the unparsed form LOUDLY — a `## Settings` section whose keys all
   fail to parse must not report defaults as though the file were absent.
   Whichever is chosen, README documents the syntax, a control seeds the
@@ -2375,6 +2379,20 @@ reordered, if any.
   already do. **Acceptance:** a dated verdict — either the bootstrap says
   plainly that the template needs a commit before it governs anyone, or the
   split is removed. Not left as an undocumented asymmetry.
+
+- [ ] **4.75** `/resume` and `/triage` disagree about whether a `blocked`
+  issue is ready work. Found in shakedown 17 (2026-08-13) on identical data.
+  `/resume`'s spec says next-3 is "top unblocked open issues (**no
+  `blocked` label**) in the current milestone"; the live run listed issue #2
+  as item 2 under a heading reading "Next tasks (unblocked, current
+  milestone M1)" while annotating it `blocked` and naming its blocker.
+  `/triage`, given the same backlog, excluded #2 from ready work entirely —
+  the correct reading. Nobody is misled, because the annotation is honest,
+  but the heading contradicts its own contents and two skills apply one rule
+  two ways. **Acceptance:** one rule, and both skills demonstrably applying
+  it — a live run where a `blocked` issue appears in neither ready-work
+  list, or appears in a section whose heading does not claim it is
+  unblocked. Same one-rule-one-home shape as 4.68.
 
 - [ ] **4.50** The next shakedown's mandatory segments — everything a
   round is already known to owe. *(**Updated 2026-08-12:** round 13 ran
@@ -2490,6 +2508,30 @@ reordered, if any.
   genuine misses inside item 8, the item `/design` reported answered —
   carried with a third self-report defect as **4.70**. A gap in
   `ai-tells.md:102`'s fabricated-content grep is **4.71**.
+  *(**Shakedown 17 phases A-C, 2026-08-13 — the tickets segment, run.**
+  Venue `AaravChadha/acstack-s17-tickets`, cold baseline captured first.
+  **HELD:** `/health` cold-repo tickets extras (evidence matched the
+  baseline independently); the gate, under a two-turn `--session-id` /
+  `-r` test — turn 1 created nothing, verified against the API; `/plan
+  build`'s bootstrap (labels 10 → 14 adding exactly the four absent,
+  `bug` byte-identical, 4 milestones, 7 issues, 7/7 template sections);
+  `/triage` (both seeded duplicates, both missing-acceptance, negative
+  twin held, plus four true unseeded findings); `/do 1` (branch
+  `feature/1-anchored-remainder-guard`, commit `#1: …`, checklist ticked
+  via the API, issue left OPEN, **no push** — no remote branch exists);
+  `/retro` (burn M1 0/2 M2 0/2 M3 0/1 M4 1/1, velocity correctly declined
+  rather than inflated). `/resume` held with the deviation now carried as
+  **4.75**. **Findings: 4.72, 4.73, 4.74, 4.75.**
+  **NOT covered, stated plainly:** `/ticket` never run; `/investigate`
+  (T9) never run — it needs a seeded failure and the venue's suite is
+  green; the failing-acceptance path (T6) never run — it needs an issue
+  whose acceptance cannot pass; `/ship`'s `Fixes #N` wiring (T7) **never
+  exercised**, because the venue left `push: direct` and the PR path
+  exists only under `push: branch-pr`; and `/triage`'s stale class is
+  **not testable in a fresh repo at all** — `stale-days: 0` makes it
+  degenerate, and the session rightly refused to manufacture findings
+  about five-minute-old issues. Evidence: `~/shakedown-17/ROUND.md`,
+  pre-registered before any session ran.)*
   **Not covered, stated plainly:** the widened emoji-as-icon check was
   never exercised — `/design` removed the 🔔, so there was nothing to
   catch. That detector still awaits a page that keeps one. Evidence:
