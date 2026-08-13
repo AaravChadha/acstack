@@ -2324,6 +2324,58 @@ reordered, if any.
   rather than sampled, and a control seeds a `.example` address and is
   watched failing before the fix, per the prove-it-fires rule.
 
+- [ ] **4.72** `bin/acstack-config` silently ignores un-bulleted `## Settings`
+  keys. Found live by shakedown 17 (2026-08-13) — a `/triage` session
+  reported the resolver saying `tracking=document (default)` while
+  `.claude/acstack.md` plainly set `tracking: tickets`, and proceeded off
+  the file rather than the binary. **Verified independently, both
+  directions:** `bin/acstack-config:40` is
+  `sed -n "s/^-[[:space:]]*$1:[[:space:]]*//p"`, so bare `tracking: tickets`
+  resolves to `document (default)` while `- tracking: tickets` resolves to
+  `tickets (project)`. **Zero** warning, ignored-key or malformed-section
+  output — grepped.
+  **Severity is the discoverability, not the regex.** The bullet syntax
+  exists in exactly ONE place, `templates/acstack.md`. README documents the
+  keys as a table and never shows the line form (0 hits for the bullet form
+  across README and all of `docs/`), and the principles block says only
+  that "`## Settings` keys override pack defaults". An adopter writing the
+  natural markdown gets the default mode, silently, and every skill's
+  runtime preamble then prints a value that contradicts the file.
+  **Why it survived this long:** skills that read the file themselves get
+  it right — `/health` reported `tracking: tickets` prereqs met in the same
+  round the binary said `document`. The model compensates, so the bug
+  hides. **Acceptance:** either the parser accepts both forms, or it
+  rejects the unparsed form LOUDLY — a `## Settings` section whose keys all
+  fail to parse must not report defaults as though the file were absent.
+  Whichever is chosen, README documents the syntax, a control seeds the
+  bare form and is watched failing first, and a live run confirms a skill
+  no longer disagrees with the binary.
+
+- [ ] **4.73** The tickets bootstrap has no owning mode, and a shipped fix
+  command names the wrong one. `plan/references/tickets-mode.md:18` lists
+  "**One-time bootstrap**" as a sibling bullet with NO mode attached,
+  directly after "**seed** is unchanged".
+  `health/references/health-checks.md:170` prescribes the fix as "re-run
+  /plan's tickets bootstrap (idempotent)" — also naming no mode. With
+  nothing to read, a live `/health` invented one and told the user to run
+  **`/plan seed`**, the mode the same file rules out. **Settled
+  behaviourally in shakedown 17: `build` performs the bootstrap** — labels
+  10 → 14, 4 milestones, 7 issues, all created by `/plan build`. Same class
+  as 4.68: an instruction that never says when it fires. **Acceptance:** the
+  bootstrap names its owning mode at its definition; `/health`'s fix
+  command names that mode; a control asserts the two cannot disagree.
+
+- [ ] **4.74** Rule the half-remote bootstrap. Labels, milestones and issues
+  are created REMOTELY via `gh` and exist immediately; `.github/ISSUE_TEMPLATE/task.md`
+  is written LOCALLY and never pushed — correct on its own terms, since
+  `/plan` does not push and that is `/ship`'s job. Verified in shakedown 17:
+  the file is on disk and the API returns 404 for it. The consequence is
+  that the template governing hand-filed issues does not exist for anyone
+  else until someone commits and pushes, while the labels those issues use
+  already do. **Acceptance:** a dated verdict — either the bootstrap says
+  plainly that the template needs a commit before it governs anyone, or the
+  split is removed. Not left as an undocumented asymmetry.
+
 - [ ] **4.50** The next shakedown's mandatory segments — everything a
   round is already known to owe. *(**Updated 2026-08-12:** round 13 ran
   4.58's ladder and **discharged 4.52's re-test** — `q10` graded correctly
