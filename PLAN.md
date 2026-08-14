@@ -3696,6 +3696,26 @@ reordered, if any.
   commit, which the matrix has not needed before — if that proves
   impractical, say so in the note and cover §34 by control instead.
 
+- [ ] **4.81** 15 of the 20 remaining scheduled tasks carry no
+  `**Acceptance:**` line. Measured 2026-08-14: wave 5 has one (5.5 only),
+  waves 6 and 7 have none at all — so 5.1–5.4, 6.1–6.7 and 7.1–7.4 are
+  **unbuildable by the pack's own rules**, since `/do` stops on a task with
+  no acceptance recorded and `/resume` reports it as a finding about the
+  plan rather than ready work. Wave B's five are deliberately **excluded**:
+  unscheduled and demand-triggered, they earn acceptance lines when they are
+  scheduled, not before.
+  **Filed late, and that is the point.** This gap was named twice in the
+  2026-08-14 session — once in the opening brief, once in a full task
+  enumeration — and no carrier was opened either time, which is precisely
+  the orphan AGENTS.md's carrier rule exists to prevent. Recording it was
+  not scheduling it.
+  **Acceptance:** every open scheduled task in waves 5–7 carries a runnable
+  `**Acceptance:**` line — runnable meaning a named command or a stated
+  observable, not "works correctly" — and check.sh asserts the property so a
+  future task cannot be filed without one, the guard shown failing first on
+  a seeded acceptance-free task. Wave B is exempt in the guard, by name and
+  with the reason.
+
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
 **Goal:** Generalize `/migrate-check`'s shape — read-only, classify every
