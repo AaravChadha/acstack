@@ -105,6 +105,32 @@ install instead of symlinks) is reported as `skipped — <why>`.
    no dead paths or skills. A contradiction is a ✗ that names both rules;
    judgment-led, see `references/health-checks.md` §9.
 
+10. **Irreversible-act deny set.** How many entries of the set below are
+   present in `~/.claude/settings.json`, or in the project's
+   `.claude/settings.json` — reported as `<n> of 5 present`, naming the
+   absent ones, with the fix being "paste the missing entries" and never
+   applied. **This row is `info`: it carries no ✓ or ✗ and never counts toward the issue total**,
+   because the set is a denylist that `sh -c` and script files defeat
+   outright, so a pass here would certify a safety property it cannot
+   deliver. README's "Irreversible acts" section carries the three measured
+   limits. The set is canonical there and byte-identical here:
+
+<!-- acstack:deny-set -->
+```json
+{
+  "permissions": {
+    "deny": [
+      "Bash(gh repo delete:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(rm -rf:*)",
+      "Bash(npx prisma migrate reset:*)"
+    ]
+  }
+}
+```
+<!-- /acstack:deny-set -->
+
 Checks that depend on machinery from later wave-4.5 items — a session
 hook (4.4), the conduct block mirrored into `~/.claude/CLAUDE.md` (4.4),
 and update-stamp/telemetry freshness (4.3) — are deferred to those items

@@ -3565,7 +3565,31 @@ reordered, if any.
   reason; each split proves 0 lines lost by set difference per 4.49's rule;
   and the behavioural half — a live model finding the moved procedure in
   each target — is owed like 4.49's was [owed: 4.50].
-- [ ] **4.76** Document the irreversible-act deny block, and make `/health`
+- [x] **4.76** *(Done 2026-08-14. README gains "Irreversible acts", carrying
+  the canonical marker-fenced `acstack:deny-set` (5 entries) and **three**
+  measured limits — indirection, prefix-only ordering, token boundary — the
+  second of which was measured after the task was written: arm I showed
+  `Bash(touch -c:*)` blocking `touch -c X` and **not** `touch X -c`, so a
+  `git push --force` entry misses `git push origin main --force`, and the
+  README says so. `/health` gains check 10, carrying the block byte-identical.
+  check.sh **§32** guards the two copies plus the row's verdict-free
+  declaration; **five seeds on a frozen copy**, each firing only its own
+  message: README block deleted, `/health` block deleted, an entry added to
+  one side, the declaration removed — and a fifth that must NOT fire, the
+  declaration re-wrapped across a line, confirming the guard is wrap-proof.
+  **Verified in the consumed form, not the authored one:** a live `/health`
+  rendered row 10 as `info` reading *"1 of 5 present"* with the absent four
+  named and the fix stated-not-applied, under a verdict line of
+  `HEALTHY — 0 issues, 3 info` — so the row genuinely does not count.
+  **Two defects of my own, both caught by machinery rather than by care:**
+  the first seeding pass reverted with `git checkout --` on files whose new
+  content was **uncommitted**, destroying the README and `/health` edits it
+  was supposed to be testing (redone on a frozen copy, the same rule the
+  matrix already follows); and §32's first form grepped a phrase that **wraps
+  across a line**, so it reported a missing declaration that was present —
+  third instance of that class here, now flattened-and-squeezed, with seed 5
+  as its standing control. Checks 34 → 35; ARCHITECTURE's "29 numbered
+  sections" was stale before this edit and is corrected to 32.)* Document the irreversible-act deny block, and make `/health`
   check it. Ruled by 4.66 as shape (5). README gains a recommended
   **user-level** `permissions.deny` set using the `:*` form, stating both
   measured limits in its own words — a prefix must end at a token boundary,
@@ -3602,6 +3626,29 @@ reordered, if any.
   has, and check.sh asserts the stated number equals the list length so the
   next enrolment cannot silently restate the old one — shown failing first on
   a seeded eighth entry.
+- [ ] **4.79** AGENTS.md's commit-style rule contradicts this repo's own
+  commits. The rule says the pack uses lowercase
+  `<verb> <object> (<detail>)` *"because the pack itself has no ticket or
+  task ID per commit"* — while the recent log is `task 4.70:`, `task 4.75:`,
+  `task 4.66:`. Found 2026-08-14 by a live `/health` as an observation
+  outside its ten checks, having survived every prior audit. Conduct rule 7
+  says surface the conflict rather than pick a side, so this task is the
+  surfacing: **the user rules which one moves** — the prose (task-IDs are the
+  real convention, and the stated reason is simply false) or the commits.
+  **Acceptance:** AGENTS.md and the last 20 commit subjects describe the same
+  convention, and check.sh asserts it so the two cannot drift apart again —
+  the guard shown failing first on a commit subject of the losing shape.
+- [ ] **4.80** check.sh §32's four failure modes are proven but not durable.
+  4.76 seeded all four on a frozen copy and watched each fire, plus a fifth
+  that must not fire (the declaration re-wrapped across a line) — but those
+  seeds were run by hand and nothing re-runs them, whereas every comparable
+  guard here carries `docs/guard-matrix.sh` cases. Named rather than done
+  because adding cases obliges a full matrix run (~18 min, frozen copy) that
+  4.76's own acceptance did not ask for.
+  **Acceptance:** five matrix cases, one per seed above including the
+  must-not-fire control, each verified to actually mutate the tree (a no-op
+  seed reached CI once already, 2026-08-14), and the full matrix run green
+  locally before any push.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 

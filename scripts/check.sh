@@ -21,7 +21,7 @@
 #   25 owed-markers name a live carrier   26 no mode section left without a procedure
 #   27 plugin manifests agree with pack  28 startup description budget
 #   29 conditional-branch waste per skill  30 unsupplied-section rule has one home
-#   31 never-guess rule stays unconditional
+#   31 never-guess rule stays unconditional  32 deny set has one canonical home
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -920,6 +920,40 @@ if [ -f "$seed_ms" ]; then
     || { echo "FAIL never-guess: $seed_ms no longer says the rule binds on every path — without that clause a reader re-scopes it to one branch (4.67)"; fail=1; }
   grep -qEi 'deriving is not guessing' "$seed_ms" \
     || { echo "FAIL never-guess: $seed_ms dropped the deriving-is-not-guessing carve-out — suppressing landmines read out of the source is a regression, not a fix (4.67)"; fail=1; }
+fi
+
+# 32. Irreversible-act deny set has ONE canonical home (4.76). README is
+#     canonical; /health carries a byte-identical copy, so the row it reports
+#     names exactly the entries a reader was told to paste. Same shape as §1.
+#     WHAT THIS DOES NOT CERTIFY: that the entries protect anything. 4.66's
+#     arm F watched `sh -c`, `bash -c` and a script file walk straight through
+#     every one of them. This guard checks two lists agree, nothing more — and
+#     the second half below exists so the honest framing cannot be dropped
+#     while the list stays in sync.
+extract_denyset() {
+  awk '/<!-- acstack:deny-set -->/{f=1} f{print} /<!-- \/acstack:deny-set -->/{f=0}' "$1"
+}
+ds_canon="$(extract_denyset README.md)"
+ds_health="$(extract_denyset skills/health/SKILL.md)"
+if [ -z "$ds_canon" ]; then
+  echo "FAIL deny-set: README.md has no acstack:deny-set block (canonical copy required, 4.76)"
+  fail=1
+elif [ -z "$ds_health" ]; then
+  echo "FAIL deny-set: skills/health/SKILL.md has no acstack:deny-set block — /health cannot report on a set it does not carry (4.76)"
+  fail=1
+elif ! diff <(printf '%s\n' "$ds_canon") <(printf '%s\n' "$ds_health") >/dev/null; then
+  echo "FAIL deny-set: skills/health/SKILL.md drifts from README's canonical deny set — /health would report on entries the README never told anyone to paste (4.76)"
+  fail=1
+fi
+if [ -n "$ds_health" ]; then
+  # Flattened AND squeezed: this phrase wraps in the source, and a line-wise
+  # grep for it silently reported a missing declaration while it was present —
+  # the third time in this repo a wrapped phrase defeated a control.
+  health_flat="$(tr '\n' ' ' < skills/health/SKILL.md | tr -s ' ')"
+  case "$health_flat" in
+    *"never counts toward the issue total"*) : ;;
+    *) echo "FAIL deny-set: /health's deny-set row no longer declares itself verdict-free — a pass here certifies a safety property a denylist cannot deliver (4.76)"; fail=1 ;;
+  esac
 fi
 
 if [ "$fail" -eq 0 ]; then

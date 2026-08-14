@@ -156,7 +156,7 @@ rule `/secure` applies to any untrusted-in-trusted-position path.
 
 Three layers, each answering a different question.
 
-**`scripts/check.sh` — is the pack internally consistent?** 29 numbered sections plus 3b, 3c and 13a — **<!-- count:checks -->34<!-- /count --> checks**; the header comment is their single enumeration, updated in the
+**`scripts/check.sh` — is the pack internally consistent?** 32 numbered sections plus 3b, 3c and 13a — **<!-- count:checks -->35<!-- /count --> checks**; the header comment is their single enumeration, updated in the
 same commit as any new section. That list went stale twice when copies
 lived elsewhere — and a partial copy that used to sit in this paragraph
 went stale a third time (it enumerated sixteen items, claimed fifteen,

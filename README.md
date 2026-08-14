@@ -113,6 +113,61 @@ Nothing leaves your machine except `git fetch` in the once-a-day update
 check, and `gh` calls you initiate in tickets mode. There is no
 telemetry — the `telemetry` key is reserved and unimplemented.
 
+### Irreversible acts: the block the pack does *not* write for you
+
+`./setup` writes symlinks and nothing else, so nothing in this pack touches
+your `settings.json`. That leaves a gap worth knowing about: with permissions
+relaxed, the harness runs a destructive command with no prompt at all —
+measured 2026-08-14 on `claude 2.1.170`, a command under
+`--dangerously-skip-permissions` with no deny rule present ran with no prompt
+and no denial. A `permissions.deny` entry is the one control that still fires
+there, and it is two lines you paste yourself.
+
+Put it in `~/.claude/settings.json`, so it applies in every project —
+including the throwaway repos where this class of accident actually happens:
+
+<!-- acstack:deny-set -->
+```json
+{
+  "permissions": {
+    "deny": [
+      "Bash(gh repo delete:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(rm -rf:*)",
+      "Bash(npx prisma migrate reset:*)"
+    ]
+  }
+}
+```
+<!-- /acstack:deny-set -->
+
+**This is friction, not a boundary, and it cannot be completed.** Three
+limits, each measured rather than assumed:
+
+1. **Indirection defeats it entirely.** `sh -c 'gh repo delete x'`,
+   `bash -c '…'`, and any script that calls the command run straight through.
+   Only the directly-typed form is caught — plus compound `a && b` chains,
+   which are decomposed and matched per component.
+2. **Matching is prefix-only, so reordered arguments escape.**
+   `Bash(git push --force:*)` catches `git push --force origin main` and does
+   **not** catch `git push origin main --force`. By the same rule
+   `Bash(rm -rf:*)` does not catch `rm -fr` or `rm -r -f`. Adding every
+   variant is the trap, not the fix.
+3. **The prefix must end at a token boundary.** `Bash(gh repo delete:*)`
+   catches `gh repo delete myrepo`; a pattern whose prefix stops mid-token
+   matches nothing at all.
+
+It is a denylist, and this repo's own history is that a denylist cannot be
+finished — `scripts/check.sh` §13 was converted to an allowlist after two
+rounds of misses for exactly that reason. Treat these entries as a speed bump
+on the form an agent actually types. `/health` reports how many are present
+and deliberately returns **no pass/fail verdict** for that row, because a
+green check here would certify a safety property it cannot deliver.
+
+Removing an entry is deleting a JSON key. `rm -rf` is the one most people
+will want to drop first.
+
 ### Agent Skills spec: where acstack diverges, and what it costs you
 
 **Verdict 2026-08-11 — acstack targets Claude Code, and keeps two fields
