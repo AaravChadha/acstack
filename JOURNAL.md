@@ -3,7 +3,13 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-14. Since 08-12: **three shakedown rounds and
+> **Last update**: 2026-08-14 (2nd). **4.66 ruled and 4.76 shipped** — the
+> irreversible-act question settled by measuring the harness rather than
+> arguing about it: ten probe arms established that `permissions.deny`
+> survives `--dangerously-skip-permissions` but is defeated outright by
+> `sh -c` and script files, which is why the pack now documents a deny set
+> and gives `/health` a row that is `info` and can never pass. Earlier the
+> same day, since 08-12: **three shakedown rounds and
 > nine carriers closed** — 15 (`/plan`'s split reachable, its unattended
 > branch not), 16 (4.30's design acceptances; A3 could not pass by
 > construction), 17 (the tickets round, nine skills, on a purpose-built
@@ -158,6 +164,85 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### The irreversible-act question, settled by measuring the harness instead of arguing about it (2026-08-14, later)
+
+**4.66 had sat open with four recorded shapes and evidence pointing both
+ways. It was ruled in one sitting — not by better argument, but by running
+ten probes against the harness and finding that three of the four shapes
+rested on a premise nobody had tested.**
+
+**The premise.** Every shape's value turned on one unmeasured question: does
+`permissions.deny` still fire when the user relaxes permissions? Shapes (1)
+hook and (5) documented-deny stake everything on yes; shape (4) "do nothing"
+stakes everything on the harness prompting anyway. Ten arms answered it
+(`claude 2.1.170`, headless `-p`, ground truth read off disk rather than from
+the model's report): **deny survives `--dangerously-skip-permissions`** — arm
+B blocks, arm C is the identical rig with the deny list emptied and the
+command runs. It applies from **both** project and user settings (arm G2, in
+a directory with no `.claude/` at all). `PreToolUse` hooks also fire under
+bypass, 5/5, before the permission decision.
+
+**The finding that shaped the ruling (arm F): indirection defeats it
+entirely.** `sh -c`, `bash -c` and a script file each ran the denied command;
+only the directly-typed form was caught, plus compound `a && b` chains, which
+are decomposed per component. §13's lesson, arriving on schedule — it is a
+denylist and it cannot be finished. Two further semantics, both measured
+because both change what a reader should paste: matching is **prefix-only**,
+so `Bash(touch -c:*)` blocks `touch -c X` and **not** `touch X -c` (arm I) —
+meaning a `git push --force` entry misses `git push origin main --force`; and
+the prefix must end at a **token boundary**, so a pattern stopping mid-token
+matches nothing (arm H).
+
+**Verdict: (3) + (5).** A carve-out on CONDUCT rule 5, plus a documented
+user-level deny block the pack never writes. **(1) declined** — and not on
+capability, which was the correction the probe forced: a hook can read a
+script off disk and a deny pattern cannot, so it *is* more capable. It loses
+on cost against completeness, while making the pack own executable code in
+every user's global config. **(2) deferred** — wave 5.3 `/careful` already
+owns that shape; a gate must fire when the model is about to act, so
+typed-only is inert precisely then and model-invocable costs ~405 chars
+against 2,861 of headroom for the same reliability class as prose. **(4)
+rejected** — arm C *is* its falsification.
+
+**4.76 shipped the buildable half the same sitting.** README's "Irreversible
+acts" carries the canonical `acstack:deny-set` (5 entries) and all three
+limits in its own words; `/health` gains check 10 carrying the block
+byte-identical; check.sh **§32** guards both copies and the row's
+verdict-free declaration. **The row is `info` on purpose** — a green check
+would certify a property `sh -c` disproves. Verified in the consumed form: a
+live `/health` rendered row 10 as *"1 of 5 present"*, naming the absent four,
+under a verdict line of `HEALTHY — 0 issues, 3 info`.
+
+**Five seeds on a frozen copy**, four that must fire and one that must not —
+the declaration re-wrapped across a line, which is a standing control rather
+than a one-off, because that exact wrap had just broken the guard.
+
+**What went wrong in my own work, which is the useful part.** Three defects,
+none caught by re-reading. **(a)** The first seeding pass reverted with
+`git checkout --` on files whose new content was **uncommitted** — the revert
+destroyed the README and `/health` edits it was supposed to be testing.
+Redone on a frozen copy, the rule the matrix already follows and that this
+session had been told about. **(b)** §32's first form grepped a phrase that
+**wraps across a line**, reporting a missing declaration that was present —
+third instance of that class here. **(c)** Arms G v1 and v2 were void by
+construction: the deny pattern's prefix landed mid-token against the marker
+name I chose, and the result nearly went down as "user-level does not apply".
+Caught by adding a disambiguating control, not by inspection. All three were
+surfaced by machinery or by a control; none by care.
+
+**Filed rather than quietly noted:** **4.77** (the rule-5 clause, whose live
+demonstration is owed to 4.50), **4.78** (check.sh says "the six skills"
+twice about a list of seven — `/why` was enrolled 2026-08-03 and the prose
+never followed), **4.79** (AGENTS.md's commit-style rule contradicts this
+repo's own log, which reads `task 4.70:` while the rule says the pack has no
+task ID per commit — found by the same live `/health` as an observation
+outside its ten checks, having survived every prior audit), **4.80** (matrix
+cases for §32; the five seeds fired but nothing re-runs them).
+
+Validation close: check.sh **34 → 35**; wave 4.5 **52/56 → 54/61**; matrix
+**unchanged at 129 and deliberately not run** — no cases were added, which is
+precisely what 4.80 exists to fix. Skills 23, unchanged. **Nothing pushed.**
 
 ### Three rounds, nine carriers closed, and a resolver that had been lying to every skill (2026-08-13 → 14)
 
