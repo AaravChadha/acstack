@@ -78,7 +78,13 @@ derive() {
     # Static count of case invocations. Verified 2026-08-06 to equal the
     # runtime `passed=` total (94); running the matrix here would cost
     # minutes on every commit, which is why this counts the source instead.
-    matrix-cases)   n=$(grep -cE '^(fullcase|check|bannedcase) ' docs/guard-matrix.sh) ;;
+    # SHAPE-AGNOSTIC on purpose (4.80). This named the three shapes that
+    # existed until 2026-08-14, when a fourth (`gitcase`) was added and the
+    # derivation silently under-counted by 5 — reporting a smaller matrix than
+    # the one that runs, which is the direction that hides work rather than
+    # inventing it. `<name>case ` with a trailing space matches an invocation
+    # and not the `<name>case() {` definition.
+    matrix-cases)   n=$(grep -cE '^([a-z]+case|check) ' docs/guard-matrix.sh) ;;
     wave45-done)    n=$(w45 | grep -c '^- \[x\]') ;;
     wave45-open)    n=$(w45 | grep -c '^- \[ \]') ;;
     wave45-total)   n=$(w45 | grep -cE '^- \[[ x]\]') ;;

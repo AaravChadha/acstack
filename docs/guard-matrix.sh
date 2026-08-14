@@ -339,6 +339,86 @@ fullcase "bootstrap loses its owning mode" FAIL 'control' bash -c "sed -e 's/One
 fullcase "health fix points at plan seed" FAIL 'control' bash -c "sed -e 's|the fix \*\*\`/plan build\`\*\* (idempotent)|the fix \`/plan seed\` (idempotent)|' skills/health/references/health-checks.md > t && mv t skills/health/references/health-checks.md"
 fullcase "config unreadable-key warning muted" FAIL 'control' bash -c "sed -e 's|\\[ -n \"\\\$bad\" \\] \&\&|[ -n \"\" ] \&\&|' bin/acstack-config > t && mv t bin/acstack-config && chmod +x bin/acstack-config"
 
+# 4.80: §32 deny-set. Four drift modes plus one that must NOT fire. The last is
+# the standing control on a bug this guard shipped with — its first form grepped
+# a phrase that wraps in the source, so it reported a missing declaration that
+# was present. A re-wrap must stay silent.
+fullcase "deny-set: README canonical block gone" FAIL 'deny-set' bash -c "python3 - <<'EOF'
+import re
+p='README.md'; s=open(p).read()
+n=re.sub(r'<!-- acstack:deny-set -->.*?<!-- /acstack:deny-set -->','',s,flags=re.S)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+fullcase "deny-set: /health copy gone"        FAIL 'deny-set' bash -c "python3 - <<'EOF'
+import re
+p='skills/health/SKILL.md'; s=open(p).read()
+n=re.sub(r'<!-- acstack:deny-set -->.*?<!-- /acstack:deny-set -->','',s,flags=re.S)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+fullcase "deny-set: /health entry diverges"   FAIL 'deny-set' bash -c "python3 - <<'EOF'
+p='skills/health/SKILL.md'; s=open(p).read()
+n=s.replace('Bash(rm -rf:*)','Bash(rm -rf:*)-DRIFT',1)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+fullcase "deny-set: row claims a verdict"     FAIL 'deny-set' bash -c "python3 - <<'EOF'
+p='skills/health/SKILL.md'; s=open(p).read()
+n=s.replace('never counts toward the issue total','counts toward the issue total',1)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+fullcase "deny-set: declaration re-wrapped"   PASS 'deny-set' bash -c "python3 - <<'EOF'
+p='skills/health/SKILL.md'; s=open(p).read()
+n=s.replace('never counts toward the issue total','never counts\n   toward the issue total',1)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+
+# 4.80: §33 READONLY_SKILLS states its own size. The first case IS the original
+# defect — /why was enrolled and both comments kept saying six.
+fullcase "readonly-count: eighth skill enrolled" FAIL 'readonly-count' bash -c "python3 - <<'EOF'
+p='scripts/check.sh'; s=open(p).read()
+n=s.replace('resume migrate-check why','resume migrate-check why ship',1)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+fullcase "readonly-count: comment restates old" FAIL 'readonly-count' bash -c "python3 - <<'EOF'
+p='scripts/check.sh'; s=open(p).read()
+n=s.replace('the 7 read-only skills actually grant','the 6 read-only skills actually grant',1)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+fullcase "readonly-count: a claim is dropped"   FAIL 'readonly-count' bash -c "python3 - <<'EOF'
+p='scripts/check.sh'; s=open(p).read()
+n=s.replace('across the 7 read-only skills above','across the read-only skills above',1)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+
+# 4.80: §34 commit subjects. A NEW CASE SHAPE, and it exists because this file
+# strips .git at line 22 — so a git-dependent guard is unreachable through
+# fullcase: it hits the shallow-repository fallback and SKIPs, forever. This
+# builds a one-commit repo inside the copy, which makes the subject under test
+# the only one in the guard's window. A fresh `git init` repo reports
+# is-shallow=false, which is what lets §34 run at all here.
+gitcase() { # name expected(PASS|FAIL) subject
+  local n="$1" exp="$2" subj="$3"
+  rm -rf "$FULL"; cp -R "$SRC" "$FULL"
+  ( cd "$FULL" && git init -q . && git add -A \
+    && git -c user.email=m@m -c user.name=m commit -q -m "$subj" ) >/dev/null 2>&1
+  out="$(cd "$FULL" && ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
+  if printf '%s' "$out" | grep -qE 'FAIL commit-style'; then got=FAIL; else got=PASS; fi
+  if [ "$got" = "$exp" ]; then printf '  ok   %-42s %s\n' "$n" "$got"; pass=$((pass+1))
+  else printf '  BAD  %-42s got=%s want=%s\n' "$n" "$got" "$exp"; failed=$((failed+1)); fi
+}
+gitcase "commit-style: capitalised subject"   FAIL "Fix the thing"
+gitcase "commit-style: task without colon"    FAIL "task 4.80 missing its colon"
+gitcase "commit-style: capitalised Task"      FAIL "Task 4.80: capitalised"
+gitcase "commit-style: Journal without date"  FAIL "Journal without a date"
+gitcase "commit-style: ordinary verb-first"   PASS "run an ordinary verb-first commit"
+
 echo
 # 4.55a: name a mid-run tree change. Not a failure — every case above read
 # the SAME frozen snapshot, so the results stand; this tells the operator

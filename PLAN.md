@@ -3679,7 +3679,35 @@ reordered, if any.
   **Acceptance:** AGENTS.md and the last 20 commit subjects describe the same
   convention, and check.sh asserts it so the two cannot drift apart again —
   the guard shown failing first on a commit subject of the losing shape.
-- [ ] **4.80** §32's, §33's and §34's failure modes are proven but not
+- [x] **4.80** *(Done 2026-08-14. **Matrix 129 → 142, `passed=142 failed=0`**,
+  run in full locally with no mid-run tree-change NOTE. Thirteen cases: five
+  for §32 (four must-fire plus the re-wrap that must stay silent), three for
+  §33 (the first being the original six-vs-seven defect reproduced by
+  enrolling an eighth skill), five for §34.
+  **A new case shape, `gitcase`, and it had to exist.** This file strips
+  `.git` at `guard-matrix.sh:22`, so any git-dependent guard hits §34's
+  shallow-repository fallback and SKIPs — unreachable through `fullcase`,
+  permanently. `gitcase` builds a one-commit repo inside the copy, which also
+  makes the subject under test the only one in the guard's window; a fresh
+  `git init` reports `is-shallow=false`, and that was verified standalone
+  **before** five cases were written on the assumption.
+  **A latent bug found on the way, outside this task's scope.**
+  `scripts/count-check.sh:81` hardcoded the three case-shape names, so adding
+  a fourth made the derivation silently **under-count by 5** — reporting a
+  smaller suite than the one that runs, which is the direction that hides
+  work rather than inventing it. Now shape-agnostic (`^([a-z]+case|check) `,
+  matching invocations and not `<name>case() {` definitions); observed at 137
+  before the fix and 142 after. The runtime `passed=` total then equalled the
+  static count, re-validating the equivalence that comment has asserted since
+  2026-08-06 at 94.
+  **All eight file-mutating seeds were independently verified to change the
+  tree** before the run — the must-not-fire one included, at 3 changed lines,
+  since a no-op there would have read as a passing case that tested nothing.
+  **Deviation from the acceptance, deliberate: thirteen cases, not fourteen.**
+  The fourteenth was the shallow-clone SKIP, and it does not belong in the
+  matrix — CI checks out at depth 1 on every run, so that branch is exercised
+  live on each push rather than simulated. The `cover §34 by control instead`
+  fallback was not needed.)* §32's, §33's and §34's failure modes are proven but not
   durable. 4.76 seeded four against §32 plus a fifth that must NOT fire (the
   declaration re-wrapped across a line); 4.78 seeded three against §33; 4.79
   seeded four against §34 plus a must-not-fire verb-first subject and a
