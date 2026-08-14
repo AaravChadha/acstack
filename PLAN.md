@@ -2068,7 +2068,83 @@ reordered, if any.
   concrete gaming shapes with a detection question each, and one is shown
   against a seeded golden case that passes while getting the task wrong.
 
-- [ ] **4.66** Decide how the pack guards IRREVERSIBLE acts, and whether that
+- [x] **4.66** *(Done 2026-08-14. **Verdict: (3) + (5) — a clause on conduct
+  rule 5, plus a documented user-level `permissions.deny` block that the pack
+  never writes. (1) declined, (2) deferred to 5.3, (4) rejected.**
+
+  **Ruled on evidence, not inference: nine nested-session arms** (`claude
+  2.1.170`, each a headless `-p` run, ground truth read off the disk rather
+  than from the model's own report). Deny semantics, all observed:
+  `Bash(cmd:*)` blocks (arm A default, arm B bypass); `Bash(cmd *)` blocks
+  (E); bare `Bash(cmd)` does **not** block an invocation carrying arguments
+  (D); a multi-token prefix blocks when it ends at a token boundary —
+  `Bash(touch probe:*)` vs `touch probe extra` (H) — and does **not** when it
+  lands mid-token (G v1). Scope: project `.claude/settings.json` applies
+  (A–F, H); user `~/.claude/settings.json` applies in a directory with no
+  project settings at all (G2). **Deny survives
+  `--dangerously-skip-permissions`** — B blocks, C is the same rig with the
+  deny list emptied and the command runs; single variable, both directions
+  observed. `PreToolUse` hooks also fire under bypass, 5/5, before the
+  permission decision.
+
+  **The finding that shaped the verdict (arm F): any indirection defeats
+  it.** `sh -c`, `bash -c` and a script file each ran the denied command;
+  only the direct form and a compound `a && b` were caught. This is §13's
+  lesson arriving on schedule — it is a denylist and it cannot be finished —
+  so the block ships documented as **friction on the direct form**, never as
+  a boundary, and `/health` reports presence-count only, never a safety
+  verdict.
+
+  **Why (1) loses.** Not on capability: a hook can read a script off disk and
+  a deny pattern cannot, so it is genuinely more capable — the claim
+  mid-argument that it "buys nothing deny doesn't" was wrong and is corrected
+  here. It loses on cost against completeness: grepping every script before
+  execution is slow and is defeated by any script that builds its command
+  dynamically, so it buys marginal completeness on a provably incompletable
+  problem — while making the pack own executable code in the user's global
+  config, a new install surface, a new uninstall surface, and silent global
+  behaviour. 4.59's boundary (*"harness config, and the pack ships skills, not
+  settings"*) stands, and the probe removed its only remaining justification.
+
+  **Why (2) loses here:** it is not this task's to rule — wave **5.3
+  `/careful`** already owns that shape almost verbatim. A safety gate must
+  also fire when the model is about to act: typed-only is inert precisely
+  then, and model-invocable costs ~405 chars against the 2,861 of headroom
+  measured 2026-08-14 (9,139 / 12,000), for the same reliability class as
+  prose.
+
+  **Why (4) loses:** its premise is exactly what arm C falsifies. With no deny
+  rule, under bypass, the destructive command ran with no prompt and no
+  denial. Default-mode prompting is not the protection; the deny rule is, and
+  nothing in the pack currently tells an adopter that.
+
+  **Why (3) survives the counter-evidence recorded below.** The category test
+  that rejected rule 11 in the referral decision — *"rules 1–10 govern how an
+  agent talks to a human and hold with zero skills installed"* — **passes**
+  here, so the clause grafts onto rule 5 rather than becoming rule 11: an
+  irreversibility confirm is the carve-out to *"don't ask permission for what
+  was requested"*. And the evidence-for-crossing below does not transfer —
+  three misdated verdicts, three miscounts, a stale pointer are all
+  **bookkeeping accuracy**, never act/don't-act decisions. Arm F strengthens
+  (3) relatively: if no mechanical control can be complete, the
+  agent-behaviour half carries more weight than this task assumed.
+
+  **Split, because the halves have different acceptances:** **4.76** is the
+  buildable half (docs + `/health` row + guard, mechanical, today); **4.77**
+  is the clause, whose live demonstration is owed to a round [owed: 4.50].
+
+  **My own error, recorded because it is the useful part:** arms G v1 and v2
+  were void by construction — the deny pattern's prefix landed mid-token
+  against the marker name I chose — and I came close to writing them up as
+  "user-level does not apply". Caught by adding a disambiguating control (H),
+  not by re-reading my own design. Fourth instance of the venue-design shape
+  the 2026-08-14 entry already records three of.
+
+  **NOT tested, no claim made:** managed/enterprise settings layering; any
+  tool other than `Bash`; `--permission-mode` values other than `default` and
+  `bypassPermissions` — deny holding under a mode documented as "bypass all
+  permission checks" should hold a fortiori in weaker ones, which is an
+  inference and is labelled as one.)* Decide how the pack guards IRREVERSIBLE acts, and whether that
   crosses into harness config. Raised 2026-08-12 after a repo deletion was
   double-verified by hand and the second pass found a recorded verdict
   wrong (`"an empty LEARNINGS.md"` against 97 bytes). **Surveyed before
@@ -3489,6 +3565,43 @@ reordered, if any.
   reason; each split proves 0 lines lost by set difference per 4.49's rule;
   and the behavioural half — a live model finding the moved procedure in
   each target — is owed like 4.49's was [owed: 4.50].
+- [ ] **4.76** Document the irreversible-act deny block, and make `/health`
+  check it. Ruled by 4.66 as shape (5). README gains a recommended
+  **user-level** `permissions.deny` set using the `:*` form, stating both
+  measured limits in its own words — a prefix must end at a token boundary,
+  and `sh -c` / `bash -c` / a script file defeat it entirely (4.66, arms F/G/H).
+  `/health` gains a row reporting **how many of the documented set are
+  present**, never a PASS and never "irreversible acts guarded": the block is
+  a denylist, and a check that certifies safety it cannot deliver is §13's
+  failure a second time. `./setup` writes nothing — the user pastes it, and
+  uninstall is deleting a JSON key.
+  **Acceptance:** a check.sh guard asserts the README set and the set
+  `/health` checks are identical, shown failing first on a seeded divergence
+  (an entry added to one side only); README states both limits; and
+  `/health`'s row is verified in its RENDERED output to carry no pass/fail
+  verdict for that row.
+- [ ] **4.77** The irreversibility clause on CONDUCT rule 5. Ruled by 4.66 as
+  shape (3): rule 5 gains a carve-out — before an act that cannot be undone,
+  name it and confirm, even when it was requested — propagated verbatim to
+  every site carrying the conduct block, with the rule count staying at ten
+  per the referral precedent.
+  **Acceptance:** the clause is **shown changing a model's behaviour in a
+  live run, not merely written down** (4.66's own bar) — a round where a
+  session carrying the clause stops and names an irreversible act that a
+  session without it performs. The discriminator is a count across runs, not
+  a reading of one transcript. [owed: 4.50]
+- [ ] **4.78** `scripts/check.sh` says "the six skills" twice about a list of
+  seven. `READONLY_SKILLS` at `scripts/check.sh:442` carries seven entries —
+  secure, health, design-audit, audit, resume, migrate-check, why — while the
+  comments at `:399` and `:444` both say six. `/why` was enrolled 2026-08-03
+  and the prose never followed. Not functional, since the loop reads the
+  variable and not the comment, but it is a stale set-claim sitting inside the
+  comment that certifies the read-only allowlist — the exact class AGENTS.md's
+  "a claim about a set enumerates the set" rule exists for.
+  **Acceptance:** both comments state the count `READONLY_SKILLS` actually
+  has, and check.sh asserts the stated number equals the list length so the
+  next enrolment cannot silently restate the old one — shown failing first on
+  a seeded eighth entry.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
