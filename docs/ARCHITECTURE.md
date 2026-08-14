@@ -156,7 +156,7 @@ rule `/secure` applies to any untrusted-in-trusted-position path.
 
 Three layers, each answering a different question.
 
-**`scripts/check.sh` — is the pack internally consistent?** 34 numbered sections plus 3b, 3c and 13a — **<!-- count:checks -->37<!-- /count --> checks**; the header comment is their single enumeration, updated in the
+**`scripts/check.sh` — is the pack internally consistent?** 35 numbered sections plus 3b, 3c and 13a — **<!-- count:checks -->38<!-- /count --> checks**; the header comment is their single enumeration, updated in the
 same commit as any new section. That list went stale twice when copies
 lived elsewhere — and a partial copy that used to sit in this paragraph
 went stale a third time (it enumerated sixteen items, claimed fifteen,
@@ -175,7 +175,7 @@ produce 6/7 (85.7%), and it also asserts that every case excluded
 from the denominator is NAMED — silent exclusion moves no percentage,
 so it is invisible in the number alone.
 
-**`docs/guard-matrix.sh` — does each guard fire?** <!-- count:matrix-cases -->142<!-- /count --> cases, each
+**`docs/guard-matrix.sh` — does each guard fire?** <!-- count:matrix-cases -->146<!-- /count --> cases, each
 seeding one defect into a copy of the real tree and asserting the
 expected failure class, plus must-pass cases so a guard cannot pass by
 failing everything. **Extend the matrix first, watch the case fail, then

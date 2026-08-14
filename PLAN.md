@@ -3724,7 +3724,41 @@ reordered, if any.
   commit, which the matrix has not needed before — if that proves
   impractical, say so in the note and cover §34 by control instead.
 
-- [ ] **4.81** 15 of the 20 remaining scheduled tasks carry no
+- [x] **4.81** *(Done 2026-08-14, **with its own scope superseded and that is
+  the finding.** As filed this demanded acceptance lines for all 15 tasks
+  across waves 5–7. That was wrong: the repo already has a pattern —
+  `docs/wave-2-specs.md`, `wave-3-specs.md`, `wave-4-specs.md` — where a wave
+  is specced **when it is next**, and there is no `wave-5-specs.md` because
+  wave 5 has not been specced, not because acceptances went missing. Writing
+  done-conditions today for wave 7's `/cost` and `/incident` would be
+  inventing the shape of skills nobody has decided on — the guessing this
+  pack refuses everywhere else.
+  **Delivered: wave 5 only — four lines, not five.** 5.5 already carried one;
+  the count was corrected mid-task. Each derived from the task's own text and
+  matched to 5.5's shape (seeded condition → named output → verdict). 5.3
+  additionally records 4.66's deferral, including that its report must state
+  the deny block is friction on the directly-typed form only.
+  **The wave's exit criterion was reworded, found while deriving 5.4's.** It
+  claimed *"none of them can write (enforced by `allowed-tools`)"* — an
+  overclaim of exactly the kind §13 refuses: that section certifies
+  "documented use is read-only", explicitly **not** "cannot write under any
+  argument". And `/verify` cannot belong to that set at all, since auditing a
+  claim means running the project's own acceptance commands. Split in two,
+  struck through rather than deleted.
+  **check.sh §35, scope DERIVED not listed:** the topmost open wave plus the
+  next. No exemption list to go stale, and waves 6/7/B fall out
+  automatically — superseding the filed acceptance's "Wave B is exempt in the
+  guard, by name" clause with something that cannot rot.
+  **Four seeds, and the third replaced a weaker one.** My first
+  must-not-fire seed asserted a distant wave stays silent — which the
+  BASELINE already satisfies, so a guard permanently blind to distant waves
+  would have passed it forever while checking nothing. Replaced with: close
+  waves 4.5 and 5, and confirm the scope **advances** — it flagged all 11
+  tasks in waves 6 and 7. Matrix 142 → 146, `passed=146 failed=0`; checks
+  37 → 38.
+  **Waves 6 and 7, decided not forgotten:** their acceptances arrive at their
+  own spec pass, and §35 will demand them the moment those waves become
+  next — mechanically, without anyone remembering.)* 15 of the 20 remaining scheduled tasks carry no
   `**Acceptance:**` line. Measured 2026-08-14: wave 5 has one (5.5 only),
   waves 6 and 7 have none at all — so 5.1–5.4, 6.1–6.7 and 7.1–7.4 are
   **unbuildable by the pack's own rules**, since `/do` stops on a task with
@@ -3752,24 +3786,59 @@ no surveyed pack occupies at all. Plus the one verification skill worth
 building.
 
 **Exit criterion:** Each gate returns a written verdict against a seeded
-scratch project; none of them can write (enforced by `allowed-tools`, per
-4.8's precedent).
+scratch project. ~~none of them can write (enforced by `allowed-tools`, per
+4.8's precedent)~~ **Verdict (2026-08-14):** that overclaimed what
+`allowed-tools` delivers. check.sh §13 certifies *"declares only commands
+whose DOCUMENTED use is read-only"*, explicitly **not** *"cannot write under
+any argument"*, and carries a named residual (`git log --output=FILE`); it
+also states that read-only describes what a skill does **to the project**,
+not a claim that nothing on the machine is touched. Restated in two parts:
+**5.1, 5.2, 5.3 and 5.5** declare no write-capable tools and enrol in §13's
+`READONLY_SKILLS`, so they never write to the project. **5.4 sits
+deliberately outside that set** — verifying a claim means running the
+project's own acceptance commands, and those write caches, temp files and
+test databases; lumping it in would either block the skill or stretch
+"read-only" until it meant nothing. Its constraint is its own and is stated
+rather than inherited: it never edits the project, the claim, or the
+acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
 
 - [ ] **5.1** /deps — dependency hygiene: what packages were added and
   why, maintenance status, license posture, whether stdlib or an existing
   dependency would have done it, whether it is even imported. Agents add
   packages reflexively; nothing in any surveyed pack looks at this.
+  **Acceptance:** on a scratch project whose manifest carries four planted
+  defects — a package that is never imported, one whose job the stdlib
+  already does, one unmaintained (no release in over two years), and one
+  whose license conflicts with the project's declared one — names all four
+  with the manifest line for each, and returns no findings on a clean
+  manifest. The never-imported one is the discriminator: it is decidable
+  with certainty, unlike the judgment calls beside it.
 - [ ] **5.2** /contract-check — breaking-change pre-flight for the surface
   callers depend on: function signatures, API response shapes, public
   exports, config keys. Same additive-vs-destructive classification and
   safe-alternative column as `/migrate-check` (add-new-then-deprecate
   rather than rename). The cheapest build in these three waves — the
   template already exists and is shakedown-proven.
+  **Acceptance:** against a diff that renames a public export, drops a field
+  from an API response, narrows a function signature, and adds an optional
+  config key, classifies the first three destructive and the fourth
+  additive, names the add-new-then-deprecate alternative for each
+  destructive one, and returns GO on an additions-only diff. A rename
+  reported as additive is the failure this skill exists to prevent.
 - [ ] **5.3** /careful — GO/NO-GO for destructive operations generally:
   history rewrites on shared branches, bulk deletes, production config
   edits, secret rotation. `/migrate-check` covers the database slice and
   nothing else today; gstack splits this across three skills, acstack
   does it as one verdict.
+  **Acceptance:** given a `git push --force` onto a shared branch, a bulk
+  delete, and a secret rotation, returns NO-GO for each with the
+  irreversibility named and the recovery path stated, and GO for an
+  operation with a working undo. **Inherits 4.66's deferral (2026-08-14):**
+  the skill shape was ruled there and sent here rather than built in 4.5, so
+  this task owns what the CONDUCT rule-5 clause does not — and its report
+  must state that a `permissions.deny` block is friction on the
+  directly-typed form only, since `sh -c`, `bash -c` and script files defeat
+  it outright (4.66, arm F).
 - [ ] **5.4** /verify — audits a completion *claim* rather than the code:
   re-derives what acceptance demands, runs it against the running system,
   reports CONFIRMED / OVERSTATED / FALSE. **Build last and only with that
@@ -3781,6 +3850,13 @@ scratch project; none of them can write (enforced by `allowed-tools`, per
   `/ship` (five gates), and `/triage` (checked boxes that now fail). The
   genuine gap is auditing a claim made by *someone else* — another
   session, another agent, a teammate — against a running system.
+  **Acceptance:** given a claim naming an acceptance the system does not
+  meet, returns FALSE with the command run and the output observed; given a
+  claim true in part, OVERSTATED naming the clause that failed; given a met
+  claim, CONFIRMED. All three must be produced against a **running** system —
+  a pass that only reads the diff cannot honestly return any of them, and
+  that is also why this task sits outside the wave's read-only set (see the
+  exit criterion's 2026-08-14 verdict).
 - [ ] **5.5** /upgrade — dependency *upgrade* pre-flight, distinct from
   5.1's *addition* review. Upgrading is a breaking-change problem, not a
   justification problem: read the changelog between the pinned and target

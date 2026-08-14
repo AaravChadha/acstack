@@ -23,6 +23,7 @@
 #   29 conditional-branch waste per skill  30 unsupplied-section rule has one home
 #   31 never-guess rule stays unconditional  32 deny set has one canonical home
 #   33 READONLY_SKILLS states its own size    34 commit subjects match the 3 shapes
+#   35 near-term open tasks state a done-condition
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1016,6 +1017,37 @@ else
 $(git log --format='%s' -20)
 EOF
   [ "$subj_bad" -eq 0 ] || fail=1
+fi
+
+# 35. Near-term open tasks state a done-condition (4.81). A task with no
+#     `**Acceptance:**` is not ready work — /do stops on it and /resume reports
+#     it as a finding about the plan rather than listing it as next. On
+#     2026-08-14, 15 of the 20 remaining scheduled tasks were in exactly that
+#     state, unnoticed through every audit because nothing checked.
+#     SCOPE IS DERIVED, NOT LISTED: the topmost open wave and the next one.
+#     It advances by itself as waves close, and keeps distant waves out
+#     without an exemption list to go stale — a wave earns acceptance lines at
+#     its own spec pass (docs/wave-<n>-specs.md), not years ahead, and
+#     inventing done-conditions for unshaped skills is the guessing this pack
+#     refuses everywhere else.
+missing_acc="$(awk '
+function flush() { if (tid != "" && topen && !tacc) print wname "\t" tid; tid=""; tacc=0; topen=0 }
+/^## /{ flush(); inscope=0
+  if ($0 ~ /^## \[ \] Wave /) { nopen++
+    if (nopen<=2) { inscope=1; wname=$0; sub(/^## \[ \] /,"",wname); sub(/ —.*/,"",wname) } }
+  next }
+inscope && /^- \[[ x]\] \*\*/{ flush()
+  topen = ($0 ~ /^- \[ \] \*\*/)
+  tid=$0; sub(/^- \[[ x]\] \*\*/,"",tid); sub(/\*\*.*/,"",tid); next }
+inscope && /\*\*Acceptance:\*\*/{ tacc=1 }
+END{ flush() }
+' PLAN.md)"
+if [ -n "$missing_acc" ]; then
+  printf '%s\n' "$missing_acc" | while IFS="$(printf '\t')" read -r w_ t_; do
+    [ -n "$t_" ] || continue
+    echo "FAIL acceptance: $w_ task $t_ is open with no **Acceptance:** line — not ready work (4.81)"
+  done
+  fail=1
 fi
 
 if [ "$fail" -eq 0 ]; then

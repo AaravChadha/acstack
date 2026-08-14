@@ -419,6 +419,38 @@ gitcase "commit-style: capitalised Task"      FAIL "Task 4.80: capitalised"
 gitcase "commit-style: Journal without date"  FAIL "Journal without a date"
 gitcase "commit-style: ordinary verb-first"   PASS "run an ordinary verb-first commit"
 
+# 4.81: §35 near-term tasks state a done-condition. The third case is the one
+# the design rests on — the scope is DERIVED (topmost open wave + the next), so
+# closing waves must PULL the following ones in. A guard that is permanently
+# blind to distant waves would pass forever and check nothing.
+fullcase "acceptance: in-scope task loses it" FAIL 'acceptance' bash -c "python3 - <<'EOF'
+p='PLAN.md'; s=open(p).read()
+n=s.replace('  **Acceptance:** on a scratch project whose manifest carries four planted','  Not an acceptance: on a scratch project whose manifest carries four planted',1)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+fullcase "acceptance: new task has none"      FAIL 'acceptance' bash -c "python3 - <<'EOF'
+p='PLAN.md'; s=open(p).read()
+a='## [ ] Wave 5 — Gates: pre-flight + verification'
+n=s.replace(a,'- [ ] **4.99** A brand-new task with no done-condition at all.\n\n'+a,1)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+fullcase "acceptance: scope advances on close" FAIL 'acceptance' bash -c "python3 - <<'EOF'
+p='PLAN.md'; s=open(p).read()
+n=s.replace('## [ ] Wave 4.5 —','## [x] Wave 4.5 —',1).replace('## [ ] Wave 5 —','## [x] Wave 5 —',1)
+assert n!=s, 'seed no-op'
+open(p,'w').write(n)
+EOF"
+fullcase "acceptance: closed task is exempt"  PASS 'acceptance' bash -c "python3 - <<'EOF'
+p='PLAN.md'; s=open(p).read()
+n=s.replace('- [ ] **5.2** /contract-check','- [x] **5.2** /contract-check',1)
+assert n!=s, 'seed no-op (checkbox)'
+m=n.replace('  **Acceptance:** against a diff that renames a public export','  Not an acceptance: against a diff that renames a public export',1)
+assert m!=n, 'seed no-op (acceptance)'
+open(p,'w').write(m)
+EOF"
+
 echo
 # 4.55a: name a mid-run tree change. Not a failure — every case above read
 # the SAME frozen snapshot, so the results stand; this tells the operator
