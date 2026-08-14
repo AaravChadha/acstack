@@ -18,11 +18,26 @@ Binding rules for this repo:
   catch itself. When in doubt, genericize.
 - Skills stay under 500 lines and plain markdown — no bash preambles until
   the wave-4 runtime lands, and none beyond its documented budget after.
-- Commit style: lowercase `<verb> <object> (<detail>)` subject + a brief
-  what-and-why body, no attribution trailers. This is a deliberate
-  **exception** to CONDUCT rule 10's work-item-referenced subject, not a
-  derivation from it — the pack itself has no ticket or task ID per commit.
-  Rule 10's no-attribution half still binds.
+- Commit style: **three shapes**, chosen by what the commit does. Derived
+  from the log on 2026-08-14 (last 40 subjects: 21 / 7 / 12), not asserted:
+  - closing a numbered PLAN task — `task <number>: <description>`, and
+    `task <a> + <b>: <description>` when one commit closes two;
+  - a journal entry — `Journal <date>: <summary>`, or
+    `Journal <date> (2nd): <summary>` for a second entry the same day;
+  - anything else — shakedown runs, fixes, corrections, records —
+    lowercase `<verb> <object> (<detail>)`.
+
+  All three take a brief what-and-why body and no attribution trailers.
+  ~~This is a deliberate **exception** to CONDUCT rule 10's
+  work-item-referenced subject, not a derivation from it — the pack itself
+  has no ticket or task ID per commit.~~ **Verdict (2026-08-14):** that was
+  false, and had been since PLAN task IDs existed — a task ID *is* a
+  work-item reference, so task-closing commits **follow** rule 10 rather
+  than excepting themselves from it. The exception survives only for the
+  third shape, where there genuinely is no work item. Found by a live
+  `/health` as an observation outside its ten checks, having outlived every
+  audit before it (4.79); guarded by check.sh §34. Rule 10's no-attribution
+  half binds throughout.
 
 Verification rules (added 2026-07-29, extended 2026-08-03 — each from a
 defect this repo shipped):

@@ -22,7 +22,7 @@
 #   27 plugin manifests agree with pack  28 startup description budget
 #   29 conditional-branch waste per skill  30 unsupplied-section rule has one home
 #   31 never-guess rule stays unconditional  32 deny set has one canonical home
-#   33 READONLY_SKILLS states its own size
+#   33 READONLY_SKILLS states its own size    34 commit subjects match the 3 shapes
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -978,6 +978,44 @@ done
 if [ "$ro_seen" -ne 2 ]; then
   echo "FAIL readonly-count: expected 2 'the <N> read-only skills' claims around READONLY_SKILLS, found $ro_seen — a claim was added or dropped, and an unchecked claim is how the last one went stale (4.78)"
   fail=1
+fi
+
+# 34. Commit subjects match one of AGENTS.md's three documented shapes (4.79).
+#     The rule and the log had disagreed since PLAN task IDs existed: AGENTS.md
+#     claimed one shape and denied the most common one existed, and every audit
+#     missed it because nobody compared the prose to `git log`. Checking the
+#     PROSE is not possible here — this checks the LOG, which is the half that
+#     goes stale silently.
+#     SHALLOW CLONES: CI checks out depth 1, so there is exactly one subject to
+#     test there. That is reported as a SKIP rather than passed off as coverage.
+#     HONEST SCOPE: "verb-first" is checked as "starts lowercase", which is all
+#     that shape can be mechanically. So this catches a capitalised or
+#     merge-style subject, and a malformed `task`/`Journal` opener — it does
+#     NOT check that a lowercase subject is well-formed prose, and it cannot.
+if [ "$(git rev-parse --is-shallow-repository 2>/dev/null || echo true)" = "true" ]; then
+  echo "SKIP commit-style: shallow clone — fewer subjects than the window, nothing meaningful checked."
+  skipped=$((skipped + 1))
+else
+  subj_bad=0
+  while IFS= read -r s_; do
+    case "$s_" in
+      "task "[0-9]*": "*)     ;;   # task-closing, incl. `task 4.68 + 4.67: …`
+      "task "*|"Task "*)
+        echo "FAIL commit-style: subject opens as a task commit but not as \`task <number>: <description>\`: $s_"
+        subj_bad=1 ;;
+      "Journal "[0-9]*)       ;;   # journal entry
+      "Journal "*|"journal "*)
+        echo "FAIL commit-style: subject opens as a journal commit but not as \`Journal <date>: <summary>\`: $s_"
+        subj_bad=1 ;;
+      [a-z]*)                 ;;   # verb-first, lowercase
+      *)
+        echo "FAIL commit-style: subject matches none of AGENTS.md's three shapes: $s_"
+        subj_bad=1 ;;
+    esac
+  done <<EOF
+$(git log --format='%s' -20)
+EOF
+  [ "$subj_bad" -eq 0 ] || fail=1
 fi
 
 if [ "$fail" -eq 0 ]; then

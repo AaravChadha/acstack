@@ -3646,7 +3646,28 @@ reordered, if any.
   has, and check.sh asserts the stated number equals the list length so the
   next enrolment cannot silently restate the old one — shown failing first on
   a seeded eighth entry.
-- [ ] **4.79** AGENTS.md's commit-style rule contradicts this repo's own
+- [x] **4.79** *(Done 2026-08-14. **User's ruling: the prose moves.** Derived
+  from the log rather than from impression — last 40 subjects are **21**
+  `task <n>:` (18 single + 3 of the `task 4.68 + 4.67:` form), **7**
+  `Journal <date>:`, and **12** verb-first, and those 12 are not noise: they
+  are exactly the non-task work (shakedown runs, fixes, corrections,
+  records). So the repo has a coherent **three-shape** convention and
+  AGENTS.md documented one shape while denying the most common one existed.
+  Rewritten to record all three, with the old claim struck through rather
+  than deleted and the reason named as **false**: a PLAN task ID *is* a
+  work-item reference, so task-closing commits **follow** CONDUCT rule 10
+  instead of excepting themselves from it. The exception survives only for
+  the third shape, where there is genuinely no work item.
+  check.sh **§34** checks the LOG — the half that goes stale silently, since
+  prose cannot be checked against intent. Five seeds on a frozen copy: a
+  capitalised subject, `task 4.79` without its colon, `Task 4.79:`
+  capitalised, `Journal` without a date — each firing its own message — and
+  an ordinary verb-first subject correctly staying **silent**. The
+  shallow-clone branch was tested separately on a real `--depth 1` clone and
+  emits `SKIP`, because CI checks out one commit and one subject is not
+  coverage. **Honest scope, written into the guard:** "verb-first" can only
+  be checked as "starts lowercase", so a malformed `task4.79:` with no space
+  reads as verb-first and passes. Checks 36 → 37.)* AGENTS.md's commit-style rule contradicts this repo's own
   commits. The rule says the pack uses lowercase
   `<verb> <object> (<detail>)` *"because the pack itself has no ticket or
   task ID per commit"* — while the recent log is `task 4.70:`, `task 4.75:`,
@@ -3658,18 +3679,22 @@ reordered, if any.
   **Acceptance:** AGENTS.md and the last 20 commit subjects describe the same
   convention, and check.sh asserts it so the two cannot drift apart again —
   the guard shown failing first on a commit subject of the losing shape.
-- [ ] **4.80** §32's and §33's failure modes are proven but not durable.
-  4.76 seeded four cases against §32 plus a fifth that must NOT fire (the
-  declaration re-wrapped across a line), and 4.78 seeded three against §33 —
-  **eight in total, every one watched firing or correctly staying silent, and
-  not one of them re-runnable.** Every comparable guard here carries
+- [ ] **4.80** §32's, §33's and §34's failure modes are proven but not
+  durable. 4.76 seeded four against §32 plus a fifth that must NOT fire (the
+  declaration re-wrapped across a line); 4.78 seeded three against §33; 4.79
+  seeded four against §34 plus a must-not-fire verb-first subject and a
+  separately-tested shallow-clone SKIP — **fourteen in total, every one
+  watched firing or correctly staying silent, and not one of them
+  re-runnable.** Every comparable guard here carries
   `docs/guard-matrix.sh` cases. Named rather than done because adding cases
-  obliges a full matrix run (~18 min, frozen copy) that neither task's
-  acceptance asked for.
-  **Acceptance:** eight matrix cases, one per seed above including the
-  must-not-fire control, each verified to actually mutate the tree (a no-op
+  obliges a full matrix run (~18 min, frozen copy) that none of the three
+  tasks' acceptances asked for.
+  **Acceptance:** fourteen matrix cases, one per seed above including both
+  must-not-fire controls, each verified to actually mutate the tree (a no-op
   seed reached CI once already, 2026-08-14), and the full matrix run green
-  locally before any push.
+  locally before any push. §34's cases need a case shape that can create a
+  commit, which the matrix has not needed before — if that proves
+  impractical, say so in the note and cover §34 by control instead.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
