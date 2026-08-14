@@ -22,6 +22,7 @@
 #   27 plugin manifests agree with pack  28 startup description budget
 #   29 conditional-branch waste per skill  30 unsupplied-section rule has one home
 #   31 never-guess rule stays unconditional  32 deny set has one canonical home
+#   33 READONLY_SKILLS states its own size
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -396,7 +397,7 @@ fi
 
 # 13. Structurally read-only skills declare a no-write tool set.
 #     ALLOWLIST, not a denylist, and the allowlist is the AUDITED UNION of what
-#     the six skills actually grant — not a plausible-looking set of read-only-
+#     the 7 read-only skills actually grant — not a plausible-looking set of read-only-
 #     sounding commands. A denylist was tried and failed twice: it missed
 #     `find`/`awk`/`git config`, and the very commit that added those introduced
 #     `sed -n` — which writes, because `sed -n -i ''` is valid and prefix grants
@@ -441,7 +442,7 @@ fi
 #     certify the preamble.
 READONLY_SKILLS="secure health design-audit audit resume migrate-check why"
 SAFE_TOOLS="Read|Grep|Glob"
-# Audited union of Bash grants across the six skills above (2026-08-03). Every
+# Audited union of Bash grants across the 7 read-only skills above (2026-08-03). Every
 # entry read-only in its DOCUMENTED use; the git log/diff residual above is the
 # accepted exception, not an oversight. git grep is deliberately ABSENT — it is
 # applied through the Grep tool, not shell.
@@ -954,6 +955,29 @@ if [ -n "$ds_health" ]; then
     *"never counts toward the issue total"*) : ;;
     *) echo "FAIL deny-set: /health's deny-set row no longer declares itself verdict-free — a pass here certifies a safety property a denylist cannot deliver (4.76)"; fail=1 ;;
   esac
+fi
+
+# 33. READONLY_SKILLS's stated size matches the list (4.78). /why was enrolled
+#     2026-08-03 and both comments above the list kept saying "six" about a
+#     list of seven for eleven days, through every audit in between — a stale
+#     set-claim sitting inside the comment that certifies the read-only
+#     allowlist, which is exactly the class AGENTS.md's "a claim about a set
+#     enumerates the set" rule exists for. The claims are written as DIGITS so
+#     they are machine-readable; the count of claims is asserted too, so
+#     adding a third one silently is also a failure.
+ro_n="$(echo "$READONLY_SKILLS" | wc -w | tr -d ' ')"
+ro_claims="$(grep -oE 'the [0-9]+ read-only skills' scripts/check.sh | grep -oE '[0-9]+' || true)"
+ro_seen=0
+for c in $ro_claims; do
+  ro_seen=$((ro_seen + 1))
+  if [ "$c" -ne "$ro_n" ]; then
+    echo "FAIL readonly-count: a comment claims '$c read-only skills' but READONLY_SKILLS lists $ro_n — the set claim went stale (4.78)"
+    fail=1
+  fi
+done
+if [ "$ro_seen" -ne 2 ]; then
+  echo "FAIL readonly-count: expected 2 'the <N> read-only skills' claims around READONLY_SKILLS, found $ro_seen — a claim was added or dropped, and an unchecked claim is how the last one went stale (4.78)"
+  fail=1
 fi
 
 if [ "$fail" -eq 0 ]; then

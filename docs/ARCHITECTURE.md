@@ -16,7 +16,7 @@ PRINCIPLES.md         why the discipline is shaped this way
 VERSION, CHANGELOG.md release record; check.sh enforces their agreement
 setup                 symlink installer / uninstaller
 bin/                  three runtime helpers (bash 3.2+)
-scripts/check.sh      the guard — its header enumerates all 31 sections
+scripts/check.sh      the guard — its header enumerates every section
 scripts/controls.sh   positive controls: documented checks vs seeded fixtures
 fixtures/<skill>/     one known planted defect per check-shaped skill
 docs/guard-matrix.sh  seeded-defect cases proving each guard fires
@@ -156,7 +156,7 @@ rule `/secure` applies to any untrusted-in-trusted-position path.
 
 Three layers, each answering a different question.
 
-**`scripts/check.sh` — is the pack internally consistent?** 32 numbered sections plus 3b, 3c and 13a — **<!-- count:checks -->35<!-- /count --> checks**; the header comment is their single enumeration, updated in the
+**`scripts/check.sh` — is the pack internally consistent?** 33 numbered sections plus 3b, 3c and 13a — **<!-- count:checks -->36<!-- /count --> checks**; the header comment is their single enumeration, updated in the
 same commit as any new section. That list went stale twice when copies
 lived elsewhere — and a partial copy that used to sit in this paragraph
 went stale a third time (it enumerated sixteen items, claimed fifteen,

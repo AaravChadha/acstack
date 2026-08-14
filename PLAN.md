@@ -3614,7 +3614,27 @@ reordered, if any.
   session carrying the clause stops and names an irreversible act that a
   session without it performs. The discriminator is a count across runs, not
   a reading of one transcript. [owed: 4.50]
-- [ ] **4.78** `scripts/check.sh` says "the six skills" twice about a list of
+- [x] **4.78** *(Done 2026-08-14. **Re-derived before fixing, and the write-up
+  survived it:** all seven entries grant Bash, so there is no reading of "six"
+  that is accurate — the alternative hypothesis, that six of the seven had
+  Bash grants and the comment meant that, is false. `REPORT_SKILLS`'s "five of
+  them violated the pack's own stance" was checked in the same pass and
+  **left alone**: that is a historical event count, not a claim about the
+  current list.
+  Both comments now read **"the 7 read-only skills"** — digits, so the claim
+  is machine-readable — and check.sh **§33** asserts the stated number equals
+  `wc -w` of the list AND that exactly two such claims exist, so dropping one
+  is also a failure. Three seeds on a frozen copy, each firing its own
+  message: an eighth skill enrolled (the original defect, reproduced — both
+  claims flagged independently), one comment restating the old number, and a
+  claim deleted.
+  **Wider than the write-up, in one direction I caused:**
+  `docs/ARCHITECTURE.md:19` claimed the header "enumerates all 31 sections",
+  which was **correct until §32 and §33 landed today**. Fixed by deleting the
+  number rather than restating it — matching CONTRIBUTING.md:12, which had
+  already been fixed that way. The counts in CHANGELOG.md:92 and
+  JOURNAL.md:2423/2758 are deliberately untouched: they record what the
+  number was on their date. Checks 35 → 36.)* `scripts/check.sh` says "the six skills" twice about a list of
   seven. `READONLY_SKILLS` at `scripts/check.sh:442` carries seven entries —
   secure, health, design-audit, audit, resume, migrate-check, why — while the
   comments at `:399` and `:444` both say six. `/why` was enrolled 2026-08-03
@@ -3638,14 +3658,15 @@ reordered, if any.
   **Acceptance:** AGENTS.md and the last 20 commit subjects describe the same
   convention, and check.sh asserts it so the two cannot drift apart again —
   the guard shown failing first on a commit subject of the losing shape.
-- [ ] **4.80** check.sh §32's four failure modes are proven but not durable.
-  4.76 seeded all four on a frozen copy and watched each fire, plus a fifth
-  that must not fire (the declaration re-wrapped across a line) — but those
-  seeds were run by hand and nothing re-runs them, whereas every comparable
-  guard here carries `docs/guard-matrix.sh` cases. Named rather than done
-  because adding cases obliges a full matrix run (~18 min, frozen copy) that
-  4.76's own acceptance did not ask for.
-  **Acceptance:** five matrix cases, one per seed above including the
+- [ ] **4.80** §32's and §33's failure modes are proven but not durable.
+  4.76 seeded four cases against §32 plus a fifth that must NOT fire (the
+  declaration re-wrapped across a line), and 4.78 seeded three against §33 —
+  **eight in total, every one watched firing or correctly staying silent, and
+  not one of them re-runnable.** Every comparable guard here carries
+  `docs/guard-matrix.sh` cases. Named rather than done because adding cases
+  obliges a full matrix run (~18 min, frozen copy) that neither task's
+  acceptance asked for.
+  **Acceptance:** eight matrix cases, one per seed above including the
   must-not-fire control, each verified to actually mutate the tree (a no-op
   seed reached CI once already, 2026-08-14), and the full matrix run green
   locally before any push.
