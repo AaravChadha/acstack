@@ -3679,7 +3679,7 @@ reordered, if any.
   **Acceptance:** AGENTS.md and the last 20 commit subjects describe the same
   convention, and check.sh asserts it so the two cannot drift apart again —
   the guard shown failing first on a commit subject of the losing shape.
-- [x] **4.80** *(Done 2026-08-14. **Matrix 129 → 142, `passed=142 failed=0`**,
+- [x] **4.80** *(Done 2026-08-15. **Matrix 129 → 142, `passed=142 failed=0`**,
   run in full locally with no mid-run tree-change NOTE. Thirteen cases: five
   for §32 (four must-fire plus the re-wrap that must stay silent), three for
   §33 (the first being the original six-vs-seven defect reproduced by
@@ -3724,7 +3724,7 @@ reordered, if any.
   commit, which the matrix has not needed before — if that proves
   impractical, say so in the note and cover §34 by control instead.
 
-- [x] **4.81** *(Done 2026-08-14, **with its own scope superseded and that is
+- [x] **4.81** *(Done 2026-08-15, **with its own scope superseded and that is
   the finding.** As filed this demanded acceptance lines for all 15 tasks
   across waves 5–7. That was wrong: the repo already has a pattern —
   `docs/wave-2-specs.md`, `wave-3-specs.md`, `wave-4-specs.md` — where a wave

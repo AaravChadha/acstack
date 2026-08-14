@@ -3,7 +3,10 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-14 (2nd). **4.66 ruled and 4.76 shipped** — the
+> **Last update**: 2026-08-15. **Six tasks closed across the sitting** — 4.66
+> ruled, then 4.76, 4.78, 4.79, 4.80, 4.81 built, with 4.79 ruled by the user
+> and **two tasks superseding their own scope** on the way. check.sh 34 → 38,
+> matrix 129 → 146. Earlier the same sitting: **4.66 ruled and 4.76 shipped** — the
 > irreversible-act question settled by measuring the harness rather than
 > arguing about it: ten probe arms established that `permissions.deny`
 > survives `--dangerously-skip-permissions` but is defeated outright by
@@ -164,6 +167,90 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Four guards, and two tasks that superseded their own scope (2026-08-14 → 15)
+
+**Five commits after the entry below, and the most useful output of three of
+them was not the thing the task asked for.** Every one turned out wider than
+its write-up, which is the standing rule doing its job rather than a run of
+bad luck.
+
+**4.78 — the read-only list states its own size.** Two comments called
+`READONLY_SKILLS` "the six skills" while it listed seven; `/why` was enrolled
+2026-08-03 and the prose never followed, surviving every audit since.
+**Re-derived before fixing, and the charitable reading died:** all seven grant
+Bash, so "six" cannot mean "six of them have Bash grants".
+`REPORT_SKILLS`'s "five of them violated the pack's own stance" was checked in
+the same pass and **left alone** — a historical event count, not a claim about
+the current list. check.sh **§33** now asserts the stated number equals
+`wc -w` of the list *and* that exactly two claims exist, so dropping one is
+also a failure. **Wider than its write-up:** `ARCHITECTURE.md:19` claimed the
+header "enumerates all 31 sections" — true until §32 and §33 landed hours
+earlier. Fixed by deleting the number, matching CONTRIBUTING.md, which had
+already been fixed that way.
+
+**4.79 — the commit convention the repo actually has.** AGENTS.md said the
+pack commits `<verb> <object> (<detail>)` *"because the pack itself has no
+ticket or task ID per commit"*, while the log was 21 `task <n>:` out of 40.
+**The user ruled: the prose moves.** Measured, not asserted — 21 task-shaped
+(18 single, 3 of the `task 4.68 + 4.67:` form), 7 journal, 12 verb-first, and
+the 12 are exactly the non-task work. The stated reason was not merely stale
+but **false**: a PLAN task ID *is* a work-item reference, so those commits
+**follow** CONDUCT rule 10 rather than excepting themselves from it. The
+exception survives only for the third shape. **§34 checks the LOG**, since
+prose cannot be checked against intent, and its honest scope is written into
+the guard: "verb-first" can only be tested as "starts lowercase", so a
+malformed `task4.79:` passes. In CI it emits `SKIP` — depth-1 checkout, one
+subject is not coverage — verified on a real `--depth 1` clone.
+
+**4.80 — the day's guards made durable, and a counter that hid work.** Matrix
+**129 → 146** across two runs. §34 forced a **new case shape**: this file
+strips `.git`, so a git-dependent guard hits the shallow fallback and SKIPs,
+unreachable forever through `fullcase`. `gitcase` builds a one-commit repo
+inside the copy — verified standalone that a fresh `git init` reports
+`is-shallow=false` **before** five cases were written on the assumption.
+**Wider than its write-up:** `count-check.sh:81` hardcoded the three
+case-shape names, so a fourth made the derivation **under-count by 5** —
+reporting a smaller suite than the one that runs, the direction that hides
+work rather than inventing it. Now shape-agnostic; 137 before, 142 after, and
+the runtime `passed=` then equalled the static count. **Scope superseded:**
+thirteen cases, not the fourteen specified — the fourteenth was the
+shallow-clone SKIP, which belongs in CI, where it runs live on every push.
+
+**4.81 — filed late, then narrowed, and the reword was worth more than the
+task.** The acceptance gap had been named **twice** in one session with no
+carrier opened either time, which is the orphan the carrier rule exists to
+stop; recording is not scheduling. Measured on filing: **15 of 20** remaining
+scheduled tasks carried no `**Acceptance:**`. **Then the scope was
+superseded** — the repo specs a wave *when it is next*
+(`wave-2/3/4-specs.md` exist, `wave-5-specs.md` does not), so waves 6 and 7
+are unspecced rather than missing something, and inventing done-conditions
+for unshaped skills is the guessing this pack refuses. Delivered wave 5 only:
+**four** lines, not five, since 5.5 already had one.
+**The find was in the exit criterion**, hit while deriving 5.4's: it claimed
+*"none of them can write (enforced by `allowed-tools`)"* — the exact overclaim
+§13 refuses, which certifies documented use and **not** incapability. And
+`/verify` cannot be in that set at all, since auditing a claim means running
+the project's own acceptance commands. Split in two, struck through.
+**§35 scopes by derivation** — topmost open wave plus the next — so there is
+no exemption list to rot. **One seed was thrown away:** the first
+must-not-fire case asserted a distant wave stays silent, which the *baseline*
+already satisfies — a guard permanently blind to distant waves would have
+passed it forever while checking nothing. Replaced by closing waves 4.5 and 5
+and confirming the scope **advances**: all 11 tasks in waves 6 and 7 flagged.
+
+**What did NOT happen.** 4.50 and 4.77 were not run — both need a live
+shakedown round, and 4.77's venue is the hard part, since demonstrating the
+clause requires a session that performs an irreversible act *without* it.
+4.3/4.4 stay adopter-gated. Waves 6 and 7 have no acceptance lines **by
+decision**, and §35 will demand them mechanically when those waves become
+next. `scripts/count-check.sh` and `docs/guard-matrix.sh` remain outside CI's
+shellcheck list — named, not filed.
+
+Validation close: check.sh **34 → 38**; matrix **129 → 146**, 0 failed, green
+locally and on CI (runs 31826149381 and 31829768926, every step); 23 skills;
+wave 4.5 **52/56 → 58/62**. Two completion dates were corrected to 08-15
+after checking commit timestamps rather than assuming the day had not turned.
 
 ### The irreversible-act question, settled by measuring the harness instead of arguing about it (2026-08-14, later)
 
