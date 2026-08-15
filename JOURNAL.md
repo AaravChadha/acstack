@@ -3,8 +3,20 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-16 (2nd entry). **Three tasks closed, two carriers
-> filed, and 4.50 taken from one covered segment to four.** 4.82 replaced
+> **Last update**: 2026-08-16 (3rd entry). **4.50 is closed — the wave's
+> oldest debt, open across five shakedown rounds — and it closed because its
+> owed *register* emptied, not because its segments finished.** All seven
+> segments held (shakedowns 19–23), including `/triage`'s document-mode
+> reference reached for the first time ever. Ticking it then turned
+> reach-check red: **14 owed-markers across nine closed tasks pointed at
+> 4.50**, because it was the standing register every behavioural debt named.
+> Audited all 14 — 11 already settled, 1 never a debt, 3 live and discharged
+> by shakedown 23. Closing it then broke a hardcoded control fixture and
+> turned a matrix seed into a no-op; both fixed by deriving instead of
+> listing, same as 4.82. Wave 4.5 **61/66**, **0 owed-markers carried**, and
+> no shakedown debt outstanding for the first time in this wave.
+> Earlier the same day (2nd entry): **three tasks closed, two carriers
+> filed.** 4.82 replaced
 > three disagreeing shellcheck rosters with one derivation after finding
 > **four** unlinted scripts where the record named two; 4.83 filed CI's
 > deprecated checkout action. Shakedown 19 ran `/ticket` and `/investigate`
@@ -188,6 +200,114 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### 4.50 closes after five rounds, and the guard would not let it close for the reason I thought (2026-08-16, 3rd)
+
+**The last three segments held, the box still refused to tick, and the
+refusal was the most useful thing in the sitting.**
+
+**T5 — the emoji-as-icon detector, owed since shakedown 16.** Venue is a
+**committed** git repo on purpose: the documented check is a `git grep` and
+only sees tracked files, so an uncommitted fixture would have read clean —
+that is how a no-op rig passes. Author ran the documented grep first: exactly
+4 hits. **Must-fire held** — 📊 `index.html:9`, 🔔 `:18`, 🚀 `:21`. **The
+must-not-fire is the real test and it could genuinely have failed:** `:30`
+`<h2>Café…</h2>` *is* matched by the grep, and `ai-tells.md:77-79` names
+accented text as the known false positive to "drop on sight". The run named
+the line, classified it, and said *"dropped, not a finding"* — silent
+omission would have been indistinguishable from not looking.
+**Measured, and worth keeping: the grep is narrower than the check it
+backs.** It searches `button|a|h[1-6]` only, so 💳/📅 in `<span>` are
+invisible to it; the run caught them anyway by reading. Every citation
+verified including the arithmetic — claimed 5.97 and 5.5, actual **5.98** and
+**5.52**. It found a real raw-hex-beside-token defect at `styles.css:4` that
+was **incidental in the fixture, not planted**, and refused a
+brand-conformance verdict with no palette configured: *"unanswerable, not
+merely unchecked."*
+
+**T6 — `/retro`'s >500-line rule.** A 607-line JOURNAL, 50 entries, **8
+substantive and 42 deliberate filler**. Both halves of `retro/SKILL.md:61-68`
+held: heading grep then `Read` with **limit=122** of 607 lines — never
+ingested — and *"the 8 substantive entries (2026-06-22 → 2026-08-10); the
+other ~42 are backfilled Groundwork notes with no signal"*, which is the
+count exactly and the anecdote-vs-trend distinction the rule exists for.
+
+**T7 — the interactive halves, scope derived not listed.** The unattended
+contracts sit at `eval-spec/SKILL.md:72`, `eval-run/SKILL.md:94`,
+`do/SKILL.md:135` and `/plan`'s mode-seed. Two-turn via `--session-id`/`-r`.
+Turn 1 fired the unattended branch and **labelled itself** — *"The interview
+wasn't answered, so this is a derivation run"* — with four rows marked
+`**DEFAULT** — unconfirmed`. Turn 2 supplied answers differing from **all
+four**; every one was adopted, the source rows re-attributed to
+`Interview 2026-08-16`, and the golden set regenerated consistently (33
+cases, **0** occurrences of the old `P1/P2/P3`).
+
+**Then the box refused to tick, and the reason was not the one I expected.**
+With all seven segments covered I ticked 4.50 and check.sh went red,
+reporting that an owed-marker named a task that was now closed. Enumerating
+rather than
+trusting the first failures printed found **14 markers — 13 in PLAN.md, 1 in
+JOURNAL.md, across nine closed tasks**. **4.50 was never a finite task; it is
+the standing register every behavioural debt in this repo points at**, which
+its own title says outright. **My enumeration two messages earlier had looked
+rigorous and was still wrong: it checked 4.50's owed list and never asked who
+was pointing at 4.50.** A self-audit checks its own list; only the guard
+checks the inbound edges.
+
+**First instinct — re-home the 14 onto a fresh carrier — was wrong and
+dropped**, because the successor breaks identically the day it closes.
+**Audited all 14 instead. Eleven were already settled** and are now
+discharged in place with date and round: round 12 ×2, shakedown 13 ×4,
+shakedown 16 ×3, shakedown 18 ×2. **The 4.61 pair corrected my own guess** —
+I had drafted a carrier for them before reading that shakedown 16's session
+reproduced a clause it *"could only do by reaching the procedure 4.61 moved
+into `references/`"*, and `/audit` was 4.61's only split target. **One was
+never a debt at all:** 4.47's prose *describing* the marker convention, using
+4.50 as its worked example — the guard cannot tell a citation from a claim.
+
+**Three were genuinely live**, all 4.49's acceptance (c), "each split skill
+in each of its modes" — and **shakedown 23 discharged them**. `/triage` in
+document mode **reached `references/document-mode.md` for the first time
+ever** and returned the full sweep: both seeded defects found (2.3 has no
+acceptance; 2.3+2.4 are a same-cause pair), both well-formed tasks correctly
+left alone, every acceptance executed against live code rather than eyeballed
+(`slugify("Café")` → `'caf'`, a 100-word input → 499 chars), and the stale
+sweep honestly reported as having nothing to run. Nothing applied. `/do 2.2`
+ticked **only** 2.2, committed `task 2.2: …`, and took the suite 3 → 4 green.
+`/do` has no document-mode reference at all, so for it the bar was report
+shape, not reachability. Register empty; **4.50 ticks, because its owed set
+emptied — not because its segments finished.**
+
+**Closing it broke two things, both caught by machinery and neither by
+reading.** `controls.sh`'s positive fixture **hardcoded `4.50`** as its
+live-carrier example, so closing 4.50 made the control reject a well-formed
+fixture; the carrier is now **derived** from whichever task is actually open,
+and the repaired control was proved still able to fail by pointing it at a
+blanket rejector. And the matrix case seeded 4.50's checkbox open → closed,
+which after the tick **matched nothing — a no-op seed that reads as a passing
+case**, the exact trap this repo keeps setting for itself. Now
+self-contained: it plants its own marker against the first open task, so it
+cannot rot on any future tick. Both are one class — *a check that names a
+live thing acquires an expiry date* — and both were fixed the same way 4.82
+was fixed earlier the same day: derive, don't list.
+
+**Self-indicting, and the funniest thing in the log:** reach-check caught me
+**four separate times** writing *about* the marker syntax rather than using
+it — a placeholder with an ellipsis, a quotation of the guard's own error
+text, the placeholder again in the closing note, and then that same quotation
+again **in this very entry**, which went red while being written. Four
+citations, four red runs, and the fourth was the sentence describing the
+other three.
+
+**What did NOT happen.** 4.83, 4.84 and 4.85 are unstarted; 4.3/4.4 stay
+adopter-gated. PR #15 is left open and mergeable on the tickets venue, and
+the three planted issues there are closed with their reasons recorded.
+
+Validation close: check.sh **38, all clean**, **0 owed-markers carried**
+(was 15); matrix **149, run in full, 0 failed**; controls **all plants
+caught**; skills **23**; wave 4.5 **60/66 → 61/66**; open scheduled
+**22 → 21**. **No shakedown debt outstanding for the first time in this
+wave's history.**
 
 ### Shakedown 19, two carriers, and a lint set that had three rosters disagreeing with each other (2026-08-16, later)
 
