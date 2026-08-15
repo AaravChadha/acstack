@@ -2901,15 +2901,63 @@ reordered, if any.
   `parse(\"30\")`" table has two rows that were mine. Issue #5, PR #15 and
   the `push: branch-pr` config change are **not** artifacts — they are real
   venue state this round left behind on purpose.
-  **Still owed after this round — three, down from seven:** the
-  emoji-as-icon detector (needs an artifact that *keeps* an emoji, and a
-  design venue rather than this one), `/retro`'s >500-line retrieval rule
-  (4.29 — needs a JOURNAL over 500 lines, which the venue does not have), and
-  the interactive halves of the unattended contracts (two-turn via
-  `--session-id`/`-r`, scope still to be derived from the contracts
-  themselves rather than listed). Evidence: `~/shakedown-18/ROUND-4.50.md`,
-  pre-registered before any session ran, with results appended after; and the
-  transcripts under `~/shakedown-19/`.)*
+  **T5 — the emoji-as-icon detector, and its must-not-fire is the real
+  test.** Owed since shakedown 16, where `/design` removed the 🔔 and left
+  nothing to catch. Venue `~/shakedown-20/venue`, a **committed** git repo,
+  because the documented check is a `git grep` and only sees tracked files —
+  an uncommitted fixture would have read clean, which is how a no-op rig
+  passes. The author ran the documented grep first: exactly 4 hits.
+  **MUST FIRE held** — 📊 `index.html:9`, 🔔 `:18`, 🚀 `:21`, each reported at
+  file:line. **MUST NOT FIRE held, and it could genuinely have failed** —
+  `:30` `<h2>Café…</h2>` *is* matched by the grep, and `ai-tells.md:77-79`
+  names accented text as the known false positive to "drop on sight". The
+  run named the line, classified it, and said *"dropped, not a finding"*
+  rather than silently omitting it, which would have been
+  indistinguishable from not looking.
+  **The detector is narrower than the check it backs**, now measured: the
+  grep only searches `button|a|h[1-6]`, so 💳/📅 in `<span>` are invisible to
+  it. The run caught them anyway by reading, at correct line numbers. Every
+  citation verified by the author, including the contrast arithmetic —
+  claimed 5.97 and 5.5, actual **5.98** and **5.52**. It also found a real
+  raw-hex-beside-token defect at `styles.css:4` that was **incidental in the
+  fixture, not planted**, and refused a brand-conformance verdict with no
+  palette configured: *"unanswerable, not merely unchecked."* Zero files
+  changed.
+  **T6 — `/retro`'s >500-line retrieval rule (4.29).** Venue
+  `~/shakedown-21/venue`: a 607-line JOURNAL, 50 `###` entries, of which
+  **8 substantive and 42 deliberate filler**. Both halves of
+  `retro/SKILL.md:61-68` held. **Retrieval, not ingestion** — the trace shows
+  a heading grep with line numbers, then `Read` with **limit=122** of 607
+  lines; the file was never read whole. **Window and count stated** — *"the
+  8 substantive entries (2026-06-22 → 2026-08-10); the other ~42 are
+  backfilled Groundwork notes with no signal"*, which is the anecdote-vs-trend
+  distinction the rule exists for, and the count is exactly right. Its other
+  numbers check out (tests 31 → 61, 2 of 4 boxes), and it left PLAN untouched,
+  proposing edits instead.
+  **T7 — the interactive halves, with the scope derived rather than listed.**
+  The unattended contracts live at `eval-spec/SKILL.md:72`,
+  `eval-run/SKILL.md:94`, `do/SKILL.md:135` and `/plan`'s mode-seed;
+  `/eval-spec`'s is the one that branches explicitly on whether anybody
+  answered. Two-turn via `--session-id` / `-r` on `~/shakedown-22/venue`.
+  **Turn 1 fired the unattended branch and labelled itself** — *"The
+  interview wasn't answered, so this is a derivation run"* — writing the
+  required source table with four rows marked `**DEFAULT** — unconfirmed`.
+  **Turn 2 supplied answers differing from all four defaults**, and the
+  interactive half fired completely: queue taxonomy replaced (4 supplied, and
+  the spec now states *"there is no Account queue… no Sales queue… no
+  Abuse/Spam queue"*), priority scheme swapped (**0** occurrences of
+  `P1/P2/P3` remain), grading changed to within-one partial credit, refusal
+  set narrowed to the two named with ambiguous routed to General. All four
+  source rows re-attributed from `DEFAULT` to **`Interview 2026-08-16`**,
+  while two genuinely-still-default rows stayed marked as such. The golden
+  set was regenerated consistently — 33 cases, only the 4 supplied queues,
+  only the 4 supplied priorities.
+  **All seven segments covered; `/triage`'s stale class remains excluded as
+  untestable in a fresh repo, by the previous round's verdict and not
+  re-litigated.** Evidence: `~/shakedown-18/ROUND-4.50.md`, pre-registered
+  before any session ran with results appended after, and the transcripts
+  under `~/shakedown-19/`, `~/shakedown-20/`, `~/shakedown-21/` and
+  `~/shakedown-22/`.)*
   Verification rule 6 says a
   behaviourally-found fix stays unverified until a live run re-tests it,
   and mechanical green never discharges it. Three debts have accumulated
