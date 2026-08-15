@@ -2873,14 +2873,42 @@ reordered, if any.
   owed — nothing behaved worse than its bar.** Method note kept because it
   will recur: pre-registration constrains grading, it does not exhaust the
   outcome space.
+  **T4 — `/ship`'s `Fixes #N`, exercised for the first time.** Never run
+  because the venue sat on the default `push: direct` and the PR path exists
+  only under `push: branch-pr`; that key is now committed to the venue's
+  `.claude/acstack.md`, and the resolver was checked through
+  `bin/acstack-config` (`push=branch-pr (project)`) rather than by re-reading
+  the file — 4.72 is exactly why the binary and not the file is the evidence.
+  Real work, not a rig: `/do 5` on a genuine backlog item produced branch
+  `feature/5-humanize-roundtrip-test`, commit `#5: …`, clean tree, suite
+  6 → 7 green. `/ship` then pushed and opened **PR #15**.
+  Every bar from `skills/ship/SKILL.md:139-141` held: `Fixes #5` present,
+  tied to milestone M3, body report-shaped (what-and-why lede, five-row gate
+  evidence table, out-of-scope line), and the report's first line is the
+  verdict `## SHIPPED — <url>`. Gate evidence carries numbers and two honest
+  negatives — *"no eval spec — gate passes with that stated"* and *"journal
+  silent → /journal proposed"*.
+  **The bar that mattered was the consumed one:** `Fixes #5` in the body is
+  the authored form, so the check was GitHub's parse —
+  `closingIssuesReferences → #5`. A grep for the string would not have
+  settled it, and this repo has shipped defects in precisely that gap.
+  PR #15 and its branch are left **open and unmerged**: unlike #12-#14 the
+  work is legitimate and mergeable, so deleting it would destroy real work
+  rather than clean up after the round.
   **Rig artifacts, named so a later reader is not misled:** issues #12, #13
   and #14 were planted by this round and closed as not-planned at its end,
   each carrying a comment saying so. T3b's own "five sources disagree about
-  `parse(\"30\")`" table has two rows that were mine.
-  **Still owed after this round:** T4 `/ship`'s `Fixes #N` (needs
-  `push: branch-pr`; opens a real PR, held for an explicit call), the
-  emoji-as-icon detector, `/retro`'s >500-line retrieval rule, and the
-  interactive halves. Evidence: `~/shakedown-18/ROUND-4.50.md` and the
+  `parse(\"30\")`" table has two rows that were mine. Issue #5, PR #15 and
+  the `push: branch-pr` config change are **not** artifacts — they are real
+  venue state this round left behind on purpose.
+  **Still owed after this round — three, down from seven:** the
+  emoji-as-icon detector (needs an artifact that *keeps* an emoji, and a
+  design venue rather than this one), `/retro`'s >500-line retrieval rule
+  (4.29 — needs a JOURNAL over 500 lines, which the venue does not have), and
+  the interactive halves of the unattended contracts (two-turn via
+  `--session-id`/`-r`, scope still to be derived from the contracts
+  themselves rather than listed). Evidence: `~/shakedown-18/ROUND-4.50.md`,
+  pre-registered before any session ran, with results appended after; and the
   transcripts under `~/shakedown-19/`.)*
   Verification rule 6 says a
   behaviourally-found fix stays unverified until a live run re-tests it,
