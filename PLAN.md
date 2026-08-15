@@ -2810,6 +2810,57 @@ reordered, if any.
   never exercised — `/design` removed the 🔔, so there was nothing to
   catch. That detector still awaits a page that keeps one. Evidence:
   `~/shakedown-16/ROUND.md`, pre-registered before any session ran.)*
+  *(**Shakedown 19, 2026-08-16 — three owed segments covered, and the
+  failing-acceptance item turns out to have been asking for an outcome, not
+  a code path.** Pre-registered at `~/shakedown-18/ROUND-4.50.md` before any
+  session ran; every bar derived from the skill's own text at `file:line`.
+  Venue `AaravChadha/acstack-s17-tickets`, fresh clone per run.
+  **`/ticket` HELD**, first run ever. Issue #11 read back from the API:
+  verb-first title, all three template sections, `bug` + `needs-acceptance`,
+  milestone M1. **The discriminator was the TBD** — the dump deliberately
+  carried a detail the repo cannot establish, and SKILL.md:63 says a guessed
+  acceptance is *worse* than an honest one, so an invented acceptance was the
+  failure mode. It wrote `TBD — needs the downstream-consumer contract` and
+  still gave four decision-independent criteria. It also found a bug the dump
+  never mentioned — `parse("1h3w")` returns `3600`, silently dropping `3w` —
+  **verified at source rather than believed**, along with its `tempo.py:6-7`
+  citations.
+  **`/investigate` HELD on diagnosis, with two findings.** Seed: a Unicode
+  lookalike (`"0s"` → `"0ѕ"`, U+0455) at `tests/test_tempo.py:29`, chosen
+  because that class is named in the pack's own known-bug-classes list.
+  Root cause named the exact seeded line and the exact codepoint, off a
+  three-row hypotheses-vs-evidence table, and it did **not** fix — the only
+  tree diff was the seed. **Finding A:** the report claimed *"Known class
+  hit … Checked first"* while the trace shows `Bash` ×8 and **zero** `Read`
+  calls — the class name came from the runtime recall preamble, which itself
+  says *"read the full class when one matches"*. The diagnosis was right; the
+  process claim was not. Carried as **4.84**. **Finding B:** the tickets
+  delta never fired — no `gh issue comment` offered — and the skill text is
+  partly at fault, since `skills/investigate/SKILL.md:103` states the offer
+  unconditionally while the only stated target comes from an `issue#`
+  argument. Carried as **4.85**.
+  **The failing-acceptance path: COVERED, by two rigs, and the round author
+  was grading the wrong thing.** T3 planted a self-contradictory acceptance
+  (#12); T3b planted one that collides with an existing test (#13, chosen so
+  the conflict is invisible from the issue alone). Both times: no branch, no
+  commit, issue OPEN, zero boxes ticked, suite untouched — and in T3b
+  `test_rejects_garbage` **survived byte-identical**, which is the failure
+  mode the never-tune-a-test rule exists for. Both were caught by
+  `skills/do/SKILL.md:59` (conflict → push back *before* code) rather than
+  by `:99` (acceptance fails at verify). ~~Owed: the verify-time branch.~~
+  **Verdict (2026-08-16):** 4.50 asked for *"an issue whose acceptance cannot
+  pass"* — an outcome, not a branch. Two different collision shapes, both
+  handled correctly, discharge it better than one run would have. The branch
+  distinction is recorded as the finding, not as a miss.
+  **Rig artifacts, named so a later reader is not misled:** issues #12 and
+  #13 were planted by this round and closed as not-planned at its end. T3b's
+  own "five sources disagree about `parse(\"30\")`" table has two rows that
+  were mine.
+  **Still owed after this round:** T4 `/ship`'s `Fixes #N` (needs
+  `push: branch-pr`; opens a real PR, held for an explicit call), the
+  emoji-as-icon detector, `/retro`'s >500-line retrieval rule, and the
+  interactive halves. Evidence: `~/shakedown-18/ROUND-4.50.md` and the
+  transcripts under `~/shakedown-19/`.)*
   Verification rule 6 says a
   behaviourally-found fix stays unverified until a live run re-tests it,
   and mechanical green never discharges it. Three debts have accumulated
@@ -3868,6 +3919,38 @@ reordered, if any.
   authored form and the annotation is the consumed one. Any other action in
   the workflow on a deprecated runtime is bumped in the same pass or its
   exclusion is written down.
+- [ ] **4.84** A "known class hit" is claimed without the class being read.
+  Shakedown 19's `/investigate` run reported *"Known class hit — Unicode
+  lookalikes breaking string comparison (pack bug-class list). **Checked
+  first**; it matched on inspection"* while its tool trace was `Bash` ×8 with
+  **zero** `Read` calls: `skills/audit/references/known-bug-classes.md` was
+  never opened. The name reached it through `bin/acstack-recall`'s preamble,
+  whose own text says *"read the full class when one matches"*. The diagnosis
+  was correct, which is why this is a reporting defect rather than a
+  correctness one — and why it would survive any check that only grades
+  outcomes. The recall preamble makes every session able to *name* classes it
+  has not read, so the honest form has to be structural, not a resolution to
+  be careful.
+  **Acceptance:** `/investigate` cannot claim a class hit without naming the
+  reference it read — either the procedure requires citing
+  `known-bug-classes.md:<section>` alongside the claim, or the claim is
+  downgraded to "matches a class name from recall (full class not read)".
+  Shown live: a seeded run whose class matches either cites the file or makes
+  the weaker claim, and the transcript's `Read` calls corroborate whichever
+  it says.
+- [ ] **4.85** `/investigate`'s tickets branch states an offer with no
+  defined target. `skills/investigate/SKILL.md:103` says *"Findings are
+  offered as a `gh issue comment` so the investigation travels with the
+  ticket — offered, not posted unasked"* unconditionally, but the only
+  target named anywhere in the branch comes from the optional `issue#`
+  argument at `:102`. Invoked bare in tickets mode — which is how shakedown
+  19 ran it, on a failure not tied to any issue — the instruction has nothing
+  to attach to, and the offer did not happen. Not a model miss alone: the
+  text does not say what to do when there is no issue.
+  **Acceptance:** the branch states the no-`issue#` case explicitly — either
+  the finding is offered against a named candidate issue, or the offer is
+  stated as not applicable and why — and a live bare invocation in tickets
+  mode does whichever the text now says.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
