@@ -3817,6 +3817,42 @@ reordered, if any.
   future task cannot be filed without one, the guard shown failing first on
   a seeded acceptance-free task. Wave B is exempt in the guard, by name and
   with the reason.
+- [x] **4.82** *(Done 2026-08-16. **Filed and closed in one edit, and the
+  filing found more than the report did.** The gap had been named twice — the
+  2026-08-15 journal and the session handoff both wrote that
+  `scripts/count-check.sh` and `docs/guard-matrix.sh` are outside CI's
+  shellcheck list, and neither opened a carrier. That is the orphan the
+  carrier rule exists to stop, and it took two passes to catch.
+  **Derived rather than trusted, and the named list was short.** Enumerating
+  every tracked file with a shell shebang found **four** unlinted scripts,
+  not two: `conditional-ratio.sh` and `reach-check.sh` had never been named
+  by anybody. **Three rosters existed and no two agreed** — check.sh §5's
+  `bash -n` loop named 7 files, its shellcheck call named 6, and
+  `.github/workflows/check.yml` named the same 6. Ten production shell
+  scripts exist; the best-covered list reached seven.
+  **Fixed by deleting all three rosters, not by extending them** —
+  `scripts/shell-sources.sh` is now the single derivation, read by both §5
+  and CI, and it covers itself (11 files). All 11 were already clean at
+  `-S warning`, so this buys future coverage rather than fixing live
+  defects, which is stated because a green result reads like a fix.
+  **Walks the tree with `find`, not `git ls-files`, deliberately:**
+  guard-matrix copies the tree without `.git`, so a git-dependent derivation
+  would have returned nothing there and broken every case in the matrix —
+  the exact trap §34 fell into and 4.80 had to add `gitcase` for. Verified
+  by running check.sh in a copy with `.git` removed: same 11 files, exit 0.
+  **Controls, on a frozen copy:** a new tracked script with an SC2164
+  warning takes check.sh to exit 1 and removing it returns exit 0, so the
+  failure is the seed's; the same defect planted under `fixtures/` leaves
+  check.sh at exit 0 and does not enter the derived set. **That must-not-fire
+  cannot be satisfied by the baseline** — the fixture does not exist until
+  the seed runs. Matrix **146 → 149**; §5 now emits a `FAIL syntax:` line on
+  a shellcheck failure so the class is greppable like every other check.)*
+  `scripts/count-check.sh` and `docs/guard-matrix.sh` run in CI but are
+  linted by nothing.
+  **Acceptance:** the set of shell files CI lints is derived from the tree
+  rather than listed, every shell source in the pack is covered including
+  any added later, and the derivation is shown failing on a newly added
+  script before it is trusted.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 

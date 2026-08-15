@@ -452,6 +452,18 @@ open(p,'w').write(m)
 EOF"
 
 echo
+# 4.82: §5's shell set is DERIVED, not listed. Three rosters used to live in
+# check.sh and check.yml and no two agreed, so four scripts were linted by
+# nothing. Case 1 is the original defect reproduced — a script added after the
+# roster was written. Case 2 is the must-not-fire, and it CANNOT be satisfied
+# by the baseline: the fixture it plants does not exist until the seed runs,
+# so a guard that swept fixtures/ would fail it. Case 3 guards the derivation
+# itself, since an empty list would silently lint nothing and still pass.
+fullcase "shell: new script enters the lint set" FAIL 'syntax' bash -c "printf '#!/usr/bin/env bash\ncd /tmp\necho hi\n' > scripts/newthing.sh"
+fullcase "shell: planted fixture stays excluded" PASS '.*'      bash -c "mkdir -p fixtures/shell-scope && printf '#!/usr/bin/env bash\ncd /tmp\necho hi\n' > fixtures/shell-scope/planted.sh"
+fullcase "shell: derivation returning nothing"   FAIL 'syntax' bash -c "printf '#!/usr/bin/env bash\ntrue\n' > scripts/shell-sources.sh"
+
+echo
 # 4.55a: name a mid-run tree change. Not a failure — every case above read
 # the SAME frozen snapshot, so the results stand; this tells the operator
 # the live tree has moved on, which is the fact that used to arrive

@@ -30,4 +30,5 @@ jobs:
       - name: guard matrix (every guard shown firing on seeded defects)
         run: bash docs/guard-matrix.sh "$PWD"
       - name: shellcheck
-        run: shellcheck -S warning setup scripts/check.sh scripts/controls.sh bin/acstack-config bin/acstack-update-check bin/acstack-recall
+        # Scope derived, never listed (4.82) — same source check.sh §5 reads.
+        run: shellcheck -S warning $(bash scripts/shell-sources.sh)

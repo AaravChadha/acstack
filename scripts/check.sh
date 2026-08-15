@@ -193,12 +193,26 @@ for f in skills/*/SKILL.md; do
   fi
 done
 
-# 5. Shell syntax (+ shellcheck when available).
-for s in setup scripts/check.sh scripts/controls.sh docs/guard-matrix.sh bin/acstack-config bin/acstack-update-check bin/acstack-recall; do
+# 5. Shell syntax (+ shellcheck when available). SCOPE IS DERIVED, NOT LISTED
+#    (4.82): scripts/shell-sources.sh enumerates every tracked shell source,
+#    and CI's shellcheck step reads the same script. Until 2026-08-16 three
+#    rosters lived here and in check.yml and no two agreed — 7 files got
+#    `bash -n`, 6 got shellcheck, and four scripts were linted by nothing.
+shell_sources="$(bash scripts/shell-sources.sh)"
+if [ -z "$shell_sources" ]; then
+  echo "FAIL syntax: scripts/shell-sources.sh returned no files — the derivation is broken"
+  fail=1
+fi
+while IFS= read -r s; do
+  [ -n "$s" ] || continue
   bash -n "$s" || { echo "FAIL syntax: $s"; fail=1; }
-done
+done <<< "$shell_sources"
 if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck -S warning setup scripts/check.sh scripts/controls.sh bin/acstack-config bin/acstack-update-check bin/acstack-recall || fail=1
+  # shellcheck disable=SC2086
+  if ! shellcheck -S warning $shell_sources; then
+    echo "FAIL syntax: shellcheck reported findings in the derived shell set (listed above)"
+    fail=1
+  fi
 fi
 
 # 6. VERSION / CHANGELOG agreement. VERSION is one bare semver line and must
