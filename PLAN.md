@@ -3853,6 +3853,21 @@ reordered, if any.
   rather than listed, every shell source in the pack is covered including
   any added later, and the derivation is shown failing on a newly added
   script before it is trusted.
+- [ ] **4.83** CI pins `actions/checkout@v4`
+  (`.github/workflows/check.yml:22`), which targets Node.js 20 and is being
+  force-run on Node 24 — every run since has carried the deprecation
+  annotation. Latest is **v7.0.1** (published 2026-07-20, read from the
+  releases API on 2026-08-16, not recalled). Nothing fails today; this is
+  filed because the forced-runtime bridge is what gets removed, and a green
+  CI with a standing annotation is the state where that removal arrives as a
+  surprise. Observed during 4.82's push, filed rather than mentioned once
+  and lost — the failure mode 4.82 itself was created by.
+  **Acceptance:** a real CI run after the bump carries **no** Node-version
+  deprecation annotation — read from the run's annotations via
+  `gh run view <id>`, not from the workflow file, since the workflow is the
+  authored form and the annotation is the consumed one. Any other action in
+  the workflow on a deprecated runtime is bumped in the same pass or its
+  exclusion is written down.
 
 ## [ ] Wave 5 — Gates: pre-flight + verification
 
