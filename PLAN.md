@@ -1867,7 +1867,9 @@ reordered, if any.
   (hygiene's claim/requires table); its tickets section was confirmed
   clear of both before the split, and the guards stayed green.
   The behavioural half — a live model finding the moved procedure in each
-  mode — is unchanged and still owed [owed: 4.50].)* Split the heavy
+  mode — is unchanged and still owed. **Discharged 2026-08-16 by shakedown
+  23**, which completed the set: `/plan` seed mode (sk-15), `/do` and
+  `/triage` in tickets mode (sk-17), and both in document mode today.)* Split the heavy
   skills so an invocation loads only the
   split, not the set, and the title says "the heavy skills". **`/plan`
   done: 12,181 → 7,175 bytes, 215 → 127 lines**, with `Mode: seed` (71
@@ -1890,7 +1892,7 @@ reordered, if any.
   files and are the next clearest; `design` (11,814) and `eval-run`
   (11,369) have one each and need reading before any claim; `/audit`
   remains the model, not a candidate. The behavioural half is unchanged
-  and still owed [owed: 4.50].)* Split the heavy skills so an invocation loads only the
+  and still owed. **Discharged 2026-08-16 by shakedown 23.**)* Split the heavy skills so an invocation loads only the
   procedure it selected. Measured 2026-08-06: the always-on cost is the
   skill listing at 9,523 bytes over 21 model-invocable descriptions
   (~2,540 tokens, ~1.3% of a 200k window) — small, and not worth
@@ -1928,7 +1930,13 @@ reordered, if any.
   simply stops knowing how to do one thing; shown failing first; and (c)
   a live round drives each split skill in each of its modes and gets the
   same report shape as before the split — behavioural, so it owes a
-  shakedown slot under verification rule 6 [owed: 4.50].
+  shakedown slot under verification rule 6. **Discharged 2026-08-16 by
+  shakedown 23**: `/triage` in document mode reached
+  `references/document-mode.md` — never exercised before — and returned the
+  full sweep, catching both seeded defects while correctly leaving the two
+  well-formed tasks alone; `/do 2.2` ticked only 2.2, committed
+  `task 2.2: …`, and took the suite 3 → 4 green. `/do` has no document-mode
+  reference at all, so for it the bar is report shape, not reachability.
 
 - [x] **4.62** *(Done 2026-08-12. **Shipped as a MODE, and the description
   grew 36 chars against a <40 budget** — 460 -> 496, well inside 4.59's 600
@@ -2671,7 +2679,24 @@ reordered, if any.
   list, or appears in a section whose heading does not claim it is
   unblocked. Same one-rule-one-home shape as 4.68.
 
-- [ ] **4.50** The next shakedown's mandatory segments — everything a
+- [x] **4.50** *(Done 2026-08-16, and it closed only after its register was
+  emptied rather than after its segments were finished — the distinction the
+  guard forced. All seven segments held (shakedowns 19-22, detailed below).
+  Ticking it then turned reach-check red: **14 `owed` markers across nine
+  closed tasks pointed at 4.50**, because it was the standing register every
+  behavioural debt in this repo named, not a finite task. Audited all 14
+  instead of re-homing them: **11 already settled** (round 12; shakedown 13
+  ×4; shakedown 16 ×3; shakedown 18 ×2), **1 was never a debt** (4.47's prose
+  citing the convention), and **3 were live** — 4.49's acceptance (c),
+  "each split skill in each of its modes". Shakedown 23 discharged those:
+  `/triage` in document mode reached `references/document-mode.md` for the
+  first time ever and returned the full sweep; `/do 2.2` ticked only its own
+  box and committed `task 2.2: …`. Two self-inflicted false positives were
+  caught by the guard on the way — an owed-marker written with an ellipsis instead of a task number, and this note's
+  own quotation of the guard's error text, both citations the checker cannot
+  distinguish from claims.
+  **`/triage`'s stale class stays excluded**, untestable in a fresh repo.
+  Two findings became carriers: **4.84** and **4.85**.)* The next shakedown's mandatory segments — everything a
   round is already known to owe. *(**Updated 2026-08-12:** round 13 ran
   4.58's ladder and **discharged 4.52's re-test** — `q10` graded correctly
   in three live runs, which requires the comma splitter.
@@ -2963,7 +2988,8 @@ reordered, if any.
   `~/shakedown-22/`.
   **And yet this box does not tick, which the guard had to tell me.**
   With all seven covered I ticked it, and check.sh's reach-check went red
-  instantly: `[owed: 4.50] names task 4.50, which is CLOSED`. Enumerating
+  instantly, reporting that the marker named a task that was now closed.
+  Enumerating
   instead of trusting the first failures printed found **14 markers — 13 in
   PLAN.md, 1 in JOURNAL.md, across nine closed tasks** (4.42, 4.47, 4.49,
   4.51, 4.53, 4.58, 4.61, 4.62, 4.66, 4.77). **4.50 is not a finite task; it

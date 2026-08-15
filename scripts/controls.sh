@@ -620,12 +620,28 @@ if [ -f scripts/reach-check.sh ]; then
   else
     ok "reach-check rejects the seeded orphaned carriers"
   fi
+  # The positive fixture carries __OPEN_TASK__, substituted here with a task
+  # that is ACTUALLY open right now. It used to hardcode 4.50; closing 4.50 on
+  # 2026-08-16 turned this control red, because reach-check resolves carriers
+  # against the real PLAN.md. A fixture naming a live task is a fixture with an
+  # expiry date — derive it (4.48's lesson, and the fixture-trips-its-own-
+  # detector bug class).
   if [ ! -f fixtures/reachability/carried-PLAN.md ]; then
     bad "reach-check positive fixture missing — a blanket rejector would score full marks"
-  elif bash scripts/reach-check.sh fixtures/reachability/carried-PLAN.md >/dev/null 2>&1; then
-    ok "reach-check accepts the well-formed carriers"
   else
-    bad "reach-check REJECTED the well-formed fixture — the guard rejects everything"
+    live_task="$(grep -oE '^- \[ \] \*\*[0-9]+\.[0-9]+\*\*' PLAN.md | grep -oE '[0-9]+\.[0-9]+' | head -1)"
+    if [ -z "$live_task" ]; then
+      bad "reach-check positive control cannot run — PLAN.md has no open task to name as a live carrier"
+    else
+      rc_tmp="$(mktemp -d)"
+      sed "s/__OPEN_TASK__/$live_task/" fixtures/reachability/carried-PLAN.md > "$rc_tmp/carried-PLAN.md"
+      if bash scripts/reach-check.sh "$rc_tmp/carried-PLAN.md" >/dev/null 2>&1; then
+        ok "reach-check accepts the well-formed carriers (live carrier $live_task, derived)"
+      else
+        bad "reach-check REJECTED the well-formed fixture — the guard rejects everything"
+      fi
+      rm -rf "$rc_tmp"
+    fi
   fi
   # Fixture integrity: the orphan fixture must still seed all four modes.
   omiss=""

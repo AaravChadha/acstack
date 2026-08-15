@@ -240,7 +240,23 @@ fullcase "unisolated fixture stops seeding" FAIL 'control' bash -c "sed -e 's|\"
 # closed under a marker still pointing at it, the implementation vanishes,
 # and the comparison is neutered into a blanket accept (caught by the
 # control layer, not by section 25 itself).
-fullcase "owed-marker carrier gets closed"  FAIL 'reach'   bash -c "sed -e 's/^- \[ \] \*\*4\.50\*\*/- [x] **4.50**/' PLAN.md > t && mv t PLAN.md"
+# SELF-CONTAINED AND DERIVED (2026-08-16). This case used to seed
+# `- [ ] **4.50**` -> `[x]` and rely on 4.50 already being named by live
+# markers. Closing 4.50 made the sed match nothing AND emptied the marker
+# set, so the seed became a no-op that would have read as a passing case.
+# It now plants its own marker against whichever task is open first, so it
+# cannot rot on any future tick.
+fullcase "owed-marker carrier gets closed"  FAIL 'reach'   bash -c "python3 - <<'EOF'
+import re, pathlib
+p = pathlib.Path('PLAN.md'); s = p.read_text()
+m = re.search(r'^- \[ \] \*\*(\d+\.\d+)\*\*', s, re.M)
+assert m, 'seed no-op: PLAN.md has no open task to close'
+tid = m.group(1)
+s2 = s.replace(m.group(0), m.group(0).replace('[ ]', '[x]'), 1)
+assert s2 != s, 'seed no-op: could not close the task'
+s2 += chr(10) + 'Seeded: this behavioural half owes a round [owed: ' + tid + '].' + chr(10)
+p.write_text(s2)
+EOF"
 fullcase "reach-check implementation gone"  FAIL 'reach'   bash -c "rm -f scripts/reach-check.sh"
 # NOTE: anchor-free on purpose. The first version of this case anchored on
 # '^  fail=1$', which matches nothing — every fail=1 in reach-check.sh sits
