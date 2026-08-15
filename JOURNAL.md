@@ -1728,7 +1728,8 @@ all 10 cases have records; one subject crashed. The operator had to
 argue against the scaffold's own wording in an otherwise-honest report.
 Reworded to name errored cases without claiming incompleteness; the
 template block re-executed after the edit. Behaviourally-found, so this
-wording owes a slot in the next round's regression segment [owed: 4.50]
+wording owes a slot in the next round's regression segment — **discharged
+2026-08-07 by round 12**
 (rule 6 — proportionate: one print string). No guard touched; matrix unchanged.
 
 **Outward-facing, user-called each time:** `main` pushed

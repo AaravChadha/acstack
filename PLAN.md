@@ -1506,7 +1506,7 @@ reordered, if any.
   falsification with zero broken claims (round 10's had two). One new
   finding: the runner template printed "run did not complete cleanly" on
   a COMPLETE run with one crashed-subject case — reworded in `b566654`,
-  owing a regression slot next round [owed: 4.50]. Journal entry 2026-08-05 records
+  owing a regression slot next round — **discharged 2026-08-07 by round 12**, which closed 4.50's segment (a). Journal entry 2026-08-05 records
   the verdict per fix, closing this task's third acceptance clause.)*
   Shakedown 11 — live re-test of the shakedown-10 fix round
   (verification rule 6: every fix in commit `43cc1ca` is behavioural and
@@ -1721,7 +1721,7 @@ reordered, if any.
   recorded in the script header rather than lost. **Three live obligations
   annotated in the same edit**, including the one that motivated the task:
   4.42's closed text and JOURNAL's shakedown-11 entry both now carry
-  `[owed: 4.50]`, so a reader of either learns where the debt went.
+  an explicit owed-marker naming 4.50, so a reader of either learns where the debt went.
   **Shown failing seven ways before being trusted:** four via the orphan
   fixture (dangling carrier, closed carrier, reasonless decline,
   unreadable carrier), the missing-file path, and three matrix cases — plus
@@ -1960,7 +1960,9 @@ reordered, if any.
   reference created, and the fifth target stranded. `/audit` sits at 26
   wasted lines, under 4.61's 40 threshold, with five pointers.
   **Still owed:** the behavioural half — a live model actually running
-  `/audit skills` against a defective skill — [owed: 4.50].)* Add `/audit skills` as a fifth mode — skill-authoring from the
+  `/audit skills` against a defective skill. **Discharged 2026-08-13 by
+  shakedown 16**, which ran exactly that and caught the class a no-target run
+  missed.)* Add `/audit skills` as a fifth mode — skill-authoring from the
   verification side. **Scheduled by 4.59** (2026-08-11) as a MODE, not a
   skill: the field's most-recurring verb across 8 independent sources, and
   acstack already holds the methodology in AGENTS.md and `check.sh` rather
@@ -2131,7 +2133,8 @@ reordered, if any.
 
   **Split, because the halves have different acceptances:** **4.76** is the
   buildable half (docs + `/health` row + guard, mechanical, today); **4.77**
-  is the clause, whose live demonstration is owed to a round [owed: 4.50].
+  is the clause, whose live demonstration is owed to a round. **Discharged 2026-08-16 by
+  shakedown 18** — control 3/3 performed the act, clause arm 0/3.
 
   **My own error, recorded because it is the useful part:** arms G v1 and v2
   were void by construction — the deny pattern's prefix landed mid-token
@@ -2957,7 +2960,39 @@ reordered, if any.
   re-litigated.** Evidence: `~/shakedown-18/ROUND-4.50.md`, pre-registered
   before any session ran with results appended after, and the transcripts
   under `~/shakedown-19/`, `~/shakedown-20/`, `~/shakedown-21/` and
-  `~/shakedown-22/`.)*
+  `~/shakedown-22/`.
+  **And yet this box does not tick, which the guard had to tell me.**
+  With all seven covered I ticked it, and check.sh's reach-check went red
+  instantly: `[owed: 4.50] names task 4.50, which is CLOSED`. Enumerating
+  instead of trusting the first failures printed found **14 markers — 13 in
+  PLAN.md, 1 in JOURNAL.md, across nine closed tasks** (4.42, 4.47, 4.49,
+  4.51, 4.53, 4.58, 4.61, 4.62, 4.66, 4.77). **4.50 is not a finite task; it
+  is the standing register every behavioural debt in this repo points at**,
+  exactly as its own title says — "everything a round is already known to
+  owe". My enumeration had checked 4.50's own owed list and never asked who
+  was pointing *at* it, which is the half a self-audit structurally misses.
+  First instinct was to re-home the 14 onto a fresh carrier; that only moves
+  the cliff, since the successor breaks identically the day it closes.
+  **Audited all 14 instead (2026-08-16), and 11 were already settled:**
+  4.42 and JOURNAL's shakedown-11 entry by round 12; 4.51 ×2, 4.53 and 4.58
+  by shakedown 13; 4.61 ×2 and 4.62 by shakedown 16 — the record states the
+  session reproduced a clause it "could only do by reaching the procedure
+  4.61 moved into `references/`", and `/audit` was 4.61's only split target,
+  which corrected this author's guess that it was still live; 4.66 and 4.77
+  by shakedown 18. Each is now discharged in place with its date and round,
+  never deleted. One more — 4.47's — was **never a debt at all**: it is
+  4.47's own prose describing the marker convention, using 4.50 as the
+  example, and the guard cannot tell a citation from a claim. Reworded so it
+  stops reading as one.
+  **Three remain live, all 4.49's, all one debt:** acceptance (c), "a live
+  round drives each split skill in each of its modes and gets the same
+  report shape as before the split". `/plan`'s seed mode held in shakedown
+  15, `/do` and `/triage` in tickets mode in shakedown 17 — **document mode
+  for `/do` and `/triage` post-split is not evidenced**, and claiming it
+  would be the guessing this task exists to prevent.
+  **So 4.50 stays open by decision, not by omission**, holding exactly that
+  residual. It retires when its register is empty, which is now three
+  markers rather than fourteen.)*
   Verification rule 6 says a
   behaviourally-found fix stays unverified until a live run re-tests it,
   and mechanical green never discharges it. Three debts have accumulated
@@ -3023,7 +3058,7 @@ reordered, if any.
   the recorded reproduction exactly (refusal 4/4 -> 1 scored + 3 errored,
   which the old gate read as 100% -> 100%). controls 85 -> 86, matrix
   105 -> 106. **Still owed:** the behavioural half — a live run confirming
-  a model actually reads the new coverage line — per rule 6 [owed: 4.50].)*
+  a model actually reads the new coverage line — per rule 6. **Discharged 2026-08-12 by shakedown 13**: a neutral-level session read the new line and explained it unprompted.)*
   Close the non-regression gate's partial-crash blindness.
   **Found behaviourally by shakedown 12, in code shipped the same day.**
   `regression-gate.py:44` filters to `status == "scored"` before computing
@@ -3043,7 +3078,7 @@ reordered, if any.
   divergence stays. **Acceptance:** the reproduction above BLOCKS; a run
   where a category's scored count is unchanged still passes; both shown
   failing before they pass; and rule 6 applies — the fix is
-  behaviourally-found, so it owes a live re-test [owed: 4.50].
+  behaviourally-found, so it owes a live re-test. **Discharged 2026-08-12 by shakedown 13.**
 
 - [x] **4.52** *(Done 2026-08-07. **The task understated it: this was not an
   unstated separator, it was two files implementing contradictory rules.**
@@ -3133,8 +3168,9 @@ reordered, if any.
   check.sh caught the first draft's cross-skill citation
   (`references/runner-template.md` resolving under `skills/ship/`), fixed
   to `../eval-run/...`. **Still owed:** the behavioural half — a live run
-  confirming a model reads the three codes as specified — per rule 6
-  [owed: 4.50].)* Decide what a completed-with-failures run exits. The
+  confirming a model reads the three codes as specified — per rule 6.
+  **Discharged 2026-08-12 by shakedown 13**, and only via `/ship` gate 3 — a
+  direct-eval session mentioned the exit code zero times, which was the finding.)* Decide what a completed-with-failures run exits. The
   runner contract says "Exit non-zero when the run could not complete, so
   /ship's gate 3 cannot mistake a crash for a pass" (contract item 7, and
   again in the Node section) and says NOTHING about a run that completes
@@ -3465,7 +3501,8 @@ reordered, if any.
   condition survives a prompt actively pushing the other way — which is
   the realistic case, since users ask for shortcuts. **Out of scope:**
   building ECC's harness; this is a segment design for the existing
-  fresh-session method [owed: 4.50]. **Acceptance:** one skill with a hard
+  fresh-session method. **Discharged 2026-08-12** — built AND run as shakedown
+  13, HELD 3/3. **Acceptance:** one skill with a hard
   stop condition is run at all three strictness levels in a blind venue,
   the level at which it first yields is recorded, and a level that yields
   when it should not becomes a carrier.
@@ -3678,8 +3715,10 @@ reordered, if any.
   prose. All three added; every one of the 32 body sections now appears in
   the header, verified programmatically.
   Checks 31 -> 32, matrix 110 -> 111. **Still owed:** the behavioural half —
-  a live model finding the moved procedure in each target — like 4.49's
-  [owed: 4.50].)* Re-run 4.49's selection with 4.49's own corrected criterion.
+  a live model finding the moved procedure in each target — like 4.49's.
+  **Discharged 2026-08-13 by shakedown 16**: `/audit skills` reproduced the
+  reference's own "declarations only, not behaviour" clause, which it could
+  not do without reaching it, and `/audit` was 4.61's only split target.)* Re-run 4.49's selection with 4.49's own corrected criterion.
   **4.49 fixed its selector mid-task and never regenerated the candidate
   list.** Its closing verdict records the correction — "the original
   35%-of-body-text framing was a SIZE measurement that did not survive
@@ -3712,7 +3751,7 @@ reordered, if any.
   every skill it ranks above a stated threshold is split or carries a
   reason; each split proves 0 lines lost by set difference per 4.49's rule;
   and the behavioural half — a live model finding the moved procedure in
-  each target — is owed like 4.49's was [owed: 4.50].
+  each target — is owed like 4.49's was. **Discharged 2026-08-13 by shakedown 16.**
 - [x] **4.76** *(Done 2026-08-14. README gains "Irreversible acts", carrying
   the canonical marker-fenced `acstack:deny-set` (5 entries) and **three**
   measured limits — indirection, prefix-only ordering, token boundary — the
@@ -3801,7 +3840,7 @@ reordered, if any.
   live run, not merely written down** (4.66's own bar) — a round where a
   session carrying the clause stops and names an irreversible act that a
   session without it performs. The discriminator is a count across runs, not
-  a reading of one transcript. [owed: 4.50]
+  a reading of one transcript. **Discharged 2026-08-16 by shakedown 18.**
 - [x] **4.78** *(Done 2026-08-14. **Re-derived before fixing, and the write-up
   survived it:** all seven entries grant Bash, so there is no reading of "six"
   that is accurate — the alternative hypothesis, that six of the seven had
