@@ -19,7 +19,12 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # v4 targeted Node 20 and every run carried a deprecation annotation
+      # (4.83). Floating major, matching what v4 was. Default fetch-depth is
+      # still 1 across v5-v7 — checked, because check.sh §34 SKIPs on a
+      # shallow clone by design and a deeper default would silently start
+      # running it against the whole history in CI.
+      - uses: actions/checkout@v7
       # No count in this label, deliberately. It read "15 checks" until
       # 2026-08-07, when check.sh was at 29 — a count duplicated outside
       # its single enumeration goes stale, and count-check.sh only reads
