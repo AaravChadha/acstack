@@ -412,7 +412,7 @@ fi
 
 # 13. Structurally read-only skills declare a no-write tool set.
 #     ALLOWLIST, not a denylist, and the allowlist is the AUDITED UNION of what
-#     the 7 read-only skills actually grant — not a plausible-looking set of read-only-
+#     the 8 read-only skills actually grant — not a plausible-looking set of read-only-
 #     sounding commands. A denylist was tried and failed twice: it missed
 #     `find`/`awk`/`git config`, and the very commit that added those introduced
 #     `sed -n` — which writes, because `sed -n -i ''` is valid and prefix grants
@@ -455,9 +455,9 @@ fi
 #     That stamp is the pack's only machine-local state and is documented as
 #     such. This section certifies the declared tool set; it does not and cannot
 #     certify the preamble.
-READONLY_SKILLS="secure health design-audit audit resume migrate-check why"
+READONLY_SKILLS="secure health design-audit audit resume migrate-check why contract-check"
 SAFE_TOOLS="Read|Grep|Glob"
-# Audited union of Bash grants across the 7 read-only skills above (2026-08-03). Every
+# Audited union of Bash grants across the 8 read-only skills above (2026-08-03). Every
 # entry read-only in its DOCUMENTED use; the git log/diff residual above is the
 # accepted exception, not an oversight. git grep is deliberately ABSENT — it is
 # applied through the Grep tool, not shell.

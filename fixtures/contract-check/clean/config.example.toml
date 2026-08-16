@@ -1,0 +1,2 @@
+timeout_ms = 3000
+retry_backoff_ms = 250

@@ -94,7 +94,7 @@
 
 ## TL;DR
 
-- **<!-- count:skills -->23<!-- /count --> skills** exist, pass the guard,
+- **<!-- count:skills -->24<!-- /count --> skills** exist, pass the guard,
   and are symlink-installed — this bullet is the single count; everything
   below refers to it rather than repeating the number. The marker is
   machine-checked by check.sh §23. Wave 3 added seven (/learn, /health, /qa,

@@ -225,7 +225,19 @@ fullcase "grader site drops the case flag" FAIL 'grader-case' bash -c "sed -e 's
 # 4.48 marked-count drift. Four ways this guard can rot: a value going stale,
 # the implementation vanishing, a marker being renamed to a name with no
 # derivation, and the comparison being neutered into a blanket accept.
-fullcase "marked count goes stale"        FAIL 'count' bash -c "sed -e 's/<!-- count:skills -->23<!-- \\/count -->/<!-- count:skills -->99<!-- \\/count -->/' JOURNAL.md > t && mv t JOURNAL.md"
+# DERIVED (2026-08-17). This hardcoded `-->23<!--`; enrolling a 24th skill made
+# the sed match nothing, and the case reported got=PASS want=FAIL — a no-op seed,
+# the third of its kind found today. sed cannot assert it changed anything, which
+# is why AGENTS.md says python3; see 5.8 for the other 49.
+fullcase "marked count goes stale"        FAIL 'count' bash -c "python3 - <<'EOF'
+import re, pathlib
+p = pathlib.Path('JOURNAL.md'); s = p.read_text()
+m = re.search(r'<!-- count:skills -->(\\d+)<!-- /count -->', s)
+assert m, 'seed no-op: count:skills marker not found'
+n = s.replace(m.group(0), '<!-- count:skills -->' + str(int(m.group(1)) + 77) + '<!-- /count -->', 1)
+assert n != s, 'seed no-op'
+p.write_text(n)
+EOF"
 fullcase "count-check implementation gone" FAIL 'count' bash -c "rm -f scripts/count-check.sh"
 fullcase "marker renamed to unknown count" FAIL 'count' bash -c "sed -e 's/count:skills/count:skillz/g' JOURNAL.md > t && mv t JOURNAL.md"
 fullcase "comparison neutered to accept-all" FAIL 'control' bash -c "sed -e 's/if \[ \"\$val\" != \"\$want\" \]; then/if false; then/' scripts/count-check.sh > t && mv t scripts/count-check.sh"
@@ -394,23 +406,36 @@ EOF"
 
 # 4.80: §33 READONLY_SKILLS states its own size. The first case IS the original
 # defect — /why was enrolled and both comments kept saying six.
-fullcase "readonly-count: eighth skill enrolled" FAIL 'readonly-count' bash -c "python3 - <<'EOF'
-p='scripts/check.sh'; s=open(p).read()
-n=s.replace('resume migrate-check why','resume migrate-check why ship',1)
-assert n!=s, 'seed no-op'
-open(p,'w').write(n)
+# SEEDS DERIVE THE CURRENT NUMBER (2026-08-17). They hardcoded 7; enrolling
+# /contract-check as the eighth made two of the three match nothing, and a
+# no-op seed reports got=PASS want=FAIL only if you are lucky enough to notice.
+# Same rot as the owed-marker case above: a seed naming a live value expires.
+fullcase "readonly-count: another skill enrolled" FAIL 'readonly-count' bash -c "python3 - <<'EOF'
+import re, pathlib
+p = pathlib.Path('scripts/check.sh'); s = p.read_text()
+m = re.search(r'^READONLY_SKILLS=\"([^\"]+)\"', s, re.M)
+assert m, 'seed no-op: READONLY_SKILLS not found'
+n = s.replace(m.group(0), 'READONLY_SKILLS=\"' + m.group(1) + ' ship\"', 1)
+assert n != s, 'seed no-op'
+p.write_text(n)
 EOF"
 fullcase "readonly-count: comment restates old" FAIL 'readonly-count' bash -c "python3 - <<'EOF'
-p='scripts/check.sh'; s=open(p).read()
-n=s.replace('the 7 read-only skills actually grant','the 6 read-only skills actually grant',1)
-assert n!=s, 'seed no-op'
-open(p,'w').write(n)
+import re, pathlib
+p = pathlib.Path('scripts/check.sh'); s = p.read_text()
+m = re.search(r'the (\d+) read-only skills actually grant', s)
+assert m, 'seed no-op: first stated-size claim not found'
+n = s.replace(m.group(0), 'the ' + str(int(m.group(1)) - 1) + ' read-only skills actually grant', 1)
+assert n != s, 'seed no-op'
+p.write_text(n)
 EOF"
 fullcase "readonly-count: a claim is dropped"   FAIL 'readonly-count' bash -c "python3 - <<'EOF'
-p='scripts/check.sh'; s=open(p).read()
-n=s.replace('across the 7 read-only skills above','across the read-only skills above',1)
-assert n!=s, 'seed no-op'
-open(p,'w').write(n)
+import re, pathlib
+p = pathlib.Path('scripts/check.sh'); s = p.read_text()
+m = re.search(r'across the (\d+) read-only skills above', s)
+assert m, 'seed no-op: second stated-size claim not found'
+n = s.replace(m.group(0), 'across the read-only skills above', 1)
+assert n != s, 'seed no-op'
+p.write_text(n)
 EOF"
 
 # 4.80: §34 commit subjects. A NEW CASE SHAPE, and it exists because this file

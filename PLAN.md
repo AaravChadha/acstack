@@ -4200,7 +4200,43 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   with the manifest line for each, and returns no findings on a clean
   manifest. The never-imported one is the discriminator: it is decidable
   with certainty, unlike the judgment calls beside it.
-- [ ] **5.2** /contract-check — breaking-change pre-flight for the surface
+- [x] **5.2** *(Done 2026-08-17, first build of wave 5. `/contract-check`
+  ships at 119 lines, description **483** chars (total 9,139 → ~9,620 of
+  12,000), enrolled in `READONLY_SKILLS` with §33's stated size 7 → 8.
+  The shared report anatomy went to **one canonical home** —
+  `skills/migrate-check/references/gate-shape.md`, cited not copied, per 4.17
+  sub-guard 4 — so shape C's merge stayed unnecessary. Forward references to
+  `/careful` had to be **removed**: §8's crossref guard refuses a citation to
+  a skill that does not exist yet, so each later gate adds its own citation
+  in its own commit. That is a build-order constraint the spec had not
+  noticed.
+  **Fixture** `fixtures/contract-check/` seeds all four change classes plus
+  an additions-only twin (0 removed lines, asserted). Its control proves
+  fixture integrity, and **both halves were shown able to fail** on a copy —
+  un-dropping the field, and making the twin remove a line.
+  **Acceptance met live** (shakedown 25, two arms): destructive diff →
+  `**NO-GO** — 3 of 4 changes … destructive`, with rename, required-param and
+  field-drop all classified destructive, the config key additive, a safe
+  alternative on **all three** destructive rows, and a "what this verdict
+  does not cover" section; clean twin → `**GO** — no destructive change to
+  any caller-facing surface`. It closed by stating it edited nothing.
+  **The first run found a defect in the fixture, not the skill, and was
+  right.** The signature plant added a bare second JS parameter, which is
+  *optional* — `strict` is `undefined`, the old path runs, nothing breaks —
+  so the run classified it additive over the author's expected destructive.
+  The plant now throws when `strict` is omitted. A bar that assumed a
+  condition the venue never set, caught by the venue.
+  **Verdict-first held 1 of 2 runs** before being tightened: one opened
+  `**NO-GO** —`, the other *"GO/NO-GO analysis complete. Here is the
+  verdict."* with the verdict four lines down. Fixed at the canonical home so
+  every gate inherits it, and both arms re-run verdict-first afterwards.
+  **The skill was not invocable when written** — 23 symlinks against 24
+  packaged skills, the `/why` defect exactly. `./setup` run, symlink verified
+  to resolve before any acceptance run was believed.
+  **Three matrix seeds went no-op** as a result of this build (§33 ×2 on the
+  eighth read-only skill, the marked-count seed on skills 23 → 24); all three
+  converted to derive, the last one caught by a full run at
+  `passed=148 failed=1`. The other 49 sed seeds are carried as **5.8**.)* /contract-check — breaking-change pre-flight for the surface
   callers depend on: function signatures, API response shapes, public
   exports, config keys. Same additive-vs-destructive classification and
   safe-alternative column as `/migrate-check` (add-new-then-deprecate
@@ -4282,6 +4318,27 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   named individually — and if the cap changes, check.sh §28's comment is
   updated to cite this ruling rather than 4.59's, so the number and its
   justification stay together.
+- [ ] **5.8** 49 matrix seeds still use `sed` and cannot assert they mutated.
+  AGENTS.md says *write matrix seed mutations in python3, not sed* — measured
+  2026-08-17, `docs/guard-matrix.sh` carries **50 sed-based seeds against 16
+  python3 ones**, so the rule is broadly unfollowed. It matters because a
+  python3 seed carries `assert n != s` and a `sed` seed silently does nothing
+  when its pattern stops matching: the case then reports `got=PASS
+  want=FAIL`, which is loud, or worse matches a *different* line and reports
+  a pass for the wrong reason.
+  **Three no-op seeds were found on one day** — the owed-marker case after
+  4.50 closed, two §33 seeds after an eighth read-only skill enrolled, and
+  the marked-count seed after the skills count moved 23 → 24 (that last one
+  reached a full matrix run and failed it, `passed=148 failed=1`). All three
+  hardcoded a live value. Each was converted as it was found; the remaining
+  49 are unconverted, and the ones that hardcode a number will rot the same
+  way on the next count change.
+  **Acceptance:** every seed in `docs/guard-matrix.sh` either asserts it
+  changed the file or is recorded as unable to, with the reason; and the
+  conversion is proven by a run in which a deliberately broken seed **fails
+  loudly rather than passing** — demonstrated on at least one converted case
+  before the rest are trusted. A matrix run of 149 with 0 failed is the
+  regression bar.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

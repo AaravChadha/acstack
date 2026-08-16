@@ -3,8 +3,9 @@
 > **What this file is.** Per-item designs for wave 5, written at wave start
 > per PLAN.md's process, at the same fidelity as waves 2–4. Build follows
 > approval, one increment at a time, in the build order at the end.
-> **Drafted:** 2026-08-17. **Status: awaiting approval — nothing below is
-> built yet.** The packaging question — how many skills these five tasks
+> **Drafted:** 2026-08-17. ~~**Status: awaiting approval — nothing below is
+> built yet.**~~ **Status (2026-08-17, later): approved; build in progress**
+> in the order at the end, one increment per commit. The packaging question — how many skills these five tasks
 > become — was ruled before the designs, as **shape D (four skills)**; it
 > changes what exists, so it could not be deferred to build time. The
 > rejected shapes are kept with their reasons, including one argument of

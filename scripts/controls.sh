@@ -1015,6 +1015,39 @@ else
   bad "bin/acstack-config missing or not executable — the config contract has no control"
 fi
 
+# --- /contract-check fixture integrity (5.2) --------------------------------
+# The gate itself is judged by a live run, not by a grep — a model classifying
+# a diff is not mechanically checkable here. What IS checkable, and what rots,
+# is whether the fixture still seeds all four change classes plus a clean twin.
+# A fixture that quietly stops seeding its plants turns a shakedown green for
+# the wrong reason.
+CCF=fixtures/contract-check
+if [ ! -d "$CCF" ]; then
+  bad "/contract-check fixture missing — 5.2's acceptance has nothing to run against"
+else
+  ccmiss=""
+  grep -q 'formatDuration' "$CCF/before/api.js" 2>/dev/null || ccmiss="$ccmiss rename-before"
+  grep -q 'humanizeDuration' "$CCF/after/api.js" 2>/dev/null || ccmiss="$ccmiss rename-after"
+  grep -q 'formatDuration' "$CCF/after/api.js" 2>/dev/null && ccmiss="$ccmiss rename-not-removed"
+  grep -q 'legacy_id' "$CCF/before/response.py" 2>/dev/null || ccmiss="$ccmiss fielddrop-before"
+  grep -q 'legacy_id' "$CCF/after/response.py" 2>/dev/null && ccmiss="$ccmiss fielddrop-not-dropped"
+  grep -q 'parse(text, strict)' "$CCF/after/api.js" 2>/dev/null || ccmiss="$ccmiss signature-narrowed"
+  grep -q 'retry_backoff_ms' "$CCF/after/config.example.toml" 2>/dev/null || ccmiss="$ccmiss additive-key"
+  if [ -n "$ccmiss" ]; then
+    bad "/contract-check fixture stopped seeding:$ccmiss"
+  else
+    ok "/contract-check fixture seeds all four change classes"
+  fi
+  # The clean twin is the must-not-fire half. If it ever removes a line it
+  # stops being additions-only, and a blanket-NO-GO gate would pass the suite.
+  ccrem="$(diff "$CCF/before/api.js" "$CCF/clean/api.js" 2>/dev/null | grep -c '^<')"
+  if [ "$ccrem" -eq 0 ]; then
+    ok "/contract-check clean twin is additions-only (0 removed lines)"
+  else
+    bad "/contract-check clean twin removes $ccrem line(s) — it is no longer a GO case"
+  fi
+fi
+
 echo
 if [ "$fail" -eq 0 ] && [ "$skipped" -gt 0 ]; then
   echo "controls.sh: no failures, but $skipped control(s) SKIPPED — coverage is incomplete"
