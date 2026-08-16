@@ -3,7 +3,16 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-16 (3rd entry). **4.50 is closed — the wave's
+> **Last update**: 2026-08-17. **Wave 4.5's buildable work is finished at
+> 64/66** — the only two left, 4.3 telemetry and 4.4 `setup --global`, are
+> adopter-gated by decision, not blocked. Closed today: **4.83**
+> (`actions/checkout` v4 → v7, verified against a real run's *annotations*
+> after capturing the v4 baseline first, so "no annotation" could not
+> confirm itself), and **4.84 + 4.85** — `/investigate` must now make its
+> class claim match its trace, and its tickets branch resolves a bare
+> invocation instead of leaving the offer targetless. Both proved in one live
+> run that also disproved the operator's own prompt.
+> Yesterday (2026-08-16, 3rd entry): **4.50 is closed — the wave's
 > oldest debt, open across five shakedown rounds — and it closed because its
 > owed *register* emptied, not because its segments finished.** All seven
 > segments held (shakedowns 19–23), including `/triage`'s document-mode
@@ -200,6 +209,84 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Wave 4.5's buildable work runs out: three tasks, each verified against something outside its own report (2026-08-17)
+
+**Three closes, and what they have in common is that none of them was
+allowed to confirm itself.**
+
+**4.83 — the deprecated action, closed against annotations rather than
+against the file.** Bumped `actions/checkout` **v4 → v7** (v7.0.1 latest,
+re-read from the releases API rather than reused from the filing note),
+pinned to the floating major to match what `v4` was. **The acceptance said
+read the run, not the workflow, and the reason showed up immediately:** the
+v4 baseline was captured **first** — run `31912257744` carrying
+`warning: Node.js 20 is deprecated … actions/checkout@v4` — because without
+it, "no annotation" on the new run is indistinguishable from an annotations
+API that returns nothing for anything. Run `31965411853` on v7: **no
+annotations at all**, seven steps green.
+**The `uses:` set was enumerated, not assumed** — the whole
+`.github/workflows/` tree contains exactly one action, so the
+"any other action on a deprecated runtime" clause is satisfied by there
+being none, rather than by nobody having looked.
+**The non-obvious risk, checked before bumping:** default `fetch-depth` is
+unchanged at 1 across v5–v7. check.sh **§34 SKIPs on a shallow clone by
+design**, so a deeper default would have quietly started running
+commit-subject checks over the entire history in CI. It still SKIPs.
+v5.0.0's Node 24 move is the only substantive change in three majors.
+
+**4.84 — a claim and its evidence forced to agree.** Shakedown 19 caught
+`/investigate` reporting *"known class hit … checked first"* on a run whose
+trace held no read of the file; the name had come from the recall preamble,
+whose own text says to read the full class when one matches. Step 3 now
+demands you say which you did: read it → cite
+`known-bug-classes.md § <class name>` and state which part matched; matched
+a recall name only → say **"matches a class name from recall (full class not
+read)"**. **The weaker claim is explicitly acceptable** — recall exists to be
+used, and the rule buys honesty rather than friction. What was never
+acceptable is the stronger claim without the read, precisely because a
+reader cannot detect the difference afterwards.
+
+**4.85 — an instruction that had no target.** `investigate/SKILL.md:103`
+stated the `gh issue comment` offer unconditionally while naming a target
+only via the optional `issue#`, so a bare tickets-mode invocation made no
+offer at all. Partly a text defect, not only a model miss. The branch now
+resolves: an issue plainly describing the failure → name it and offer the
+comment unposted; none does → say so in one line and stop, **explicitly not
+opening an issue just to have somewhere to put the comment**.
+
+**Both verified in one live run — shakedown 24**, tickets venue, U+043C
+seeded for Latin `m` in `test_compound`. It took **4.84's strong branch and
+earned it**: report cites *"`known-bug-classes.md § Unicode lookalikes
+breaking string comparison` — I read the full class"*, and the trace shows
+`sed -n '/Unicode lookalikes/,/^## /p'` against that file. Claim and evidence
+corroborate, which is the property — the citation alone would not have been.
+It also observed the class documents space/dash lookalikes while this was a
+Cyrillic *letter*: same mechanism, different codepoint. It took **4.85's
+harder branch** in almost the prescribed words: *"no open issue matches this
+failure (a corrupted test fixture); filing one is `/ticket`'s job"*, against
+a venue whose ten open issues describe none of it.
+**And it disproved the operator's prompt.** I said `test_roundtrip` was
+failing; the seed was in `test_compound`. It found the real failure and said
+so — *"chasing the named test would have found nothing wrong"* — then flagged
+the parser silently dropping unmatched trailing input, tying it to the
+BRIEF's own stated risk. The skill working correctly on its author is the
+best evidence available that it works.
+
+**Declined in writing, not left unsaid.** No guard for either 4.84 or 4.85:
+§30 and §31 guard rules this pack had already **lost**, and these are new
+with no history of loss, so a check.sh section would be guarding a
+speculation. And 4.84's **weak branch is unexercised** — it cannot be forced
+without preventing a read, so the recall-only wording is written but
+undemonstrated. Said plainly rather than implied to work.
+
+**Where the wave stands.** Wave 4.5's **buildable** work is finished: the two
+remaining items, **4.3** telemetry and **4.4** `setup --global`, are
+adopter-gated by decision and not blocked on anything technical.
+
+Validation close: check.sh **38, all clean**, **0 owed-markers carried**;
+controls **all plants caught**; matrix **149**; skills **23**; wave 4.5
+**61/66 → 64/66**; open scheduled **21 → 18**.
 
 ### 4.50 closes after five rounds, and the guard would not let it close for the reason I thought (2026-08-16, 3rd)
 
