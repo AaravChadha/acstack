@@ -4066,7 +4066,25 @@ reordered, if any.
   rather than listed, every shell source in the pack is covered including
   any added later, and the derivation is shown failing on a newly added
   script before it is trusted.
-- [ ] **4.83** CI pins `actions/checkout@v4`
+- [x] **4.83** *(Done 2026-08-17. Bumped to the floating **v7** major
+  (v7.0.1 latest, re-read from the releases API rather than reused from the
+  filing note), matching what `v4` was. **Verified in the consumed form the
+  acceptance named:** run `31912257744` on v4 carried
+  `warning: Node.js 20 is deprecated … actions/checkout@v4`; run
+  `31965411853` on v7 carries **no annotations at all**, all seven steps
+  green. The v4 baseline was captured **before** the bump on purpose — without
+  it, "no annotation" is indistinguishable from an annotations API that
+  returns nothing for every run, and the acceptance would have been
+  self-confirming.
+  **The `uses:` set was enumerated, not assumed** — `.github/workflows/`
+  contains exactly one action, so the "any other action on a deprecated
+  runtime" clause is satisfied by there being none.
+  **Checked before bumping, and it is the non-obvious risk:** default
+  `fetch-depth` is unchanged at 1 across v5-v7. check.sh **§34 SKIPs on a
+  shallow clone by design**, so a deeper default would have silently started
+  running commit-subject checks over the entire history in CI. It still
+  SKIPs. v5.0.0's Node 24 move is the only substantive change in the three
+  majors crossed.)* CI pins `actions/checkout@v4`
   (`.github/workflows/check.yml:22`), which targets Node.js 20 and is being
   force-run on Node 24 — every run since has carried the deprecation
   annotation. Latest is **v7.0.1** (published 2026-07-20, read from the
