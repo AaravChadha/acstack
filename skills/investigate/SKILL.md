@@ -74,6 +74,21 @@ Method details in `references/investigation-method.md`. The sequence:
 3. **Known classes first.** Check the pack's
    `../audit/references/known-bug-classes.md` and the project's
    LEARNINGS.md before inventing hypotheses — most bugs are reruns.
+
+   **Naming a class requires having read it.** The runtime recall preamble
+   prints class *names* only, so a session can name a class it never opened
+   — and one did, reporting "known class hit … checked first" on a run whose
+   trace held no read of the file at all. Say which you did, in these words:
+
+   - read the class → cite it, `known-bug-classes.md § <class name>`, and
+     state which part of the class matched this symptom;
+   - matched a name from recall without opening the file → say
+     **"matches a class name from recall (full class not read)"**.
+
+   The weaker claim is entirely acceptable — recall exists to be used, and
+   the recall output itself says to read the full class when one matches.
+   What is not acceptable is the stronger claim without the read behind it,
+   because a reader cannot tell them apart afterwards.
 4. **Hypotheses vs evidence.** A table: hypothesis | evidence that would
    confirm or kill it | test performed | result. A hypothesis with no
    discriminating test does not belong in the table — it's a hunch, and
@@ -102,6 +117,17 @@ mode; never guess.
 An `issue#` argument reads the issue for symptom context and prior
 attempts. Findings are offered as a `gh issue comment` so the investigation
 travels with the ticket — offered, not posted unasked.
+
+**Invoked with no `issue#`, the offer still has to resolve to something.**
+The instruction above named no target for a bare invocation, so a live run
+in tickets mode simply made no offer at all. Do one of two things, and say
+which:
+
+- an open issue plainly describes this failure → name it and offer the
+  comment against it, still unposted;
+- none does → say so in one line — "no issue matches this failure; filing
+  one is `/ticket`'s job" — and stop there. Do not open an issue to have
+  somewhere to put the comment.
 
 ## Hard rules
 

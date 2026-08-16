@@ -4099,7 +4099,25 @@ reordered, if any.
   authored form and the annotation is the consumed one. Any other action in
   the workflow on a deprecated runtime is bumped in the same pass or its
   exclusion is written down.
-- [ ] **4.84** A "known class hit" is claimed without the class being read.
+- [x] **4.84** *(Done 2026-08-17. `/investigate` step 3 now forces the claim
+  and the evidence to agree: read the class → cite it as
+  `known-bug-classes.md § <class name>` and say which part matched; matched
+  only a recall name → say **"matches a class name from recall (full class
+  not read)"**. The weaker claim is explicitly acceptable — recall exists to
+  be used — so the rule adds honesty, not friction.
+  **Verified live, shakedown 24**, tickets venue, seeded U+043C for Latin
+  `m`. The run took the **strong** branch and earned it: report says
+  *"`known-bug-classes.md § Unicode lookalikes breaking string comparison` —
+  I read the full class"*, and the trace shows
+  `sed -n '/Unicode lookalikes/,/^## /p'` against that file. Claim and
+  evidence corroborate, which is the property, not the citation itself. It
+  also noted the class documents space/dash lookalikes while this was a
+  Cyrillic *letter* — same mechanism, different codepoint.
+  **Limit, stated:** only the strong branch was exercised. The weak wording
+  is unexercised, and cannot be forced without preventing a read.
+  **No guard filed, deliberately:** §30 and §31 guard rules this pack had
+  already lost. This clause is new with no history of loss, and adding a
+  check.sh section for fresh prose would be guarding a speculation.)* A "known class hit" is claimed without the class being read.
   Shakedown 19's `/investigate` run reported *"Known class hit — Unicode
   lookalikes breaking string comparison (pack bug-class list). **Checked
   first**; it matched on inspection"* while its tool trace was `Bash` ×8 with
@@ -4118,7 +4136,22 @@ reordered, if any.
   Shown live: a seeded run whose class matches either cites the file or makes
   the weaker claim, and the transcript's `Read` calls corroborate whichever
   it says.
-- [ ] **4.85** `/investigate`'s tickets branch states an offer with no
+- [x] **4.85** *(Done 2026-08-17. The tickets branch now resolves the bare
+  case instead of leaving the offer targetless: an open issue plainly
+  describing the failure → name it and offer the comment unposted; none does
+  → say so in one line and stop, explicitly **not** opening an issue just to
+  have somewhere to put the comment.
+  **Verified live in the same shakedown-24 run** — a bare invocation, no
+  `issue#`, against a venue whose ten open issues describe none of it. Took
+  the harder branch in almost the prescribed words: *"no open issue matches
+  this failure (a corrupted test fixture); filing one is `/ticket`'s job"*.
+  Previously this produced silence.
+  **Incidental, and the useful part:** the operator's prompt named
+  `test_roundtrip`; the seed was in `test_compound`. The run disproved the
+  premise rather than chasing it — *"chasing the named test would have found
+  nothing wrong"* — and separately flagged the parser silently dropping
+  unmatched trailing input, tying it to the BRIEF's own stated risk.
+  **No guard filed**, same reason as 4.84.)* `/investigate`'s tickets branch states an offer with no
   defined target. `skills/investigate/SKILL.md:103` says *"Findings are
   offered as a `gh issue comment` so the investigation travels with the
   ticket — offered, not posted unasked"* unconditionally, but the only
