@@ -4253,6 +4253,35 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   the supply chain. **Acceptance:** on a repo pinned to an older major of
   a dependency with a known breaking change, names that change and the
   call sites it affects, and returns NO-GO without a migration note.
+- [ ] **5.6** `setup` has no sweep for symlinks whose target is gone. It
+  iterates the skills the pack currently has and links those; nothing looks
+  for a `~/.claude/skills/<name>` whose target no longer exists. So renaming
+  or removing any skill leaves a dangling symlink on every machine that
+  installed beforehand — silently, since a broken link is not a missing one.
+  Found 2026-08-17 while costing a `/migrate-check` rename for wave 5's
+  packaging decision; the rename was rejected on other grounds, so this is
+  filed rather than fixed under it. It is a prerequisite for any future
+  rename or removal, which is why it sits in wave 5 and not in 4.5.
+  **Acceptance:** with a skill installed and then removed from the pack,
+  `./setup` leaves no dangling entry under `~/.claude/skills` — verified by
+  `find ~/.claude/skills -maxdepth 1 -type l ! -exec test -e {} \; -print`
+  returning empty, shown non-empty first on the seeded state so the check is
+  demonstrated failing before it is trusted.
+- [ ] **5.7** Rule §28's total against what is actually left to build,
+  before wave 6 opens. Measured 2026-08-17: **9,139 / 12,000**, headroom
+  **2,861**, 23 skills at mean **397**. Remaining after wave 5 is 11 tasks
+  (wave 6's 7, wave 7's 4); folded as hard as wave 6's own design implies —
+  6.6 `/board` already convenes 6.1–6.5 as lenses — that is still ~5
+  descriptions, ~1,985 chars, against the ~1,155 wave 5's shape D leaves.
+  **Every candidate packaging shape was short**, which is 4.59's cap doing
+  exactly what it was set below the roadmap to do. The decision is therefore
+  owed, not optional, and taking it now is cheaper than taking it mid-wave-6
+  with less room and a build in flight.
+  **Acceptance:** a written verdict recording either a new total with the
+  reasoning for it, or a reduced skill count with the tasks that become modes
+  named individually — and if the cap changes, check.sh §28's comment is
+  updated to cite this ruling rather than 4.59's, so the number and its
+  justification stay together.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
