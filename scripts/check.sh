@@ -412,7 +412,7 @@ fi
 
 # 13. Structurally read-only skills declare a no-write tool set.
 #     ALLOWLIST, not a denylist, and the allowlist is the AUDITED UNION of what
-#     the 8 read-only skills actually grant — not a plausible-looking set of read-only-
+#     the 9 read-only skills actually grant — not a plausible-looking set of read-only-
 #     sounding commands. A denylist was tried and failed twice: it missed
 #     `find`/`awk`/`git config`, and the very commit that added those introduced
 #     `sed -n` — which writes, because `sed -n -i ''` is valid and prefix grants
@@ -455,13 +455,19 @@ fi
 #     That stamp is the pack's only machine-local state and is documented as
 #     such. This section certifies the declared tool set; it does not and cannot
 #     certify the preamble.
-READONLY_SKILLS="secure health design-audit audit resume migrate-check why contract-check"
+READONLY_SKILLS="secure health design-audit audit resume migrate-check why contract-check deps"
 SAFE_TOOLS="Read|Grep|Glob"
-# Audited union of Bash grants across the 8 read-only skills above (2026-08-03). Every
+# Audited union of Bash grants across the 9 read-only skills above (2026-08-03). Every
 # entry read-only in its DOCUMENTED use; the git log/diff residual above is the
 # accepted exception, not an oversight. git grep is deliberately ABSENT — it is
 # applied through the Grep tool, not shell.
-SAFE_BASH="cat|ls|wc|grep|diff|readlink|command -v|git log|git diff|git status|git ls-files|git rev-parse|git check-ignore|git remote get-url|gh auth status|gh issue list|gh label list|gh pr view|gh pr diff|npx prisma migrate status"
+# `npm view` added 2026-08-17 for /deps' maintenance check: it queries the
+# registry and prints metadata, installing nothing and writing nothing. Network
+# reads were ALREADY in this union — gh auth status, gh issue list, gh label
+# list, gh pr view, gh pr diff — so this adds no new class of capability, only
+# a non-GitHub registry. Recorded because widening a security allowlist should
+# never be a silent side effect of building a skill.
+SAFE_BASH="cat|ls|wc|grep|diff|readlink|command -v|git log|git diff|git status|git ls-files|git rev-parse|git check-ignore|git remote get-url|gh auth status|gh issue list|gh label list|gh pr view|gh pr diff|npx prisma migrate status|npm view"
 for s_ in $READONLY_SKILLS; do
   f="skills/$s_/SKILL.md"
   if [ ! -f "$f" ]; then

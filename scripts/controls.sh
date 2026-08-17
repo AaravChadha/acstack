@@ -1048,6 +1048,37 @@ else
   fi
 fi
 
+# --- /deps fixture integrity (5.1) ------------------------------------------
+# Same scope as /contract-check's: the verdict is judged by a live run, the
+# fixture is judged here. Check 1 is the discriminator, so its plant gets the
+# strictest assertion — chalk must be declared AND have zero use sites. If it
+# ever acquires one, the only decidable finding in the skill stops being
+# seeded and a shakedown goes green for the wrong reason.
+DPF=fixtures/deps
+if [ ! -d "$DPF" ]; then
+  bad "/deps fixture missing — 5.1's acceptance has nothing to run against"
+else
+  dmiss=""
+  grep -q '"chalk"' "$DPF/project/package.json" 2>/dev/null || dmiss="$dmiss chalk-not-declared"
+  if grep -rq 'chalk' "$DPF/project/src" 2>/dev/null; then dmiss="$dmiss chalk-now-imported"; fi
+  grep -q '"object-assign"' "$DPF/project/package.json" 2>/dev/null || dmiss="$dmiss stdlib-plant"
+  grep -q '"left-pad"' "$DPF/project/package.json" 2>/dev/null || dmiss="$dmiss unmaintained-plant"
+  grep -q 'GPL-3.0' "$DPF/project/node_modules/fixture-copyleft-lib/package.json" 2>/dev/null || dmiss="$dmiss license-plant"
+  grep -q '"license": "MIT"' "$DPF/project/package.json" 2>/dev/null || dmiss="$dmiss project-license"
+  if [ -n "$dmiss" ]; then
+    bad "/deps fixture stopped seeding:$dmiss"
+  else
+    ok "/deps fixture seeds all four checks (chalk has 0 use sites)"
+  fi
+  # The clean twin must declare only dependencies it actually uses.
+  dclean="$(grep -c '": "\^' "$DPF/clean/package.json" 2>/dev/null || echo 0)"
+  if [ "$dclean" -eq 1 ] && grep -rq 'zod' "$DPF/clean/src" 2>/dev/null; then
+    ok "/deps clean twin declares one dependency that passes all four checks"
+  else
+    bad "/deps clean twin is no longer a no-findings case ($dclean deps declared)"
+  fi
+fi
+
 echo
 if [ "$fail" -eq 0 ] && [ "$skipped" -gt 0 ]; then
   echo "controls.sh: no failures, but $skipped control(s) SKIPPED — coverage is incomplete"

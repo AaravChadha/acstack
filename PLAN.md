@@ -4189,7 +4189,43 @@ test databases; lumping it in would either block the skill or stretch
 rather than inherited: it never edits the project, the claim, or the
 acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
 
-- [ ] **5.1** /deps — dependency hygiene: what packages were added and
+- [x] **5.1** *(Done 2026-08-17. `/deps review` ships at 110 lines,
+  description **449** chars (total 9,624 → ~10,073 of 12,000), enrolled in
+  `READONLY_SKILLS` with §33's stated size 8 → 9.
+  **The four checks are ordered by decidability and the report must preserve
+  that order** — check 1 is stated as fact, 2-4 carry their evidence so a
+  reader can overrule them. A judgment call printed beside a fact in the same
+  voice reads as a fact, which is the whole reason PLAN called check 1 *the
+  discriminator*.
+  **`npm view` was added to check.sh's `SAFE_BASH` union** for the
+  maintenance check, with the justification written into the guard: it
+  queries the registry and prints metadata, installing and writing nothing,
+  and the union **already** contained network reads (`gh auth status`,
+  `gh issue list`, `gh pr view`, …), so this adds no new class of capability.
+  Recorded because widening a security allowlist should never be a silent
+  side effect of building a skill.
+  **Acceptance met live** (shakedown 26). Seeded arm: all four named with
+  their manifest lines — `chalk` never imported (fact, `package.json:6`),
+  `object-assign` and `left-pad` stdlib-replaceable with the exact
+  replacement call given, `left-pad` unmaintained at **`time.modified`
+  2024-04-16**, and `fixture-copyleft-lib` GPL-3.0 against the project's MIT
+  as a *pair*, not a verdict. It also reported the one registry lookup that
+  **did not run** rather than inferring staleness — the honesty rule firing
+  unprompted. Clean arm: **`no findings`**, with a per-check breakdown and a
+  "not checked" section.
+  **A live run caught a defective control, for the second build running.**
+  The first clean twin declared `object-assign`, which check 2 correctly
+  flags as an `Object.assign` ponyfill — so the must-not-fire arm **could not
+  pass**, and the run reporting one finding on it was right. Replaced with
+  `zod` (verified live: MIT, `time.modified` 2026-08-15), which genuinely
+  clears all four. A control the baseline cannot satisfy proves as little as
+  one the baseline already satisfies; this repo had only written down the
+  second half of that.
+  **The license plant is vendored metadata on purpose:** pinning a real
+  package's licence into a fixture makes it lie the day that package
+  relicenses — the same rot as the hardcoded counts fixed three times today.
+  Both halves of the fixture control shown failing on a copy before being
+  trusted.)* /deps — dependency hygiene: what packages were added and
   why, maintenance status, license posture, whether stdlib or an existing
   dependency would have done it, whether it is even imported. Agents add
   packages reflexively; nothing in any surveyed pack looks at this.
