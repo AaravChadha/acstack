@@ -3,7 +3,14 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-17. **Wave 4.5's buildable work is finished at
+> **Last update**: 2026-08-17 (entry written 2026-08-30). **Wave 5 is open
+> and 2 of 8 built** — specced at wave start, packaging ruled as shape D
+> before any design, and both builds so far had the live run correct the
+> author rather than the other way round. `/contract-check` and `/deps
+> review` ship; the shared gate anatomy lives in one cited reference at zero
+> description cost. Description budget **10,075 / 12,000**, which is why
+> **5.7** now owns ruling that cap before wave 6. Skills **25**.
+> Earlier the same day: **wave 4.5's buildable work is finished at
 > 64/66** — the only two left, 4.3 telemetry and 4.4 `setup --global`, are
 > adopter-gated by decision, not blocked. Closed today: **4.83**
 > (`actions/checkout` v4 → v7, verified against a real run's *annotations*
@@ -209,6 +216,102 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Wave 5 opens: specced, packaged, and two builds where the live run corrected the author (2026-08-17)
+
+*(Written 2026-08-30 from the commits, which are all dated 2026-08-17 — the
+work and the write-up are two weeks apart and the entry is dated by the
+work.)*
+
+**Wave 5 specced at wave start**, per the process waves 2–4 followed:
+`docs/wave-5-specs.md`, 334 lines. The packaging question was ruled **before**
+the designs, because it decides how many skills exist and cannot be deferred
+to build time.
+
+**The budget turned out not to decide it, which was the finding.** §28 caps
+descriptions at 12,000 chars — a number 4.59 set *deliberately below* what the
+roadmap costs. Measured at spec time: 9,139 used, **2,861 headroom**, 23
+skills at mean 397. Waves 6–7 are 11 tasks; folded as hard as wave 6's own
+design implies (6.6 `/board` already convenes 6.1–6.5 as lenses) that is still
+~5 descriptions, ~1,985 chars. **Every candidate shape left less than that.**
+So the cap gets revisited regardless, and once the budget stopped separating
+the options the criterion became which shape is best designed.
+**Shape D chosen** — `/contract-check`, `/careful`, `/deps` (review +
+upgrade), `/verify`: PLAN as written with exactly one fold, and the fold is
+the defensible one, since 5.1 and 5.5 read the same manifest and the same
+call sites.
+**Shape C was rejected with my own argument for it withdrawn in writing.** I
+had claimed three gates sharing an anatomy is "the duplication 4.48 and 4.61
+exist to catch". It is not: 4.48 is a duplicated *count derivation*, 4.61 is
+duplicated *conditional content inside one skill*, and the pack already ships
+five report-shaped skills sharing verdict-first structure. With that gone, C
+was buying a smaller share of a shortfall by renaming the pack's hardest
+safety trigger. What C was right about — the gates do share content — is
+handled by **citation**: one canonical
+`skills/migrate-check/references/gate-shape.md`, cited not copied, per 4.17
+sub-guard 4, at a cost of **zero descriptions**.
+
+**5.2 `/contract-check`** — 119 lines, description 483 chars, enrolled in
+`READONLY_SKILLS` (§33 stated size 7 → 8). Acceptance met live across two
+arms: the destructive diff returns `NO-GO` with rename, required-param and
+field-drop all destructive, the config key additive, a safe alternative on
+**all three** destructive rows, and a section naming what the verdict does not
+cover; the additions-only twin returns `GO`.
+
+**5.1 `/deps review`** — 110 lines, description 449 chars, §33 stated size
+8 → 9. Its four checks are ordered by **decidability** and the report must
+preserve that order: check 1 stated as fact, 2–4 carrying their evidence so a
+reader can overrule them, because a judgment call printed beside a fact in the
+same voice reads as a fact. Live: all four plants named with manifest lines,
+`left-pad`'s staleness given as the **date 2024-04-16** rather than an
+adjective, GPL-3.0 vs MIT reported as a *pair* rather than a verdict, and the
+one registry lookup that failed reported as **not-run** instead of inferred.
+Clean arm: `no findings`.
+**`npm view` was added to check.sh's `SAFE_BASH`**, justified inside the
+guard: it queries the registry and prints metadata, installing and writing
+nothing, and the union **already** held network reads (`gh auth status`,
+`gh issue list`, `gh pr view`). No new class of capability, only a non-GitHub
+registry — recorded because widening a security allowlist should never be a
+silent side effect of building a skill.
+
+**Both builds had a live run correct the author, two for two.**
+`/contract-check`'s first run classified my "narrowed signature" plant
+**additive** against my expected destructive — and was **right**: a bare
+second JS parameter is optional, the argument is `undefined`, the old path
+runs, nothing breaks. `/deps`' clean twin declared `object-assign`, which its
+own check 2 correctly flags as an `Object.assign` ponyfill, so the
+must-not-fire arm **could not pass**; the run reporting one finding on it was
+right. Both fixtures fixed, both re-run. The pack had written down that a
+must-not-fire control the baseline *already satisfies* proves nothing; the
+mirror — one the baseline **cannot** satisfy — was not written down and now is.
+
+**Four more no-op seeds and a widened crossref lesson.** Enrolling new
+read-only skills silently broke three matrix seeds that hardcoded live values
+(§33's two on 7 → 8, the marked-count seed on skills 23 → 24); the last
+reached a full run and failed it at **`passed=148 failed=1`**. All now derive
+their value and assert the file changed. Measured in passing: guard-matrix
+carries **50 sed-based seeds against 16 python3 ones**, so AGENTS.md's
+"python3, not sed" rule was broadly unfollowed — carried as **5.8**.
+Separately, §8 refuses a citation to a skill that does not exist yet, so
+forward references between wave-5 items had to be removed and each later gate
+adds its own citation in its own commit — a build-order constraint the spec
+had not noticed, now recorded in it.
+
+**And the `/why` defect recurred, caught before it mattered.** Both new skills
+were uninvocable when written — 23 symlinks against 24 packaged skills, then
+24 against 25. `./setup` run and the symlink verified to resolve **before** any
+acceptance run was believed.
+
+**Filed along the way:** **5.6** (`setup` has no sweep for symlinks whose
+target is gone, so any rename or removal leaves a dangling entry — found while
+costing the rejected rename), **5.7** (rule §28's total against what is left to
+build, before wave 6 opens), **5.8** (the 49 remaining sed seeds).
+
+Validation close: check.sh **38, all clean**; controls **all plants caught**;
+matrix **149, run in full, 0 failed**; skills **23 → 25**; description budget
+**9,139 → 10,075 of 12,000**; wave 5 **2 of 8**; 0 owed-markers. **Nothing
+pushed** — the three wave-5 commits are local, so CI has not yet seen any of
+this.
 
 ### Wave 4.5's buildable work runs out: three tasks, each verified against something outside its own report (2026-08-17)
 
