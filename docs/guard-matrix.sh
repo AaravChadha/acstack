@@ -464,11 +464,24 @@ gitcase "commit-style: ordinary verb-first"   PASS "run an ordinary verb-first c
 # the design rests on — the scope is DERIVED (topmost open wave + the next), so
 # closing waves must PULL the following ones in. A guard that is permanently
 # blind to distant waves would pass forever and check nothing.
+# DERIVED (2026-08-31). This named 5.1's acceptance text verbatim; ticking 5.1
+# made the seed neuter a CLOSED task's line, which section 35 does not police,
+# so the case went got=PASS want=FAIL. It passed locally only because the tree
+# was edited mid-run and the matrix scores the snapshot it took at start —
+# 4.55a's NOTE exists for exactly that and was not read. Now it finds whichever
+# open task carries the first acceptance line and breaks that one.
 fullcase "acceptance: in-scope task loses it" FAIL 'acceptance' bash -c "python3 - <<'EOF'
-p='PLAN.md'; s=open(p).read()
-n=s.replace('  **Acceptance:** on a scratch project whose manifest carries four planted','  Not an acceptance: on a scratch project whose manifest carries four planted',1)
-assert n!=s, 'seed no-op'
-open(p,'w').write(n)
+import re, pathlib
+p = pathlib.Path('PLAN.md'); lines = p.read_text().split(chr(10))
+is_open = False; hit = -1
+for i, l in enumerate(lines):
+    if re.match(r'^- \\[[ x]\\] \\*\\*[0-9]', l):
+        is_open = l.startswith('- [ ]')
+    if is_open and '**Acceptance:**' in l:
+        hit = i; break
+assert hit >= 0, 'seed no-op: no open task carries an acceptance line'
+lines[hit] = lines[hit].replace('**Acceptance:**', 'Not an acceptance:', 1)
+p.write_text(chr(10).join(lines))
 EOF"
 fullcase "acceptance: new task has none"      FAIL 'acceptance' bash -c "python3 - <<'EOF'
 p='PLAN.md'; s=open(p).read()
