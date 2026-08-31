@@ -308,10 +308,26 @@ costing the rejected rename), **5.7** (rule §28's total against what is left to
 build, before wave 6 opens), **5.8** (the 49 remaining sed seeds).
 
 Validation close: check.sh **38, all clean**; controls **all plants caught**;
-matrix **149, run in full, 0 failed**; skills **23 → 25**; description budget
-**9,139 → 10,075 of 12,000**; wave 5 **2 of 8**; 0 owed-markers. **Nothing
-pushed** — the three wave-5 commits are local, so CI has not yet seen any of
-this.
+matrix **149, 0 failed**; skills **23 → 25**; description budget
+**9,139 → 10,075 of 12,000**; wave 5 **2 of 8**; 0 owed-markers.
+
+**Correction (2026-08-31), and it invalidates the matrix number above as it
+was originally written.** That `149/0` was a **phantom pass**: the run was
+started and PLAN 5.1 was ticked *while it was still going*, so it scored the
+pre-tick snapshot (4.55a). Pushed on the strength of it, and **CI went red** —
+one case, `acceptance: in-scope task loses it`, `got=PASS want=FAIL`. Its seed
+named 5.1's acceptance text verbatim and became a no-op the moment 5.1 closed,
+since §35 only polices open tasks. The seed now derives its target — whichever
+open task carries the first acceptance line — and was shown firing against
+4.3's before being trusted. Re-run on a **frozen** tree with the tree hash
+captured at both ends and identical (`9ec885be…`): **149 passed, 0 failed, no
+NOTE**. Fixed in `e7243cd`.
+**The lesson is the direction of the failure.** The same rule was broken on
+2026-08-07 and produced *phantom failures* — noisy and self-announcing. This
+time it produced a **phantom pass**, which nothing prompts you to check. Also
+learned in passing: an ~18-minute matrix run started in the foreground is
+killed by the tool timeout at ~44/149, and the partial log reads like
+progress.
 
 ### Wave 4.5's buildable work runs out: three tasks, each verified against something outside its own report (2026-08-17)
 
