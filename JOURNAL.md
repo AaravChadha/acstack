@@ -139,7 +139,7 @@
   is the enumeration.
 - Remote live (2026-07-27); **public as of 2026-08-03**, `main` pushed.
 - Roadmap runs to 39 skills (those built, plus wave 5's 5, wave 6's 7 and
-  wave 7's 4), **<!-- count:open-scheduled -->19<!-- /count --> scheduled
+  wave 7's 4), **<!-- count:open-scheduled -->21<!-- /count --> scheduled
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,

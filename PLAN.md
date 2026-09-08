@@ -4375,6 +4375,71 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   loudly rather than passing** — demonstrated on at least one converted case
   before the rest are trusted. A matrix run of 149 with 0 failed is the
   regression bar.
+- [ ] **5.9** Nothing checks the README *as a document a stranger reads*.
+  `/audit`'s five targets cover drift — `docs` checks README/PLAN/JOURNAL
+  against the tree, counts and checkbox reality — but none asks whether the
+  front door states who the project is for, whether install is reachable
+  before the essays, whether the skill roster is complete, or whether sections
+  have accreted past the point of being scannable.
+  **Found 2026-09-08**, when a front-door pass on this repo's own README
+  returned six factual defects and four structural gaps, none of which
+  `/audit docs` would have reported: two shipped skills (`/contract-check`,
+  `/deps`) absent from the roster entirely, four stale "23 skills" claims
+  against a tree of 25, `/audit` itself described with four targets when it
+  declares five, a tickets-precondition claim false for three of the nine
+  skills it names, a duplicated `## Operating principles` heading, and — in
+  the 25 days since the repo went public — no statement anywhere of who this
+  is for or why someone would choose it.
+  **Scoped as a sixth `/audit` target, not a new skill, and gated on 5.7.**
+  A standalone skill costs a full description (~400 chars) against §28's
+  headroom of 1,925, which **5.7 has not yet ruled** — spending it before that
+  ruling is exactly what 5.7 exists to prevent. A sixth target on an existing
+  multi-target description costs ~60.
+  ~~A README-*writing* skill, as originally proposed.~~ **Verdict
+  (2026-09-08):** declined in favour of the audit target. The 2026-09-08 pass
+  split ~80/20 between finding defects and rewriting, and the rewriting half
+  turned on decisions a skill cannot make alone — how aggressively to cut, and
+  whether the roster stays in the README at all — both of which were put to
+  the user and answered. The finding half is what automates.
+  The *drift* half needs no skill either: it needs a guard, and the count
+  markers added to README on 2026-09-08 now fail `check.sh` when the roster
+  changes. That is the half `/audit docs` never caught in practice, because —
+  as `scripts/count-check.sh`'s own header records — nobody types it without
+  already suspecting drift.
+  **Acceptance:** against a seeded README carrying a skill absent from its
+  roster, a marked count contradicting the tree, and no statement of who the
+  project is for, names all three with line numbers; and returns no findings
+  against this repo's README as of the 5.9 commit. Both arms shown on a copy
+  before the target is trusted.
+- [ ] **5.10** `/do` ticks a box without ever asking what points AT it.
+  `scripts/reach-check.sh` answers that question, but it runs from
+  `check.sh` — that is, at commit time, **after** the tick. On 2026-08-16
+  closing **4.50** turned reach-check red because **14 owed-markers across
+  nine closed tasks** pointed at it; every one was discharged by hand,
+  afterwards. The information needed to avoid that existed before the tick
+  and nothing surfaced it.
+  **The gap is wider than reach-check's, which is why this is not just a
+  call to that script.** §25's honest scope is *marked* owed-obligations
+  (the bracketed carrier form check.sh reads); unmarked prose references are invisible to it. Measured
+  2026-09-08: PLAN.md defines **118 tasks** carrying **535 plain-text
+  cross-references**, every task referenced at least once, with 4.50 at 15
+  and 4.30/4.59 at 17 each. A `git grep` for the task ID covers that set;
+  reach-check does not.
+  **Deliberately not the graph.** The retrieval layer in `## Open items`
+  would also answer this, and is not needed to: the whole check is a grep for
+  the task ID before the box is ticked. Filed as its own task so the cheap
+  80% ships without waiting on a design that is recorded but unscheduled.
+  Report-only — it names what points at the task and leaves the call to the
+  operator, since a reference is not automatically a blocker. Costs **zero
+  description budget**: a step inside an existing skill, not a new one, so
+  5.7 does not gate it.
+  **Acceptance:** on a seeded PLAN where the task being closed is referenced
+  by three others, `/do` lists all three with `file:line` **before** ticking,
+  and ticks without a report on a task nothing references. The clean arm's
+  task must be **verified to have zero inbound references** before the arm is
+  trusted — a must-not-fire control the baseline cannot satisfy proves as
+  little as one it already satisfies (5.1's defective twin, 2026-08-17).
+  Both arms shown failing on a copy first.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
@@ -4740,3 +4805,71 @@ existing contract — not a redesign.
   creation awaits explicit user go.~~ **Verdict (2026-07-27):** created
   private and pushed — `main` tracks `origin/main`, all 31 commits up.
   Public flip stays gated on the wave-4 launch checklist (4.7).
+- [ ] **Derived retrieval layer over JOURNAL/PLAN (NEW 2026-09-08).**
+  JOURNAL.md is 3,752 lines / 240KB, and `/resume` already carries a
+  "retrieve, don't ingest" rule because of it. Proposed: an Obsidian-style
+  index over the documents, truth staying authoritative, with periodic
+  reconciliation catching drift.
+  **Measured 2026-09-08:** PLAN.md defines **118 tasks** carrying **535
+  cross-references**, every task referenced at least once. Those edges are
+  already authored and they carry meaning — supersedes, prerequisite-for,
+  found-while-doing. **4.50 is referenced 15 times**, and closing it orphaned
+  14 inbound markers that reach-check caught only *after* the tick. That
+  incident is the case for traversal, and it is also layer 1's positive
+  control: seed a closure that orphans a referrer and watch it fire.
+  **Two layers, different determinism, different controls:**
+  - **Layer 1** — task IDs, references, backlinks, per-wave subgraphs.
+    Extractable by regex, so regenerate-and-diff gives byte-identity (the
+    section 1 / section 12 pattern) and drift is *impossible*; no comparator
+    to calibrate. Mermaid for the display: GitHub renders it natively and it
+    stays text, so it survives README's "no runtime, no package manager, no
+    build step". A full 118-node / 535-edge render is a hairball — scope it
+    per wave, or to 1-hop around a task. Costs **zero description budget**
+    (a script and a check.sh section, not a skill), so 5.7 does not gate it.
+  - **Layer 2** — semantic links and summaries. Not deterministically
+    derivable, so it needs the reconciliation check. **Its hard problem is
+    the comparator's tolerance, not the format:** an exact-match scorer flags
+    correct paraphrases as drift, and a check that cries wolf is one you stop
+    reading — guard-matrix.sh's own 2026-08-07 lesson. Its negative control
+    (a correct paraphrase must NOT fire) is the half that proves anything.
+  **Surveyed 2026-09-08:** `thedotmack/claude-mem` — SQLite + Chroma, five
+  lifecycle hooks, no source of truth, and **no graph structure at all**. It
+  is a stream-plus-search design, which is correct for its data: session
+  observations have no authored edges. What is worth taking is its
+  **progressive disclosure** — `search` returns ~50-100-token stubs,
+  `get_observations` ~500-1,000, and filtering before fetching is where its
+  ~10x saving comes from. `/resume` already does a hand-rolled version. Its
+  *capture* model (hooks writing machine-local binary state) is the inverse
+  of this pack's stated pitch, so borrowing it would mean changing README's
+  positioning deliberately rather than by drift.
+  **Surveyed 2026-09-08, and it supersedes the two-layer split above:**
+  `Graphify-Labs/graphify` tags **every edge with its provenance** —
+  `EXTRACTED` (explicit in the source) or `INFERRED` (resolved by the tool) —
+  rather than splitting the artifact in two. That is the better shape, and it
+  is this pack's own decidability rule applied to edges: 5.1 ships `/deps`
+  with its four checks ordered by decidability because "a judgment call
+  printed beside a fact in the same voice reads as a fact". One graph,
+  per-edge control: EXTRACTED regenerates and diffs byte-identical, INFERRED
+  carries the comparator. Graphify also **commits `graphify-out/` to git**,
+  which is this pack's own repo-owned-memory principle reached independently,
+  and states plainly "not a vector index; no embeddings, no vector store".
+  Its code parsing is deterministic tree-sitter across 37+ languages; only
+  docs, PDFs, images and audio route through a model.
+  **Do not rebuild it.** It maps *code*; the graph wanted here is over PLAN
+  and JOURNAL — task dependencies, parsed by regex over markdown, which
+  tree-sitter has no notion of. And it has no verification layer either, the
+  same gap as claude-mem and the Obsidian setup: three implementations
+  surveyed, none checks itself against truth. That check is the whole
+  contribution.
+  **One refusal carried:** graphify updates via `post-commit` /
+  `post-checkout` git hooks, watch mode, and a `PreToolUse` hook steering
+  reads to `graphify query`. Regenerate in `check.sh` instead — same trigger,
+  no daemon, and README's "nothing runs on its own" stays true.
+  **Measure our own saving or state none.** The Obsidian+Graphify setup
+  claims 71.5x in its README while its worked example says 499x, with no
+  baseline and no methodology stated. Inheriting a number like that is the
+  exact class of claim this pack exists to refuse.
+  **Not scheduled, and deliberately not a wave task** — wave 6 is lenses and
+  wave 7 is operate; this belongs to neither. The EXTRACTED subgraph is the
+  cheap first increment. Decide on INFERRED only after `/resume` or `/why`
+  demonstrably fails to find something.
