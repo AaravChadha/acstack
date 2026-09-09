@@ -75,7 +75,9 @@
 >   check in an untouched file produces no diff lines. Whole-surface runs
 >   of /secure and /qa are the counterweight to review-time-only checking.
 > - **Process prerequisites in prose are invisible to `/resume`.** Its
->   "unblocked" is defined by checkboxes and `## Open items` only, so a
+>   "unblocked" is defined by checkboxes and `
+
+## Open items` only, so a
 >   prerequisite recorded in prose — like this header's
 >   specs-at-wave-start rule — never blocks a task. Found by the 4.7
 >   item 10 cold start (2026-07-29), which named 4.1 as next when the
@@ -4440,6 +4442,27 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   trusted — a must-not-fire control the baseline cannot satisfy proves as
   little as one it already satisfies (5.1's defective twin, 2026-08-17).
   Both arms shown failing on a copy first.
+- [ ] **5.11** `docs/guard-matrix.sh` runs all 149 cases or none — it takes
+  `<repo>` and nothing else. Measured 2026-09-08: a full run is **~19 minutes
+  at ~7.6s per case**, and it must run on a frozen tree, so any edit during
+  it wastes the run. Most sessions change a handful of files: after the
+  README work of 2026-09-08 the genuinely affected set was **9 cases** by
+  direct seed and **22** counting every case whose class derives from the
+  changed files — 15% of the matrix, ~3 minutes.
+  The standing options are both bad: pay 19 minutes for a two-line edit, or
+  skip the matrix and push on `check.sh` alone. The second is what produced
+  the CI red of 2026-08-31, since the two are separate surfaces.
+  **The trap this task exists to avoid is the fix's own failure mode.** A
+  filter that matches nothing runs zero cases and reports `passed=0 failed=0`
+  — indistinguishable from a clean run, and greener than a real one. So the
+  filter is not done when it selects correctly; it is done when it **cannot
+  report success without saying how many cases it ran**. Same class as
+  4.55a's phantom pass, where the absence of a signal read as a good signal.
+  **Acceptance:** with a filter matching a known-failing seeded case, the run
+  reports that failure and a non-zero case count; with a filter matching
+  **nothing**, the run **fails loudly** rather than reporting a clean pass —
+  demonstrated in that order, the empty-match arm before the filter is
+  trusted for anything. An unfiltered run still reports 149.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
@@ -4716,6 +4739,89 @@ existing contract — not a redesign.
 > `/qa`'s honest-decline path already models. Do not let it land by
 > accident.
 
+## [ ] Wave C (Deferred) — retrieval (unscheduled, trigger-gated)
+
+**Trigger, not a date.** Build when `/resume` or `/why` demonstrably fails
+to find something — not before. As of 2026-09-08 neither has: `/resume`'s
+"retrieve, don't ingest" rule read a blockquote, the entry headings and one
+full entry, and never loaded the other 3,400 lines of JOURNAL. The record is
+**complete and greppable**; only traversal is slow. Nothing here is
+scheduled, and all of it unblocks together.
+
+**The measurement that motivates it (2026-09-08).** PLAN.md defines **120
+tasks** carrying **535 plain-text cross-references**, every task referenced at
+least once — 4.50 at 15, 4.30 and 4.59 at 17 each. PLAN.md is 4,896 lines and
+JOURNAL.md 3,752. The edges are already authored and they carry meaning
+(supersedes, prerequisite-for, found-while-doing); no index traverses them.
+The cost of that was paid once already: closing **4.50** orphaned 14
+owed-markers, and `reach-check` reported it only *after* the tick. **5.10
+takes the cheap 80% of that** with a grep before ticking, deliberately
+without any of this.
+
+**Survey (2026-09-08), three implementations, one shared gap.**
+`thedotmack/claude-mem` — SQLite + Chroma, five lifecycle hooks, **no source
+of truth and no graph at all**; a stream-plus-search design, correct for data
+whose records have no authored edges. `Graphify-Labs/graphify` — deterministic
+tree-sitter across 37+ languages, **every edge tagged `EXTRACTED` (explicit in
+the source) or `INFERRED` (resolved by the tool)**, explicitly "not a vector
+index", and it **commits its output to git**, which is this pack's own
+repo-owned-memory principle reached independently. The Obsidian + graphify
+setup pairs a markdown vault with a code graph. **None of the three verifies
+itself against a source of truth.** That check is the only novel part, and it
+is why this is worth building at all rather than adopting one of them.
+
+**Two rules carried in from the survey.** (1) Provenance beats a second
+artifact: one graph with per-edge tags, not a deterministic index plus a
+separate semantic store — which is this pack's own decidability rule, the one
+`/deps` already applies when it orders four checks so a judgment call is never
+printed beside a fact in the same voice. (2) Regenerate from `check.sh`, never
+from hooks. graphify updates on `post-commit`, `post-checkout`, watch mode and
+a `PreToolUse` hook; claude-mem on five lifecycle hooks. README promises
+"nothing runs on its own — you type it", and `check.sh` already runs before
+every commit, which is the same trigger without a daemon.
+
+- [ ] **C.1** Extract — parse PLAN.md and JOURNAL.md into nodes (tasks,
+  entries) and edges, each tagged `EXTRACTED` where the reference is literally
+  in the text or `INFERRED` where something resolved it. Emit a committed
+  `graph.json` plus a backlink index. Regex over markdown, not tree-sitter:
+  the parse target is `5.7`, not syntax.
+- [ ] **C.2** Display — mermaid, because GitHub renders it natively and it
+  stays text, so it survives README's "no runtime, no package manager, no
+  build step". **Scoped, never whole:** 120 nodes and 535 edges in one diagram
+  is a hairball. Per wave, or 1-hop around a task.
+- [ ] **C.3** The check — the contribution. `EXTRACTED` edges regenerate and
+  diff byte-identical (the principles/runtime pattern), so that subgraph
+  cannot drift and needs no comparator. `INFERRED` edges get reconciled
+  against the documents. **The hard problem is the comparator's tolerance,
+  not the format:** an exact-match scorer flags a correct paraphrase as drift,
+  and a check that cries wolf is one you stop reading — guard-matrix.sh's own
+  2026-08-07 lesson. Its negative control (a correct paraphrase must NOT fire)
+  is the half that proves anything.
+- [ ] **C.4** Progressive disclosure — the one idea worth taking from
+  claude-mem: compact stubs to filter on (~50-100 tokens), full detail only
+  for what survives (~500-1,000). `/resume` already does a hand-rolled
+  version. **Measure the saving on this repo or state none** — the Obsidian
+  setup claims 71.5x in its README while its own worked example says 499x,
+  with no baseline and no methodology, which is the class of claim this pack
+  exists to refuse.
+- [ ] **C.5** The report — graphify's third output, and the one C.1–C.2
+  dropped. `GRAPH_REPORT.md` is narrative rather than structural: key
+  concepts, **surprising connections**, and suggested questions. For this repo
+  the surprising-connection query is the valuable one, and it is concrete:
+  *"4.50 carries 15 inbound references and you are about to close it"* is the
+  2026-08-16 incident stated **before** it happens instead of by reach-check
+  afterwards. C.2 renders structure you already know you want to look at; this
+  one tells you where to look.
+  **Clustering is the open question inside this item, not a given.** graphify
+  runs Leiden and reports 750+ communities over a codebase; acstack already
+  has waves as hand-authored communities, so detection only earns its keep if
+  it finds clusters that **cross** wave boundaries. There is one prior
+  indication it might: wave 5 holds 9 open tasks of which 5 are not gates,
+  having become the catch-all for work that fit nowhere else. Whether that is
+  a real cluster or merely a filing habit is exactly what clustering would
+  answer — and if it answers "filing habit", drop it rather than ship a
+  feature that restates the wave headings.
+
 ## Open items (decide as we go)
 
 - [x] **Commit subject format (NEW 2026-07-27).** ~~Document mode: keep
@@ -4805,71 +4911,13 @@ existing contract — not a redesign.
   creation awaits explicit user go.~~ **Verdict (2026-07-27):** created
   private and pushed — `main` tracks `origin/main`, all 31 commits up.
   Public flip stays gated on the wave-4 launch checklist (4.7).
-- [ ] **Derived retrieval layer over JOURNAL/PLAN (NEW 2026-09-08).**
-  JOURNAL.md is 3,752 lines / 240KB, and `/resume` already carries a
-  "retrieve, don't ingest" rule because of it. Proposed: an Obsidian-style
-  index over the documents, truth staying authoritative, with periodic
-  reconciliation catching drift.
-  **Measured 2026-09-08:** PLAN.md defines **118 tasks** carrying **535
-  cross-references**, every task referenced at least once. Those edges are
-  already authored and they carry meaning — supersedes, prerequisite-for,
-  found-while-doing. **4.50 is referenced 15 times**, and closing it orphaned
-  14 inbound markers that reach-check caught only *after* the tick. That
-  incident is the case for traversal, and it is also layer 1's positive
-  control: seed a closure that orphans a referrer and watch it fire.
-  **Two layers, different determinism, different controls:**
-  - **Layer 1** — task IDs, references, backlinks, per-wave subgraphs.
-    Extractable by regex, so regenerate-and-diff gives byte-identity (the
-    section 1 / section 12 pattern) and drift is *impossible*; no comparator
-    to calibrate. Mermaid for the display: GitHub renders it natively and it
-    stays text, so it survives README's "no runtime, no package manager, no
-    build step". A full 118-node / 535-edge render is a hairball — scope it
-    per wave, or to 1-hop around a task. Costs **zero description budget**
-    (a script and a check.sh section, not a skill), so 5.7 does not gate it.
-  - **Layer 2** — semantic links and summaries. Not deterministically
-    derivable, so it needs the reconciliation check. **Its hard problem is
-    the comparator's tolerance, not the format:** an exact-match scorer flags
-    correct paraphrases as drift, and a check that cries wolf is one you stop
-    reading — guard-matrix.sh's own 2026-08-07 lesson. Its negative control
-    (a correct paraphrase must NOT fire) is the half that proves anything.
-  **Surveyed 2026-09-08:** `thedotmack/claude-mem` — SQLite + Chroma, five
-  lifecycle hooks, no source of truth, and **no graph structure at all**. It
-  is a stream-plus-search design, which is correct for its data: session
-  observations have no authored edges. What is worth taking is its
-  **progressive disclosure** — `search` returns ~50-100-token stubs,
-  `get_observations` ~500-1,000, and filtering before fetching is where its
-  ~10x saving comes from. `/resume` already does a hand-rolled version. Its
-  *capture* model (hooks writing machine-local binary state) is the inverse
-  of this pack's stated pitch, so borrowing it would mean changing README's
-  positioning deliberately rather than by drift.
-  **Surveyed 2026-09-08, and it supersedes the two-layer split above:**
-  `Graphify-Labs/graphify` tags **every edge with its provenance** —
-  `EXTRACTED` (explicit in the source) or `INFERRED` (resolved by the tool) —
-  rather than splitting the artifact in two. That is the better shape, and it
-  is this pack's own decidability rule applied to edges: 5.1 ships `/deps`
-  with its four checks ordered by decidability because "a judgment call
-  printed beside a fact in the same voice reads as a fact". One graph,
-  per-edge control: EXTRACTED regenerates and diffs byte-identical, INFERRED
-  carries the comparator. Graphify also **commits `graphify-out/` to git**,
-  which is this pack's own repo-owned-memory principle reached independently,
-  and states plainly "not a vector index; no embeddings, no vector store".
-  Its code parsing is deterministic tree-sitter across 37+ languages; only
-  docs, PDFs, images and audio route through a model.
-  **Do not rebuild it.** It maps *code*; the graph wanted here is over PLAN
-  and JOURNAL — task dependencies, parsed by regex over markdown, which
-  tree-sitter has no notion of. And it has no verification layer either, the
-  same gap as claude-mem and the Obsidian setup: three implementations
-  surveyed, none checks itself against truth. That check is the whole
-  contribution.
-  **One refusal carried:** graphify updates via `post-commit` /
-  `post-checkout` git hooks, watch mode, and a `PreToolUse` hook steering
-  reads to `graphify query`. Regenerate in `check.sh` instead — same trigger,
-  no daemon, and README's "nothing runs on its own" stays true.
-  **Measure our own saving or state none.** The Obsidian+Graphify setup
-  claims 71.5x in its README while its worked example says 499x, with no
-  baseline and no methodology stated. Inheriting a number like that is the
-  exact class of claim this pack exists to refuse.
-  **Not scheduled, and deliberately not a wave task** — wave 6 is lenses and
-  wave 7 is operate; this belongs to neither. The EXTRACTED subgraph is the
-  cheap first increment. Decide on INFERRED only after `/resume` or `/why`
-  demonstrably fails to find something.
+
+- [ ] **A second retrieval surface at all? (NEW 2026-09-08).** Wave C records
+  the design and the survey; this is the open question it waits on. Everything
+  the pack has today is one greppable store per concern — PLAN for tasks,
+  JOURNAL for what happened, git for history — and a derived index is the
+  first thing that would duplicate any of it. The counter-argument is that a
+  derived artifact cannot drift if it is regenerated and diffed, which is how
+  the principles and runtime blocks already work. **Decide when Wave C's
+  trigger fires, not before** — deciding now would be deciding without the
+  evidence the trigger exists to produce.
