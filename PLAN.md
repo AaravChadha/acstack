@@ -4341,7 +4341,7 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   `find ~/.claude/skills -maxdepth 1 -type l ! -exec test -e {} \; -print`
   returning empty, shown non-empty first on the seeded state so the check is
   demonstrated failing before it is trusted.
-- [ ] **5.7** Rule §28's total against what is actually left to build,
+- [x] **5.7** Rule §28's total against what is actually left to build,
   before wave 6 opens. Measured 2026-08-17: **9,139 / 12,000**, headroom
   **2,861**, 23 skills at mean **397**. Remaining after wave 5 is 11 tasks
   (wave 6's 7, wave 7's 4); folded as hard as wave 6's own design implies —
@@ -4356,6 +4356,61 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   named individually — and if the cap changes, check.sh §28's comment is
   updated to cite this ruling rather than 4.59's, so the number and its
   justification stay together.
+  **Verdict (2026-09-08): total raised 12,000 → 13,500. Per-description
+  stays 600.** `check.sh` §28's comment now cites this ruling.
+  **Basis: what *good* folding costs, not what maximum folding costs.** The
+  test applied was not "does the cap bind" — it was whether the folding the
+  cap forces improves the product. Measured: `/audit` carries **five targets
+  in 496 chars** where five separate skills at the observed mean of 403 would
+  cost 2,015, so folding is **75% cheaper** and mode-first is right. Some
+  folds the old cap forced were good — `/board` convening 6.1–6.5 as lenses
+  is already wave 6's own design. One was not: jamming `/deploy`,
+  `/incident`, `/document` and `/cost` into a single `/operate` to satisfy
+  arithmetic puts four unrelated jobs in one skill.
+  **Derivation.** After wave 5 the total is 11,011 (10,075 today, +485 for
+  5.3 at the `/contract-check` rate, +451 for 5.4 at the `/deps` rate).
+  Good folding of the 11 remaining: `/board` 496, `/skill` 403,
+  `/operate` (7.1+7.2 as two modes) 451, `/document` 403, `/cost` 403 =
+  **2,156**. 11,011 + 2,156 = 13,167, plus **333** for estimate error
+  (~±50 across five unwritten descriptions) = **13,500**.
+  **The forcing function survives, which is why this is a raise and not a
+  repeal.** Those 11 skills unfolded cost 4,433, so the roadmap unfolded is
+  **15,444** — the new cap still sits 1,944 below it. 4.59 set the total
+  deliberately under the roadmap and that property is preserved; only the
+  margin changed.
+  **Named individually, the folds this ruling assumes:** 6.1 `/architect`,
+  6.2 `/a11y`, 6.3 `/devex`, 6.4 `/ops` and 6.5 `/data` become **lenses of
+  6.6 `/board`**, not skills. 7.1 `/deploy` and 7.2 `/incident` become
+  **modes of one skill**. 6.7 `/skill`, 7.3 `/document` and 7.4 `/cost` stay
+  standalone. Wave 6 and wave 7 spec passes inherit this as a constraint.
+  ~~Option B: hold 12,000 and fold 5.3 `/careful` into an existing gate.~~
+  **Rejected** — it fits arithmetically and leaves ~19 chars across the whole
+  remaining roadmap, which is not a budget. ~~Option C: drop `/cost` and
+  `/a11y`.~~ **Rejected as the primary move**, but it stays available: if
+  13,500 binds during wave 6, cutting scope is the next lever rather than
+  another raise.
+  **Estimates, labelled.** The five figures above are derived from observed
+  rates, not measured — no wave-6 or wave-7 description exists yet. If they
+  land materially over, that is a finding against this ruling, not a reason
+  to raise again silently.
+- [ ] **5.12** §28's **total**-cap branch has no matrix case. Found
+  2026-09-08 while raising it under 5.7: `docs/guard-matrix.sh` carries a
+  `'budget'` case, but it seeds a **SKILL.md line-count** overflow, not a
+  description-total overflow — a different branch of a different check. So
+  the constant 5.7 just moved from 12,000 to 13,500 was, and is, unguarded
+  against regression by the matrix.
+  It was verified by hand at both ends before being trusted (13,499 silent
+  with no single description over 600; 13,501 fires), and **the first attempt
+  at that control was itself defective** — padding one description to 3,920
+  chars tripped the per-description 600 cap, so the must-not-fire arm fired
+  for the wrong reason and proved nothing. The padding now spreads across
+  descriptions so the two branches cannot contaminate each other. A matrix
+  case must reproduce that separation or it will re-run the same mistake.
+  **Acceptance:** a matrix case seeds a description-total overflow that
+  leaves every individual description under `BUDGET_ONE`, and fails on the
+  total branch specifically — shown by the failure text naming the total, not
+  a single file. Paired with a must-not-fire case one char under the cap.
+  Both demonstrated before the case is trusted.
 - [ ] **5.8** 49 matrix seeds still use `sed` and cannot assert they mutated.
   AGENTS.md says *write matrix seed mutations in python3, not sed* — measured
   2026-08-17, `docs/guard-matrix.sh` carries **50 sed-based seeds against 16

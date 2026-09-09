@@ -843,12 +843,21 @@ fi
 #     is invoked. It is the only budget in this pack that grows
 #     MONOTONICALLY, and it was unguarded until 2026-08-08 — while 4.49 spent
 #     a task optimising a body budget that sat at 212 lines against a 500
-#     cap, i.e. with 60% headroom. Caps are decided in PLAN 4.59, not here:
-#     12000 chars total (~3000 tok) and 600 per description. The total cap is
-#     deliberately BELOW what the current roadmap would cost if every planned
-#     skill shipped as a skill — that is the point, and 4.59 rules mode-first
-#     because of it. Chars, not tokens: chars are deterministic.
-BUDGET_TOTAL=12000
+#     cap, i.e. with 60% headroom. Caps are decided in PLAN, not here.
+#     TOTAL RAISED 12000 -> 13500 by PLAN 5.7 (2026-09-08); per-description
+#     stays 600, unchanged since 4.59. The basis is what GOOD folding of the
+#     remaining roadmap costs, derived from observed rates: /board absorbing
+#     six wave-6 tasks as lenses at the measured /audit rate (496 chars for
+#     five targets), /skill standalone, and wave 7 folded once rather than
+#     four-into-one — 2156 total, plus 333 for estimate error.
+#     THE CAP IS STILL BELOW WHAT THE ROADMAP COSTS UNFOLDED (15444 if every
+#     planned skill shipped as its own skill), which is the point: 4.59's
+#     mode-first ruling stands and this still forces ~1944 chars of folding.
+#     5.7 raised it because the old number had begun forcing BAD folds --
+#     jamming /deploy, /incident, /document and /cost into one skill to
+#     satisfy arithmetic -- not because it bound. Chars, not tokens: chars
+#     are deterministic.
+BUDGET_TOTAL=13500
 BUDGET_ONE=600
 desc_tot=0
 for f in skills/*/SKILL.md; do
