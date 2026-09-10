@@ -4577,12 +4577,20 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   `2` the run is not interpretable (empty filter, missing gate, incomplete
   unfiltered run). Documented in CONTRIBUTING with the warning that a
   filtered run is for iterating and never for landing.
-  **The unfiltered arm, measured:** `RAN=150 passed=150 failed=0`,
+  **The unfiltered arm, measured twice:** `RAN=150 passed=150 failed=0`,
   `MATRIX_EXIT=0` read from inside the log rather than from the wrapper,
-  0 NOTE, tree hash `35846ccc` identical at both ends. It took **28m21s**
-  for 150 cases, **~11.3 s/case** — this task's own estimate of ~7.6 s/case
-  and "~19 minutes" was optimistic by nearly half, which strengthens rather
-  than weakens the case for the filter.)* `docs/guard-matrix.sh` runs all 149 cases or none — it takes
+  0 NOTE, tree hash identical at both ends — on tree `35846ccc` (pre-fix)
+  and again on `1b412ced` (post-fix).
+  **The timing claim is corrected here, having been wrong in this very
+  block for an hour.** Run 1 took **28m21s** (~11.3 s/case) and this note
+  originally called the task's ~7.6 s/case estimate *"optimistic by nearly
+  half"*. Run 2, same machine, same day, same 150 cases, took **16m26s**
+  (~6.6 s/case) — **faster** than the estimate it had just dismissed. The
+  honest statement is a range, not a figure: a full run is roughly
+  **16–29 minutes** depending on machine load, and no single sample
+  characterises it. Stating one measurement as if it were the property is
+  the same error class as a hardcoded count, committed while writing up a
+  task about hardcoded counts.)* `docs/guard-matrix.sh` runs all 149 cases or none — it takes
   `<repo>` and nothing else. Measured 2026-09-08: a full run is **~19 minutes
   at ~7.6s per case**, and it must run on a frozen tree, so any edit during
   it wastes the run. Most sessions change a handful of files: after the
