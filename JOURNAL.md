@@ -3,7 +3,20 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-08-17 (entry written 2026-08-30). **Wave 5 is open
+> **Last update**: 2026-09-08 (entry written 2026-09-10). **The front
+> door got its first end-to-end read since the flip — 25 days overdue — and
+> was restructured**: 462 → 386 lines against five high-star comparables,
+> six factual defects fixed (two shipped skills absent from the roster,
+> four stale "23 skills" claims against a tree of 25), and the counts now
+> *guarded* rather than corrected — five `count:skills` markers under §23,
+> proven firing on a seeded copy. **5.7 ruled the same day: description cap
+> 12,000 → 13,500**, derived from what *good* folding costs, with the
+> forcing function preserved 1,944 below the unfolded roadmap and the folds
+> named individually so waves 6–7 inherit them. Filed from the work, not
+> the plan: **5.9–5.12** and **Wave C** (retrieval — deferred,
+> trigger-gated, placed after Wave B so it adds no scheduled work). Wave 5
+> **3 of 12**; budget **10,075 / 13,500**; scheduled open **22**.
+> Earlier (2026-08-17, entry written 2026-08-30): **Wave 5 is open
 > and 2 of 8 built** — specced at wave start, packaging ruled as shape D
 > before any design, and both builds so far had the live run correct the
 > author rather than the other way round. `/contract-check` and `/deps
@@ -138,15 +151,17 @@
   2026-07-29, extended since; AGENTS.md's own "These six are repo-binding"
   is the enumeration.
 - Remote live (2026-07-27); **public as of 2026-08-03**, `main` pushed.
-- Roadmap runs to 39 skills (those built, plus wave 5's 5, wave 6's 7 and
-  wave 7's 4), **<!-- count:open-scheduled -->22<!-- /count --> scheduled
+- Roadmap runs to 32 skills after the fold rulings (25 built, wave 5's
+  remaining 2 — /careful, /verify — wave 6's 2 and wave 7's 3; it read
+  "39" until shape D and 5.7 made most remaining tasks modes and lenses),
+  **<!-- count:open-scheduled -->22<!-- /count --> scheduled
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,
-  **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (5) → 6
-  (7) → 7 (4), plus 5 unscheduled browser-layer items. Full detail in
-  PLAN.md.
-- Next: **wave 4.5**, which reopened 2026-08-06 after being called done.
+  **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (9) → 6
+  (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
+  Wave C's 5 retrieval). Full detail in PLAN.md.
+- Next: **wave 5** — 5.5 `/deps upgrade` in build order, then 5.3, 5.4; 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
   4.45–4.47 carry three findings from a survey of two high-star
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
@@ -212,10 +227,133 @@ bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
 | 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->64<!-- /count -->/<!-- count:wave45-total -->66<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. **2026-08-08:** **4.53** closed — the runner's exit code became a three-state signal (`0` completed / `1` could not complete / `2` completed with errored cases) after cannot-complete and completed-with-errors were measured both exiting `1`; `/ship` gate 3 now reads the value, having read no exit code at all, and a dead `.py` cross-reference the crossref guard cannot see was fixed in passing (guard gap carried as 4.55c). **2026-08-08 → 12:** six more closed — **4.53** three-state runner exit code (`/ship` gate 3 had read no exit code at all), **4.55** three guard input surfaces pinned (snapshot-once matrix that names a mid-run change; count-check roster with a reason per inclusion and exclusion; crossref no longer names extensions, which had hidden a dead `.py` link), **4.54+4.60** a dated four-cluster default-look check replacing the stale violet denylist plus three new tell classes and the first negative-twin controls, **4.56** spec divergence kept and guarded against check.sh's own allowlist, **4.57** `.claude-plugin/` as a second install path proven end-to-end in an isolated config, **4.59** all ten roster gaps ruled mode-first against a 12,000-char startup budget set below what the roadmap costs, scheduling 4.62–4.65. **4.58** closed 2026-08-12 — the strictness ladder was built AND run as shakedown 13 (HELD 3/3), which discharged **4.52's** owed re-test in a venue built for something else. **4.61** split `/audit` 163 → 91 lines and turned the ratio scan into a script plus check.sh §29; **4.62** added `/audit skills` as the fifth target. **2026-08-13 → 14:** three shakedown rounds and nine carriers closed — **15** (`/plan`'s `mode-seed.md` split reachable 3/3; its unattended branch not, because `AskUserQuestion` returns a stub rather than erroring), **16** (4.30's four design acceptances run for the first time: A1/A2/A4 held, **A3 unreachable by construction** since `/design`'s honest-scope rule ships disclosed gaps a blind audit must flag), **17** (the tickets round — nine skills, cold baseline, two-turn gate test, `/health` + bootstrap + `/triage` + `/do` + `/retro` all held). Closed: **4.67** never-guess hoisted above the branch that had scoped it out, **4.68** one home for the unsupplied-section rule, **4.69** the `/design` pairing becomes a blind audit plus a three-bucket diff (and one audit run proved not to be an enumeration — 3 findings then 1 on a byte-identical artifact), **4.70** set claims derived from the artifact, **4.71** RFC 2606 enumerated not sampled, **4.72** **the config resolver had been reporting defaults for any `## Settings` written without a leading `-`, silently, to every skill** — three independent sessions caught it, **4.73** the bootstrap names `build` as its owning mode, **4.74** the template is on disk but not in effect until pushed, **4.75** next-3 is a cap not a quota. **4.66 ruled 2026-08-14** on nine nested-session arms rather than on inference — **(3)+(5)**: a CONDUCT rule-5 carve-out plus a documented user-level `permissions.deny` block the pack never writes; the hook declined, the skill deferred to 5.3, "do nothing" falsified by the arm where the destructive command ran under bypass with no prompt and no denial. Splits into **4.76** (docs + `/health` row + guard) and **4.77** (the clause, live demo owed to 4.50); **4.78** files a stale set-claim found in check.sh in passing. Still open: **4.50** (step 4's interactive halves, now testable via `--session-id`/`-r`, plus `/ticket`, `/investigate`, the failing-acceptance path and `Fixes #N`), **4.76**/**4.77**/**4.78**, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
-| 5 / 6 / 7 — Gates, review board, operate | ⬜ | 16 skills: pre-flight family (incl. /upgrade), the lens board, post-merge coverage |
+| 5 / 6 / 7 — Gates, review board, operate | 🔶 3/12 (wave 5) | /contract-check and /deps review shipped 2026-08-17; 5.7 ruled the cap 12,000 → 13,500 (2026-09-08). Remaining roadmap after the fold rulings is **7 skills, not 16**: /careful, /verify, /board (6.1–6.5 as lenses), /skill, /operate (7.1+7.2), /document, /cost |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
+| C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### The front door reread, the cap re-ruled, and a wave that adds no scheduled work (2026-09-08, written 2026-09-10)
+
+*(All five work commits are dated 2026-09-08, 13:09 → 23:03; the write-up is
+two days later and the entry is dated by the work. The two 2026-08-31
+commits — e7243cd, 17c39c3 — are already recorded by the previous entry's
+Correction paragraph and are not re-journaled here.)*
+
+**README read end to end as a stranger would — the first time since the repo
+went public on 2026-08-03 — then restructured as a front door** (6c33624:
+462 → 386 lines, 3,934 → 3,230 words, checked against ripgrep, fzf,
+spec-kit, superpowers and anthropics/skills). **Six factual defects, all
+found before editing:** `/contract-check` and `/deps` — built 19 days
+earlier — appeared **nowhere in the file**; four "23 skills" claims stood
+against a tree of 25; `/audit` was described with four targets when its own
+frontmatter declares five; the tickets-preconditions claim ("each states the
+three preconditions inline") was false for 3 of the 9 skills it names;
+and `## Operating principles` rendered twice in a row (:379/:385 — the
+wrapper could move, the byte-identical block could not).
+**The structural cause outranks the defects:** `count-check.sh` has named
+README first in its coverage contract since 4.55b — *"the front door; its
+numbers are the first ones read"* — but README carried **zero** markers, so
+the guard ran on every commit with nothing to check while four stale counts
+sat in it. Its own honest-scope line said exactly this would happen. Now:
+five `count:skills` markers, proven on a copy (seeded 25 → 24, guard fired
+at `README.md:94  doc says 24 / reality is 25`). The dated 2026-08-07
+validator measurement (0/23, 23/23) was left unmarked deliberately — a
+guard would drag a historical number to the live count and make it false.
+**Control 4.56 blocked the restructure mid-flight** — moving the
+Agent-Skills section out failed because README itself must name both
+diverging frontmatter fields; fixed by naming them in the why-not bullet
+rather than gaming the grep. Reference material moved, not deleted
+(docs/EXAMPLE.md 69 lines, docs/SPEC-COMPAT.md 31); Repo-layout and
+Development **deleted outright** as duplicates of ARCHITECTURE.md and
+CONTRIBUTING.md. The user ruled scope twice: reorder-in-place first, then
+"only things needed stay" after the first rewrite came out **longer** than
+the original (495 lines — navigation costs lines even as words fall), then
+"the viewer has everything he needs" — which added back the invocation
+column, the capability table, and a six-row troubleshooting section.
+
+**5.7 ruled: total 12,000 → 13,500, per-description 600 unchanged**
+(8b11c02; §28's comment now cites 5.7, not 4.59). The test applied was not
+"does the cap bind" but **whether the folding it forces is good folding**.
+Measured both ways: `/audit` carries five targets in 496 chars where five
+skills at the observed mean (403) would cost 2,015 — folding is 75% cheaper
+and 4.59's mode-first ruling right — but the old cap's arithmetic forced
+`/deploy` + `/incident` + `/document` + `/cost` into one skill, four
+unrelated jobs in one description. Derivation: 11,011 after wave 5 (+485,
++451 at the two shipped gates' rates) + good folding at 2,156 + 333
+estimate margin = 13,500. Unfolded roadmap is 15,444, so the cap still
+forces ~1,944 of folding — a raise, not a repeal. Named folds inherited by
+the wave 6/7 spec passes: 6.1–6.5 lenses of `/board`; 7.1+7.2 one skill;
+`/skill`, `/document`, `/cost` standalone. Rejected in writing: holding
+12,000 by folding `/careful` (leaves ~19 chars for the whole remaining
+roadmap) and dropping `/cost`+`/a11y` (kept as the next lever if 13,500
+binds). **The first positive control was itself defective** — padding one
+description to 3,920 chars tripped the per-description cap, so the
+must-not-fire arm fired for the wrong branch and proved nothing; redone
+with padding spread: 13,499 silent, 13,501 fires on the total line.
+**5.12 filed from that**: §28's total branch has never had a matrix case
+(the existing 'budget' case seeds a SKILL.md line-count overflow).
+
+**Four tasks and a deferred wave, every one found by doing the work.**
+5.9 — README-as-document as a sixth `/audit` target (~60 chars) rather
+than the README-writing skill the user first proposed (~400 against
+headroom 5.7 had not yet ruled); the decline is recorded in the task with
+a dated verdict. 5.10 — `/do` ticks boxes without asking what points AT
+them; reach-check answers that at commit time, *after* the tick (the 4.50
+incident: 14 owed-markers discharged by hand), and its marked-only scope
+misses the **535 plain-prose references across 120 tasks** a grep covers.
+5.11 — guard-matrix runs 149 or nothing (~19 min at ~7.6 s/case); its
+acceptance is the fix's own failure mode: a filter matching nothing
+reports `passed=0 failed=0`, greener than a real run. **Wave C** (C.1–C.5,
+retrieval) — recorded, deliberately NOT scheduled: placed after Wave B
+because `open-scheduled` derives from a range that *ends at Wave B's
+heading*, so placement is load-bearing; trigger written as a condition
+(`/resume` or `/why` demonstrably failing to find something — neither has).
+Survey of three implementations (claude-mem: no source of truth, no graph;
+graphify: per-edge `EXTRACTED`/`INFERRED` provenance, output committed to
+git, "not a vector index"; the Obsidian pairing): **none verifies itself
+against truth** — that check is C.3 and the only novel part.
+
+**The bug class of the sitting: a string living in both prose and
+structure. Four hits in one day**, all mine, five of six caught by guards:
+5.10's own text quoted the owed-marker syntax and reach-check parsed it as
+a live obligation (the recall list's "a fixture's prose trips its own
+detector", firing on its author); Wave C spliced in at line 80 because
+`.index("## Open items")` matched a prose mention at :146, not the heading
+at :4808 — §35 went red; the filtered matrix harness ran **0 of 22 cases
+silently** because a `|` from a shell variable is literal in `case`, and
+only the `RAN=` counter added minutes earlier distinguished it from a clean
+pass — 5.11's failure mode demonstrated before 5.11 existed; and
+count-check caught `open-scheduled` stale within seconds of each filing
+(19 → 20 → 21 → 22). The sixth: my 12,500 cap recommendation contradicted
+my own good-folding argument — caught by re-deriving before writing the
+verdict, the only one no guard saw.
+
+**Matrix operations, and one honest near-miss.** The first full run died
+in under a second on its usage line (`guard-matrix.sh <repo>` — invoked
+bare), while the background-task notification reported *"completed (exit
+code 0)"* — the wrapper's exit, not the matrix's; the log's own
+`MATRIX_EXIT=1` told the truth. Output describing an action is not
+evidence the action happened, and a matching before/after tree hash is no
+evidence either when nothing ran. Real runs: **149/0 twice on frozen
+trees** — d338a14f (pre-5.7) and 763cbf51 at 8b11c02, the run that
+mattered since check.sh itself had changed and every case exercises it —
+plus the scratch 22-case subset (`RAN=22 passed=22 failed=0`, 5ea970e2)
+covering the PLAN/JOURNAL-reading classes in ~90 s.
+
+**What did NOT change:** no skill was built or edited (25 throughout — the
+principles/runtime blocks in all 25 SKILL.md files are untouched, verified
+by §1/§12 byte-identity throughout); VERSION stays 0.4.0; 4.3/4.4 stay
+adopter-gated; the retrieval graph is recorded, not built. Also corrected
+in this sitting (a526dea): 5.5's label still read `/upgrade` a month after
+shape D folded it into `/deps` as a mode — superseded, not edited.
+
+Validation close: check.sh **38, all clean** (controls' plants all caught
+via §11); matrix **149 passed, 0 failed** on frozen tree 763cbf51, no
+NOTE; skills **25**; description budget **10,075 / 13,500**; scheduled
+open **22** (wave 5 **3 of 12**); 0 owed-markers; README **386 lines**.
+Commits 6c33624 / 016b505 / eb31ad5 pushed, CI green (run 34304031217,
+10m36s); 8b11c02, a526dea and this journal local, push owner: user.
 
 ### Wave 5 opens: specced, packaged, and two builds where the live run corrected the author (2026-08-17)
 
@@ -3737,7 +3875,8 @@ JOURNAL.md so the self-hosting docs can't leak personal context either.
 |---|---|---|
 | ~~GitHub remote~~ | Resolved 2026-07-27: private `AaravChadha/acstack` created, `main` pushed and tracking | Done |
 | ~~Fresh-session check~~ | Resolved 2026-07-27: typed `/plan` in a fresh session and it engaged seed mode — loading works; user-only skills simply don't appear in the VS Code extension's subset autocomplete (CLI shows all) | Done |
-| Scratch repo deletion | `acstack-w2-shakedown` — contents verified disposable 2026-07-29 (backup taken); policy decided: never reuse, always create fresh per wave | `gh auth refresh -s delete_repo`, then `gh repo delete` — owner: user |
+| ~~Scratch repo deletion~~ | Resolved 2026-08-13: deleted by the user after shakedown 17 built its replacement venue (`acstack-s17-tickets`, kept deliberately) — recorded in Open items, this row was stale | Done |
+| Push of local commits | 8b11c02 (5.7), a526dea (5.5 label), plus this journal — matrix 149/0 verified on 8b11c02's tree | `git push` — owner: user |
 | ~~Document-mode commit style~~ | Resolved 2026-07-29: both modes symmetric — `task 2.3.2: <desc>` / `ticket #2: <desc>`; `#` kept for GitHub auto-linking. Implementation pending (CONDUCT rule 10, /do, /ship, README) | Done (decision) |
 | ~~Browser probe timing~~ | Resolved 2026-07-27: deferred to first real need; wave 3 ships http with the seam browser-ready | Done |
 
