@@ -4441,7 +4441,32 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   rates, not measured — no wave-6 or wave-7 description exists yet. If they
   land materially over, that is a finding against this ruling, not a reason
   to raise again silently.
-- [ ] **5.12** §28's **total**-cap branch has no matrix case. Found
+- [x] **5.12** *(Done 2026-09-10. Two cases, matrix **150 → 152**.
+  **The class regex is the whole trick.** All four of §28's failures print
+  `FAIL budget:`, and the pre-existing `'budget'` case matches that bare
+  class — so a case written the obvious way is satisfied by *whichever*
+  branch fires. That is 5.7's hand-verification mistake reproduced one layer
+  down. Both new cases match `budget: skill descriptions total`, which only
+  the total branch can emit.
+  **Seeds derive both caps from `check.sh`** rather than naming 13500 or
+  600, so the next ruling that moves either number cannot silently turn them
+  into no-ops — the rot that hit three seeds in a single day (5.8).
+  Must-fire pads **every** description to exactly `BUDGET_ONE`, giving
+  25 × 600 = 15,000 against a 13,500 cap with **no single description over
+  the per-description cap** — the separation 5.7's first control failed to
+  achieve when it padded one description to 3,920 chars and tripped the
+  wrong branch. Verified in the seeded run: the only budget line emitted is
+  the total one.
+  **The must-not-fire arm sits at EXACTLY the cap, not one char under it,
+  and this task's own acceptance asked for one-under.** The boundary is
+  strictly stronger: §28 tests `-gt`, so an off-by-one to `-ge` fires at the
+  cap and is **invisible** one char below it. Recorded as a deliberate
+  departure rather than silently substituted.
+  **Both shown failing before either was trusted, each on its own branch —
+  the property that makes them worth having.** Disabling the total branch:
+  must-fire `got=PASS want=FAIL`, must-not-fire still ok. Changing `-gt` to
+  `-ge`: must-not-fire `got=FAIL want=PASS`, must-fire still ok. Neither
+  regression can be masked by the other.)* §28's **total**-cap branch has no matrix case. Found
   2026-09-08 while raising it under 5.7: `docs/guard-matrix.sh` carries a
   `'budget'` case, but it seeds a **SKILL.md line-count** overflow, not a
   description-total overflow — a different branch of a different check. So

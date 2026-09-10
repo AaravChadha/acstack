@@ -283,6 +283,85 @@ fullcase "conduct block missing entirely"  FAIL 'conduct' bash -c "awk '/BEGIN:a
 # checked 4.7's bar ("every guard shown firing") against the matrix itself
 fullcase "principles block drifts"        FAIL 'principles' bash -c "sed -e 's/^- Be direct\./- Be direct and terse./' skills/do/SKILL.md > t && mv t skills/do/SKILL.md"
 fullcase "SKILL.md over line budget"      FAIL 'budget'  bash -c "for i in \$(seq 1 500); do echo 'pad line'; done >> skills/do/SKILL.md"
+# 5.12: §28's TOTAL branch. The case above is §4's SKILL.md LINE budget — a
+# different branch of a different check — so the constant 5.7 moved from
+# 12000 to 13500 had no matrix coverage at all until now.
+#
+# THE CLASS REGEX IS THE POINT. All four of §28's failures print
+# `FAIL budget:`, so matching the bare class would be satisfied by whichever
+# branch happened to fire. That is exactly the contamination 5.7 hit by hand:
+# its first control padded ONE description to 3920 chars, tripped the
+# PER-DESCRIPTION cap, and proved nothing about the total while appearing to.
+# Matching `budget: skill descriptions total` is what makes only the total
+# branch able to satisfy these cases.
+#
+# Both seeds DERIVE both caps from check.sh rather than naming 13500 or 600,
+# so the next ruling that moves either number cannot turn them into no-ops —
+# the rot that hit three seeds in one day (5.8).
+fullcase "budget: description total over cap" FAIL 'budget: skill descriptions total' bash -c "python3 - <<'EOF'
+import pathlib, re
+s = pathlib.Path('scripts/check.sh').read_text()
+TOT = int(re.search(r'^BUDGET_TOTAL=(\d+)', s, re.M).group(1))
+ONE = int(re.search(r'^BUDGET_ONE=(\d+)', s, re.M).group(1))
+def rows():
+    r = []
+    for f in sorted(pathlib.Path('skills').glob('*/SKILL.md')):
+        t = f.read_text().splitlines(keepends=True)
+        for i, l in enumerate(t):
+            if re.match(r'^description:\s', l):
+                r.append((f, i, t, len(re.sub(r'^description:\s*', '', l.rstrip(chr(10)))))); break
+    return r
+def pad(line, target):
+    v = re.sub(r'^description:\s*', '', line); n = target - len(v)
+    if n <= 0: return line
+    p = 'x' * n
+    v = v[:-1] + p + v[-1] if len(v) > 1 and v[0] == v[-1] and v[0] in '\"' + chr(39) else v + p
+    return 'description: ' + v
+r = rows(); assert r, 'seed no-op: no descriptions found'
+for f, i, t, vlen in r:
+    if vlen < ONE:
+        t[i] = pad(t[i].rstrip(chr(10)), ONE) + chr(10); f.write_text(''.join(t))
+a = rows(); tot = sum(v for *_, v in a)
+assert max(v for *_, v in a) <= ONE, 'seed invalid: a single description exceeds BUDGET_ONE — this would fire the WRONG branch'
+assert tot > TOT, 'seed cannot fire: total ' + str(tot) + ' <= cap ' + str(TOT)
+EOF"
+# The must-not-fire arm sits at EXACTLY the cap, not one under it. 5.12's text
+# asked for one-under; the boundary value is strictly stronger, because §28
+# tests `-gt` and an off-by-one to `-ge` fires at the cap and is invisible one
+# char below it. Proven both ways before this was trusted.
+fullcase "budget: total exactly at the cap"   PASS 'budget: skill descriptions total' bash -c "python3 - <<'EOF'
+import pathlib, re
+s = pathlib.Path('scripts/check.sh').read_text()
+TOT = int(re.search(r'^BUDGET_TOTAL=(\d+)', s, re.M).group(1))
+ONE = int(re.search(r'^BUDGET_ONE=(\d+)', s, re.M).group(1))
+def rows():
+    r = []
+    for f in sorted(pathlib.Path('skills').glob('*/SKILL.md')):
+        t = f.read_text().splitlines(keepends=True)
+        for i, l in enumerate(t):
+            if re.match(r'^description:\s', l):
+                r.append((f, i, t, len(re.sub(r'^description:\s*', '', l.rstrip(chr(10)))))); break
+    return r
+def pad(line, target):
+    v = re.sub(r'^description:\s*', '', line); n = target - len(v)
+    if n <= 0: return line
+    p = 'x' * n
+    v = v[:-1] + p + v[-1] if len(v) > 1 and v[0] == v[-1] and v[0] in '\"' + chr(39) else v + p
+    return 'description: ' + v
+r = rows(); assert r, 'seed no-op: no descriptions found'
+need = TOT - sum(v for *_, v in r)
+assert need > 0, 'seed no-op: baseline is already at or over the cap'
+assert sum(ONE - v for *_, v in r) >= need, 'not enough headroom to reach the cap without breaching BUDGET_ONE'
+for f, i, t, vlen in r:
+    if need <= 0: break
+    add = min(ONE - vlen, need)
+    if add <= 0: continue
+    t[i] = pad(t[i].rstrip(chr(10)), vlen + add) + chr(10); f.write_text(''.join(t)); need -= add
+assert need == 0, 'seed missed the cap by ' + str(need)
+a = rows(); tot = sum(v for *_, v in a)
+assert tot == TOT, 'seed landed at ' + str(tot) + ', not exactly ' + str(TOT)
+assert max(v for *_, v in a) <= ONE, 'seed invalid: a single description exceeds BUDGET_ONE'
+EOF"
 fullcase "shell syntax error in setup"    FAIL 'syntax'  bash -c "printf 'if [ ; then\n' >> setup"
 bannedcase "a planted banned token is caught" 'zzqqplanted' 'FAIL banned names'
 # the budget case must trip the BUDGET, not byte-identity: grow the block
