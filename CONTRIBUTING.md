@@ -10,9 +10,17 @@ guard blocks the commit. Fix the drift; do not skip the check.
 
 ```bash
 scripts/check.sh                    # the pack guard; its header lists every section, includes positive controls
-bash docs/guard-matrix.sh "$PWD"    # every guard shown firing on a seeded defect
+bash docs/guard-matrix.sh "$PWD"    # every guard shown firing on a seeded defect (~19 min, all cases)
+bash docs/guard-matrix.sh "$PWD" 'count|reach'   # only cases whose name matches, while iterating
 ./setup && ./setup --uninstall      # installer round-trip
 ```
+
+**The filter is for iterating, never for landing.** A full run is the bar
+before a push; a filtered run covers only what it names, and it says so in
+its own output. Read the `RAN=` in the summary rather than the `passed=`:
+a filter matching no case would otherwise print `passed=0 failed=0`, which
+is greener than a real run. That case exits non-zero and refuses to look
+clean, which is the whole reason the counter exists.
 
 CI runs the first two plus `shellcheck` on every PR — the installer
 round-trip is local-only, since it writes outside the repo. One honest

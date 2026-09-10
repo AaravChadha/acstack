@@ -1,10 +1,44 @@
 #!/usr/bin/env bash
 # Test matrix for check.sh's frontmatter guard, written BEFORE the fix.
 # Each case: name | expected (PASS/FAIL) | frontmatter body
-# Run: bash guard-matrix.sh /path/to/repo
+# Run: bash guard-matrix.sh /path/to/repo [case-filter-regex]
+#
+# THE FILTER AND ITS OWN FAILURE MODE (5.11, 2026-09-10). A full run is all
+# 150 cases or nothing, ~19 minutes at ~7.6 s/case on a frozen tree, so a
+# two-line edit paid the same price as a rewrite and the standing options
+# were both bad: pay 19 minutes, or skip the matrix and push on check.sh
+# alone. The second is what turned CI red on 2026-08-31, since the two are
+# separate surfaces.
+#
+# The trap this exists to avoid is the FIX's failure mode, not the bug's. A
+# filter matching nothing runs zero cases and would report
+# `passed=0 failed=0` — indistinguishable from a clean run and greener than
+# a real one, the 4.55a phantom-pass shape where the absence of a signal
+# reads as a good signal. So the filter is not done when it selects
+# correctly. It is done when it CANNOT report success without saying how
+# many cases it ran. Hence: RAN is in every summary line, an empty match is
+# a loud exit 2 and never a pass, and an unfiltered run asserts RAN against
+# the case count derived from this file — the equality count-check.sh has
+# assumed since 2026-08-06 on the strength of one hand-check.
 set -uo pipefail
-REPO="${1:?usage: guard-matrix.sh <repo>}"
+SELF="${BASH_SOURCE[0]}"
+REPO="${1:?usage: guard-matrix.sh <repo> [case-filter-regex]}"
+ONLY="${2:-}"
 WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
+
+# Every case function must gate on the filter, and a new one that forgets
+# would run unfiltered and silently — a case class quietly ignoring the
+# selection, which is the same silent-scope class as a hardcoded roster
+# under-counting the day a name is added (4.82, 5.8). DERIVED from this
+# file rather than listed: definitions counted against gates.
+_defs="$(grep -cE '^(check|[a-z]+case)\(\) *\{' "$SELF")"
+_gates="$(grep -cE '^  _case_start "\$n" \|\| return 0$' "$SELF")"
+if [ "$_defs" -ne "$_gates" ]; then
+  echo "guard-matrix: $_defs case function(s) but $_gates filter gate(s)."
+  echo "  A case function without the gate ignores the filter and runs"
+  echo "  unfiltered, silently. Add the gate as the first line of its body."
+  exit 2
+fi
 
 # --- SNAPSHOT ONCE (4.55a) -----------------------------------------------
 # Every case used to `cp -R "$REPO"` afresh, so a long run re-sampled the
@@ -34,10 +68,20 @@ cd "$WORK/pack" || exit 1
 rm -rf skills/*/ 2>/dev/null
 # keep one known-good skill so principles/budget checks have something valid
 mkdir -p skills/good
-pass=0; failed=0
+pass=0; failed=0; RAN=0
+
+# The one filter gate. Returns 1 when the case is filtered out, so every
+# case function opens by calling it and returning early. RAN counts only
+# what actually ran, which is what makes a zero-match run detectable.
+_case_start() { # case-name
+  [ -z "$ONLY" ] || printf '%s' "$1" | grep -qE "$ONLY" || return 1
+  RAN=$((RAN + 1))
+  return 0
+}
 
 check() { # name expected body
   local n="$1" exp="$2" body="$3"
+  _case_start "$n" || return 0
   rm -rf skills/tc; mkdir -p skills/tc
   printf '%s' "$body" > skills/tc/SKILL.md
   out="$(ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
@@ -77,6 +121,7 @@ FULL="$WORK/full"
 
 fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
   local n="$1" exp="$2" cls="$3"; shift 3
+  _case_start "$n" || return 0
   rm -rf "$FULL"; cp -R "$SRC" "$FULL"   # $SRC: frozen at start, no .git/.acstack-banned
   ( cd "$FULL" && "$@" ) >/dev/null 2>&1
   out="$(cd "$FULL" && ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
@@ -89,6 +134,7 @@ fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
 # on the OUTPUT TEXT (these cases are about the sweep's own error handling).
 bannedcase() { # name listfile-content required-regex [second-required-regex]
   local n="$1" content="$2" want="$3" want2="${4:-}"
+  _case_start "$n" || return 0
   rm -rf "$FULL"; cp -R "$SRC" "$FULL"   # $SRC: frozen at start, no .git/.acstack-banned
   printf '%s\n' "$content" > "$WORK/blist"
   out="$(cd "$FULL" && ACSTACK_BANNED_FILE="$WORK/blist" bash scripts/check.sh 2>&1)" || true
@@ -460,6 +506,7 @@ EOF"
 # is-shallow=false, which is what lets §34 run at all here.
 gitcase() { # name expected(PASS|FAIL) subject
   local n="$1" exp="$2" subj="$3"
+  _case_start "$n" || return 0
   rm -rf "$FULL"; cp -R "$SRC" "$FULL"
   ( cd "$FULL" && git init -q . && git add -A \
     && git -c user.email=m@m -c user.name=m commit -q -m "$subj" ) >/dev/null 2>&1
@@ -541,5 +588,32 @@ if [ "$(tree_hash "$REPO")" != "$H0" ]; then
   echo "      snapshot taken at start, so these results are internally"
   echo "      consistent — but they describe the tree as it was, not as it is."
 fi
-echo "passed=$pass failed=$failed"
+
+# 5.11: the summary can never say "clean" without saying how many ran.
+if [ -n "$ONLY" ]; then
+  echo "FILTER: /$ONLY/  — a filtered run covers ONLY the named cases;"
+  echo "        it is not a substitute for a full run before a push."
+fi
+if [ "$RAN" -eq 0 ]; then
+  echo "MATRIX FILTER MATCHED NOTHING: 0 cases ran."
+  echo "  passed=$pass failed=$failed is not a clean run here, it is an empty"
+  echo "  one — greener than the real thing and the reason this check exists."
+  echo "  Check the regex against the case names in $SELF."
+  exit 2
+fi
+if [ -z "$ONLY" ]; then
+  # An unfiltered run must run every declared case. count-check.sh derives
+  # matrix-cases from these same invocation lines and has assumed since
+  # 2026-08-06 that the static count equals the runtime total, on one
+  # hand-check. Asserted here instead of assumed.
+  _declared="$(grep -cE '^([a-z]+case|check) ' "$SELF")"
+  if [ "$RAN" -ne "$_declared" ]; then
+    echo "MATRIX INCOMPLETE: $_declared cases declared but RAN=$RAN."
+    echo "  An unfiltered run must execute every case; a case that silently"
+    echo "  did not run is coverage the summary would otherwise claim."
+    echo "RAN=$RAN passed=$pass failed=$failed"
+    exit 2
+  fi
+fi
+echo "RAN=$RAN passed=$pass failed=$failed"
 [ "$failed" -eq 0 ]

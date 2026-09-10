@@ -4548,7 +4548,41 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   trusted — a must-not-fire control the baseline cannot satisfy proves as
   little as one it already satisfies (5.1's defective twin, 2026-08-17).
   Both arms shown failing on a copy first.
-- [ ] **5.11** `docs/guard-matrix.sh` runs all 149 cases or none — it takes
+- [x] **5.11** *(Done 2026-09-10. `guard-matrix.sh <repo> [case-filter-regex]`
+  — a second optional positional argument, matched against case names with
+  `grep -E`. One shared gate, `_case_start`, is called first in all four case
+  functions, so `RAN` counts only what actually ran.
+  **The acceptance's own order was followed: the empty-match arm was proven
+  before the filter was trusted for anything.** A filter matching nothing
+  now prints `MATRIX FILTER MATCHED NOTHING: 0 cases ran` and exits **2**,
+  and says in the same breath that `passed=0 failed=0` is an empty run and
+  not a clean one. Then the selecting arm: a routing line dropped from
+  `skills/do/SKILL.md` on a copy, filtered to `clean tree stays clean`,
+  returned `RAN=1 passed=0 failed=1` and exit **1** with the `BAD` line.
+  **Two failure modes of the fix were closed beyond what the task asked.**
+  A new case function that forgets the gate would ignore the filter and run
+  unfiltered and silently — the hardcoded-roster class again — so the script
+  now derives its own case-function count from its source and refuses to run
+  when gates and definitions disagree; proven on a copy by deleting one gate
+  of four (`4 case function(s) but 3 filter gate(s)`, exit 2). And an
+  unfiltered run now asserts `RAN` against the case count derived from the
+  same invocation lines `count-check.sh` reads, so the static-equals-runtime
+  equality that had rested since 2026-08-06 on a single hand-check is
+  enforced rather than assumed.
+  **No matrix case was added for this**, deliberately and stated rather than
+  skipped quietly: the changed component is the runner, not a guard, so a
+  case inside it cannot witness its own selection. The three demonstrations
+  above are the evidence, each on a copy.
+  Exit codes are now meaningful: `0` all ran and passed, `1` a case failed,
+  `2` the run is not interpretable (empty filter, missing gate, incomplete
+  unfiltered run). Documented in CONTRIBUTING with the warning that a
+  filtered run is for iterating and never for landing.
+  **The unfiltered arm, measured:** `RAN=150 passed=150 failed=0`,
+  `MATRIX_EXIT=0` read from inside the log rather than from the wrapper,
+  0 NOTE, tree hash `35846ccc` identical at both ends. It took **28m21s**
+  for 150 cases, **~11.3 s/case** — this task's own estimate of ~7.6 s/case
+  and "~19 minutes" was optimistic by nearly half, which strengthens rather
+  than weakens the case for the filter.)* `docs/guard-matrix.sh` runs all 149 cases or none — it takes
   `<repo>` and nothing else. Measured 2026-09-08: a full run is **~19 minutes
   at ~7.6s per case**, and it must run on a frozen tree, so any edit during
   it wastes the run. Most sessions change a handful of files: after the
