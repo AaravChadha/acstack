@@ -4318,8 +4318,11 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   a pass that only reads the diff cannot honestly return any of them, and
   that is also why this task sits outside the wave's read-only set (see the
   exit criterion's 2026-08-14 verdict).
-- [ ] **5.5** /upgrade — dependency *upgrade* pre-flight, distinct from
-  5.1's *addition* review. Upgrading is a breaking-change problem, not a
+- [ ] **5.5** ~~/upgrade~~ **`/deps upgrade`** *(label corrected
+  2026-09-10: shape D — ruled 2026-08-17, docs/wave-5-specs.md — folds this
+  into 5.1's skill as its `upgrade` mode, not a standalone skill; the task
+  text predated the ruling and was never updated to it)* — dependency
+  *upgrade* pre-flight, distinct from 5.1's *addition* review. Upgrading is a breaking-change problem, not a
   justification problem: read the changelog between the pinned and target
   versions, classify each change additive vs breaking against the call
   sites this repo actually has, flag transitive bumps, and end in GO/NO-GO
