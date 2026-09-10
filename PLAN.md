@@ -4478,8 +4478,11 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   changed the file or is recorded as unable to, with the reason; and the
   conversion is proven by a run in which a deliberately broken seed **fails
   loudly rather than passing** — demonstrated on at least one converted case
-  before the rest are trusted. A matrix run of 149 with 0 failed is the
-  regression bar.
+  before the rest are trusted. The regression bar is a full run with 0
+  failed at the case count `count:matrix-cases` derives on the day it runs —
+  **derived, not hardcoded**, because this line said `149` and went stale
+  within one commit when 5.5 added a case (2026-09-10). The same rot the
+  task itself is about.
 - [ ] **5.9** Nothing checks the README *as a document a stranger reads*.
   `/audit`'s five targets cover drift — `docs` checks README/PLAN/JOURNAL
   against the tree, counts and checkbox reality — but none asks whether the
@@ -4565,7 +4568,68 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   reports that failure and a non-zero case count; with a filter matching
   **nothing**, the run **fails loudly** rather than reporting a clean pass —
   demonstrated in that order, the empty-match arm before the filter is
-  trusted for anything. An unfiltered run still reports 149.
+  trusted for anything. An unfiltered run still reports the count
+  `count:matrix-cases` derives — **derived, not hardcoded**: this line named
+  `149` and 5.5 made it stale one commit later (2026-09-10).
+- [ ] **5.13** Decide `/plan` and `/resume` against the host's built-in
+  commands **on measured dispatch**, not on the 2026-07-27 shadowing
+  verdict's assumption. That verdict kept both names deliberately and
+  README states the escape hatches (Shift+Tab, `claude -r`); nothing has
+  overturned it, and this task is not a rename proposal. It exists because
+  the fact the verdict rests on has never been measured.
+  **What is now known** (derived 2026-09-10 from the shipped binary, not
+  recalled): both built-ins are `type:"local-jsx"`, and `plan` declares
+  `requires:{ink:true}` — they render in the terminal UI and **cannot run
+  headless at all**. A headless `-p` probe therefore proves nothing about
+  the interactive case: `/resume` typed into `claude -p` ran acstack's skill
+  only because the built-in was ineligible there. `resume` also carries the
+  alias `continue`.
+  **Why `/plan` is the sharp one.** It is typed-only
+  (`disable-model-invocation: true`), so typing is its *intended* route. If
+  the TUI resolves a typed `/plan` to built-in plan mode, acstack's `/plan`
+  is unreachable by the only path designed for it — the `/why` defect
+  (shipped, invocable by nobody) in a new dress. `/resume` is not exposed
+  this way: the model can still reach it by name.
+  **Acceptance:** in a real interactive session, type `/plan` and `/resume`
+  and record for each which implementation ran, quoting a distinguishing
+  line of its output; state whether the autocomplete menu offered one entry
+  or two, and under what label. Then rule in writing per name, with the
+  options costed: keep as-is, keep and document the working invocation, or
+  rename. **A rename is a destructive change to a public pack** by
+  `/contract-check`'s own table, so if it is chosen it lands
+  add-new-then-deprecate, and the description-budget cost of carrying two
+  names is stated before the choice, not after.
+- [ ] **5.14** Nothing checks acstack's skill names against the host's. The
+  names are a shared namespace with Claude Code's built-in commands and its
+  shipped skills, both of which grow without notice, and the pack learns
+  about a collision only when someone looks by hand.
+  **Found by looking by hand, 2026-09-10.** `/design` collided with a
+  built-in `design` command ("Grant or revoke Claude agent access to your
+  Design projects") in 2.1.220, and the collision **disappeared** in 2.1.267
+  when that command was split into `design-consent` / `design-login` /
+  `design-revoke`. So README's shadowing disclosure named two shadowed
+  skills while three were shadowed, for as long as both shipped, and the
+  discrepancy resolved itself without anyone acting. `review` left the
+  command set in the same window and reappeared as a shipped *skill*, so
+  the two rosters trade names between them and checking one is not enough.
+  Measured the same day: **99** built-in command names in 2.1.267 against
+  **98** in 2.1.220; acstack's 25 present names collide on `plan` and
+  `resume` only; all 14 planned wave-5-to-7 names are clear, and `/upgrade`
+  would have collided had shape D not folded 5.5 into `/deps` as a mode.
+  **The near-miss worth naming:** planned 6.7 `/skill` sits beside built-in
+  `skills` and `skill-doctor`, which both predate this check.
+  **Constraint on the fix:** the roster lives inside a ~200 MB binary whose
+  path differs per install route (npm, native, IDE extension), and CI has no
+  binary at all — so grepping it from `check.sh` on every commit is not the
+  shape. A dated captured roster plus a fast comparison is, with the capture
+  script separate from the guard, the way `conditional-ratio.sh` is.
+  **Acceptance:** a committed roster capture whose date and source version
+  are recorded, and a check that fails when any skill name in `skills/` — or
+  any planned skill name in PLAN — appears in it, **shown failing first** on
+  a seeded copy that plants a colliding name, and shown passing on the real
+  tree. The check states its own honest scope: it compares against the
+  captured roster, not against whatever the reader's Claude Code ships
+  today, and a stale capture is reported as stale rather than as a pass.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
