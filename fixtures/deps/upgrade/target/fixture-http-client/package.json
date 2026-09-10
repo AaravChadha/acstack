@@ -1,0 +1,8 @@
+{
+  "name": "fixture-http-client",
+  "version": "3.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "fixture-retry": "^2.0.0"
+  }
+}

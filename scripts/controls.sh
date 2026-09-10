@@ -1079,6 +1079,47 @@ else
   fi
 fi
 
+# --- /deps upgrade fixture integrity (5.5) ---------------------------------
+# Same split as review's: the verdict is judged by a live run, the fixture
+# here. The discriminator is the positional createClient call site — the
+# seeded tree must carry at least one (so the BREAKING entry has a caller to
+# break) and the twin none, against the SAME changelog. A twin with a tamer
+# changelog would let a grep-for-BREAKING gate pass the suite, which is the
+# exact non-implementation the mode exists to be better than.
+UPF=fixtures/deps/upgrade
+UPC=fixtures/deps/upgrade-clean
+if [ ! -d "$UPF" ] || [ ! -d "$UPC" ]; then
+  bad "/deps upgrade fixture missing — 5.5's acceptance has nothing to run against"
+else
+  umiss=""
+  grep -q '"fixture-http-client": "\^2\.' "$UPF/package.json" 2>/dev/null || umiss="$umiss older-major-not-declared"
+  grep -q '"version": "2.4.1"' "$UPF/node_modules/fixture-http-client/package.json" 2>/dev/null || umiss="$umiss rollback-pin"
+  grep -q '"version": "3.0.0"' "$UPF/target/fixture-http-client/package.json" 2>/dev/null || umiss="$umiss target-metadata"
+  grep -q 'BREAKING' "$UPF/target/fixture-http-client/CHANGELOG.md" 2>/dev/null || umiss="$umiss breaking-entry"
+  if ! grep -q '"fixture-retry": "\^1\.' "$UPF/node_modules/fixture-http-client/package.json" 2>/dev/null \
+     || ! grep -q '"fixture-retry": "\^2\.' "$UPF/target/fixture-http-client/package.json" 2>/dev/null; then
+    umiss="$umiss transitive-bump"
+  fi
+  usites="$(grep -rc 'createClient("' "$UPF/src" 2>/dev/null | awk -F: '{s+=$NF} END{print s+0}')"
+  [ "$usites" -ge 1 ] || umiss="$umiss positional-call-site"
+  if [ -f "$UPF/MIGRATION.md" ] || [ -f "$UPF/UPGRADE.md" ]; then umiss="$umiss migration-note-present"; fi
+  if [ -n "$umiss" ]; then
+    bad "/deps upgrade fixture stopped seeding:$umiss"
+  else
+    ok "/deps upgrade fixture seeds a breaking entry with $usites positional call site(s) and no migration note"
+  fi
+  # The twin: byte-identical changelog, zero affected call sites, the
+  # options-object form present so the twin is a real user of the package.
+  tsites="$(grep -rc 'createClient("' "$UPC/src" 2>/dev/null | awk -F: '{s+=$NF} END{print s+0}')"
+  if ! diff -q "$UPF/target/fixture-http-client/CHANGELOG.md" "$UPC/target/fixture-http-client/CHANGELOG.md" >/dev/null 2>&1; then
+    bad "/deps upgrade clean twin's changelog differs from the seeded one — it must be a GO case by call sites, not by a tamer changelog"
+  elif [ "$tsites" -ne 0 ] || ! grep -rq 'createClient({' "$UPC/src" 2>/dev/null; then
+    bad "/deps upgrade clean twin is no longer a GO case ($tsites positional call site(s))"
+  else
+    ok "/deps upgrade clean twin shares the changelog and has 0 affected call sites"
+  fi
+fi
+
 echo
 if [ "$fail" -eq 0 ] && [ "$skipped" -gt 0 ]; then
   echo "controls.sh: no failures, but $skipped control(s) SKIPPED — coverage is incomplete"

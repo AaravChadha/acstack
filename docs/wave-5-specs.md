@@ -236,6 +236,20 @@ one: the gate does not accept "we'll deal with it" as a plan.
 **Sequencing:** built after 5.1 so both share one manifest-reading procedure
 in `references/`, per 4.49's split rule.
 
+**Built 2026-09-10.** Landed as `## Mode: upgrade` in the skill with the
+procedure in `references/upgrade.md`; the split was forced by §29 (review's
+43 conditional lines plus a second branch), and the call-site search reuses
+review's check 1 by reference rather than through a shared file — 5.1 shipped
+its manifest procedure inline, so there was nothing in `references/` to
+share. Two facts the design above did not state: the changelog is read
+**locally** — an unpacked target tree named as an optional third argument, or
+`node_modules/` when the target is already installed — because the read-only
+allowlist has no network tool beyond `npm view`, which serves no changelog;
+and the fixture's twin shares the seeded changelog byte for byte and differs
+only by call sites, so neither a blanket `NO-GO` nor a grep-for-BREAKING gate
+can pass the pair. **Fixture:** `fixtures/deps/upgrade/` and
+`fixtures/deps/upgrade-clean/`.
+
 ## 5.3 `/careful` — GO/NO-GO for destructive operations
 
 **Inherits 4.66's deferral, and inherits its measurements.** The report

@@ -147,6 +147,20 @@ fullcase "hygiene rule set loses a rule"    FAIL 'hygiene' bash -c "grep -vi 'Do
 # a clustering pass that always finds clusters would look correct.
 fullcase "clustering fixture loses a task"  FAIL 'controls' bash -c "grep -v '1.8' fixtures/triage/clustered-PLAN.md > t && mv t fixtures/triage/clustered-PLAN.md"
 fullcase "independent fixture goes missing" FAIL 'controls' rm fixtures/triage/independent-PLAN.md
+# 5.5: the /deps upgrade fixture's discriminator is the positional call site.
+# Rewriting every site to the options-object form — the realistic rot, someone
+# "fixing" the fixture — leaves the BREAKING entry with nothing to break, and
+# the control must say so. python3 so the seed asserts it mutated (5.8).
+fullcase "deps upgrade fixture loses its call sites" FAIL 'controls' bash -c "python3 - <<'EOF'
+import pathlib
+n = 0
+for p in sorted(pathlib.Path('fixtures/deps/upgrade/src').glob('*.js')):
+    s = p.read_text()
+    t = s.replace('createClient(\"https://', 'createClient({ url: \"https://')
+    if t != s:
+        p.write_text(t); n += 1
+assert n > 0, 'seed no-op: no positional call site found'
+EOF"
 # 20: /design without all eight items is the mockup generator 4.30 exists not to be.
 # The mutation deletes the BODY item only — the frontmatter description still
 # says "real content", which is exactly how a looser guard stayed green.

@@ -4318,7 +4318,52 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   a pass that only reads the diff cannot honestly return any of them, and
   that is also why this task sits outside the wave's read-only set (see the
   exit criterion's 2026-08-14 verdict).
-- [ ] **5.5** ~~/upgrade~~ **`/deps upgrade`** *(label corrected
+- [x] **5.5** *(Done 2026-09-10. Lands as `## Mode: upgrade` in
+  `skills/deps/SKILL.md` (110 → 144 lines) with the procedure in
+  `references/upgrade.md` (119 lines). The split was decided by §29, not
+  taste: review's 43 conditional lines plus a second branch put a full body
+  over the 40-wasted-line threshold at 36 lines, so the SKILL.md section
+  carries the question, the pointer and the verdict rule (wasted 0 → 34).
+  Description **451 → 577** chars (total 10,075 → 10,201 of 13,500);
+  `argument-hint` grew an optional `<unpacked-target-dir>`; no new skill, no
+  `./setup`, no §33 change — `/deps` was already enrolled. No new
+  allowed-tools: the changelog is read from a local tree and never fetched,
+  because the read-only allowlist has no network tool beyond `npm view` and
+  the registry serves no changelog — a constraint the spec had not stated.
+  **Fixture** `fixtures/deps/upgrade/` — pinned 2.4.1 in vendored
+  `node_modules/`, declared `^2.4.1`, an unpacked 3.0.0 target tree carrying
+  the changelog, two positional `createClient` call sites, a second BREAKING
+  entry nothing calls, a transitive major bump, no migration note — and its
+  twin `upgrade-clean/`, which shares the changelog byte for byte and differs
+  only by call sites, so neither a blanket NO-GO nor a grep-for-BREAKING
+  gate can pass the pair. The package is fictitious on purpose: an invented
+  changelog on a real package would be a fabricated record, and the registry
+  404 exercises the not-run path honestly. **Control** in
+  `scripts/controls.sh`, proven on copies with four arms each failing on its
+  own branch: seeded tree loses its positional sites (`positional-call-site`),
+  twin gains one (`no longer a GO case (1 …)`), twin changelog drifts tamer,
+  seeded tree gains an `UPGRADE.md` (`migration-note-present`). **Matrix
+  149 → 150**: a python3 seed rewriting every site to the object form, shown
+  firing through a scratch filtered run (`RAN=2 passed=2` — clean tree PASS,
+  the case FAIL) with its no-op arm asserting loudly; the scratch filter's
+  empty-match arm exited 2 with `FILTER MATCHED NOTHING`, which is 5.11's
+  bar met by the scratch harness, not by the repo — 5.11 stays open.
+  **Acceptance met live**, two blind subagent sessions each told only the
+  invocation and its directory. Seeded arm: `**NO-GO**` as the literal first
+  line; the positional-form removal named with both sites `src/api.js:4` and
+  `src/reports.js:3`; the `client.request()` removal listed at 0 call sites
+  as *not a blocker*; `fixture-retry` `^1.2.0 → ^2.0.0` flagged, not
+  classified; rollback pin **2.4.1** with the range-is-not-a-pin caveat;
+  migration, stay and adapter alternatives on the destructive row; the
+  registry 404 reported as **not-run**. Twin: `**GO**`, the same two BREAKING
+  entries at 0 sites. Every `file:line` in both reports was checked against
+  the fixture files — all correct. **One design gap, found by deriving the
+  venue from the procedure's own branch logic before running it:** source 1
+  read "a directory named in the request" and the fixture's documented
+  invocation named none, so both arms would have hit the no-changelog NO-GO
+  and the twin would have failed for the wrong reason. Fixed as the optional
+  third argument before the runs; the rollback-pin rule gained the
+  already-installed case at the same time.)* ~~/upgrade~~ **`/deps upgrade`** *(label corrected
   2026-09-10: shape D — ruled 2026-08-17, docs/wave-5-specs.md — folds this
   into 5.1's skill as its `upgrade` mode, not a standalone skill; the task
   text predated the ruling and was never updated to it)* — dependency

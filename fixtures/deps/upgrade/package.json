@@ -1,0 +1,8 @@
+{
+  "name": "invoice-tool",
+  "version": "1.2.0",
+  "license": "MIT",
+  "dependencies": {
+    "fixture-http-client": "^2.4.1"
+  }
+}

@@ -156,7 +156,7 @@ skill list, so they only ever run when you ask for them.
 | `/secure` | Confidence-gated security review: a finding needs an exploit scenario and a rating. Reports only | `/secure src/` |
 | `/qa` | Exercise the running app: happy-path flows, adversarial inputs, auth probing, exact repro commands | `/qa http://localhost:3000` |
 | `/contract-check` | Breaking-change pre-flight for signatures, response shapes, exports, config keys → written GO/NO-GO | `/contract-check` |
-| `/deps` | Dependency hygiene: is it imported, would stdlib do, is it maintained, does its license fit | `/deps` |
+| `/deps` | Dependency hygiene: is it imported, would stdlib do, is it maintained, does its license fit; `upgrade` mode pre-flights a version bump against your call sites → GO/NO-GO | `/deps` · `/deps upgrade zod 4` |
 | `/migrate-check` | Read-only pre-flight for migrations against shared Postgres, per statement → GO/NO-GO | `/migrate-check` |
 | `/eval-run` | Execute the eval, grade every case by its rule, compute the headline from the results file — never by hand | `/eval-run` |
 | `/design-audit` | Static UI check: off-palette colors, dishonest data labels, AI-slop, leaked internal language | `/design-audit src/ui/` |

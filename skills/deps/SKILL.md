@@ -1,7 +1,7 @@
 ---
 name: deps
-description: "Dependency hygiene review - for each declared package, whether it is imported at all, whether the standard library or an existing dependency already does its job, whether it is still maintained, and whether its license fits the project's. Reports findings against the manifest line, ordered by how decidable each one is, and never edits the manifest. Use when the user asks to review dependencies, check what a package is for, or audit the manifest."
-argument-hint: "[review]"
+description: "Dependency hygiene review - for each declared package, whether it is imported at all, whether the standard library or an existing dependency already does its job, whether it is still maintained, and whether its license fits the project's. Reports findings against the manifest line, ordered by how decidable each one is, and never edits the manifest. The upgrade mode pre-flights a version bump against this repo's call sites and ends GO/NO-GO. Use when the user asks to review dependencies, check what a package is for, audit the manifest, or ask whether an upgrade is safe."
+argument-hint: "[review | upgrade <package> <target-version> [<unpacked-target-dir>]]"
 allowed-tools: Read, Grep, Glob, Bash(cat:*), Bash(ls:*), Bash(git ls-files:*), Bash(npm view:*)
 ---
 
@@ -9,11 +9,14 @@ allowed-tools: Read, Grep, Glob, Bash(cat:*), Bash(ls:*), Bash(git ls-files:*), 
 
 Agents add packages reflexively. Nothing else in this pack looks at what
 accumulated. This skill is read-only: it has no Edit, no Write, and no
-install or update command. It reports; the operator decides.
+install or update command. It reports; the operator decides. Two modes:
+`review` (the default) asks whether each dependency earns its place;
+`upgrade` asks whether a version bump is safe to take.
 
 `Adjacent skills:` /secure (vulnerabilities in what you depend on; this
 covers whether you should depend on it) · /contract-check (breaking changes
-in your own surface; this covers your suppliers).
+in your own surface; this covers your suppliers) · /migrate-check (the same
+gate shape, applied to the database).
 
 <!-- acstack:runtime -->
 Run before the skill's steps — per invocation, not per session (4.36); failures degrade to markdown:
@@ -87,12 +90,39 @@ metadata. Report the pair — `project MIT vs dep GPL-3.0` — never a verdict
 like "incompatible" on its own. Licence compatibility is a legal judgment;
 the skill's job is to surface the pair that needs one.
 
+## Mode: upgrade
+
+`/deps upgrade <package> <target-version> [<unpacked-target-dir>]` — is this
+version bump safe to take? Upgrading is a breaking-change problem, not a
+justification problem:
+the question is which changelog entries between the pinned and target
+versions break a call site **this repo actually has**. A breaking change in
+an API nothing here calls is not a blocker, and saying so is the value.
+
+Full procedure: `references/upgrade.md` — where the pinned version, the
+target's metadata and its changelog are read from (a local tree or the
+registry; this skill has no network tool beyond `npm view`, so a changelog
+is never fetched), the classification table, transitive bumps, the rollback
+pin, and the report shape. The report anatomy is
+`../migrate-check/references/gate-shape.md`: verdict first, every entry
+classified, a safe alternative per destructive row, never fix, and state
+what the verdict does not cover.
+
+**Verdict rule.** `NO-GO` when any breaking entry has an affected call site
+and no migration note names that site and its replacement; otherwise `GO`.
+A migration note is a concrete plan per site — "we'll deal with it" is not
+one. A changelog that cannot be read is a `NO-GO` naming the missing fact,
+never a `GO` on the assumption that nothing changed.
+
 ## Report
 
-Verdict first: the count of findings, or `no findings`. Then one section per
-check that fired, each finding carrying **the manifest line**. A dependency
-that passes all four is not listed — but the report states how many were
-examined, so a reader can tell a clean manifest from a short one.
+Verdict first: in review, the count of findings or `no findings`; in
+upgrade, `GO` or `NO-GO` as the literal first line. The review report then
+carries one section per check that fired, each finding with **the manifest
+line**. A dependency that passes all four is not listed — but the report
+states how many were examined, so a reader can tell a clean manifest from a
+short one. The upgrade report's sections are listed in
+`references/upgrade.md`.
 
 State what was not checked: dependencies whose registry lookup failed,
 ecosystems the pass did not cover, and transitive dependencies, which are
@@ -108,3 +138,7 @@ out of scope here.
   never as staleness.
 - `no findings` means the four checks found nothing, not that the dependency
   set is good.
+- Upgrade: the word BREAKING decides nothing — call sites decide, and every
+  affected one is cited `file:line`.
+- Upgrade: the rollback pin is the exact installed version, named in every
+  report; a manifest range is not a pin, and is reported as a range.
