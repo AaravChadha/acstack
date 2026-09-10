@@ -21,7 +21,18 @@
 # the case count derived from this file — the equality count-check.sh has
 # assumed since 2026-08-06 on the strength of one hand-check.
 set -uo pipefail
-SELF="${BASH_SOURCE[0]}"
+# ABSOLUTE, resolved before anything cds (2026-09-10). This was
+# `${BASH_SOURCE[0]}` for four minutes and that is a defect: the run cds
+# into the copied tree at line 67, so the unfiltered RAN assertion below
+# re-read `docs/guard-matrix.sh` from the COPY of whatever repo was passed
+# in, not from the script actually executing. Against this repo it is
+# invisible, because the copy is byte-identical — the failure needs two
+# trees whose case counts differ, e.g. running this script against an older
+# clone, which then reports `MATRIX INCOMPLETE` for a complete run.
+# Demonstrated before the fix against a 3-case stub: `3 cases declared but
+# RAN=150`, exit 2. The relative-path-from-the-wrong-root class, inside the
+# guard whose job is refusing to vouch for a run it cannot verify.
+SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
 REPO="${1:?usage: guard-matrix.sh <repo> [case-filter-regex]}"
 ONLY="${2:-}"
 WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
