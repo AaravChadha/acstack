@@ -81,6 +81,48 @@ rm -rf skills/*/ 2>/dev/null
 mkdir -p skills/good
 pass=0; failed=0; RAN=0
 
+# --- 5.8: a seed that changed nothing tested nothing -----------------------
+# THE DEFECT. A `sed` whose pattern stops matching writes the file back
+# byte-identical and exits 0, so the case runs check.sh against an unmutated
+# tree. For a must-FAIL case that surfaces as `got=PASS want=FAIL`, which is
+# loud. For a must-PASS case it surfaces as nothing at all — a green case
+# that verified an untouched tree. Three no-op seeds were found by hand in a
+# single day (2026-08-17); one reached a full run as `passed=148 failed=1`.
+#
+# WHY THIS IS STRUCTURAL RATHER THAN 49 REWRITES. The task that carried this
+# asked to convert 49 `sed` seeds to python3 so each could assert. But `sed`
+# is only 49 of ~107 mutating seeds: 21 printf, 12 grep -v, 9 awk, 8 rm and 7
+# others rot exactly the same way, and every future seed would depend on its
+# author remembering. Hashing the copy either side of the mutation asserts it
+# for ALL of them, cannot be forgotten, and costs ~30 ms per case (~9 s on a
+# full run, measured 2026-09-10 on 212 files).
+#
+# The content hash is not negotiable: a metadata hash would see `mv t file`
+# as a change even when the bytes are identical, which is precisely the
+# no-op being hunted.
+seed_hash() { find "$1" -type f -exec shasum {} + 2>/dev/null | sort | shasum | awk '{print $1}'; }
+
+# Cases that legitimately change nothing, each with its reason. The size is
+# asserted so a second exemption has to be a deliberate, visible edit — the
+# §33 idiom, because an exemption list that grows quietly is how a guard
+# stops guarding.
+NOMUT_CASES='clean tree stays clean'   # the baseline: an UNmutated tree is the whole point
+_nomut() {
+  local c oldifs="$IFS"
+  IFS='|'
+  for c in $NOMUT_CASES; do
+    [ "$c" = "$1" ] && { IFS="$oldifs"; return 0; }
+  done
+  IFS="$oldifs"; return 1
+}
+_nomut_n="$(printf '%s' "$NOMUT_CASES" | awk -F'|' '{print NF}')"
+if [ "$_nomut_n" -ne 1 ]; then
+  echo "guard-matrix: NOMUT_CASES lists $_nomut_n entries, expected 1."
+  echo "  A new no-op exemption must be deliberate: state the case's reason"
+  echo "  above and update this assertion in the same edit."
+  exit 2
+fi
+
 # The one filter gate. Returns 1 when the case is filtered out, so every
 # case function opens by calling it and returning early. RAN counts only
 # what actually ran, which is what makes a zero-match run detectable.
@@ -134,7 +176,14 @@ fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
   local n="$1" exp="$2" cls="$3"; shift 3
   _case_start "$n" || return 0
   rm -rf "$FULL"; cp -R "$SRC" "$FULL"   # $SRC: frozen at start, no .git/.acstack-banned
+  local _pre _post
+  _pre="$(seed_hash "$FULL")"
   ( cd "$FULL" && "$@" ) >/dev/null 2>&1
+  _post="$(seed_hash "$FULL")"
+  if [ "$_pre" = "$_post" ] && ! _nomut "$n"; then
+    printf '  BAD  %-42s SEED NO-OP — tree unchanged, the case tested nothing\n' "$n"
+    failed=$((failed+1)); return 0
+  fi
   out="$(cd "$FULL" && ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
   if printf '%s' "$out" | grep -qE "FAIL ($cls)"; then got=FAIL; else got=PASS; fi
   if [ "$got" = "$exp" ]; then printf '  ok   %-42s %s\n' "$n" "$got"; pass=$((pass+1))
@@ -147,7 +196,15 @@ bannedcase() { # name listfile-content required-regex [second-required-regex]
   local n="$1" content="$2" want="$3" want2="${4:-}"
   _case_start "$n" || return 0
   rm -rf "$FULL"; cp -R "$SRC" "$FULL"   # $SRC: frozen at start, no .git/.acstack-banned
+  # 5.8: this shape mutates NO tree by design — the seed is the banned list
+  # handed to check.sh, and the copy is deliberately pristine so the sweep's
+  # own error handling is what gets tested. So the seed asserted here is the
+  # list file, not the tree.
   printf '%s\n' "$content" > "$WORK/blist"
+  if [ ! -s "$WORK/blist" ]; then
+    printf '  BAD  %-42s SEED NO-OP — banned list is empty, nothing was seeded\n' "$n"
+    failed=$((failed+1)); return 0
+  fi
   out="$(cd "$FULL" && ACSTACK_BANNED_FILE="$WORK/blist" bash scripts/check.sh 2>&1)" || true
   if printf '%s' "$out" | grep -qE "$want" && { [ -z "$want2" ] || printf '%s' "$out" | grep -qE "$want2"; }; then
     printf '  ok   %-42s matched\n' "$n"; pass=$((pass+1))
@@ -377,8 +434,15 @@ fullcase "grader site drops the case flag" FAIL 'grader-case' bash -c "sed -e 's
 # derivation, and the comparison being neutered into a blanket accept.
 # DERIVED (2026-08-17). This hardcoded `-->23<!--`; enrolling a 24th skill made
 # the sed match nothing, and the case reported got=PASS want=FAIL — a no-op seed,
-# the third of its kind found today. sed cannot assert it changed anything, which
-# is why AGENTS.md says python3; see 5.8 for the other 49.
+# the third of its kind found today. sed cannot assert it changed anything.
+# ~~which is why AGENTS.md says python3~~ **Corrected 2026-09-10 (5.8):**
+# AGENTS.md says no such thing and never did — its six repo-binding rules were
+# enumerated and none concerns sed or python3. Three places cited that rule
+# (this comment, PLAN 5.8, a JOURNAL line); nothing could catch it, because
+# §8's crossref guard resolves skill and reference citations, not prose claims
+# about what another document says. The rule's PURPOSE is now met mechanically
+# by the seed_hash check above, for every seed shape rather than for python3
+# ones — so no such rule is being added to AGENTS.md.
 fullcase "marked count goes stale"        FAIL 'count' bash -c "python3 - <<'EOF'
 import re, pathlib
 p = pathlib.Path('JOURNAL.md'); s = p.read_text()
@@ -600,6 +664,15 @@ gitcase() { # name expected(PASS|FAIL) subject
   rm -rf "$FULL"; cp -R "$SRC" "$FULL"
   ( cd "$FULL" && git init -q . && git add -A \
     && git -c user.email=m@m -c user.name=m commit -q -m "$subj" ) >/dev/null 2>&1
+  # 5.8: fullcase's tree-hash check would be satisfied here by `git init`
+  # alone, which proves nothing about the subject under test. The subject IS
+  # this case's seed, so it is asserted directly.
+  local _got
+  _got="$(cd "$FULL" && git log -1 --format=%s 2>/dev/null)"
+  if [ "$_got" != "$subj" ]; then
+    printf '  BAD  %-42s SEED NO-OP — subject is %s, expected %s\n' "$n" "${_got:-<no commit>}" "$subj"
+    failed=$((failed+1)); return 0
+  fi
   out="$(cd "$FULL" && ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
   if printf '%s' "$out" | grep -qE 'FAIL commit-style'; then got=FAIL; else got=PASS; fi
   if [ "$got" = "$exp" ]; then printf '  ok   %-42s %s\n' "$n" "$got"; pass=$((pass+1))
@@ -647,13 +720,30 @@ n=s.replace('## [ ] Wave 4.5 —','## [x] Wave 4.5 —',1).replace('## [ ] Wave 
 assert n!=s, 'seed no-op'
 open(p,'w').write(n)
 EOF"
+# DERIVED (2026-09-10, 5.8) — and this one was found by the seed-hash check on
+# its first full run, not by reading. It hardcoded `- [ ] **5.2** /contract-check`;
+# 5.2 closed 2026-08-17, so the string stopped existing and the seed mutated
+# NOTHING from that day on. The case is must-PASS, so it reported `ok` while
+# testing an untouched tree — silent, unlike its must-FAIL sibling above.
+# NOTE THE SHAPE: this seed was ALREADY python3 and ALREADY carried
+# `assert n!=s`. The assertion fired correctly every time and nobody heard it,
+# because fullcase discarded the mutation's exit status. Converting seeds to
+# python3 — which is what 5.8 was written to do — would not have caught this.
+# Only the harness-level check does.
 fullcase "acceptance: closed task is exempt"  PASS 'acceptance' bash -c "python3 - <<'EOF'
-p='PLAN.md'; s=open(p).read()
-n=s.replace('- [ ] **5.2** /contract-check','- [x] **5.2** /contract-check',1)
-assert n!=s, 'seed no-op (checkbox)'
-m=n.replace('  **Acceptance:** against a diff that renames a public export','  Not an acceptance: against a diff that renames a public export',1)
-assert m!=n, 'seed no-op (acceptance)'
-open(p,'w').write(m)
+import re, pathlib
+p = pathlib.Path('PLAN.md'); lines = p.read_text().split(chr(10))
+task = -1; acc = -1
+for i, l in enumerate(lines):
+    if re.match(r'^- \\[[ x]\\] \\*\\*[0-9]', l):
+        task = i if l.startswith('- [ ]') else -1
+        continue
+    if task >= 0 and '**Acceptance:**' in l:
+        acc = i; break
+assert task >= 0 and acc >= 0, 'seed no-op: no open task carries an acceptance line'
+lines[task] = lines[task].replace('- [ ]', '- [x]', 1)
+lines[acc] = lines[acc].replace('**Acceptance:**', 'Not an acceptance:', 1)
+p.write_text(chr(10).join(lines))
 EOF"
 
 echo

@@ -4484,8 +4484,53 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   total branch specifically — shown by the failure text naming the total, not
   a single file. Paired with a must-not-fire case one char under the cap.
   Both demonstrated before the case is trusted.
-- [ ] **5.8** 49 matrix seeds still use `sed` and cannot assert they mutated.
-  AGENTS.md says *write matrix seed mutations in python3, not sed* — measured
+- [x] **5.8** *(Done 2026-09-10, and **not the way this task specified** —
+  the departure and its reason are the substance of the entry.
+  **The premise was wrong.** This task's first sentence cites a rule
+  AGENTS.md does not contain and never has: its six repo-binding rules were
+  enumerated 2026-09-10 and none concerns `sed` or python3. Three places
+  carried the citation — this task, a `guard-matrix.sh` comment, and a
+  JOURNAL line. Nothing could catch it: §8's crossref guard resolves skill
+  and reference citations, never a prose claim about what another document
+  says. The *defect* the task describes is real; only its justification was
+  invented. The code comment is corrected and the JOURNAL line stands as
+  written (history is not edited).
+  **Converting 49 seeds was rejected as the fix, in favour of a structural
+  one.** `sed` is only 49 of ~107 mutating seeds — 21 `printf`, 12 `grep -v`,
+  9 `awk`, 8 `rm` and 7 others rot identically, and every future seed would
+  depend on its author remembering. `fullcase` now content-hashes the copied
+  tree either side of the mutation and fails the case loudly when nothing
+  changed. One implementation, all shapes, cannot be forgotten, ~30 ms per
+  case (~9 s on a full run, measured on 212 files). The hash must be of
+  CONTENT: a metadata hash counts `mv t file` as a change even when the
+  bytes are identical, which is exactly the no-op being hunted.
+  **Three shapes cannot be covered that way, each handled and recorded.**
+  `gitcase` would be satisfied trivially by `git init`, so it asserts the
+  commit subject actually reached the log. `bannedcase` mutates no tree by
+  design — its seed is the banned list handed to check.sh — so it asserts
+  that file. The baseline case legitimately changes nothing and is the sole
+  exemption, named with its reason and its list size asserted.
+  **The check found a real defect on its first full run**, which is the
+  evidence that matters: `acceptance: closed task is exempt` had hardcoded
+  `- [ ] **5.2** /contract-check`, and 5.2 closed 2026-08-17, so the seed had
+  mutated nothing for 24 days. It is a **must-PASS** case, so it reported
+  `ok` on an untouched tree — silent, unlike its must-FAIL sibling.
+  **And it vindicates the departure:** that seed was already python3 and
+  already carried `assert n != s`. The assertion fired correctly every time
+  and nobody heard it, because the harness discarded the mutation's exit
+  status. Doing what this task asked would not have caught it. Now derived,
+  and shown failing when §35's closed-task exemption is broken.
+  **Proof arms, all on copies, before anything was trusted:** a must-FAIL
+  seed broken to match nothing → `SEED NO-OP`; a must-PASS seed broken to do
+  nothing → `SEED NO-OP`; the same broken must-PASS seed with the check
+  removed → `ok`, the silent false pass reproduced on demand; one of four
+  filter gates deleted → the runner refuses to start.
+  **Deliberately declined:** adding a python3-not-sed rule to AGENTS.md. Its
+  purpose is now met mechanically for every seed shape, and this pack's own
+  preference is a check over a resolution to be careful.)* ~~49 matrix seeds still use `sed` and cannot assert they mutated.
+  AGENTS.md says *write matrix seed mutations in python3, not sed*~~
+  **Superseded 2026-09-10:** AGENTS.md says no such thing — see the entry
+  above. Original text kept below for the measurement it carries. — measured
   2026-08-17, `docs/guard-matrix.sh` carries **50 sed-based seeds against 16
   python3 ones**, so the rule is broadly unfollowed. It matters because a
   python3 seed carries `assert n != s` and a `sed` seed silently does nothing
@@ -4612,10 +4657,13 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   half"*. Run 2, same machine, same day, same 150 cases, took **16m26s**
   (~6.6 s/case) — **faster** than the estimate it had just dismissed. The
   honest statement is a range, not a figure: a full run is roughly
-  **16–29 minutes** depending on machine load, and no single sample
+  **16–30 minutes** depending on machine load, and no single sample
   characterises it. Stating one measurement as if it were the property is
   the same error class as a hardcoded count, committed while writing up a
-  task about hardcoded counts.)* `docs/guard-matrix.sh` runs all 149 cases or none — it takes
+  task about hardcoded counts. **Third sample, same day, 5.8's regression
+  run: 30m15s for 152 cases (~11.9 s/case)** — which pushed the range's top
+  end out again, one hour after it was written. Three samples: 6.6, 11.3
+  and 11.9 s/case.)* `docs/guard-matrix.sh` runs all 149 cases or none — it takes
   `<repo>` and nothing else. Measured 2026-09-08: a full run is **~19 minutes
   at ~7.6s per case**, and it must run on a frozen tree, so any edit during
   it wastes the run. Most sessions change a handful of files: after the
