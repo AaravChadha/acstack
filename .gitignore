@@ -12,3 +12,7 @@ scratch/
 # python bytecode from fixture runs
 __pycache__/
 *.pyc
+
+# personal Claude Code permissions — absolute paths and machine-local allows;
+# was protected only by a GLOBAL git ignore on one machine (found 2026-09-11)
+.claude/settings.local.json
