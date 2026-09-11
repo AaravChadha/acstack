@@ -4783,6 +4783,33 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   Demonstrated by changing a skill's report wording in a worktree and
   showing the live invocation does **not** reflect it before the fix, and
   either does or is refused after.
+- [ ] **5.16** Make `main` genuinely PR-only, not merely status-gated.
+  `enforce_admins` went on 2026-09-11, so the required `check` status binds
+  the owner too — but protection carries no `required_pull_request_reviews`,
+  and those are not the same rule. A commit can still reach `main` by direct
+  push provided its SHA already carries a green `check`, which a branch push
+  earns. Solo and sequential the distinction is academic: the only route to a
+  green SHA is pushing it where CI can see it, so branch-first is already
+  forced in practice. **It stops being academic the moment two sessions run
+  at once** — a green feature SHA fast-forwarded onto `main` bypasses the
+  integrator, the review surface, and the post-merge marker re-derivation
+  CONTRIBUTING now requires, and trips nothing on the way past. The
+  auto-merging count marker (2026-09-11) is exactly the class that needs a
+  merge point to be caught at.
+  **Trigger, not a date (operator's call, 2026-09-11):** this lands when
+  multi-session work actually starts, not before. Until then the integrator
+  is one person working sequentially, and the rule would tax them for a
+  hazard that cannot yet occur.
+  **Acceptance:** protection on `main` read back **from the server** shows
+  `required_pull_request_reviews` present with its review count recorded,
+  alongside the `enforce_admins`, linear-history and `check` settings
+  already live; a direct `git push origin main` of an otherwise-green commit
+  is then **refused**, with the refusal message quoted — shown refusing that
+  way first, since a protection setting that has never rejected a push is a
+  claim and not a control. The self-approval question is answered in writing
+  with the setting chosen and its reason: whether a solo owner may approve
+  their own PR and at what review count, because a required review nobody
+  can satisfy locks `main` outright.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
