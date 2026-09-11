@@ -107,7 +107,21 @@ defect this repo shipped):
   it stops being affordable, narrow the rule to security- and
   correctness-relevant fixes rather than quietly stop obeying it.
 
-These six are repo-binding, not part of the shipped conduct block. Promote
+- **A clean merge is not evidence.** Two branches that each tick a box, file
+  a task, or move the same count marker make *identical* edits; git
+  auto-merges them with no conflict, and the marker sits one too high or a
+  task number is allocated twice — measured on a scratch clone 2026-09-11,
+  before parallel sessions had been run for real. So: squash or rebase,
+  never a merge commit (git's default `Merge branch 'x'` subject fails
+  §34); re-derive every count marker after every merge; and run
+  `scripts/check.sh` on the merged tree *before* pushing it, because
+  count-check otherwise catches the drift only afterwards, on `main`. The
+  same shape bites one layer down: a skill edited in a `git worktree` is
+  not the skill that runs, since `./setup` links `~/.claude/skills/<name>`
+  at the main checkout, so a live run from a worktree exercises the old
+  file and passes for the wrong reason (5.15).
+
+These <!-- count:repo-rules -->7<!-- /count --> are repo-binding, not part of the shipped conduct block. Promote
 one into CONDUCT.md only if it proves out across projects — the same bar
 `/learn` uses for promoting a lesson into known-bug-classes.
 

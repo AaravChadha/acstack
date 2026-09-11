@@ -49,7 +49,9 @@ verified=""
 #   CONTRIBUTING.md      tells contributors how many checks they must pass
 #   PRINCIPLES.md        enumerates its own sections
 #   docs/ARCHITECTURE.md enumerates guards and components
-COVERED="README.md PLAN.md JOURNAL.md CONTRIBUTING.md PRINCIPLES.md docs/ARCHITECTURE.md"
+#   AGENTS.md            enumerates the repo-binding rules; its own "These N"
+#                        sentence is the enumeration every session is held to
+COVERED="README.md PLAN.md JOURNAL.md CONTRIBUTING.md PRINCIPLES.md docs/ARCHITECTURE.md AGENTS.md"
 #
 # EXEMPT — files that contain the marker SYNTAX but make no claim. Each is
 # listed with why, so adding one is a decision rather than a silent drop:
@@ -90,6 +92,12 @@ derive() {
     wave45-total)   n=$(w45 | grep -cE '^- \[[ x]\]') ;;
     open-scheduled) n=$(awk '/^## \[[ x]\] Wave 4\.5/,/^## \[[ x]\] Wave B/' PLAN.md \
                         | grep -c '^- \[ \]') ;;
+    # The repo-binding verification rules in AGENTS.md. Their count lives in
+    # two places (AGENTS.md's own "These N" and JOURNAL's restatement) and
+    # drifted by hand until 2026-09-11. Bounded by the section heading and
+    # the "These N" sentence so a bullet elsewhere in the file cannot inflate it.
+    repo-rules)     n=$(awk '/^Verification rules \(added/,/^These /' AGENTS.md \
+                        | grep -c '^- \*\*') ;;
     *)              return 1 ;;
   esac
   printf '%s' "$n" | tr -d '[:space:]'
