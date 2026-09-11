@@ -7,9 +7,11 @@
 > at wave start, at the same fidelity as waves 1–3's (`docs/wave-2-specs.md`,
 > `docs/wave-3-specs.md`). The founding design discussion — wave-1 specs,
 > skill-roster rationale, infra tradeoffs, telemetry stance, and the
-> numbered locked decisions — predates this file, lives under
-> `~/.claude/plans/` outside this repo, and is summarized in README.md
-> and CONDUCT.md.
+> numbered locked decisions — predates this file, ~~lives under
+> `~/.claude/plans/` outside this repo~~ (**2026-09-11:** that path no
+> longer exists on the originating machine; the dated verdicts in this
+> file are the surviving record — see Open items), and is summarized in
+> README.md and CONDUCT.md.
 >
 > **Cross-cutting constraints (apply to every wave):**
 > - Plain markdown skills; zero runtime dependencies beyond git + bash 3.2+
@@ -4299,7 +4301,13 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   this task owns what the CONDUCT rule-5 clause does not — and its report
   must state that a `permissions.deny` block is friction on the
   directly-typed form only, since `sh -c`, `bash -c` and script files defeat
-  it outright (4.66, arm F).
+  it outright (4.66, arm F). **Same class, measured 2026-09-11:** an
+  `autoMode.hard_deny` rule naming the document set did not hold under an
+  explicit operator request — `rm PLAN.md` ran on a scratch clone, so the
+  classifier tier the settings schema describes as "user intent does NOT
+  clear" cleared. The report must not call `hard_deny` a boundary either;
+  what protects a tracked file is git plus the model's own refusal, which
+  did fire on the first attempt.
 - [ ] **5.4** /verify — audits a completion *claim* rather than the code:
   re-derives what acceptance demands, runs it against the running system,
   reports CONFIRMED / OVERSTATED / FALSE. **Build last and only with that
@@ -5216,9 +5224,13 @@ every commit, which is the same trigger without a daemon.
   (2026-07-27):** deferred to first real need (user call at wave-3 spec
   time). Wave 3 ships the http probe with the seam designed for both
   modes, so adding browser later stays additive. That is the founding
-  design doc's no-architectural-penalty bet (locked decision 8; the doc
-  lives under `~/.claude/plans/`, outside this repo), restated in
-  `docs/wave-3-specs.md`.
+  design doc's no-architectural-penalty bet (locked decision 8; ~~the doc
+  lives under `~/.claude/plans/`, outside this repo~~ **Verdict
+  (2026-09-11):** that path no longer exists on the originating machine —
+  found by `/resume` on 2026-09-10. Waves 1–4 are closed, so the locked
+  decisions survive only as this file's dated verdicts; the original
+  reasoning is not recoverable and is deliberately not reconstructed from
+  memory), restated in `docs/wave-3-specs.md`.
 - [x] **GitHub remote (NEW 2026-07-27).** ~~Private `AaravChadha/acstack`
   creation awaits explicit user go.~~ **Verdict (2026-07-27):** created
   private and pushed — `main` tracks `origin/main`, all 31 commits up.

@@ -10,7 +10,7 @@ guard blocks the commit. Fix the drift; do not skip the check.
 
 ```bash
 scripts/check.sh                    # the pack guard; its header lists every section, includes positive controls
-bash docs/guard-matrix.sh "$PWD"    # every guard shown firing on a seeded defect (~19 min, all cases)
+bash docs/guard-matrix.sh "$PWD"    # every guard shown firing on a seeded defect (16–29 min; keep the machine awake for all of it)
 bash docs/guard-matrix.sh "$PWD" 'count|reach'   # only cases whose name matches, while iterating
 ./setup && ./setup --uninstall      # installer round-trip
 ```
@@ -27,6 +27,22 @@ round-trip is local-only, since it writes outside the repo. One honest
 gap: CI has no `.acstack-banned` (that list is untracked by design), so
 the banned-name section prints SKIP there and **local pre-commit is the
 enforcement point for names**.
+
+## Pull requests and merging
+
+`main` requires linear history, so **squash or rebase, never a merge
+commit** — git's default `Merge branch 'x'` subject matches none of the
+three commit shapes and fails check.sh §34 on the merged tree (measured
+2026-09-11 on a rehearsal). Two more things a PR against this repo hits:
+
+- **Two PRs that each move the same count marker do not conflict.** Both
+  decrement `count:open-scheduled` from the same base, git sees identical
+  edits and auto-merges them, and the marker sits one too high with no
+  warning. Re-derive markers after every merge and run `scripts/check.sh`
+  on the merged tree *before* pushing it; count-check only catches it
+  afterwards, on `main`.
+- A PR body states what was verified, with the exact commands, and what
+  was **not** run. Coverage is stated, never implied.
 
 > **Reviewing someone else's branch: read the diff before you run the
 > guard.** `check.sh` section 11 runs `scripts/controls.sh`, which
