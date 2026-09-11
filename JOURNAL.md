@@ -3,19 +3,24 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-08 (entry written 2026-09-10). **The front
-> door got its first end-to-end read since the flip — 25 days overdue — and
-> was restructured**: 462 → 386 lines against five high-star comparables,
-> six factual defects fixed (two shipped skills absent from the roster,
-> four stale "23 skills" claims against a tree of 25), and the counts now
-> *guarded* rather than corrected — five `count:skills` markers under §23,
-> proven firing on a seeded copy. **5.7 ruled the same day: description cap
-> 12,000 → 13,500**, derived from what *good* folding costs, with the
-> forcing function preserved 1,944 below the unfolded roadmap and the folds
-> named individually so waves 6–7 inherit them. Filed from the work, not
-> the plan: **5.9–5.12** and **Wave C** (retrieval — deferred,
-> trigger-gated, placed after Wave B so it adds no scheduled work). Wave 5
-> **3 of 12**; budget **10,075 / 13,500**; scheduled open **22**.
+> **Last update**: 2026-09-10 → 11 (entry written 2026-09-11). **Four
+> wave-5 tasks closed in one sitting — 5.5 `/deps upgrade`, 5.11 the matrix
+> filter, 5.12 the total-cap cases, 5.8 seed self-proof — and every one had
+> the venue correct the author**: 5.11's own `SELF` path read the copy
+> instead of the running script four minutes after it shipped; 5.8's
+> premise cited an AGENTS.md rule that does not exist and its structural
+> fix found a must-PASS seed that had mutated nothing for 24 days; three
+> matrix timing figures were published and two withdrawn, the last because
+> the machine slept through the run. Filed: **5.13–5.15**. A host-namespace
+> recheck found `/design` had shadowed a built-in command since it shipped,
+> undocumented, and that the collision resolved itself in 2.1.267. Wave 5
+> **7 of 15**; budget **10,201 / 13,500**; scheduled open **21**; matrix
+> **152**, full run 152/152 on 5.8's tree.
+> Earlier (2026-09-08, entry written 2026-09-10): **The front door got its
+> first end-to-end read since the flip** and was restructured 462 → 386
+> lines with six factual defects fixed and its counts guarded; **5.7 ruled
+> the description cap 12,000 → 13,500** on what good folding costs; 5.9–5.12
+> and Wave C filed.
 > Earlier (2026-08-17, entry written 2026-08-30): **Wave 5 is open
 > and 2 of 8 built** — specced at wave start, packaging ruled as shape D
 > before any design, and both builds so far had the live run correct the
@@ -161,7 +166,7 @@
   **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (8) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
-- Next: **wave 5** — 5.3 `/careful` in build order, then 5.4 last; 5.5 `/deps upgrade` shipped 2026-09-10; 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
+- Next: **wave 5** — recommended order 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), then 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.13 when the interactive readings arrive; 5.6 before any rename; 5.15 before any skill edit from a worktree session. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
   4.45–4.47 carry three findings from a survey of two high-star
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
@@ -214,7 +219,7 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard; its header enumerates every section — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect (~19 min)
+bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect (16–29 min; a run the machine sleeps through is not a timing)
 bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, for iterating
 # then start a new Claude Code session; the whole skill roster loads at start
 ```
@@ -233,6 +238,180 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Four wave-5 tasks closed, three filed, and every venue corrected its author (2026-09-10 → 11)
+
+*(Work commits run 2026-09-10 12:17 → 2026-09-11 01:34; the entry is dated
+by the work. Ten task and correction commits plus this one; four were
+pushed mid-sitting and are CI-green, the rest await the owner.)*
+
+**5.5 `/deps upgrade` — shape D's fold, built and closed** (1fc8f62). A
+`## Mode: upgrade` section in `skills/deps/SKILL.md` (110 → 144 lines) with
+the procedure in `references/upgrade.md` (119 lines). **The split was
+decided by §29, not taste**: review's 43 conditional lines plus a full
+second body cross the 40-wasted-line threshold, so SKILL.md carries the
+question, the pointer and the verdict rule (wasted 0 → 34). Description
+**451 → 577** chars, total **10,075 → 10,201 of 13,500**; no new skill, no
+`./setup`, no §33 change, no new allowed-tools. **Two facts the spec had
+not stated**: the changelog is read *locally* (an unpacked target tree as an
+optional third argument, or `node_modules/` when the target is installed)
+because the read-only allowlist has no network tool beyond `npm view`, which
+serves no changelog; and the fixture's twin shares the seeded changelog byte
+for byte and differs only by call sites, so neither a blanket NO-GO nor a
+grep-for-BREAKING gate can pass the pair. Fixture `fixtures/deps/upgrade/`
++ `upgrade-clean/`, package fictitious on purpose (an invented changelog on
+a real package would be a fabricated record). Control proven on copies,
+four arms each failing on its own branch; matrix **149 → 150**. **Acceptance
+met live in two blind subagent sessions**: seeded arm `**NO-GO**` on line
+one with both sites `src/api.js:4` and `src/reports.js:3`, the unused
+removal listed at 0 sites, rollback pin 2.4.1, registry 404 reported
+*not-run*; twin `**GO**`. Every `file:line` checked. **One design gap fixed
+before the runs, found by deriving the venue from the procedure's own
+branch logic**: source 1 required the target directory to be named and the
+documented invocation named none, so both arms would have hit the
+no-changelog NO-GO and the twin would have failed for the wrong reason.
+
+**5.11 — the matrix gets a case filter that cannot fake a clean run**
+(48c038c), and then its author's own defect (9d2bbe7). `guard-matrix.sh
+<repo> [case-filter-regex]`; one gate `_case_start` in all four case
+functions so `RAN` counts only what ran. **The acceptance's order was
+followed — the empty-match arm first**: a filter matching nothing prints
+`MATRIX FILTER MATCHED NOTHING`, says `passed=0 failed=0` is an empty run
+not a clean one, exits **2**. Then a routing line dropped on a copy,
+filtered to one case: `RAN=1 passed=0 failed=1`. Two failure modes closed
+beyond the ask: the script derives its own case-function count and refuses
+to run when gates and definitions disagree (proven: `4 case function(s) but
+3 filter gate(s)`, exit 2), and an unfiltered run asserts `RAN` against the
+declared count, turning the static-equals-runtime equality that had rested
+on one hand-check since 2026-08-06 into something enforced. **No matrix
+case was added, said out loud**: the runner cannot witness its own
+selection. **Then, four minutes after it shipped: `SELF` was
+`${BASH_SOURCE[0]}`, relative, and the run cds into the copied tree at line
+67 — so the `RAN` assertion re-read `docs/guard-matrix.sh` from the COPY of
+whatever repo was passed in.** Invisible against this repo (the copy is
+byte-identical), demonstrated in three seconds against a 3-case stub:
+`MATRIX INCOMPLETE: 3 cases declared but RAN=150`, exit 2. The
+relative-path-from-the-wrong-root class from the pack's own recall list,
+planted inside the guard whose job is refusing to vouch. Fixed; full runs
+**150/150 twice** on frozen trees `35846ccc` (pre-fix) and `1b412ced`
+(post-fix); CI green on 9d2bbe7 (run 34509770864), which is the only place
+the fix runs on Linux at a different checkout path.
+
+**Three timing figures, two withdrawn — the pattern was mine.** Run 1:
+28m21s. On that one sample this journal's author called the task's ~7.6
+s/case estimate "optimistic by nearly half." Run 2, same machine, same
+day: 16m26s — *faster* than the estimate just dismissed. Corrected to a
+range. Run 3 (5.8's regression): 30m15s — then `pmset -g log` showed the
+machine idle-slept at 15:36:56 and stayed asleep or in DarkWake until
+15:53:14, so ~16 of those minutes were a suspended process. Withdrawn
+(8624fac). **The condition nobody had checked, now stated in 5.11's note
+and CONTRIBUTING**: a run yields a timing sample only if the machine is
+awake for all of it. Range stands at **16–29 min** on the two valid
+samples. Why it slept: the machine's sleep-hold is tied to the turn, and a
+backgrounded run outlives the turn. Machine-side fix, not repo-side.
+
+**5.12 — §28's total branch gets its first matrix cases** (2fb6741), matrix
+**150 → 152**. **The class regex was the whole trick**: all four §28
+failures print `FAIL budget:`, so a case matching the bare class is
+satisfied by whichever branch fires — 5.7's hand-verification mistake one
+layer down. Both cases match `budget: skill descriptions total`. Seeds
+derive both caps from `check.sh` rather than naming 13,500 or 600. Must-fire
+pads every description to exactly `BUDGET_ONE`: 25 × 600 = 15,000 against
+13,500 with no single description over the per-description cap. **Departure
+recorded**: the must-not-fire arm sits at exactly the cap, not one under as
+the acceptance asked, because §28 tests `-gt` and an off-by-one to `-ge`
+fires at the cap and is invisible one char below — demonstrated, not
+argued. Both shown failing on their own branch and only their own.
+
+**5.8 — every seed proves it mutated, structurally, not by rewriting 49
+of them** (e35d9b1). **The premise was wrong**: the task's first sentence
+cited *"AGENTS.md says write matrix seed mutations in python3, not sed"* —
+AGENTS.md's six repo-binding rules were enumerated and none concerns either.
+Three places carried the citation (the task, a code comment, a JOURNAL
+line); §8 resolves skill and reference citations, never a prose claim about
+another document. Defect real, justification invented. **Why structural**:
+`sed` is 49 of ~107 mutating seeds — 21 `printf`, 12 `grep -v`, 9 `awk`,
+8 `rm`, 7 others rot identically. `fullcase` now content-hashes the copied
+tree either side of the mutation (metadata hashing would count `mv t file`
+as a change) and fails loudly on no change; ~30 ms/case. `gitcase` asserts
+the commit subject reached the log, `bannedcase` asserts its list file, the
+baseline case is the sole exemption with its size asserted. **First full
+run found a real one**: `acceptance: closed task is exempt` hardcoded
+`- [ ] **5.2** /contract-check`; 5.2 closed 2026-08-17, so the seed had
+mutated nothing for 24 days — a must-PASS case reporting `ok` on an
+untouched tree. **It was already python3 and already carried `assert n !=
+s`**; the assertion fired every time and nobody heard it because the
+harness discarded the exit status. Doing what the task asked would not have
+caught it. Now derived; shown failing when §35's exemption is broken. Full
+run **152/152** on `f589777b`. **Declined, recorded**: adding the rule to
+AGENTS.md — the mechanism now covers every seed shape.
+
+**Host-namespace recheck, filed as 5.13 and 5.14** (8f024b8). Built-in
+command roster extracted from the shipped binaries: **99** names in 2.1.267
+against **98** in 2.1.220; only `cloud-plugins`, `list-agents`,
+`plugin-types` added; only `design` and `review` removed. acstack's 25
+present names collide on **`plan` and `resume` only** — the two README
+already discloses — and all 14 planned wave-5-to-7 names are clear;
+`/upgrade` would have collided had shape D not folded 5.5 into `/deps`.
+**The undocumented one**: `/design` shadowed a built-in `design` command
+("Grant or revoke Claude agent access to your Design projects") for as long
+as both shipped, and the collision vanished in 2.1.267 when that command
+split into `design-consent` / `design-login` / `design-revoke`. README named
+two shadowed skills while three were shadowed, and it resolved itself with
+nobody acting — hence 5.14. **5.13 exists because the 2026-07-27 shadowing
+verdict rests on a fact never measured**: both built-ins are
+`type:"local-jsx"` and `plan` declares `requires:{ink:true}`, so a headless
+`-p` probe proves nothing (the skill "won" only because the built-in was
+ineligible), and `/plan` is typed-only, so typing is its intended route.
+Also fixed in that commit: 5.8's and 5.11's acceptance bars both hardcoded
+a matrix count of 149, made stale by 5.5 one commit earlier — now derived.
+
+**5.15 filed** (889baf1): `./setup` links `~/.claude/skills/<name>` at the
+main checkout, and a `git worktree` is a checkout those links know nothing
+about, so a skill edited in a worktree is not what the live skill serves and
+a live run from there passes for the wrong reason. Found designing the
+parallel-session workflow, before it was tried. Every other hazard in that
+design is a merge conflict; this one is a false pass.
+
+**Two repo corrections found in passing.** `.claude/settings.local.json`
+— absolute paths and this machine's username — was kept out of six rounds
+of `git add -A` only by a *global* ignore at `~/.config/git/ignore`; the
+public repo's own `.gitignore` had no `.claude` entry. Fixed (efb1e19). And
+PLAN's two pointers at the founding design doc under `~/.claude/plans/`
+name a path that no longer exists on the originating machine; superseded
+with a dated verdict rather than deleted, since waves 1–4 are closed and
+the reasoning is not recoverable.
+
+**Observed while setting up parallel sessions on the machine (config, not
+repo — recorded because it will bite the repo):** on a scratch clone, two
+branches each ticking a task and each moving `count:open-scheduled` 21 → 20
+**auto-merged with no conflict** — identical edits — leaving the marker one
+too high; count-check catches it only on the merged tree. Git's default
+merge subject then failed §34. So: squash only (`main` now requires linear
+history on GitHub), re-derive markers after every merge, run check.sh
+before pushing — written into CONTRIBUTING. Also: a sandbox write-protects
+`.git/config` (so `git push -u` cannot set tracking), and
+`bin/acstack-update-check` cannot write `~/.acstack/update-stamp` under one
+and degrades, honestly and as designed, to a fetch per invocation — the
+message names the fix and nothing is scheduled for it.
+
+**What did NOT change:** CONDUCT.md untouched; README changed only in the
+`/deps` roster row; VERSION 0.4.0; skills 25; check.sh sections 38; 4.3/4.4
+adopter-gated; Waves B and C untouched. **Self-indicting, in order of
+cost:** the `SELF` bug shipped in the guard about vouching; the
+timing-sample pattern (three figures, two wrong, third for a reason unchecked);
+telling the operator nothing had been written to config after checking the
+wrong file (`~/.claude.json` rather than `settings.json`, where the theme had
+landed); claiming a sandbox exclusion worked before testing it; and calling
+a classifier tier a boundary before measuring it. Each is recorded where
+the next reader will meet it.
+
+Validation close: check.sh **38, all clean**; matrix **152**, full run
+**152 passed, 0 failed** on frozen tree `f589777b` (5.8's), with `MATRIX_EXIT`
+read from inside the log both times it mattered; the three doc-only commits
+after it covered by filtered runs (`RAN=15`, `15`, `17`, all passed); CI
+green through 9d2bbe7; description budget **10,201 / 13,500**; scheduled
+open **21**; wave 5 **7 of 15**; 0 owed-markers. Push owner: user.
 
 ### The front door reread, the cap re-ruled, and a wave that adds no scheduled work (2026-09-08, written 2026-09-10)
 
@@ -3877,7 +4056,11 @@ JOURNAL.md so the self-hosting docs can't leak personal context either.
 | ~~GitHub remote~~ | Resolved 2026-07-27: private `AaravChadha/acstack` created, `main` pushed and tracking | Done |
 | ~~Fresh-session check~~ | Resolved 2026-07-27: typed `/plan` in a fresh session and it engaged seed mode — loading works; user-only skills simply don't appear in the VS Code extension's subset autocomplete (CLI shows all) | Done |
 | ~~Scratch repo deletion~~ | Resolved 2026-08-13: deleted by the user after shakedown 17 built its replacement venue (`acstack-s17-tickets`, kept deliberately) — recorded in Open items, this row was stale | Done |
-| Push of local commits | 8b11c02 (5.7), a526dea (5.5 label), plus this journal — matrix 149/0 verified on 8b11c02's tree | `git push` — owner: user |
+| ~~Push of 8b11c02 / a526dea / journal~~ | Resolved 2026-09-10: pushed with 1fc8f62 (5.5) and 8f024b8; CI green (run 34503064946) | Done |
+| Push of local commits | 1fc8f62 (5.5), 8f024b8 (5.13/5.14 filed), 48c038c (5.11), 9d2bbe7 (SELF fix) went 2026-09-10, CI green (34503064946, 34509770864). Still local: 3049056, 2fb6741 (5.12), e35d9b1 (5.8), 8624fac, efb1e19, 889baf1 (5.15), plus the corrections and this journal — full matrix 152/152 on 5.8's tree f589777b, doc-only commits after it covered by filtered runs (RAN=15, 15, 17) | `git push` — owner: user |
+| Flip `enforce_admins` on `main` | Branch protection is live since 2026-09-11: no force-push, no deletion, linear history, `check` status required — with admin enforcement OFF so the push above can land. After it, `main` is PR-only for everyone including the owner | say "flip"; the same `gh api -X PUT …/branches/main/protection` payload with `enforce_admins: true` — owner: user |
+| 5.13 interactive readings | Headless proves nothing: both built-ins are `local-jsx` and `plan` declares `requires:{ink:true}`, so they cannot run under `-p` at all. A pty-driven probe reached the login step of first-run onboarding and was stopped there deliberately | in a terminal (2.1.267) and in the Cursor surface: type `/pla` and `/resu` and read the menu, then `/plan` and `/resume` with Enter — owner: user |
+| Cursor window reload | The extension host running every session on 2026-09-10 was 2.1.220 (installed July 25) and passes `--permission-mode acceptEdits` on its own with the setting blank; 2.1.261 is registered and defers to settings | `Developer: Reload Window` — owner: user |
 | ~~Document-mode commit style~~ | Resolved 2026-07-29: both modes symmetric — `task 2.3.2: <desc>` / `ticket #2: <desc>`; `#` kept for GitHub auto-linking. Implementation pending (CONDUCT rule 10, /do, /ship, README) | Done (decision) |
 | ~~Browser probe timing~~ | Resolved 2026-07-27: deferred to first real need; wave 3 ships http with the seam browser-ready | Done |
 
