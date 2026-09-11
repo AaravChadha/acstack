@@ -4755,6 +4755,26 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   tree. The check states its own honest scope: it compares against the
   captured roster, not against whatever the reader's Claude Code ships
   today, and a stale capture is reported as stale rather than as a pass.
+- [ ] **5.15** A worktree session's skill edits never reach the live skill.
+  `./setup` links each `~/.claude/skills/<name>` at the checkout it was run
+  from — this repo's main checkout — and a `git worktree` is a second
+  checkout those links know nothing about. So a session in a worktree
+  editing `skills/deps/SKILL.md` is not editing what `/deps` serves, and a
+  live shakedown run from that worktree exercises the **old** file and
+  passes for the wrong reason. That is the `/why` defect — shipped, reaching
+  nobody — in exactly the shape parallel sessions hit on their first day.
+  Found 2026-09-11 while designing the multi-session workflow, before it was
+  tried; every other hazard in that design is a merge conflict, this one is
+  a false pass.
+  **Acceptance:** with a skill edited in a worktree and unchanged in the
+  main checkout, the pack either (a) refuses a live run from that worktree
+  with a message naming the mismatch, or (b) re-points the links for the
+  session's duration and restores them after — whichever is chosen is
+  recorded with its reason. AGENTS.md gains a repo-binding rule that live
+  skill runs happen only against the checkout the links resolve to.
+  Demonstrated by changing a skill's report wording in a worktree and
+  showing the live invocation does **not** reflect it before the fix, and
+  either does or is refused after.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
