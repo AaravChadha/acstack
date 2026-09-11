@@ -152,8 +152,8 @@
 - Conduct contract (10 rules) shipped in CONDUCT.md and embedded in this
   repo's AGENTS.md — rule 5 carries the irreversibility carve-out since
   2026-08-16, the only clause in the contract demonstrated live (3–0) before
-  it was written. Plus 6 repo-only verification rules — 4 added
-  2026-07-29, extended since; AGENTS.md's own "These six are repo-binding"
+  it was written. Plus <!-- count:repo-rules -->7<!-- /count --> repo-only verification rules — 4 added
+  2026-07-29, extended since; AGENTS.md's own "These 7 are repo-binding"
   is the enumeration.
 - Remote live (2026-07-27); **public as of 2026-08-03**, `main` pushed.
 - Roadmap runs to 32 skills after the fold rulings (25 built, wave 5's
