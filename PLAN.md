@@ -4308,6 +4308,13 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   clear" cleared. The report must not call `hard_deny` a boundary either;
   what protects a tracked file is git plus the model's own refusal, which
   did fire on the first attempt.
+  **Also owed here (2026-09-11):** CONDUCT rule 5's irreversibility
+  carve-out is the contract's only live-demonstrated clause (3–0), and that
+  round ran while every tool call still raised a prompt. Auto mode removes
+  the dialog that carried the confirmation, so the naming must be written
+  into the turn — and this skill's shakedown is where that evidence gets
+  refreshed, since /careful is the gate for precisely the class that no
+  longer prompts. CONDUCT.md §5 carries the matching evidence note.
 - [ ] **5.4** /verify — audits a completion *claim* rather than the code:
   re-derives what acceptance demands, runs it against the running system,
   reports CONFIRMED / OVERSTATED / FALSE. **Build last and only with that
@@ -4810,6 +4817,81 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   with the setting chosen and its reason: whether a solo owner may approve
   their own PR and at what review count, because a required review nobody
   can satisfy locks `main` outright.
+- [ ] **5.17** The skills assume one session. Six of them break when two run
+  at once, and none mentions `worktree`, `parallel` or `concurrent` anywhere
+  — verified by grep across `skills/` on 2026-09-11. These are not adopter
+  problems to defer: acstack is the rule book, so each of these ships into
+  the next project, which will have no check.sh §23 to catch the drift.
+  Ordered by how silently each fails. Each subtask states its own
+  **Acceptance:** because `/do` stops on a subtask that has none.
+  - [ ] **5.17.1** `/ticket` allocates "the next free task number — existing
+    tasks are NEVER renumbered" (`skills/ticket/SKILL.md:87-90`). Two
+    sessions read the same PLAN and both allocate the same number; inserted
+    at different offsets they auto-merge, and the skill's own rule forbids
+    the obvious repair.
+    **Acceptance:** two branches from one base each filing a task produce
+    either distinct numbers or a stated collision the merger must resolve —
+    demonstrated on a scratch clone by making both filings and merging,
+    shown producing duplicates first.
+  - [ ] **5.17.2** `/do` ticks a box and commits it (`skills/do/SKILL.md:122,130`)
+    with no step that re-derives count markers. This is the measured
+    auto-merge hazard, and it is also the one skill whose OWNER changes
+    under multi-session: performing the task is the feature session's,
+    owning the post-merge count is the integrator's. Split or state the
+    hand-off; whichever is chosen is recorded with its reason.
+    **Acceptance:** two branches each ticking a different box and each
+    moving the same marker, merged, leave the marker correct — shown wrong
+    first on the same seed.
+  - [ ] **5.17.3** `/journal` writes entries "newest first" and rewrites the
+    top blockquote (`skills/journal/SKILL.md:61,72`); `/retro` appends to the
+    same file. Every session therefore writes at the identical anchor. The
+    conflict is the tolerable case; the skeleton's count markers auto-merging
+    is not.
+    **Acceptance:** two sessions journaling the same day either conflict
+    visibly or merge to a correct skeleton — never to a silently wrong count.
+  - [ ] **5.17.4** `/health` reports JOURNAL stale when work commits postdate
+    its last entry. With N sessions committing it fires permanently, and a
+    check that always fires stops being read.
+    **Acceptance:** with unjournaled commits from another branch present,
+    `/health` distinguishes "this branch is unjournaled" from "someone else
+    committed", or states the limit rather than reporting a flat stale.
+  - [ ] **5.17.5** `/resume`'s "next 3 unblocked" hands two sessions the same
+    task. Its ahead/behind is per-worktree and already correct; assignment is
+    the gap.
+    **Acceptance:** `/resume` run in two worktrees does not propose the same
+    task to both without saying it may already be taken.
+  - [ ] **5.17.6** `/ship`'s clean-state and docs-drift gates are branch-local
+    but do not say so — drift is measured against a PLAN the integrator may
+    already have moved.
+    **Acceptance:** `/ship`'s report states the scope of its verdict as the
+    branch, not the project.
+- [ ] **5.18** README's permission section ships a limit that is no longer
+  true. Its measured limit 2 reads *"Matching is prefix-only, so reordered
+  arguments escape… Adding every variant is the trap, not the fix"*, with
+  `Bash(git push --force:*)` as the example. Read out of the 2.1.267 binary
+  on 2026-09-11, there are **two** forms: `Bash(npm run:*)` is *prefix
+  matching (legacy)* and `Bash(npm run *)` is *wildcard matching* — a real
+  glob, so `Bash(git push * --force*)` catches the reordering the legacy
+  form misses. The section was measured on `claude 2.1.170` and was probably
+  true then; it is now telling every adopter that a fixable problem is
+  unfixable. All five `acstack:deny-set` entries use the legacy form.
+  Two further facts from the same read belong in the section: a `:*` must be
+  the LAST thing in a pattern or the rule is rejected outright, and for
+  `git`, options such as `-c` and `--exec-path` can run arbitrary commands,
+  so a broad `Bash(git *)` allow is a hole and allows stay subcommand-scoped.
+  This is also the canonical home for the permission layout applied to
+  machine config on 2026-09-11 (gh api mutation asks, `gh repo edit`,
+  `git merge`, `git worktree add`, `npm publish` promoted to deny, and the
+  autoMode publication clause) — CONDUCT rule 5 already points here as "the
+  harness-level counterpart", so it extends this section rather than a new
+  page. **Declined, recorded:** the `npm publish` deny was not extended to
+  `yarn`/`pnpm`/`cargo publish`/`twine upload`; acstack ships none of them
+  and the canon should name the gap rather than guess at a roster.
+  **Acceptance:** the limits section re-measured against the installed
+  version with that version named and dated, each surviving limit
+  demonstrated rather than asserted, and the withdrawn one superseded with a
+  dated verdict rather than deleted. README's line count and its marked
+  counts stay green.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

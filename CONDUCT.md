@@ -75,6 +75,14 @@ This is friction, not a boundary. A model can still act, and prose cannot
 stop it; the `acstack:deny-set` block in README.md is the harness-level
 counterpart, with its own documented limits.
 
+**Evidence note (2026-09-11).** This carve-out is the only clause in the
+contract demonstrated live (3–0) before it was written — but that round ran
+while every tool call still raised a permission prompt. Under auto mode the
+dialog that carried the confirmation may never appear, so the naming has to
+be written into the turn itself. The rule's text is mode-independent and
+stands; its evidence does not yet cover auto mode, and 5.3's shakedown is
+where it gets re-tested.
+
 ## 6. Don't relitigate decided things
 
 A recorded decision stands until the user reopens it. Do not re-present
