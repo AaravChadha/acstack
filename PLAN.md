@@ -4660,10 +4660,20 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   **16–30 minutes** depending on machine load, and no single sample
   characterises it. Stating one measurement as if it were the property is
   the same error class as a hardcoded count, committed while writing up a
-  task about hardcoded counts. **Third sample, same day, 5.8's regression
-  run: 30m15s for 152 cases (~11.9 s/case)** — which pushed the range's top
-  end out again, one hour after it was written. Three samples: 6.6, 11.3
-  and 11.9 s/case.)* `docs/guard-matrix.sh` runs all 149 cases or none — it takes
+  task about hardcoded counts.
+  ~~Third sample, 5.8's regression run: 30m15s for 152 cases (~11.9 s/case),
+  pushing the range to 16–30.~~ **Withdrawn 2026-09-11 — that sample is not
+  a timing measurement.** The machine idle-slept at 15:36:56 and stayed
+  asleep or in DarkWake until 15:53:14, so roughly 16 of those 30 minutes
+  were wall-clock across a suspended process. The power log is the evidence
+  (`pmset -g log`). Range stands at **16–29 minutes** on the two valid
+  samples, 6.6 and 11.3 s/case.
+  **The condition is now stated, because it was the missing half all
+  along:** a run only yields a valid timing sample if the machine stays
+  awake for its whole duration. Three figures were published today without
+  checking that, and the third was wrong because of it. Hold sleep off for
+  the run itself — tie the hold to the run's own process, not to anything
+  that ends when the operator stops typing.)* `docs/guard-matrix.sh` runs all 149 cases or none — it takes
   `<repo>` and nothing else. Measured 2026-09-08: a full run is **~19 minutes
   at ~7.6s per case**, and it must run on a frozen tree, so any edit during
   it wastes the run. Most sessions change a handful of files: after the
