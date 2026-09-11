@@ -4887,10 +4887,27 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   page. **Declined, recorded:** the `npm publish` deny was not extended to
   `yarn`/`pnpm`/`cargo publish`/`twine upload`; acstack ships none of them
   and the canon should name the gap rather than guess at a roster.
+  **Residuals, stated rather than papered over (2026-09-11):** making a
+  repo public is denied on the `gh repo edit` form only, anchored on
+  `--accept-visibility-change-consequences` — a flag gh *requires* for the
+  act and which appears in no other command. `gh repo edit *` stays at ask
+  so routine description/topic/default-branch edits keep working; a deny
+  that causes weekly friction is a deny that gets deleted. Three holes stay
+  open deliberately: `gh api -X PATCH repos/O/R -f visibility=public` sits
+  at ask, because denying every `gh api -f` would block legitimate
+  mutations; `sh -c` defeats `permissions.deny` outright (limit 1 above);
+  and `autoMode.hard_deny` is friction, not a boundary — 5.3 records it
+  clearing under an explicit operator request. The only real boundary,
+  GitHub's org-level restriction on visibility changes, does not exist for
+  a User-owned repo (verified 2026-09-11). Every tier here is friction and
+  the section must say so rather than imply a wall.
   **Acceptance:** the limits section re-measured against the installed
   version with that version named and dated, each surviving limit
   demonstrated rather than asserted, and the withdrawn one superseded with a
-  dated verdict rather than deleted. README's line count and its marked
+  dated verdict rather than deleted. The four visibility deny patterns
+  added to machine config on 2026-09-11 have NOT been shown firing —
+  proving them needs a repo whose visibility is safe to change, never
+  this one. README's line count and its marked
   counts stay green.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
