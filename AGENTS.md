@@ -111,9 +111,18 @@ defect this repo shipped):
   a task, or move the same count marker make *identical* edits; git
   auto-merges them with no conflict, and the marker sits one too high or a
   task number is allocated twice — measured on a scratch clone 2026-09-11,
-  before parallel sessions had been run for real. So: squash or rebase,
-  never a merge commit (git's default `Merge branch 'x'` subject fails
-  §34); re-derive every count marker after every merge; and run
+  before parallel sessions had been run for real. So: **squash by default**
+  — it is the only method that guarantees every commit on `main` is a
+  complete change, so `git bisect` cannot land on a broken intermediate and
+  a revert is one SHA. **Rebase only on a testable exception:** every commit
+  on the branch passes `scripts/check.sh` on its own *and* its body carries
+  reasoning worth keeping in `main`. Never a merge commit (git's default
+  `Merge branch 'x'` subject fails §34). **Note which text §34 then
+  guards:** under rebase it is every original subject, already checked at
+  commit time; under squash it is the **PR title**, which no guard sees
+  before the merge — so a squash PR's title must itself satisfy the three
+  shapes, or the guard degrades from prevention to detection on `main`.
+  Re-derive every count marker after every merge; and run
   `scripts/check.sh` on the merged tree *before* pushing it, because
   count-check otherwise catches the drift only afterwards, on `main`. The
   same shape bites one layer down: a skill edited in a `git worktree` is

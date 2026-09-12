@@ -30,10 +30,30 @@ enforcement point for names**.
 
 ## Pull requests and merging
 
-`main` requires linear history, so **squash or rebase, never a merge
-commit** — git's default `Merge branch 'x'` subject matches none of the
-three commit shapes and fails check.sh §34 on the merged tree (measured
-2026-09-11 on a rehearsal). Two more things a PR against this repo hits:
+`main` requires linear history, so **never a merge commit** — git's default
+`Merge branch 'x'` subject matches none of the three commit shapes and fails
+check.sh §34 on the merged tree (measured 2026-09-11 on a rehearsal), and the
+branch rule rejects a second parent anyway. That leaves squash and rebase,
+and **which one is not taste**:
+
+- **Squash by default.** It is the only method that guarantees every commit
+  on `main` is a complete change — so `git bisect` cannot land on a broken
+  intermediate state, and reverting a feature is one `git revert <sha>`.
+- **Rebase only on a testable exception:** every commit on the branch passes
+  `scripts/check.sh` **on its own**, *and* its body carries reasoning worth
+  keeping in `main`'s history. The first half is mechanical on purpose — a
+  discriminator that needs judgement decays into habit.
+- **Which text §34 guards changes with the method.** Under rebase it is every
+  original subject, already checked at commit time. Under squash it is the
+  **PR title**, which becomes the commit subject and which no guard sees
+  before the merge — so a squash PR's title must itself satisfy the three
+  shapes, or §34 drops from prevention to detection after the fact on `main`.
+
+Keep both methods enabled so the author chooses per PR; `allow_merge_commit`
+should be off, since a repo that offers a button its own branch rule rejects
+is a footgun waiting for a tired afternoon.
+
+Two more things a PR against this repo hits:
 
 - **Two PRs that each move the same count marker do not conflict.** Both
   decrement `count:open-scheduled` from the same base, git sees identical
