@@ -159,11 +159,11 @@
 - Roadmap runs to 32 skills after the fold rulings (25 built, wave 5's
   remaining 2 — /careful, /verify — wave 6's 2 and wave 7's 3; it read
   "39" until shape D and 5.7 made most remaining tasks modes and lenses),
-  **<!-- count:open-scheduled -->24<!-- /count --> scheduled
+  **<!-- count:open-scheduled -->26<!-- /count --> scheduled
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,
-  **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (11) → 6
+  **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (13) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
 - Next: **wave 5** — recommended order 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), then 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.13 when the interactive readings arrive; 5.6 before any rename; 5.15 before any skill edit from a worktree session. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
