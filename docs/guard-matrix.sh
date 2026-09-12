@@ -455,6 +455,29 @@ EOF"
 fullcase "count-check implementation gone" FAIL 'count' bash -c "rm -f scripts/count-check.sh"
 fullcase "marker renamed to unknown count" FAIL 'count' bash -c "sed -e 's/count:skills/count:skillz/g' JOURNAL.md > t && mv t JOURNAL.md"
 fullcase "comparison neutered to accept-all" FAIL 'control' bash -c "sed -e 's/if \[ \"\$val\" != \"\$want\" \]; then/if false; then/' scripts/count-check.sh > t && mv t scripts/count-check.sh"
+# 5.x repo-rules: the enumeration of AGENTS.md's repo-binding rules. NEW
+# COVERAGE AXIS, stated because it is the reason this case exists: every count
+# case above mutates the MARKER and leaves the counted reality alone. None
+# mutates the thing being counted, so a rule added to or dropped from the
+# enumeration while both markers stay put was invisible to the matrix. That is
+# the direction this drifted by hand until 2026-09-11, and it fires on
+# AGENTS.md and JOURNAL.md together because both restate the number.
+# DERIVED, not hardcoded (5.8): the seed finds the LAST rule bullet in the
+# block rather than naming rule 7's text, so rewording a rule cannot turn this
+# into a no-op seed.
+fullcase "repo-rule dropped from enumeration" FAIL 'count: AGENTS\.md' bash -c "python3 - <<'EOF'
+import pathlib
+p = pathlib.Path('AGENTS.md'); s = p.read_text()
+lines = s.split('\n')
+start = next(i for i, l in enumerate(lines) if l.startswith('Verification rules (added'))
+end = next(i for i, l in enumerate(lines) if i > start and l.startswith('These '))
+idx = [i for i in range(start, end) if lines[i].startswith('- **')]
+assert idx, 'seed no-op: no repo-binding rule bullets found'
+lines[idx[-1]] = '  ' + lines[idx[-1]][2:]
+n = '\n'.join(lines)
+assert n != s, 'seed no-op'
+p.write_text(n)
+EOF"
 # 4.45 eval-runner isolation. Three ways this rots: a site drops the rule,
 # a site drops the model pin, and the seeded unisolated runner quietly
 # acquires the flags it exists to lack (that last one surfaces as a control
