@@ -4909,6 +4909,73 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   proving them needs a repo whose visibility is safe to change, never
   this one. README's line count and its marked
   counts stay green.
+- [ ] **5.19** The canon has never been audited for whether it *transfers*.
+  Every rule in AGENTS.md, CONDUCT.md and CONTRIBUTING.md was earned by
+  induction from a defect **this repo** shipped — which is the source of
+  their authority and also the shape of their blind spot. acstack has no
+  build, no runtime, no deploy, no database and no users, so it has never
+  produced a broken deploy, a bad migration, a flaky test, a dependency CVE,
+  a perf regression, an incident or a rollback. The canon is correspondingly
+  silent on all of them, and nothing tells a reader *which* silences are
+  deliberate. Waves 6–7 schedule the **skills** for those concerns (`/ops`,
+  `/data`, `/deploy`, `/incident`); no task owns whether the **workflow
+  rules** generalise, and the pack's whole premise is that they do.
+  Write the coverage map: for each rule, whether it is universal or
+  pack-specific, and an explicit list of what the canon does not cover and
+  why. Same shape as §13's honest residual and count-check's honest scope,
+  turned on the workflow itself. **Do not invent rules for failures this
+  repo has not had** — a stated silence is the deliverable; confident prose
+  nobody earned is the thing this rule exists to prevent.
+  Known pack-specific, to be checked not assumed: "`check.sh` clean before
+  every commit" (translates to *the project's own* suite), document-mode
+  PLAN/JOURNAL and count markers, the 500-line skill cap, the description
+  budget, and the seeded-defect matrix used *as* a test suite.
+  **Acceptance:** every rule in the three documents classified universal or
+  pack-specific, with the classification derived by reading each rule rather
+  than sampled — a claim about a set enumerates the set. A stated
+  not-covered list naming at least the seven failure classes above. And one
+  falsification pass, framed to **disprove** the classifications, whose
+  findings are each checked at `file:line`; a pass that merely agrees is not
+  evidence.
+- [ ] **5.20** Five workflow rules that are earned or strongly evidenced but
+  written nowhere. Filed as subtasks so each lands with its own evidence
+  rather than as one unexamined batch; each states its own **Acceptance:**
+  because `/do` stops on a subtask that has none.
+  - [ ] **5.20.1** Never commit to local `main` — branch first, always. Then
+    `main` is a pure mirror of the remote and every pull is a fast-forward.
+    Earned 2026-09-12: six commits were made on local `main` before the
+    branch existed, and that is the *only* reason the post-merge divergence
+    and the `git branch -f` cleanup happened at all.
+    **Acceptance:** the rule is in the canon, and the cleanup it prevents is
+    recorded alongside it so the cost is visible rather than asserted.
+  - [ ] **5.20.2** CI tiering — a fast gate on every push, the slow gate
+    before merge. Earned by this repo's own numbers: the pre-push bar is a
+    **16–29 minute** matrix, which is the single biggest obstacle to the
+    multi-session workflow, because slow feedback pushes branches toward
+    long-lived and long-lived branches are what parallel work punishes.
+    **Acceptance:** a documented split naming which checks run when, with
+    this repo's own matrix assigned to a tier and the fast tier's wall-clock
+    measured rather than estimated.
+  - [ ] **5.20.3** Small PRs, with a stated size past which a change splits.
+    Reviewer effectiveness falls off sharply with diff size; it also shrinks
+    the conflict surface multi-session is about to create.
+    **Acceptance:** a number, with the reason it was chosen, and the split
+    advice for exceeding it.
+  - [ ] **5.20.4** Ordered work stacks; it does not fan out. This plan
+    already encodes orderings — 5.6 before any rename, 5.15 before any skill
+    edit from a worktree, 5.4 last by decision — and nothing names the
+    technique, so the default reading is "run them in parallel", which is
+    exactly wrong.
+    **Acceptance:** the canon distinguishes independent work (parallel
+    branches) from dependent work (stacked), with this plan's own recorded
+    orderings as the worked example.
+  - [ ] **5.20.5** Every behaviour change ships a test. The generalisation of
+    "prove a new check fails before trusting that it passes" from guards to
+    code — the repo's strongest rule, stated in terms a project with a real
+    test suite can apply.
+    **Acceptance:** written so it is checkable in a project with tests, and
+    explicit that a guard-matrix-style seeded-defect proof is one instance of
+    it rather than the only form it takes.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
