@@ -3,7 +3,20 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-10 → 11 (entry written 2026-09-11). **Four
+> **Last update**: 2026-09-11 → 14 (entry written 2026-09-14). **The three
+> owner-gated steps closed and the repo learned to use pull requests** — nine
+> commits reached `main` through **five PRs**, the first this repo has ever
+> used. `enforce_admins` is **on**, verified by a separate server read. **5.13
+> disproved its own premise**: a typed `/plan` reaches acstack's skill even in
+> the terminal where the built-in is eligible, so the shadowing fear was
+> wrong — but the terminal lists both names **twice, identically**, which is a
+> discoverability defect carried to 5.9. AGENTS.md gained **rule 7** and its
+> enumeration became a machine-checked count; the matrix case written for it
+> exposed an axis nothing covered — every prior count case mutates the
+> *marker*, none mutated the *counted reality*. "Squash or rebase" became a
+> policy with a mechanical discriminator. Filed **5.16–5.21**; scheduled open
+> **21 → 26**; wave 5 **8 of 21**; matrix **153**.
+> Earlier (2026-09-10 → 11, written 2026-09-11): **Four
 > wave-5 tasks closed in one sitting — 5.5 `/deps upgrade`, 5.11 the matrix
 > filter, 5.12 the total-cap cases, 5.8 seed self-proof — and every one had
 > the venue correct the author**: 5.11's own `SELF` path read the copy
@@ -166,7 +179,7 @@
   **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (13) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
-- Next: **wave 5** — recommended order 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), then 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.13 when the interactive readings arrive; 5.6 before any rename; 5.15 before any skill edit from a worktree session. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
+- Next: **wave 5** — **5.15 then 5.17.2 first**: both block multi-session and both are solo work in the main checkout (5.15 gates any skill edit from a worktree, and 5.17.2 gates any two concurrent task closures, since every tick moves the same marker). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
   4.45–4.47 carry three findings from a survey of two high-star
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
@@ -238,6 +251,165 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### The three owner steps close, the canon gets a merge policy, and 5.13 disproves its own premise (2026-09-11 → 14)
+
+*(Work commits run 2026-09-11 → 14; nine commits reached `main` through
+**five pull requests**, the first PRs this repo has ever used. Entry dated by
+the work.)*
+
+**The three owner-gated steps, all closed.** The eight local commits pushed
+(`ba9be5d`), CI green. Then `enforce_admins` flipped **true** — verified by a
+**separate server read**, not the PUT's own echo, with exactly one field
+changed and the `check` app-pin 15368 preserved by sending `checks` rather
+than `contexts` (sending `contexts` silently resets the pin to *any app*).
+The push itself printed the argument for the flip: `remote: Bypassed rule
+violations for refs/heads/main: Required status check "check" is expected.`
+Admin bypass, in the remote's own words, closed minutes later.
+
+**5.13 — the premise was false, and the defect is one layer over** (`f13a8a1`).
+The task existed because the 2026-07-27 shadowing verdict rested on an
+unmeasured fact. Measured by the operator typing in both surfaces:
+
+| name | Cursor extension | terminal, ink TUI, 2.1.267 |
+|---|---|---|
+| `/resume` | acstack | acstack |
+| `/plan` | not read, deliberately | **acstack** |
+
+Each acstack win evidenced by the runtime config echo, and terminal `/plan`
+additionally by the session reading `skills/plan/references/mode-seed.md` —
+its own file. **So a typed `/plan` reaches the typed-only skill**; the `/why`
+defect in a new dress did not happen. **The real defect:** the terminal lists
+`/plan` and `/resume` **twice under identical names**, flat, no source label,
+separable only by description. Cursor shows one `/plan` and two `/resume`
+under *different* headings. The Cursor `/plan` cell was left unread on
+purpose — `plan` declares `requires:{ink:!0}` and the extension is not an ink
+TUI, so a reading there could only produce the false positive that made a
+headless probe worthless. **Rename costed before the choice, as the
+acceptance demanded:** add-new-then-deprecate carries `plan` 344 + `resume`
+361 = **+705 chars**, budget 10,201 → **10,906 of 13,500**. It fits; it was
+not bought. Reachability is fine, discoverability is not, and README
+understates it — carried to **5.9** rather than filed as new work.
+
+**Rule 7, and the first unmarked count to become machine-checked**
+(`f7d7e3a`). AGENTS.md was silent on multi-session: the merge rules lived
+only in CONTRIBUTING, the worktree rules only in a machine-local file. Rule 7
+states the verification half — *a clean merge is not evidence* — and carries
+squash-only, re-derive-after-merge, and the worktree false pass (5.15). The
+enumeration was an **unmarked** count in two places (AGENTS.md's own "These
+N" and JOURNAL's restatement) and had drifted by hand; both are now marked,
+`count-check` gains a `repo-rules` derivation bounded by the section heading,
+and AGENTS.md joins the `COVERED` roster. **The marker regex takes digits
+only**, so the prose now reads "These 7" — a spelled-out number would have
+been a marker verifying nothing while looking checked. Proven on a copy in
+**both directions**: marker drift (says 6, seven present) and reality drift (a
+rule de-listed, marker still 7) each exit 1, the second firing on AGENTS.md
+and JOURNAL.md **together**.
+
+**The matrix case that found a coverage axis** (`ed6a424`), matrix **152 →
+153**. CONTRIBUTING requires matrix-first for a guard change and `repo-rules`
+shipped with a copy-proof instead, which does not persist. Writing the case
+exposed the gap: **all four existing count cases mutate the MARKER and leave
+the counted reality alone.** None mutated the thing being counted — so a rule
+added to or dropped from the enumeration while both markers stayed put was
+invisible to the matrix, which is precisely the direction this number drifted.
+Seed derived (finds the last rule bullet, does not name rule 7's text, so
+rewording cannot no-op it — 5.8's lesson); class pinned to
+`count: AGENTS\.md` rather than the bare `count` class — 5.12's lesson.
+Watched firing: `RAN=1 passed=1`, no `SEED NO-OP`.
+
+**"Squash or rebase" was not a policy** (`508f0fe`). Rule 7 and CONTRIBUTING
+both said it and gave **no rule for choosing**. Now: squash by default,
+because it is the only method that guarantees every commit on `main` is a
+complete change — bisect cannot land on a broken intermediate, and a revert
+is one SHA. Rebase only on a **mechanical** exception: every commit passes
+`check.sh` alone *and* its body is worth keeping. The first half is
+deliberately mechanical; a discriminator needing judgement decays into habit.
+**And the counterintuitive half, recorded:** which text §34 guards changes
+with the method. Rebase lands every original subject, already checked at
+commit time. Squash lands the **PR title**, which no guard sees before the
+merge — so a squash PR's title must satisfy the three shapes or §34 drops
+from prevention to detection on `main`.
+
+**Permissions and autoMode, and the hole found by committing it.** `gh api`
+was in **neither** tier — and this session changed `enforce_admins` through
+it with no prompt. A session that can rewrite its own guardrails has none.
+Added: 13 `ask` entries (`gh api` mutations across both flag orderings and
+`--input`/`-f`/`--field`, `gh repo edit`, `gh repo create`,
+`gh release create`, `git merge`), `git worktree add` to `allow`,
+`npm publish` promoted `ask` → **deny**, four visibility denies anchored on
+`--accept-visibility-change-consequences` (a flag gh *requires* for the act
+and no other command carries), and an `autoMode` publication clause — the
+block was organised around *destruction* and had no *publication* axis.
+**Read out of the 2.1.267 binary, correcting a stale shipped claim:** there
+are two pattern forms, `Bash(x:*)` prefix (legacy) and `Bash(x *)` wildcard.
+README's measured limit 2 — *"reordered arguments escape… adding every
+variant is the trap"* — is true of the legacy form only, was measured on
+2.1.170, and now tells every adopter a fixable problem is unfixable. Filed as
+**5.18**. Also from that read: a `:*` must be last or the rule is rejected,
+and for `git`, `-c`/`--exec-path` can run arbitrary commands, so a broad
+`Bash(git *)` allow is a hole.
+
+**Filed: 5.16–5.21**, scheduled open **21 → 26**. 5.16 PR-mandatory
+(trigger-gated on multi-session start, the operator's call); 5.17 the six
+skills that assume one session, one subtask each; 5.18 README's permission
+section; 5.19 whether the canon *transfers*; 5.20 five earned-but-unwritten
+rules; 5.21 the hackathon delivery lane. **Two dependency wirings written at
+filing time rather than left to a future grep:** 5.16 now says *do not close
+before 5.21.1 rules the mode caveat* — its trigger reads "when multi-session
+work starts" and names no mode, which would fire a mandatory PR gate at
+exactly the moment a hackathon wants none; and 5.21 states it depends on
+5.20.2 without duplicating it.
+
+**Two findings that reclassify work already filed.** First: **three of
+5.17's six subtasks are document-mode artifacts.** In tickets mode the count
+is never *stored* — GitHub derives it — so marker drift (5.17.2), task-number
+collision (5.17.1) and same-task assignment (5.17.5) vanish structurally
+rather than being mitigated. 5.17.3/.4/.6 persist. The blocker analysis given
+earlier in the session was stated as general and was not. Second:
+`mode: hackathon` **branches in `/plan` only** — `SKILL.md` and
+`hackathon-template.md`, nothing else in the tree. The pack has a hackathon
+*planning* shape and no hackathon *delivery* shape, which matters because a
+16-minute CI run is ~3% of a 24h event per run and the failure mode there is
+integration at hour 20, not bad code on `main`. Filed as 5.21.
+
+**Self-indicting, in order of cost.** The divergence and the `git branch -f`
+cleanup existed **only** because six commits were made on local `main` before
+the branch existed — which earned 5.20.1 and has since been demonstrated
+twice, both later PRs fast-forwarding with zero reconciliation. D1's
+justification was wrong (mid-wildcards claimed to work because they were
+*present* in settings — the authored form, not the consumed one); the design
+survived only because the binary confirmed it independently. The D4
+recommendation framed `autoMode.hard_deny` as a boundary when **PLAN already
+recorded it clearing** under an explicit operator request. Two predictions
+about 5.13 were wrong: that `/resume` was the safe one (both names collide
+identically) and that the menu would group entries under a skills scope (the
+terminal groups nothing). A claim that CLAUDE.md described the sleep-hold
+incorrectly was itself false — the file was already right. And the
+`repo-rules` guard shipped with a copy-proof and no matrix case until
+CONTRIBUTING's own rule was re-read.
+
+**What did NOT change:** CONDUCT's ten rules (only §5 gained a dated evidence
+note — its 3–0 live demonstration ran under prompting and does not cover auto
+mode; 5.3's shakedown owns re-testing it); README untouched; VERSION 0.4.0;
+skills **25**; check.sh sections **38**; 4.3/4.4 still adopter-gated; Waves B
+and C untouched.
+
+**A timing note worth keeping.** Four CI runs: **16m23s, 16m00s, 15m48s,
+16m41s** — a far tighter band than the local **16–29 min**, because GitHub's
+runners cannot idle-sleep. The machine-awake condition that invalidated two
+local samples does not apply to CI, which makes it the better venue for a
+timing figure. Related, and unguarded: `caffeinate` prevents *idle* sleep
+only — **closing the lid sleeps the machine regardless**, so `awake-while`
+does not protect a local run against a shut lid.
+
+Validation close: check.sh **38, all clean** on every merged tree, with
+markers re-derived after each merge rather than trusted; matrix **153**, full
+runs **153/153** on three separate PR trees; CI green on five runs, each
+conclusion read from the run object and each `RAN=` read from inside the log;
+scheduled open **26**; wave 5 **8 of 21**; `repo-rules` **7**; 0 owed-markers.
+Two checks SKIP in CI by design (untracked banned-list, depth-1 clone hiding
+§34) and the guard says so itself rather than reporting clean.
 
 ### Four wave-5 tasks closed, three filed, and every venue corrected its author (2026-09-10 → 11)
 
@@ -4057,9 +4229,9 @@ JOURNAL.md so the self-hosting docs can't leak personal context either.
 | ~~Fresh-session check~~ | Resolved 2026-07-27: typed `/plan` in a fresh session and it engaged seed mode — loading works; user-only skills simply don't appear in the VS Code extension's subset autocomplete (CLI shows all) | Done |
 | ~~Scratch repo deletion~~ | Resolved 2026-08-13: deleted by the user after shakedown 17 built its replacement venue (`acstack-s17-tickets`, kept deliberately) — recorded in Open items, this row was stale | Done |
 | ~~Push of 8b11c02 / a526dea / journal~~ | Resolved 2026-09-10: pushed with 1fc8f62 (5.5) and 8f024b8; CI green (run 34503064946) | Done |
-| Push of local commits | 1fc8f62 (5.5), 8f024b8 (5.13/5.14 filed), 48c038c (5.11), 9d2bbe7 (SELF fix) went 2026-09-10, CI green (34503064946, 34509770864). Still local: 3049056, 2fb6741 (5.12), e35d9b1 (5.8), 8624fac, efb1e19, 889baf1 (5.15), plus the corrections and this journal — full matrix 152/152 on 5.8's tree f589777b, doc-only commits after it covered by filtered runs (RAN=15, 15, 17) | `git push` — owner: user |
-| Flip `enforce_admins` on `main` | Branch protection is live since 2026-09-11: no force-push, no deletion, linear history, `check` status required — with admin enforcement OFF so the push above can land. After it, `main` is PR-only for everyone including the owner | say "flip"; the same `gh api -X PUT …/branches/main/protection` payload with `enforce_admins: true` — owner: user |
-| 5.13 interactive readings | Headless proves nothing: both built-ins are `local-jsx` and `plan` declares `requires:{ink:true}`, so they cannot run under `-p` at all. A pty-driven probe reached the login step of first-run onboarding and was stopped there deliberately | in a terminal (2.1.267) and in the Cursor surface: type `/pla` and `/resu` and read the menu, then `/plan` and `/resume` with Enter — owner: user |
+| ~~Push of local commits~~ | Resolved 2026-09-11: the eight local commits pushed as `ba9be5d`, CI green (run 34570943109, matrix 152/152). Everything since has gone through a PR | Done |
+| ~~Flip `enforce_admins` on `main`~~ | Resolved 2026-09-11: flipped **true** and verified by a separate server read, not the PUT's echo — exactly one field changed, `check` app-pin 15368 preserved by sending `checks` rather than `contexts`. `main` is now status-gated for the owner too; PR-mandatory is 5.16, deliberately deferred | Done |
+| ~~5.13 interactive readings~~ | Resolved 2026-09-13: typed in both surfaces. acstack's skill wins every cell read, including the terminal ink TUI where the built-in is eligible. The CLI had simply never been authenticated on this machine — that login wall, not any technical barrier, is what stopped the earlier pty probe. Ruled in PLAN: keep both names | Done |
 | Cursor window reload | The extension host running every session on 2026-09-10 was 2.1.220 (installed July 25) and passes `--permission-mode acceptEdits` on its own with the setting blank; 2.1.261 is registered and defers to settings | `Developer: Reload Window` — owner: user |
 | ~~Document-mode commit style~~ | Resolved 2026-07-29: both modes symmetric — `task 2.3.2: <desc>` / `ticket #2: <desc>`; `#` kept for GitHub auto-linking. Implementation pending (CONDUCT rule 10, /do, /ship, README) | Done (decision) |
 | ~~Browser probe timing~~ | Resolved 2026-07-27: deferred to first real need; wave 3 ships http with the seam browser-ready | Done |
