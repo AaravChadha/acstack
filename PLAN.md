@@ -4941,7 +4941,7 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   gate is wrong, so closing this task without the caveat would fire the rule
   at the worst possible moment. Do not close 5.16 before 5.21.1 rules it.
 - [ ] **5.17** The skills assume one session. ~~Six of them break when two run
-  at once~~ **nine**, and none mentions `worktree`, `parallel` or `concurrent`
+  at once~~ ~~nine~~ **ten**, and none mentions `worktree`, `parallel` or `concurrent`
   anywhere — verified by grep across `skills/` on 2026-09-11. These are not
   adopter problems to defer: acstack is the rule book, so each of these ships
   into the next project, which will have no check.sh §23 to catch the drift.
@@ -4954,6 +4954,27 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   roster rather than the 2026-09-11 grep: **9 read-only** skills cannot
   collide by writing; of the 16 that can, three write shared state and were
   never listed —
+
+  **Second correction, same day: the arithmetic was wrong too, and in the
+  same direction.** "Six" counted **subtasks**, not skills — 5.17.3 names
+  **two** (`/journal` *and* `/retro`), so the six subtasks always covered
+  **seven** skills. Six plus three was written as nine; seven plus three is
+  **ten**. The correction inherited the undercount it was correcting instead
+  of re-deriving it, which is the same failure one layer up.
+
+  **The set, enumerated so it can be checked (10 affected, 15 not):**
+  affected — `/do`, `/ticket`, `/journal`, `/retro`, `/learn`, `/plan`,
+  `/triage`, `/ship`, `/health`, `/resume`. Unaffected — `audit`,
+  `challenge`, `contract-check`, `deps`, `design`, `design-audit`,
+  `eval-run`, `eval-spec`, `investigate`, `migrate-check`, `plan-review`,
+  `qa`, `refactor`, `secure`, `why`. 10 + 15 = **25**, which is the whole
+  pack. Borderline cases were opened rather than assumed:
+  `/investigate`'s "write the state up" is a report to the user, not a file;
+  `/plan-review`, `/audit` and `/qa` write nothing; `/refactor` edits code,
+  where a collision is a **visible** git conflict rather than a silent
+  merge. `/eval-spec` writes `eval/`, a real collision surface but not the
+  shared doc set — filed as out of scope here rather than folded in
+  silently.
   - **`/learn`** appends to LEARNINGS.md carrying a **seen-count**
     (`skills/learn/SKILL.md:55,67`). Two sessions each taking `seen: 3` to
     `4` produce the *identical* edit, git auto-merges it, and the true value
