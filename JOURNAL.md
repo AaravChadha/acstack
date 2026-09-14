@@ -3,7 +3,22 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-11 → 14 (entry written 2026-09-14). **The three
+> **Last update**: 2026-09-14 (2nd entry that day). **5.15's premise was
+> measured false, and it had already shipped as canon** — AGENTS.md rule 7
+> asserted that a skill edited in a `git worktree` is never the skill that
+> runs. Measured by crossover, the worktree session is served the
+> **worktree's own** file (`WORKTREE` ×1, `MAIN-CHECKOUT` ×0), because the
+> tracked `.claude-plugin/plugin.json` registers `./skills` relative to
+> whichever checkout holds it. The rule 5.15 would have added is **not
+> added** — it asserts the disproved claim — so `repo-rules` stays **7**, not
+> the 8 the plan predicted. Option (b) of its acceptance turned out
+> *unavailable*, not merely unwise: the sandbox write-protects
+> `~/.claude/skills`. Carried to **5.22** (is precedence even deterministic —
+> and it may explain 5.13's duplicate listing). 5.17 gained a mode-scope
+> annotation. **First rebase merge** (PR #7), exception tested not asserted.
+> Scheduled open **26** (unchanged: −1 +1); wave 5 **9 of 22**; matrix
+> **153**.
+> Earlier (2026-09-11 → 14, written 2026-09-14): **The three
 > owner-gated steps closed and the repo learned to use pull requests** — nine
 > commits reached `main` through **five PRs**, the first this repo has ever
 > used. `enforce_admins` is **on**, verified by a separate server read. **5.13
@@ -179,7 +194,7 @@
   **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (13) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
-- Next: **wave 5** — **5.15 then 5.17.2 first**: both block multi-session and both are solo work in the main checkout (5.15 gates any skill edit from a worktree, and 5.17.2 gates any two concurrent task closures, since every tick moves the same marker). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
+- Next: **wave 5** — **5.17.2 first**: it gates any two concurrent task closures, since every tick moves the same marker, and it is solo work in the main checkout. ~~5.15 then 5.17.2~~ **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
   4.45–4.47 carry three findings from a survey of two high-star
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
@@ -251,6 +266,140 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### 5.15 falls to its own measurement, the canon loses a claim, and the first rebase merge lands (2026-09-14, 2nd)
+
+*(Two commits reached `main` through **PR #7**, the repo's **first rebase
+merge**. Second entry dated 2026-09-14; the entry above covers 09-11 → 14.)*
+
+**5.15 — the premise was false, and it had already shipped as canon**
+(`5a561bb`). The task held that a skill edited in a `git worktree` is never
+the skill that runs, so a live shakedown from a worktree would exercise the
+**old** file and pass for the wrong reason. It was filed 2026-09-11 from
+inspection, never measured — and AGENTS.md **rule 7 asserted it as fact**,
+which is the part that matters: this was not a wrong task, it was wrong
+canon, binding every session in the repo.
+
+The links half is correct — all **25** symlinks resolve to the main
+checkout, verified. The conclusion is not, because the symlinks are **not
+the only registration**. The pack ships `.claude-plugin/plugin.json`
+declaring `"skills": ["./skills"]` — a path relative to whichever checkout
+holds it — and the file is **tracked**, so `git worktree add` populates it.
+A worktree session loads the skills sitting in that worktree.
+
+**Measured by crossover**, both copies of `skills/resume/SKILL.md` tagged
+distinctly and *simultaneously* **inside the runtime block**, so the
+discriminator is a bash line that gets **executed** rather than an
+instruction that must be **obeyed**:
+
+| CWD | served body (Skill tool result) | `WORKTREE` | `MAIN-CHECKOUT` |
+|---|---|---|---|
+| the worktree | 8,589 chars, unnumbered | **1** | **0** |
+
+Separated from the agent's own `Read` of the same file (9,081 chars, `cat -n`
+numbered) — the two are easy to confuse and the first reading of the stream
+did confuse them. `TOOL_USE: Skill {"skill": "resume"}` present.
+**Sufficient, not proven necessary:** moving `.claude-plugin` aside stopped
+the skill loading at all (`Skill` permission-denied,
+`non_execution_kind: user-rejected`), so that arm measures nothing about a
+fallback.
+
+**Acceptance withdrawn rather than met, and one half was not merely unwise
+but unavailable.** Option (a) refuse — nothing to refuse. Option (b)
+re-point the links for the session — **the sandbox write-protects
+`~/.claude/skills`**: `./setup --force` from the worktree died at
+`rm: Operation not permitted` on the first link, and `set -euo pipefail`
+aborted before any mutation (all 25 targets verified byte-identical after).
+**The repo-binding rule 5.15 specified was NOT added** — it asserts the very
+claim just disproved, so adding it would have shipped false canon a second
+time. `repo-rules` stays **7**, not the **8** the plan predicted. Rule 7's
+sentence is superseded in place instead.
+
+**Carried, not closed → 5.22.** Which registration wins when both are
+present is not established as deterministic. If it varies, a session can be
+served **either** copy — *worse* than 5.15's stated hazard, because
+intermittent rather than consistent. 5.22 also gives **5.13's** unresolved
+duplicate-listing finding a candidate mechanism: two registrations of one
+skill is exactly what lists `/plan` and `/resume` twice under identical
+names. Hypothesis with a mechanism, not a measurement.
+
+**5.17 gained its mode scope** (`55171c1`). Its text had **zero** mentions of
+tracking mode, so a reader opening the task could not tell that three of six
+subtasks have no referent in tickets mode. Derived at `file:line`, not
+restated from the entry above: **5.17.1** collides on `/ticket`'s document
+path (`ticket/SKILL.md:89-90`) while tickets mode takes a server-assigned
+number (`:76`); **5.17.2** stores the count in PLAN.md (`do/SKILL.md:122`)
+while the tickets path stores no aggregate
+(`do/references/tickets-mode.md:17,22`) and `gh issue list` derives it on
+read (`resume/SKILL.md:130`); **5.17.5** has an assignee field — **but
+`/resume` is read-only there** (`resume/SKILL.md:139`, `allowed-tools` line
+5), so it may READ an assignee and never set one. Tickets mode makes that
+collision **visible, not prevented** — "vanishes structurally" overstated
+it, and the annotation says so.
+
+**The first rebase merge, and the exception was tested rather than asserted.**
+Rule 7 permits rebase only when every commit passes `check.sh` standing alone
+*and* its body is worth keeping. The rule says *testable*, so both commits
+were checked out detached and run: `ba17815` clean, `8a48670` clean. Chosen
+over squash because the squash subject would have read `task 5.15: …` while
+the change also annotates 5.17 — §34's `task <a> + <b>:` form does not apply,
+since 5.17 stays **open**. Third reason, found while deciding: under squash
+the per-commit derivations survive only in a **GitHub PR body**, outside the
+repo and outside the BRIEF → PLAN → JOURNAL → git-history order `/why`
+searches.
+
+**Two machine facts worth keeping.** `~/.claude/skills` is sandbox
+write-protected (above). And **`git branch --merged main` reports a
+rebase-merged branch as UNMERGED** — it is SHA-based, and rebase rewrote
+them, so all seven local branches looked unmerged while `git cherry` marked
+every commit `-` (equivalent upstream) and six had `MERGED` PRs on GitHub.
+Deleting on the `--merged` signal alone would look unsafe; trusting its
+inverse would strand merged branches forever.
+
+**Self-indicting, in order of cost.** **Two probe designs failed before one
+worked** — both injected an "output this token" instruction into the served
+skill, and the agent **paraphrased compliance** ("Completed the first
+instruction") instead of emitting the token; they are recorded as failed
+instruments, not evidence, which is why the discriminator moved into the
+runtime block where it is executed. **The CI watcher was broken and would
+never have fired**: its `jq` expression did not survive quoting into
+`bash -c` (`failed to parse jq expression … unexpected token "\\"`), so every
+poll fell to the error branch and it would have reported a timeout on a run
+that passed — the operator asking is what surfaced it, not the watch. A guard
+written for someone else's work, then not held to this repo's own
+prove-it-fires bar. **A check presented as independent verification was
+not**: `git diff main...<branch>` is three-dot, showing what a branch changed
+since its merge base — non-empty for any branch that ever had a commit, and
+structurally unable to answer whether `main` already holds that work. No
+conclusion changed; the reasoning shown was wrong. **And the branch cleanup
+was oversold** as costing "something real" when it buys a readable branch
+list and nothing else — no disk, no performance, no safety.
+
+**The permission gate held, which is the point of it.** Branch deletion was
+verified safe on two independent sources and explicitly authorized, and
+`git branch -D` was still denied — batched and singly. No workaround was
+attempted: `git update-ref -d` would delete the same refs while routing
+around a rule written on purpose. The scratch worktree removal succeeded;
+all **7** local branches remain, as does the pile on `origin`. An
+`ask` rule outranking a verified, authorized, safe operation is the control
+being real rather than aspirational.
+
+**What did NOT change:** CONDUCT's ten rules; README; VERSION 0.4.0; skills
+**25**; check.sh sections **38**; matrix cases **153**; `scripts/` and
+`docs/guard-matrix.sh` untouched — this PR changed no guard, which is why no
+matrix case was owed. 4.3/4.4 still adopter-gated; Waves B and C untouched.
+
+**Validation close.** `check.sh` **38, all clean** on each commit standing
+alone and again on the merged tree, markers **re-derived** after the merge
+rather than trusted: `open-scheduled` **26** (5.15 −1, 5.22 +1 — net zero, so
+an unchanged marker is the derivation agreeing, not an untouched number),
+`repo-rules` **7**, skills **25**, wave 5 **8/21 → 9/22**. CI green,
+`RAN=153 passed=153 failed=0` read from inside the job log via
+`gh api …/actions/jobs/103860759476/logs`. Run time **12m51s**, below the
+15m48s–16m41s band — plausible for a prose-only change, a data point and not
+a new baseline. Two checks SKIP in CI by design (untracked banned-list,
+depth-1 clone hiding §34) and both ran clean locally, where the list exists
+and the clone is full.
 
 ### The three owner steps close, the canon gets a merge policy, and 5.13 disproves its own premise (2026-09-11 → 14)
 
