@@ -4583,6 +4583,14 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   skills it names, a duplicated `## Operating principles` heading, and — in
   the 25 days since the repo went public — no statement anywhere of who this
   is for or why someone would choose it.
+  **Carried here 2026-09-13 by 5.13's ruling:** the shadowing disclosure is
+  now understated. README names two shadowed skills but says nothing about
+  which implementation actually answers — measured that day as **acstack's,
+  in every surface read** — and nothing about the terminal listing `/plan`
+  and `/resume` **twice under identical names**, in a flat list with no
+  source label, separable only by reading the description. Reachability is
+  fine; discoverability is the defect, and this document is where a stranger
+  meets it.
   **Scoped as a sixth `/audit` target, not a new skill, and gated on 5.7.**
   A standalone skill costs a full description (~400 chars) against §28's
   headroom of 1,925, which **5.7 has not yet ruled** — spending it before that
@@ -4711,7 +4719,7 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   trusted for anything. An unfiltered run still reports the count
   `count:matrix-cases` derives — **derived, not hardcoded**: this line named
   `149` and 5.5 made it stale one commit later (2026-09-10).
-- [ ] **5.13** Decide `/plan` and `/resume` against the host's built-in
+- [x] **5.13** Decide `/plan` and `/resume` against the host's built-in
   commands **on measured dispatch**, not on the 2026-07-27 shadowing
   verdict's assumption. That verdict kept both names deliberately and
   README states the escape hatches (Shift+Tab, `claude -r`); nothing has
@@ -4739,6 +4747,65 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   `/contract-check`'s own table, so if it is chosen it lands
   add-new-then-deprecate, and the description-budget cost of carrying two
   names is stated before the choice, not after.
+  **Verdict (2026-09-13) — keep both names; the shadowing fear was wrong,
+  and the real defect is one layer over.** Measured by the operator typing
+  in both surfaces. Four cells, three read:
+
+  | name | Cursor extension | terminal, ink TUI, 2.1.267 |
+  |---|---|---|
+  | `/resume` | acstack | acstack |
+  | `/plan` | not read, deliberately | **acstack** |
+
+  Every acstack win is evidenced by the runtime preamble's config echo
+  (`mode=standard (default)`, `tracking=document (default)`,
+  `push=branch-pr (global)`), and the terminal `/plan` additionally by the
+  session reading `skills/plan/references/mode-seed.md` — its own file. The
+  built-ins are identified against their binary definitions extracted the
+  same day, not by inference: `plan` → *"Enable plan mode or view the
+  current session plan"*, `resume` → *"Resume a previous conversation"*.
+  **So `/plan` is reachable by the only route designed for it.** The premise
+  this task was filed on — that a typed `/plan` might resolve to built-in
+  plan mode, leaving a typed-only skill invocable by nobody — is false.
+
+  **The menu is where the defect actually is.** Terminal: `/pla` and `/resu`
+  each list **two entries with identical names**, in one flat list, with no
+  `Skills`/`Built-in` grouping and no source label — the only distinguisher
+  is the description text, and acstack's is listed first in both. Cursor:
+  `/pla` lists **one** entry; `/resu` lists two under *different* headings
+  (`Slash Commands` → `/resume`, `Context` → "Resume conversation"). The two
+  surfaces disagree, and the Cursor `/plan` reading was skipped on purpose:
+  `plan` declares `requires:{ink:!0}` and the extension is not an ink TUI,
+  so the built-in is ineligible there and a reading could only have produced
+  the false positive this task exists to avoid — the same shape that made a
+  headless probe worthless.
+
+  **Options costed before the choice, per this task's own bar:**
+  - *keep as-is* — free. Dispatch resolves to acstack in every surface read.
+  - *keep and document* — free. README already discloses two shadowed names
+    and the escape hatches (Shift+Tab cycles modes; `claude -r` and the
+    `continue` alias reach the built-in resume); both still work.
+  - *rename* — **destructive to a public pack** by `/contract-check`'s own
+    table, so it would land add-new-then-deprecate. Derived cost of carrying
+    both names through the deprecation window: `plan` 344 + `resume` 361 =
+    **+705 chars**, taking the budget 10,201 → **10,906 of 13,500**. It
+    fits. It is still not bought — a destructive change to a public pack is
+    not the price for a problem measurement says does not exist.
+
+  **Ruled: keep both, unchanged.** The 2026-07-27 shadowing verdict stands
+  and now rests on measured dispatch instead of the assumption it was filed
+  against. What changes is the *disclosure*: README names two shadowed
+  skills but says nothing about which implementation answers, and nothing
+  about the terminal listing the same name twice with only a description to
+  separate them. That is a discoverability defect, not a reachability one,
+  and it is carried by **5.9**, which owns README as a document a stranger
+  reads — noted in that task rather than filed as a new one.
+
+  **Two facts recorded in passing.** The terminal CLI had never been
+  authenticated on this machine — the first-run login wall is what stopped
+  the earlier pty probe, not any technical barrier. And the trust prompt
+  surfaced this repo's ten `.claude/settings.local.json` pre-approvals for
+  confirmation; the Cursor surface never did, which is a real difference in
+  how the two venues treat repo-local permission grants.
 - [ ] **5.14** Nothing checks acstack's skill names against the host's. The
   names are a shared namespace with Claude Code's built-in commands and its
   shipped skills, both of which grow without notice, and the pack learns
