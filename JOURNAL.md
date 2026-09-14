@@ -187,7 +187,7 @@
 - Roadmap runs to 32 skills after the fold rulings (25 built, wave 5's
   remaining 2 — /careful, /verify — wave 6's 2 and wave 7's 3; it read
   "39" until shape D and 5.7 made most remaining tasks modes and lenses),
-  **<!-- count:open-scheduled -->26<!-- /count --> scheduled
+  **<!-- count:open-scheduled -->29<!-- /count --> scheduled
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,
