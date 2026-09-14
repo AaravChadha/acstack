@@ -4333,6 +4333,18 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   a pass that only reads the diff cannot honestly return any of them, and
   that is also why this task sits outside the wave's read-only set (see the
   exit criterion's 2026-08-14 verdict).
+  **Open question for the operator (2026-09-14) — the "build last" ordering
+  may now be wrong, and it is not mine to re-rule.** This task's own stated
+  gap is *"auditing a claim made by someone else — another session, another
+  agent, a teammate"*. When "build last" was decided, multi-session was an
+  edge case; as of 2026-09-14 it is the **default working mode**, which makes
+  `/verify` the only skill in the pack whose entire premise is the new
+  default. Two readings, both defensible: it is now **central** and belongs
+  early, or it stays last **because** it audits the other skills and wants
+  them fixed first (5.17) so it is not auditing known-broken behaviour. The
+  second reading is a real dependency argument, not deference. Nothing is
+  reordered pending a ruling; recorded so the ordering is a decision rather
+  than an inheritance.
 - [x] **5.5** *(Done 2026-09-10. Lands as `## Mode: upgrade` in
   `skills/deps/SKILL.md` (110 → 144 lines) with the procedure in
   `references/upgrade.md` (119 lines). The split was decided by §29, not
@@ -4908,6 +4920,45 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   gains a row naming which registration is live. A `readlink` or a dry run
   is not evidence here: the served body must be read back out of the
   invocation, as 5.15's crossover did.
+- [ ] **5.23** `/skill` (6.7) authors new skills and knows nothing about
+  concurrency, so every skill it produces is born with the defect 5.17 is
+  cleaning up ten instances of. This is the **leverage point**: patching
+  shipped skills one at a time is finite work, but a generator that does not
+  know the four classes makes it infinite. Found 2026-09-14 while sweeping
+  past/present/future skills after multi-session became the default working
+  mode rather than an edge case. Depends on 5.17 only for the class
+  vocabulary, not for its fixes — the classes are already written down in
+  5.17's table.
+  **Acceptance:** `/skill` refuses to emit a skill that writes a stored
+  aggregate, allocates an identifier, appends at a fixed anchor, or reports
+  a branch-local verdict as project-wide, without naming which class it is
+  in and how it is handled — demonstrated by authoring one skill of each of
+  the four classes and showing the unhandled version is refused first.
+- [ ] **5.24** `/careful` (5.3) classifies destructive operations on the
+  assumption that one session exists. Under concurrency, whether an act is
+  destructive depends on **who else holds the thing**: deleting a branch
+  another session is working on, removing a worktree in use, or force-moving
+  a ref a peer has based work on are all reversible-looking and not. 5.3's
+  acceptance names force-push, bulk delete and secret rotation — none of
+  which is the multi-session case. Filed 2026-09-14 from the same sweep;
+  **do not close 5.3 before ruling this**, because building `/careful`
+  single-session-shaped and retrofitting it is the pattern 5.23 exists to
+  stop.
+  **Acceptance:** given a branch, worktree or ref that another session is
+  demonstrably using, `/careful` returns NO-GO naming the other holder and
+  how it was detected — and GO for the identical operation when nothing else
+  holds it, so the check is shown discriminating rather than always
+  refusing.
+- [ ] **5.25** `/eval-spec` writes under `eval/` and was ruled **out of
+  scope** for 5.17 on 2026-09-14 because `eval/` is not the shared doc set.
+  That ruling is correct and leaves the surface owned by nobody: two sessions
+  writing golden cases concurrently collide on the same files, and a golden
+  set is exactly the artefact where a silent merge is worst — a case that
+  vanishes takes its coverage with it and the score still looks fine.
+  Recorded rather than folded into 5.17 silently, per the carrier-task rule.
+  **Acceptance:** two branches each adding golden cases to the same category,
+  merged, produce a golden set containing **every** case from both with the
+  category minimum recomputed — shown losing cases first on the same seed.
 - [ ] **5.16** Make `main` genuinely PR-only, not merely status-gated.
   `enforce_admins` went on 2026-09-11, so the required `check` status binds
   the owner too — but protection carries no `required_pull_request_reviews`,
