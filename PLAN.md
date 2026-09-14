@@ -4884,6 +4884,11 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   with the setting chosen and its reason: whether a solo owner may approve
   their own PR and at what review count, because a required review nobody
   can satisfy locks `main` outright.
+  **Mode caveat owed (2026-09-14, filed as 5.21.1):** this trigger says
+  "when multi-session work actually starts" and names no mode. A hackathon
+  is *exactly* when multi-session starts and *exactly* when a mandatory PR
+  gate is wrong, so closing this task without the caveat would fire the rule
+  at the worst possible moment. Do not close 5.16 before 5.21.1 rules it.
 - [ ] **5.17** The skills assume one session. Six of them break when two run
   at once, and none mentions `worktree`, `parallel` or `concurrent` anywhere
   — verified by grep across `skills/` on 2026-09-11. These are not adopter
@@ -5043,6 +5048,53 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
     **Acceptance:** written so it is checkable in a project with tests, and
     explicit that a guard-matrix-style seeded-defect proof is one instance of
     it rather than the only form it takes.
+- [ ] **5.21** The pack has a hackathon *planning* shape and no hackathon
+  *delivery* shape. `mode: hackathon` branches in **`/plan` only** — verified
+  2026-09-14: `skills/plan/SKILL.md` and `references/hackathon-template.md`,
+  nothing else in the tree. So a timed event gets clock-window phases, owner
+  tags, build-order arrows and a demo script, and then runs into a git
+  workflow built for a long-lived repo.
+  **Why that is harmful and not merely slow.** At 24–48h the
+  correctness-optimised flow inverts. A 16-minute CI run is ~3% of a 24h
+  event *per run*; `enforce_admins` plus a required status check makes `main`
+  unpushable while CI runs; PR review wants a reviewer who is also building.
+  And the failure mode is a different one: nobody loses a hackathon because
+  bad code reached `main` — they lose because **integration at hour 20 fails**
+  or the demo is unfinished. The lane must optimise for *continuous*
+  integration — merge constantly, tiny increments — rather than *gated*
+  integration. Those are opposite designs, not one design at two speeds.
+  **Depends on 5.20.2 and does not duplicate it:** CI tiering is the general
+  rule; the hackathon requirement is the specific target that the fast tier
+  be **seconds, not minutes**. 5.21 cannot close before 5.20.2 does.
+  **Acceptance:** `mode: hackathon` changes delivery as well as planning,
+  demonstrated on a seeded two-owner scratch repo where two sessions land
+  work concurrently with no gate and no conflict, and the whole edit → merged
+  loop is **timed and the figure stated** (under the awake-for-the-whole-run
+  rule). The mode's honest scope is written down: exactly what protection is
+  dropped, and that dropping it is a deliberate trade bounded by the event,
+  never a default.
+  - [ ] **5.21.1** The gate must not fire in hackathon mode. 5.16 files
+    PR-mandatory on `main` triggered by *"when multi-session work starts"*
+    with **no mode caveat** — which fires at precisely the wrong moment,
+    since a hackathon is when multi-session and no-gate are both wanted.
+    Rule what branch protection looks like under `mode: hackathon`, and write
+    the caveat into 5.16 so the two cannot be closed inconsistently.
+    **Acceptance:** 5.16's trigger carries the mode caveat, and the hackathon
+    protection posture is stated together with what it gives up.
+  - [ ] **5.21.2** Conflict avoidance at a hackathon is **file-ownership
+    partitioning agreed up front**, not review. The hackathon template
+    already carries owner tags and `← unblocks <owner>` arrows; it carries no
+    statement of who owns which *files*, which is the thing that actually
+    stops two parallel sessions colliding when there is no time to review.
+    **Acceptance:** the template gains a file-ownership section, and the
+    two-owner run in the parent acceptance uses it and produces no conflict.
+  - [ ] **5.21.3** `/ship` and `/do` have no hackathon branch at all. `/ship`'s
+    five gates and `/do`'s commit-and-stop are both shaped for a long-lived
+    repo; under a clock each needs either a stated fast path or an explicit
+    *"unchanged, and here is why"*.
+    **Acceptance:** each of the two either gains a hackathon lane or records
+    that it deliberately has none, with the reason — a silent absence is the
+    outcome this subtask exists to prevent.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
