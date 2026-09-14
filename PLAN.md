@@ -4896,6 +4896,34 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   the next project, which will have no check.sh §23 to catch the drift.
   Ordered by how silently each fails. Each subtask states its own
   **Acceptance:** because `/do` stops on a subtask that has none.
+
+  **Mode scope (2026-09-14) — three of the six are document-mode
+  artifacts.** They do not merely hurt less in tickets mode; they have no
+  referent there, because the thing that collides is not stored. **5.17.1:**
+  the collision is `/ticket`'s document path — "the next free task number —
+  existing tasks are NEVER renumbered" (`skills/ticket/SKILL.md:89-90`);
+  tickets mode files through `gh issue create`
+  (`skills/ticket/SKILL.md:76`), so the number is server-assigned and two
+  sessions cannot draw the same one. **5.17.2:** `/do`'s document path ticks
+  a box in PLAN.md (`skills/do/SKILL.md:122`) and the count lives in the
+  file, so two closures move one marker; its tickets path ticks issue-body
+  items via `gh issue edit` and closes on merge
+  (`skills/do/references/tickets-mode.md:17,22`), storing no aggregate at
+  all — `gh issue list` derives the open count on read
+  (`skills/resume/SKILL.md:130`). No stored marker, no marker drift.
+  **5.17.5:** an issue carries an assignee, so "may already be taken" is a
+  tracker field to read; PLAN.md has no such field, which is why document
+  mode has to carry the warning in the report instead. Note the limit on
+  that relief — `/resume`'s tickets path is read-only by its own rule
+  (`skills/resume/SKILL.md:139`) and declares only `Bash(gh issue list:*)`
+  (`skills/resume/SKILL.md:5`), so it may READ an assignee and must never
+  set one; tickets mode makes the collision *visible*, not prevented.
+  **5.17.3/.4/.6 persist in both modes** — journal anchors, cross-session
+  staleness and branch-local gates are not tracker-shaped. **So .1, .2 and
+  .5 fix and accept in document mode**, and a tickets-mode adopter needs no
+  fix for them. The earlier blocker analysis was stated as general and was
+  not; recorded here because a reader opening 5.17 reads the task, not the
+  journal entry that found this.
   - [ ] **5.17.1** `/ticket` allocates "the next free task number — existing
     tasks are NEVER renumbered" (`skills/ticket/SKILL.md:87-90`). Two
     sessions read the same PLAN and both allocate the same number; inserted
