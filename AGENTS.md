@@ -8,6 +8,16 @@ Binding rules for this repo:
 
 - Run `scripts/check.sh` before every commit. A failing guard blocks the
   commit — fix the drift, don't skip the check.
+- **Never hand-edit a count marker — run `scripts/recount.sh`.** It re-derives
+  every marked count and rewrites the ones that drifted, holding no
+  derivation of its own (it uses `count-check.sh` as the oracle, so the two
+  cannot disagree). Hand-editing is what makes two concurrent task closures
+  collide: both sessions write the same new value, git auto-merges the
+  identical edit without conflict, and the count sits one too high —
+  demonstrated on a scratch clone 2026-09-14, where the file carrying the
+  marker did not even appear in the merge diff. Run it after every merge too,
+  which is rule 7's re-derivation made mechanical. It cannot repair
+  non-derivable accumulators or unmarked prose, and says so.
 - The `acstack:principles` block is edited ONLY in README.md (canonical),
   then propagated verbatim to every `skills/*/SKILL.md`.
 - No client, company, or collaborator names anywhere in pack content. The

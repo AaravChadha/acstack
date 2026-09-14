@@ -5106,7 +5106,29 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
     **decimal phases** the same way (`skills/plan/SKILL.md:3`). The fix is
     per-class, so the acceptance above must be shown passing for `/plan`'s
     phase insertion too, not `/ticket` alone.
-  - [ ] **5.17.2** `/do` ticks a box and commits it (`skills/do/SKILL.md:122,130`)
+  - [x] **5.17.2** *(Done 2026-09-14. `scripts/recount.sh` (118 lines) plus
+    the hand-off stated in `/do` step 3 and the tool named in AGENTS.md's
+    binding rules. **Acceptance met, shown wrong first**, on a scratch clone
+    of this branch: two branches from one base, `session-a` closing 5.6 and
+    `session-b` closing 5.9, each hand-editing `open-scheduled` 29 → 28 the
+    way `/do` did before this change. Each branch **alone** was correct
+    (derived 28, marker 28). Merged: `Merge made by the 'ort' strategy`, **no
+    conflict**, reality **27** and marker **28** — one too high. The sharpest
+    piece of evidence is the merge diffstat: `PLAN.md | 2 +-` and
+    **`JOURNAL.md` absent entirely**, because the two marker edits were
+    byte-identical and git silently took one side. `count-check` caught it
+    only *after* the merge, which is the whole problem — on `main` by then.
+    Then `recount.sh` on the merged tree: `fixed JOURNAL.md:190
+    count:open-scheduled -> 27`, count-check clean, reality and marker both
+    27. Matrix case `recount repairs marker drift` watched both arms
+    (`PASS` with the repair, `BAD got=FAIL want=PASS` without); full matrix
+    **154/154**. **The generic/specific split is deliberate:** `setup`
+    installs only `skills/`, so `scripts/` never reaches an adopter and
+    `/do` must not name `recount.sh` — the skill carries the rule (re-derive,
+    never hand-edit; the post-merge total is the integrator's) and this repo
+    carries the tool. **Not covered:** `/learn`'s seen-count, which is a
+    non-derivable accumulator — class B′, carried by 5.17.3.)*
+    `/do` ticks a box and commits it (`skills/do/SKILL.md:122,130`)
     with no step that re-derives count markers. This is the measured
     auto-merge hazard, and it is also the one skill whose OWNER changes
     under multi-session: performing the task is the feature session's,
