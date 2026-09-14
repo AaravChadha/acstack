@@ -478,6 +478,28 @@ n = '\n'.join(lines)
 assert n != s, 'seed no-op'
 p.write_text(n)
 EOF"
+# 5.17.2 recount repairs what it claims to. Every prior count case asserts the
+# GUARD fires; this one asserts the REPAIR works, which nothing covered — a
+# broken rewriter would leave check.sh red and look identical to drift nobody
+# fixed. The seed moves the counted REALITY (ticks the last open scheduled
+# task) and leaves the marker stale, so it is not self-reversing and cannot be
+# a SEED NO-OP; recount then has to find and rewrite it. DERIVED, not
+# hardcoded: it locates the last open task inside count-check's own awk range
+# rather than naming a task ID, so renumbering cannot no-op it.
+fullcase "recount repairs marker drift"    PASS '.*' bash -c "python3 - <<'EOF'
+import pathlib, re
+p = pathlib.Path('PLAN.md'); s = p.read_text()
+lines = s.split('\n')
+start = next(i for i, l in enumerate(lines) if re.match(r'^## \[[ x]\] Wave 4\.5', l))
+end = next(i for i, l in enumerate(lines) if i > start and re.match(r'^## \[[ x]\] Wave B', l))
+idx = [i for i in range(start, end) if lines[i].startswith('- [ ] ')]
+assert idx, 'seed no-op: no open scheduled task found in the counted range'
+lines[idx[-1]] = lines[idx[-1]].replace('- [ ] ', '- [x] ', 1)
+n = '\n'.join(lines)
+assert n != s, 'seed no-op'
+p.write_text(n)
+EOF
+bash scripts/recount.sh"
 # 4.45 eval-runner isolation. Three ways this rots: a site drops the rule,
 # a site drops the model pin, and the seeded unisolated runner quietly
 # acquires the flags it exists to lack (that last one surfaces as a control

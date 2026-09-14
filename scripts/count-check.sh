@@ -58,7 +58,13 @@ COVERED="README.md PLAN.md JOURNAL.md CONTRIBUTING.md PRINCIPLES.md docs/ARCHITE
 #   scripts/count-check.sh    documents the marker format in its own header
 #   docs/guard-matrix.sh      seeds marker strings inside sed mutations
 #   fixtures/count-drift/*    seeded fixtures; being stale IS their job
-EXEMPT="scripts/count-check.sh docs/guard-matrix.sh fixtures/count-drift/stale-doc.md fixtures/count-drift/typo-name.md"
+#   scripts/recount.sh        repairs markers; its rewrite regex must contain
+#                             the marker literal, so the stray scan reads the
+#                             tool as making a claim. Same reason this file
+#                             and guard-matrix.sh are here. Added 2026-09-14;
+#                             it was flagged on its first run, which is the
+#                             stray scan working.
+EXEMPT="scripts/count-check.sh scripts/recount.sh docs/guard-matrix.sh fixtures/count-drift/stale-doc.md fixtures/count-drift/typo-name.md"
 #
 # HONEST SCOPE OF THE STRAY SCAN. It finds files carrying a MARKER that are
 # on neither list. A new file making count claims in unmarked prose is still
