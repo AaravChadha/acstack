@@ -4837,26 +4837,77 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   tree. The check states its own honest scope: it compares against the
   captured roster, not against whatever the reader's Claude Code ships
   today, and a stale capture is reported as stale rather than as a pass.
-- [ ] **5.15** A worktree session's skill edits never reach the live skill.
+- [x] **5.15** *(Ruled 2026-09-14 — premise measured FALSE; no gate built,
+  and the rule it would have added would have been false canon.)*
+  A worktree session's skill edits never reach the live skill.
   `./setup` links each `~/.claude/skills/<name>` at the checkout it was run
   from — this repo's main checkout — and a `git worktree` is a second
-  checkout those links know nothing about. So a session in a worktree
+  checkout those links know nothing about. ~~So a session in a worktree
   editing `skills/deps/SKILL.md` is not editing what `/deps` serves, and a
   live shakedown run from that worktree exercises the **old** file and
   passes for the wrong reason. That is the `/why` defect — shipped, reaching
-  nobody — in exactly the shape parallel sessions hit on their first day.
+  nobody — in exactly the shape parallel sessions hit on their first day.~~
   Found 2026-09-11 while designing the multi-session workflow, before it was
-  tried; every other hazard in that design is a merge conflict, this one is
-  a false pass.
-  **Acceptance:** with a skill edited in a worktree and unchanged in the
-  main checkout, the pack either (a) refuses a live run from that worktree
-  with a message naming the mismatch, or (b) re-points the links for the
-  session's duration and restores them after — whichever is chosen is
-  recorded with its reason. AGENTS.md gains a repo-binding rule that live
-  skill runs happen only against the checkout the links resolve to.
-  Demonstrated by changing a skill's report wording in a worktree and
-  showing the live invocation does **not** reflect it before the fix, and
-  either does or is refused after.
+  tried.
+  **Verdict (2026-09-14): false, and disproved the way 5.13 was — by
+  measuring the fact the task rested on.** The links half is correct: all 25
+  resolve to the main checkout, verified. The conclusion is not, because the
+  symlinks are **not the only registration**. The pack ships
+  `.claude-plugin/plugin.json` declaring `"skills": ["./skills"]` — a path
+  relative to whichever checkout holds it — and that file is tracked, so
+  `git worktree add` populates it. A worktree session therefore loads the
+  skills sitting in that worktree, and its own edits do reach the skill it
+  runs.
+  **Measured by crossover:** both copies of `skills/resume/SKILL.md` tagged
+  distinctly and simultaneously *inside the runtime block*, so the
+  discriminator is a bash line that gets executed rather than an instruction
+  that must be obeyed. With CWD the worktree, the Skill tool's served body
+  carried `SERVED-FROM: WORKTREE` ×1 and `MAIN-CHECKOUT` ×0. The served body
+  is identified as the tool result (8,589 chars, unnumbered) and
+  distinguished from the agent's own `Read` of the same file (9,081 chars,
+  `cat -n` numbered); `TOOL_USE: Skill {"skill": "resume"}` present in the
+  stream. **Two earlier probes are not evidence and are recorded as failed
+  instruments:** both injected an "output this token" instruction and the
+  agent paraphrased compliance instead of emitting it — which is why the
+  discriminator moved into the runtime block.
+  **Sufficient, not proven necessary:** moving `.claude-plugin` aside in the
+  worktree stopped the skill loading at all (headless `Skill` call
+  permission-denied, `non_execution_kind: user-rejected`), so that arm
+  cannot show what a fallback would have served.
+  ~~**Acceptance:** … the pack either (a) refuses a live run from that
+  worktree with a message naming the mismatch, or (b) re-points the links
+  for the session's duration and restores them after … AGENTS.md gains a
+  repo-binding rule that live skill runs happen only against the checkout
+  the links resolve to.~~ **Withdrawn, not met (2026-09-14):** (a) has
+  nothing to refuse, and **(b) is unavailable** — the sandbox
+  write-protects `~/.claude/skills`, so `./setup --force` from the worktree
+  died at `rm: Operation not permitted` on the first link and
+  `set -euo pipefail` aborted before any mutation (all 25 targets verified
+  byte-identical afterwards). The repo-binding rule this task specified is
+  **not added**, because it asserts the thing just disproved; AGENTS.md
+  rule 7's existing sentence claiming it is superseded there instead, which
+  is why `repo-rules` stays 7 rather than going to 8.
+  **Carried, not closed:** which registration wins when both are present is
+  not established as deterministic → **5.22**.
+- [ ] **5.22** Two registrations of every skill coexist, and precedence is
+  unmeasured. `./setup` links `~/.claude/skills/<name>` at one fixed
+  checkout; `.claude-plugin/plugin.json` registers `./skills` at whichever
+  checkout the session opened in. 5.15 measured the plugin path winning in a
+  worktree on 2026-09-14 and nothing establishes that as deterministic — if
+  it varies, a session can be served either copy, which is **worse** than
+  the false pass 5.15 predicted, because it is intermittent rather than
+  consistent. Plausibly the same mechanism behind 5.13's unresolved finding
+  that the terminal lists `/plan` and `/resume` **twice under identical
+  names**: two registrations of one skill is exactly what would list it
+  twice. That is a hypothesis with a mechanism, not a measurement, and this
+  task is where it gets one.
+  **Acceptance:** with the same skill differing between the two registered
+  paths, ten live invocations from one CWD all serve the same copy, and
+  which copy wins is recorded with the host version measured — or, if they
+  differ across runs, the non-determinism is demonstrated and `/health`
+  gains a row naming which registration is live. A `readlink` or a dry run
+  is not evidence here: the served body must be read back out of the
+  invocation, as 5.15's crossover did.
 - [ ] **5.16** Make `main` genuinely PR-only, not merely status-gated.
   `enforce_admins` went on 2026-09-11, so the required `check` status binds
   the owner too — but protection carries no `required_pull_request_reviews`,

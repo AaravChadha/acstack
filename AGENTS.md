@@ -125,10 +125,19 @@ defect this repo shipped):
   Re-derive every count marker after every merge; and run
   `scripts/check.sh` on the merged tree *before* pushing it, because
   count-check otherwise catches the drift only afterwards, on `main`. The
-  same shape bites one layer down: a skill edited in a `git worktree` is
+  same shape ~~bites one layer down: a skill edited in a `git worktree` is
   not the skill that runs, since `./setup` links `~/.claude/skills/<name>`
   at the main checkout, so a live run from a worktree exercises the old
-  file and passes for the wrong reason (5.15).
+  file and passes for the wrong reason (5.15).~~ **Verdict (2026-09-14):**
+  that was asserted from the symlinks alone and is **false** — measured by
+  crossover, a worktree session is served the worktree's own skill, because
+  the tracked `.claude-plugin/plugin.json` registers `./skills` relative to
+  whichever checkout holds it. The links half is true (all 25 resolve to the
+  main checkout); the conclusion drawn from it was not. What survives is the
+  verification point, not the hazard: **two registrations of every skill
+  coexist and which one a live run served is a fact to establish, never to
+  infer from `readlink`** — 5.15 for the measurement, 5.22 for whether
+  precedence is even deterministic.
 
 These <!-- count:repo-rules -->7<!-- /count --> are repo-binding, not part of the shipped conduct block. Promote
 one into CONDUCT.md only if it proves out across projects — the same bar
