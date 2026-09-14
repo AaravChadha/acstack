@@ -4975,7 +4975,8 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   | Class | Instances | Fix shape |
   |---|---|---|
   | **A — allocated identifiers** | `/ticket` task numbers, `/plan` decimal phases | detect the collision, or let the server assign (tickets mode does) |
-  | **B — stored aggregates** | `/do` count markers, `/learn` seen-counts, `/triage` ticks | re-derive mechanically rather than hand-edit — **5.17.2** |
+  | **B — stored aggregates** | `/do` count markers, `/triage` ticks | re-derive mechanically rather than hand-edit — **5.17.2** |
+  | **B′ — non-derivable accumulators** | `/learn` seen-counts | re-derivation cannot reach these; give them a derivable shape first — **5.17.3** |
   | **C — same-anchor appends** | `/journal`, `/retro`, `/learn`, `/triage` | conflict must be visible, never silently merged — **5.17.3** |
   | **D — branch-local reported as project-wide** | `/health`, `/resume`, `/ship` | state the scope of the verdict — **5.17.4/.5/.6** |
 
@@ -5051,10 +5052,26 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
     controls, count-check, reach-check, shell-sources, and nothing else).
     **Class B, two further instances:** `/learn`'s **seen-count**
     (`skills/learn/SKILL.md:55,67`) and `/triage`'s checkbox edits
-    (`skills/triage/SKILL.md:3,14`), which move the derived open count. The
-    script must cover stored aggregates **wherever they live**, not count
-    markers alone — a rewriter that fixes PLAN.md and leaves LEARNINGS.md
-    drifting has fixed one instance of a class it was built to close.
+    (`skills/triage/SKILL.md:3,14`), which move the derived open count.
+    ~~The script must cover stored aggregates **wherever they live**, not
+    count markers alone — a rewriter that fixes PLAN.md and leaves
+    LEARNINGS.md drifting has fixed one instance of a class it was built to
+    close.~~ **Correction (2026-09-14, same day, before the script shipped):
+    a seen-count is NOT re-derivable, so class B's fix does not reach it.**
+    Every other marked count has ground truth in the tree — count the
+    directories, count the checkboxes. "How many times have I seen this
+    lesson" has none; it is an accumulator, and nothing in the repo can
+    reconstruct it. `/triage`'s ticks *are* covered, because the open count
+    is derived from the boxes it edits. So the split is:
+    - **`/do`, `/triage`** — covered by `scripts/recount.sh` as shipped.
+    - **`/learn`** — needs a **derivable shape first**: store one dated
+      occurrence line per sighting and derive the count from those lines,
+      which converts an un-mergeable accumulator into a countable reality
+      and *then* lets recount own it. Two sessions appending different
+      occurrence lines conflict visibly or merge correctly; two sessions
+      both writing `seen: 4` never can.
+    That reshaping is class C work (same-anchor appends) feeding class B,
+    and it is **5.17.3's** to carry, not this subtask's.
   - [ ] **5.17.3** `/journal` writes entries "newest first" and rewrites the
     top blockquote (`skills/journal/SKILL.md:61,72`); `/retro` appends to the
     same file. Every session therefore writes at the identical anchor. The
