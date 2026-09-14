@@ -4940,13 +4940,58 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   is *exactly* when multi-session starts and *exactly* when a mandatory PR
   gate is wrong, so closing this task without the caveat would fire the rule
   at the worst possible moment. Do not close 5.16 before 5.21.1 rules it.
-- [ ] **5.17** The skills assume one session. Six of them break when two run
-  at once, and none mentions `worktree`, `parallel` or `concurrent` anywhere
-  — verified by grep across `skills/` on 2026-09-11. These are not adopter
-  problems to defer: acstack is the rule book, so each of these ships into
-  the next project, which will have no check.sh §23 to catch the drift.
+- [ ] **5.17** The skills assume one session. ~~Six of them break when two run
+  at once~~ **nine**, and none mentions `worktree`, `parallel` or `concurrent`
+  anywhere — verified by grep across `skills/` on 2026-09-11. These are not
+  adopter problems to defer: acstack is the rule book, so each of these ships
+  into the next project, which will have no check.sh §23 to catch the drift.
   Ordered by how silently each fails. Each subtask states its own
   **Acceptance:** because `/do` stops on a subtask that has none.
+
+  **Correction (2026-09-14): the set claim was short by three, and this
+  task's own text is what the "a claim about a set enumerates the set" rule
+  was written about.** Re-derived against check.sh §13's `READONLY_SKILLS`
+  roster rather than the 2026-09-11 grep: **9 read-only** skills cannot
+  collide by writing; of the 16 that can, three write shared state and were
+  never listed —
+  - **`/learn`** appends to LEARNINGS.md carrying a **seen-count**
+    (`skills/learn/SKILL.md:55,67`). Two sessions each taking `seen: 3` to
+    `4` produce the *identical* edit, git auto-merges it, and the true value
+    5 is lost with no conflict. **Structurally the same defect as 5.17.2's
+    count marker**, in a different file.
+  - **`/plan` replan** inserts **decimal phases** (`skills/plan/SKILL.md:3`)
+    — allocating a number from what it just read, which is **5.17.1's
+    defect** with phases in place of task IDs.
+  - **`/triage`** applies approved actions to PLAN.md checkboxes
+    (`skills/triage/SKILL.md:3,14`); every tick moves the derived open count,
+    so it is a second writer of **5.17.2's** marker.
+
+  **None of the three is a new failure mode**, which is the finding that
+  matters: nine instances resolve to **four classes**, and fixing per-class
+  covers instances this task has not yet enumerated. Whack-a-mole per skill
+  is what produced 5.15 — a patch built for a hazard that measurement then
+  showed did not exist.
+
+  | Class | Instances | Fix shape |
+  |---|---|---|
+  | **A — allocated identifiers** | `/ticket` task numbers, `/plan` decimal phases | detect the collision, or let the server assign (tickets mode does) |
+  | **B — stored aggregates** | `/do` count markers, `/learn` seen-counts, `/triage` ticks | re-derive mechanically rather than hand-edit — **5.17.2** |
+  | **C — same-anchor appends** | `/journal`, `/retro`, `/learn`, `/triage` | conflict must be visible, never silently merged — **5.17.3** |
+  | **D — branch-local reported as project-wide** | `/health`, `/resume`, `/ship` | state the scope of the verdict — **5.17.4/.5/.6** |
+
+  The three new instances are folded into the subtasks that already own their
+  class rather than filed as 5.17.7–.9; duplicating a class as three more
+  numbered subtasks would inflate `open-scheduled` while adding no work the
+  class fix does not already cover. **Scheduled count unchanged at 26 by
+  design, not by oversight.**
+
+  **Declined deliberately (2026-09-14):** this task's "nine" is **unmarked
+  prose** and therefore unguarded — the same shape as AGENTS.md's "These N",
+  which drifted by hand until 2026-09-11. Marking it needs a new derivation
+  in `count-check.sh` plus a matrix case, which is a guard change and
+  CONTRIBUTING requires matrix-first. Recorded as declined rather than left
+  as an unowned "should", per the carrier-task rule; revisit if it drifts
+  once.
 
   **Mode scope (2026-09-14) — three of the six are document-mode
   artifacts.** They do not merely hurt less in tickets mode; they have no
@@ -4984,6 +5029,10 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
     either distinct numbers or a stated collision the merger must resolve —
     demonstrated on a scratch clone by making both filings and merging,
     shown producing duplicates first.
+    **Class A, second instance (2026-09-14):** `/plan` replan allocates
+    **decimal phases** the same way (`skills/plan/SKILL.md:3`). The fix is
+    per-class, so the acceptance above must be shown passing for `/plan`'s
+    phase insertion too, not `/ticket` alone.
   - [ ] **5.17.2** `/do` ticks a box and commits it (`skills/do/SKILL.md:122,130`)
     with no step that re-derives count markers. This is the measured
     auto-merge hazard, and it is also the one skill whose OWNER changes
@@ -4993,6 +5042,19 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
     **Acceptance:** two branches each ticking a different box and each
     moving the same marker, merged, leave the marker correct — shown wrong
     first on the same seed.
+    **Shape ruled (2026-09-14): mechanical, not documentary.** A rule telling
+    the integrator to re-derive is what AGENTS.md rule 7 already says, and a
+    control that depends on remembering is not a control. Ships as a script
+    that re-derives and rewrites every stored aggregate;
+    `scripts/count-check.sh` only **verifies** and has no rewrite mode
+    (checked 2026-09-14 — `scripts/` holds check, conditional-ratio,
+    controls, count-check, reach-check, shell-sources, and nothing else).
+    **Class B, two further instances:** `/learn`'s **seen-count**
+    (`skills/learn/SKILL.md:55,67`) and `/triage`'s checkbox edits
+    (`skills/triage/SKILL.md:3,14`), which move the derived open count. The
+    script must cover stored aggregates **wherever they live**, not count
+    markers alone — a rewriter that fixes PLAN.md and leaves LEARNINGS.md
+    drifting has fixed one instance of a class it was built to close.
   - [ ] **5.17.3** `/journal` writes entries "newest first" and rewrites the
     top blockquote (`skills/journal/SKILL.md:61,72`); `/retro` appends to the
     same file. Every session therefore writes at the identical anchor. The
@@ -5000,6 +5062,12 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
     is not.
     **Acceptance:** two sessions journaling the same day either conflict
     visibly or merge to a correct skeleton — never to a silently wrong count.
+    **Class C, two further instances (2026-09-14):** `/learn` appends to
+    LEARNINGS.md and `/triage` rewrites PLAN.md in place; both write at a
+    fixed anchor the same way `/journal` and `/retro` do. The acceptance
+    above must hold for every writer in the class, since a conflict made
+    visible in JOURNAL.md while LEARNINGS.md merges silently leaves the
+    class open.
   - [ ] **5.17.4** `/health` reports JOURNAL stale when work commits postdate
     its last entry. With N sessions committing it fires permanently, and a
     check that always fires stops being read.
