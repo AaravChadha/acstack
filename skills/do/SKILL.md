@@ -125,6 +125,23 @@ about the wrong product is worse than no answer (conduct rule 8).
    every child is checked (a phase with no gate is done once its subtasks
    are; without this rule an exit-criterion-less phase could never flip,
    and /audit docs would forever flag it as drift).
+
+   **A derived count is re-derived, never hand-edited.** If ticking this box
+   changes a number stored somewhere else — a count marker, a README badge,
+   a progress total — recompute it with the project's own tool instead of
+   editing the digit. Two sessions closing *different* tasks both hand-write
+   the *same* new value; git sees identical edits, auto-merges them with no
+   conflict, and the stored number ends up one out. Measured on a scratch
+   clone 2026-09-14: two branches each closing one task merged cleanly to a
+   count one too high, and the file carrying the number did not even appear
+   in the merge diff. A conflict would have been the safe outcome; there
+   wasn't one.
+
+   **Your commit's scope, and what is not yours.** Keeping *this branch*
+   self-consistent is yours. Re-deriving after the merge belongs to whoever
+   integrates, because only the merged tree knows the real total — your
+   branch cannot see the task another session closed. Say so in the report
+   rather than implying the number is settled.
 4. **Commit.** Subject from `subtask-commit-format` (default
    `task <number>: <description>`), plus a brief what-and-why
    body per CONDUCT rule 10. Include the PLAN.md checkbox change in the same
