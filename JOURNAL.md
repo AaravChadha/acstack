@@ -3,7 +3,24 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-14 (2nd entry that day). **5.15's premise was
+> **Last update**: 2026-09-14 (3rd entry that day; written 2026-09-15).
+> **Multi-session is now the default working mode, in every mode** — which
+> removes the tickets-mode shortcut and leaves all nine critical-path items
+> standing. **5.17's set claim was wrong twice in the same direction**: six →
+> nine → **ten**, the second error being the correction inheriting the base it
+> was fixing. Nine instances resolve to **four classes**, which is the finding;
+> per-skill patching is what produced 5.15. **5.17.2 closed** with
+> `scripts/recount.sh` (118 lines, no derivation of its own — it uses
+> `count-check.sh` as oracle). Its demonstration merged two branches to a count
+> one too high with **no conflict and `JOURNAL.md` absent from the diffstat**,
+> because the marker edits were byte-identical. **Rule 7's post-merge
+> re-derivation is now mechanical** rather than a human remembering. Found by
+> writing it wrong first: **a seen-count is not re-derivable** (class B′ → 5.17.3).
+> Filed **5.23–5.25**; `/skill` (6.7) is the leverage point. **5.4's ordering is
+> open for the operator** — it is the only skill whose premise *is* the new
+> default, scheduled last from when it was not. Scheduled open **26 → 29**;
+> wave 5 **9 of 25**; matrix **153 → 154**.
+> Earlier (2026-09-14, 2nd entry that day): **5.15's premise was
 > measured false, and it had already shipped as canon** — AGENTS.md rule 7
 > asserted that a skill edited in a `git worktree` is never the skill that
 > runs. Measured by crossover, the worktree session is served the
@@ -194,7 +211,7 @@
   **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (13) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
-- Next: **wave 5** — **5.17.2 first**: it gates any two concurrent task closures, since every tick moves the same marker, and it is solo work in the main checkout. ~~5.15 then 5.17.2~~ **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
+- Next: **wave 5** — ~~5.17.2 first~~ **Verdict (2026-09-14, 3rd):** 5.17.2 is closed (`scripts/recount.sh`, acceptance shown wrong first on a merge that lost a count silently). **The remaining multi-session critical path is 5.17.1, .3, .4, .5, .6 + 5.22 + 5.21.1 + 5.16** — eight items, and all nine of the original set stand now that multi-session is the default in *every* mode rather than tickets-mode-only. **5.23 `/skill` sits behind them as the leverage point**: patching shipped skills is finite work, a generator that does not know the four classes makes it infinite. **5.4's ordering is OPEN for the operator** — its premise (auditing another session's claim) *is* the new default, yet it is scheduled last from when that was an edge case; both readings recorded in the task, nothing moved. ~~5.15 then 5.17.2~~ **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
   4.45–4.47 carry three findings from a survey of two high-star
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
@@ -266,6 +283,189 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Multi-session becomes the default working mode, 5.17.2 closes with a merge that loses a number silently, and a set claim is wrong twice (2026-09-14, 3rd)
+
+*(Five commits reached `main` through **PRs #9 and #10**. Entry dated by the
+work; written 2026-09-15, and dated by the work per the convention this file
+already uses.)*
+
+**The premise change that reframes wave 5.** The operator stated that
+multi-session is the **default way he codes**, in every mode — not an edge
+case, and not tickets-mode-only. That removes the shortcut found the same
+day: three of 5.17's subtasks are document-mode artifacts, so *targeting
+tickets mode* would have cut the critical path from 9 items to 6. Document
+mode has to work too, so all nine stand.
+
+**5.17's set claim was wrong twice, in the same direction, and the second
+error was mine correcting the first.** It read *"Six of them break when two
+run at once."* Re-derived against check.sh §13's `READONLY_SKILLS` roster
+instead of the 2026-09-11 grep: **9 read-only** skills cannot collide by
+writing; of the 16 that can, **three were never listed** — `/learn`
+(LEARNINGS.md + seen-count, `learn/SKILL.md:55,67`), `/plan` replan
+(decimal-phase allocation, `plan/SKILL.md:3`), `/triage` (PLAN.md checkbox
+edits, `triage/SKILL.md:3,14`). Filed as nine (`6e4855c`). **Then nine was
+also wrong** (`9b0320f`): "six" counted **subtasks**, and 5.17.3 names
+**two** skills (`/journal` *and* `/retro`), so six subtasks always covered
+**seven** skills. Seven plus three is **ten**. The correction re-derived its
+three additions and took the base on trust — the same failure one layer up
+from the one it was fixing. The set is now enumerated so it can be checked:
+**10 affected** (`/do`, `/ticket`, `/journal`, `/retro`, `/learn`, `/plan`,
+`/triage`, `/ship`, `/health`, `/resume`), **15 not**, 10 + 15 = **25**.
+
+**Nine instances, four classes — which is the finding, not the count.** None
+of the three additions is a new failure mode:
+
+| Class | Instances | Fix |
+|---|---|---|
+| **A** allocated identifiers | `/ticket` task numbers, `/plan` decimal phases | detect collision, or let the server assign |
+| **B** stored aggregates | `/do` markers, `/triage` ticks | re-derive mechanically — **closed, 5.17.2** |
+| **B′** non-derivable accumulators | `/learn` seen-counts | needs a derivable shape first — 5.17.3 |
+| **C** same-anchor appends | `/journal`, `/retro`, `/learn`, `/triage` | conflict must be visible |
+| **D** branch-local as project-wide | `/health`, `/resume`, `/ship` | state the verdict's scope |
+
+Per-skill patching is whack-a-mole, and **5.15 was what that costs** — a gate
+built for a hazard that measurement then showed did not exist.
+
+**B′ was found by writing something false and catching it before it
+shipped.** The task text said the recount script must also fix `/learn`. It
+cannot: **a seen-count is not derivable.** Every other marked count has
+ground truth in the tree — count the directories, count the checkboxes. "How
+many times have I seen this lesson" has none; it is an accumulator, and
+nothing in the repo can reconstruct it. The fix that *does* work reshapes the
+data: store one dated occurrence per sighting and derive the count from those
+lines, converting an un-mergeable accumulator into a countable reality. Two
+sessions appending different occurrences conflict visibly or merge correctly;
+two sessions both writing `seen: 4` never can.
+
+**5.17.2 closed (`91354ed`) — and the demonstration produced better evidence
+than expected.** `scripts/recount.sh`, 118 lines. Acceptance run on a scratch
+clone, **shown wrong first**: two branches from one base, `session-a` closing
+5.6 and `session-b` closing 5.9, each hand-editing `open-scheduled` 29 → 28
+the way `/do` did before this change.
+
+| | reality (boxes) | marker |
+|---|---|---|
+| `session-a` alone | 28 | 28 ✓ |
+| `session-b` alone | 28 | 28 ✓ |
+| **merged, no conflict** | **27** | **28 ✗** |
+
+The sharpest piece is the merge diffstat: `Merge made by the 'ort' strategy.`
+/ `PLAN.md | 2 +-` — **`JOURNAL.md` absent entirely**, because the two marker
+edits were byte-identical and git silently took one side. A conflict would
+have been the *safe* outcome and there wasn't one. `count-check` caught it
+only **after** the merge, i.e. on `main`, which is the problem rather than
+the remedy. Then `recount.sh`: `fixed JOURNAL.md:190 count:open-scheduled ->
+27`, clean.
+
+**The script holds no derivation of its own** (`4b71821`). It runs
+`count-check.sh` and repairs what that reports, so the two cannot disagree
+about what a count should be — a duplicated `derive()` would create exactly
+the drift it exists to remove, and the copy would be the one CI never runs.
+It **verifies rather than assumes**, re-running count-check afterwards,
+because a parse that silently matched nothing would look identical to a
+repair. Proven **on this repo, not a copy**: adding the matrix case moved the
+derived count 153 → 154 and stranded two markers in different files;
+recount fixed both. Matrix case `recount repairs marker drift` — the first
+case in 154 to assert a **repair** works rather than a **guard** fires —
+watched both arms: `ok PASS` with it, `BAD got=FAIL want=PASS` without. Its
+seed moves the counted *reality* rather than the marker, so it cannot
+self-reverse into a `SEED NO-OP`; the harness caught that on the first design
+and the `NOMUT_CASES` exemption (pinned at exactly 1, loud if it grows) was
+deliberately not used.
+
+**The generic/specific split, from a check that changed the design.**
+`setup` installs only `skills/` — **`scripts/` never reaches an adopter**, and
+README's count markers are acstack describing *itself*, not a convention
+adopters inherit. So wiring `/do` to call `recount.sh` would have shipped
+every adopter an instruction naming a file they do not have. `/do` carries
+the **rule** (a derived count is re-derived, never hand-edited; the
+post-merge total belongs to whoever integrates, because a branch cannot see
+the task another session closed); AGENTS.md's binding rules carry the
+**tool**. `repo-rules` stays **7** — the new bullet joins the top
+binding-rules list, outside the range count-check derives from.
+
+**Rule 7's re-derivation became mechanical.** Since 2026-09-11 the canon has
+said "re-derive every count marker after every merge", and until now that was
+a human remembering. PR #10's merge is the first where a script did it:
+`recount: nothing to do — every marked count already matches its
+derivation`.
+
+**Filed: 5.23–5.25** (`8add82f`), scheduled open **26 → 29**, rewritten by
+`recount.sh` rather than by hand — its first use on real drift. **5.23
+`/skill` (6.7) is the leverage point**: it authors skills and knows nothing
+about concurrency, so every skill it emits is born with the defect 5.17 is
+cleaning up ten instances of. Patching shipped skills is finite; a generator
+that does not know the classes makes it infinite. **5.24** `/careful` (5.3)
+assumes one session — under concurrency whether an act is destructive depends
+on *who else holds the thing*, and 5.3's acceptance names force-push, bulk
+delete and secret rotation, none of which is that case; wired so 5.3 cannot
+close before it is ruled. **5.25** `/eval-spec` writes `eval/`, ruled out of
+5.17's scope correctly and thereby owned by nobody; a golden set is where a
+silent merge is worst, since a vanished case takes its coverage and the score
+still looks fine.
+
+**5.4 annotated, deliberately not reordered.** Its own stated gap is
+*"auditing a claim made by someone else — another session, another agent, a
+teammate"*, which makes it the **only skill whose premise IS the new
+default** — yet it is scheduled **last** by a decision taken when
+multi-session was an edge case. Both readings recorded: it is now central, or
+it stays last **because** it audits the other skills and wants them fixed
+first so it is not auditing known-broken behaviour. The second is a real
+dependency argument, not deference. **Open for the operator**; nothing moved.
+
+**Self-indicting, in order of cost.** **Two CI watchers looked armed and were
+not** — the first's `jq` expression never survived quoting into `bash -c`
+(`failed to parse jq expression … unexpected token "\\"`), so every poll fell
+to the error branch and it would have reported a **timeout on a run that
+passed**; the second nested `&` inside a backgrounded call, so the outer
+shell exited after a `sleep` and the completion notification fired for the
+*arming* command, not the watch. Different causes, one pattern: the thing
+being watched was verified carefully and the **instrument** not at all. The
+third was written to a file and **both arms proven** (fires on a completed
+run, silent on a running one) before being trusted, and it worked. **A
+three-dot `git diff main...<branch>` was presented as independent
+verification** of whether merged branches were safe to delete — it shows what
+a branch changed since its merge base, is non-empty for any branch that ever
+had a commit, and structurally cannot answer the question; `git cherry` plus
+the GitHub PR state were the real check. **A blast-radius grep matched all 25
+skills** because it measured the shared principles block's mention of
+PLAN/JOURNAL rather than any write. **Branch cleanup was oversold** as
+costing "something real" when it buys a readable branch list and nothing
+else. And **three assertions that `~/.claude/CLAUDE.md` carried the stale
+worktree claim were false** — it never did; the claim was in AGENTS.md rule 7,
+restated from memory without opening the file.
+
+**Two machine facts.** `git branch --merged main` reports a **rebase-merged
+branch as UNMERGED** — it is SHA-based and rebase rewrites them, so all local
+branches looked unmerged while `git cherry` marked every commit `-`; deleting
+on that signal looks unsafe, and trusting its inverse strands merged branches
+forever. And `~/.claude/bin/awake-while` prints `nice(5) failed: operation
+not permitted` under the sandbox — non-fatal, both long runs completed, but
+the sleep-hold may be weaker than intended in a sandboxed session.
+
+**What did NOT change:** CONDUCT's ten rules; README; VERSION 0.4.0; skills
+**25**; check.sh sections **38**; `check.sh`, `count-check.sh`'s derivations
+and `guard-matrix.sh`'s existing cases (only `EXEMPT` gained
+`scripts/recount.sh`, with its reason: the rewrite regex must contain the
+marker literal, so the stray scan reads the tool as making a claim — it was
+flagged on its first run, which is the scan working). 4.3/4.4 still
+adopter-gated; Waves B and C untouched. **Branch cleanup did not happen**:
+verified safe on two independent sources and explicitly authorized, and
+`git branch -D` was still denied by the permission gate, batched and singly.
+No workaround was attempted — `git update-ref -d` would delete the same refs
+while routing around a rule written on purpose. Nine local branches and eight
+on `origin` remain.
+
+**Validation close.** `check.sh` **38, all clean** on every commit standing
+alone and on each merged tree. Matrix **153 → 154**, full unfiltered runs
+**154/154** on two separate trees (`8974459`, `2f94b74`), each with the tree
+verified **unmoved** before and after, since a moving tree has produced a
+phantom PASS here before. CI green twice — 16m17s and 16m18s, back inside the
+15m48s–16m41s band that PR #7's 12m51s sat below. Markers **re-derived** after
+every merge and confirmed by `recount.sh` itself: `open-scheduled` **29**,
+`matrix-cases` **154**, `repo-rules` **7**, `checks` **38**, skills **25**.
+Wave 5 **9 of 25** with 5.17.2 closed as a subtask. `/do` 175 lines.
 
 ### 5.15 falls to its own measurement, the canon loses a claim, and the first rebase merge lands (2026-09-14, 2nd)
 
