@@ -4193,6 +4193,14 @@ test databases; lumping it in would either block the skill or stretch
 rather than inherited: it never edits the project, the claim, or the
 acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
 
+**Build order (ruled 2026-09-16):** 5.17.1 → 5.17.4 / .5 / .6 → 5.26 → 5.4 →
+the remaining open tasks in listed order. The list below is **not** re-sorted;
+the ruling lives here and in 5.4's and 5.26's own dated verdicts, so a reader
+opening either task finds it without the journal. Multi-session becoming the
+default (2026-09-14) is what moved both off the end: correctness (5.17) before
+the one skill whose premise *is* the new default, and the CI cut before the
+multi-PR build that would otherwise pay full price for every push.
+
 - [x] **5.1** *(Done 2026-08-17. `/deps review` ships at 110 lines,
   description **449** chars (total 9,624 → ~10,073 of 12,000), enrolled in
   `READONLY_SKILLS` with §33's stated size 8 → 9.
@@ -4317,8 +4325,10 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   longer prompts. CONDUCT.md §5 carries the matching evidence note.
 - [ ] **5.4** /verify — audits a completion *claim* rather than the code:
   re-derives what acceptance demands, runs it against the running system,
-  reports CONFIRMED / OVERSTATED / FALSE. **Build last and only with that
-  angle** — this is the crowded lane. superpowers gates the agent on
+  reports CONFIRMED / OVERSTATED / FALSE. ~~**Build last**~~ **and only with
+  that angle** — this is the crowded lane *(the ordering half is superseded
+  by the 2026-09-16 verdict below; the angle half stands verbatim)*.
+  superpowers gates the agent on
   itself before it may claim done, spec-kit's `/speckit.converge` diffs
   code against spec and emits more tasks, and BMAD's Acceptance Auditor
   reviews the diff via a context-free subagent. acstack already covers
@@ -4342,9 +4352,27 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   default. Two readings, both defensible: it is now **central** and belongs
   early, or it stays last **because** it audits the other skills and wants
   them fixed first (5.17) so it is not auditing known-broken behaviour. The
-  second reading is a real dependency argument, not deference. Nothing is
-  reordered pending a ruling; recorded so the ordering is a decision rather
+  second reading is a real dependency argument, not deference. ~~Nothing is
+  reordered pending a ruling~~; recorded so the ordering is a decision rather
   than an inheritance.
+  **Verdict (2026-09-16):** scheduled **immediately after 5.17.4/.5/.6 and
+  5.26**, ahead of every other open wave-5 task — not last, and not before
+  5.17.1. "Build last" was inherited from a premise measured false on
+  2026-09-14, so it could not stand on inertia. The dependency reading is real
+  but narrower than it reads: /verify consumes a claim, an acceptance and a
+  running system — it allocates no identifier (class A), stores no aggregate
+  (B/B′) and appends to no shared anchor (C), so 5.17.1–.3 have **no /verify
+  referent**. The dependency lives entirely in class D (5.17.4/.5/.6), and
+  there it is inheritance, not audit: class D's fix is the convention *state
+  the scope of a verdict as the branch, not the project*, and /verify is a
+  verdict-returning skill run from a branch — built before class D it ships as
+  the eleventh instance of the defect; built after, it inherits the convention
+  at birth. The cost of staying last is already being paid in prose: the
+  operator's own rule that a peer's "done" is checked at file:line before
+  anything is built on it runs on memory until this skill exists. **"Only
+  with that angle" is not superseded** — the crowded-lane scope discipline
+  (audit someone else's claim; never re-cover /do, /ship, /triage) survives
+  the reorder unchanged.
 - [x] **5.5** *(Done 2026-09-10. Lands as `## Mode: upgrade` in
   `skills/deps/SKILL.md` (110 → 144 lines) with the procedure in
   `references/upgrade.md` (119 lines). The split was decided by §29, not
@@ -4977,13 +5005,42 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   So sharding must not ship without the exhaustiveness check, and the check
   needs its own matrix case, since a sharding bug is invisible by
   construction.
-  **Do the cheap thing first.** At ~4.6 s/case the dominant cost may be
+  ~~**Do the cheap thing first.** At ~4.6 s/case the dominant cost may be
   `fullcase`'s per-case `cp -R` of the whole repo rather than `check.sh`
   itself. If so, `cp -Rl`, a tar pipe or a `git worktree` per case cuts the
   total on a **single** runner with zero coverage risk and no new invariant
   to guard. Splitting buys speed at the price of a correctness obligation;
   making cases cheaper buys speed at no price. Measure the split before
-  building either.
+  building either.~~ **Verdict (2026-09-16): measured, and the hypothesis is
+  false.** The per-case `cp -R` copies the `.git`-less snapshot (4.55a already
+  drops the 40M `.git` once, at start) and costs **0.08 s**; `check.sh` on
+  that copy costs **6.3–6.7 s** — three timed trials each, local. The copy is
+  ~1% of a case, so hardlinks, tar pipes and worktrees buy nothing. Inside
+  `check.sh`, three sections carry **68%**: §5 shellcheck **1.65 s**, §11
+  positive controls **1.53 s**, §8 cross-references **1.35 s**; the other 36
+  share 2.2 s (instrumented scratch copy, run as the matrix runs it with
+  `ACSTACK_BANNED_FILE=/dev/null`). Even deleting those three — impossible,
+  they are guards — leaves a ~5-minute matrix; four shards give ~3. **So
+  sharding is the primary move, not the fallback**, and section speed-ups are
+  a separate, optional, coverage-sensitive follow-up. The **before** figure the
+  acceptance asks for is in hand: matrix step **11m37s** of an 11m50s run
+  (`gh api repos/<owner>/<repo>/actions/runs/<id>/jobs`, three runs),
+  **4.47 s/case** aggregate over 156; **135** cases (132 `fullcase` + 3
+  `bannedcase`) run the whole `check.sh`, 16 `check` cases run it on a
+  stripped tree, 5 `gitcase`. Checkout is **2 s** measured, not the ~30–60 s
+  estimated above. One of five local `check.sh` runs stalled **183 s in §8**;
+  the other four ran it in 1.3–1.4 s — unexplained, not seen in CI's steady
+  per-case rate, recorded rather than chased. **`--shard i/N` pays twice:**
+  the local rule "full matrix before pushing any guard change" costs the same
+  11+ minutes under `awake-while`, and N shards as parallel local processes
+  cut that too, under the same partition invariant. **Scheduled** after
+  5.17.4/.5/.6 and before 5.4 (see the wave's build order); file-disjoint from
+  5.17, so a peer session can carry it in parallel. **Carried here because
+  this is the next PR that touches `check.sh` and so runs the full matrix
+  anyway:** its header enumeration (`scripts/check.sh:7-25`, "the SINGLE
+  enumeration") stops at §35 — §36 landed 2026-09-16 without the same-commit
+  update the header demands, and nothing guards the list, since `count-check`
+  derives from the `# N.` lines instead. Add the §36 line in this task's PR.
   **Declined deliberately (2026-09-16):** selecting cases from the diff
   ("only run what the change touches"). It needs a changed-files → cases
   mapping, which is a hardcoded list that under-counts silently the day a
