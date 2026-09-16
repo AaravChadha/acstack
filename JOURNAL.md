@@ -3,7 +3,25 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-14 (3rd entry that day; written 2026-09-15).
+> **Last update**: 2026-09-16. **Class C closed by reshaping data rather than
+> checking it.** `/learn`'s `Seen: N` was an accumulator two sessions could
+> not both increment — both write `2`, git auto-merges the identical edit, the
+> true `3` is lost, and `recount` cannot repair what has no ground truth. Now
+> **one dated line per sighting, no stored total**, which inverts the failure:
+> the old number's silent merge is always wrong, the new shape's is always
+> **right**, because two records of one sighting *are* one sighting.
+> `/journal`'s same-day conflict turned out to be **already** the tolerable
+> outcome — the gap was that no skill said so, or said to keep **both**
+> entries. Live round run, blind: `/learn` appended a dated line and wrote no
+> digit. **The guard exists because the operator pushed back** — 5.17.3
+> shipped with a copy-proof, a live run and no guard, and "no guard can
+> inspect one" was wrongly generalised from conflict resolution to the
+> reshape. check.sh **§36** now asserts the positive shape *and* rejects the
+> numeric one, two matrix cases watched failing. Filed **5.26** (shard the
+> matrix; the exhaustiveness assertion is part of it, not a follow-up).
+> `checks` **38 → 39**; matrix **154 → 156**; scheduled open **30**; wave 5
+> **9 of 26**.
+> Earlier (2026-09-14, 3rd entry that day; written 2026-09-15).
 > **Multi-session is now the default working mode, in every mode** — which
 > removes the tickets-mode shortcut and leaves all nine critical-path items
 > standing. **5.17's set claim was wrong twice in the same direction**: six →
@@ -283,6 +301,116 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Class C closes by reshaping data rather than checking it, and the guard arrives only because the operator asked for it (2026-09-16)
+
+*(Two commits reached `main` through **PR #12**; one more filed here.)*
+
+**5.17.3 closed, and measuring first changed what the task was** (`0c52ffc`).
+The task's own framing put `/journal`'s shared anchor at the centre. Measured
+on a scratch clone before designing anything: two branches journaling the same
+day produce `CONFLICT (content): Merge conflict in JOURNAL.md`. **The
+acceptance's first arm was already satisfied** — the conflict is the tolerable
+outcome and it was already happening. The real gap was that **no skill said
+so**, or said what a correct resolution looks like; a session could reasonably
+resolve by dropping one entry and lose a whole session's record with nothing
+to notice. `/journal` step 2 now says keep **both** entries, never merge them
+under one heading, and re-derive any stored count after resolving rather than
+accepting whichever side git kept. `/retro` points at that rule and names that
+it writes the same anchor.
+
+**The dangerous arm was `/learn`, and the fix was to change the data's shape.**
+Demonstrated: `Seen: 1`, two sessions each recording one further sighting, both
+writing `2` — `Merge made by the 'ort' strategy`, no conflict, result **2**
+where the truth is **3**. `recount.sh` cannot repair it: an accumulator has no
+ground truth in the tree to re-derive from (class B′, identified 2026-09-14).
+Replaced with **one dated line per sighting and no stored total**, then both
+arms measured on the new shape:
+
+| | two *different* sightings | the *same* sighting twice |
+|---|---|---|
+| `Seen: N` | silent merge → **wrong** | silent merge → **wrong** |
+| dated lines | visible conflict, both kept | silent merge → **correct** |
+
+**The old number's silent merge is always wrong; the new shape's is always
+right**, because two records of one sighting *are* one sighting. That asymmetry
+is the fix — not the conflict. Promotion threshold restated from "`Seen:`
+reaches 2+" to "two or more `Seen:` lines". `/triage` gained the class note:
+applied box changes move derived totals, so re-derive with the project's tool
+and state that the post-merge total is the integrator's.
+
+**The live round, and why it was owed.** The fix is *instruction text*, and
+mechanical green verifies the authored text, never that a model behaves
+differently. Blind headless run of `/learn` into a scratch project whose
+LEARNINGS.md already held an entry in the new shape, prompt never mentioning
+the format: it **appended** `- 2026-09-15 — CSV export path, same
+citext-versus-text issue`, deduped to **1** entry, wrote **0** numeric
+`Seen:`. Usefully, the live skill *was* the edited one — because the work
+happened in the main checkout the symlinks resolve to, which is **5.15's
+finding used deliberately** rather than tripped over.
+
+**The guard exists because the operator pushed back, not because the author
+caught it** (`5dd8472`). 5.17.3 shipped with a copy-proof and a live run and
+**no guard** — nothing would have noticed the template sliding back to a
+digit, which by this repo's own standard is a proof that does not persist. The
+author had also written *"no guard can inspect one"*, which was true of
+conflict-resolution quality and **wrongly generalised** to the reshape, which
+is trivially guardable. check.sh **§36** now asserts the **positive** shape — a
+bare `- **Seen:**` followed by an indented dated line — *and* separately
+rejects a numeric form, because a denylist certifies nothing about what is
+actually there. Two matrix cases, one per half, watched in both directions:
+`ok … FAIL` with the guard present, `BAD got=PASS want=FAIL` for both with it
+disabled. Seeds derived from whatever the template currently says, so
+rewording cannot no-op them.
+
+**`recount.sh` earned its keep three times in one session**, on real drift
+rather than seeded drift: 4 markers across 2 files when the guard and cases
+landed (`checks` 38 → 39, `matrix-cases` 154 → 156), 1 when three tasks were
+filed, 1 more for 5.26. Every post-merge re-derivation this session was a
+script rather than a person remembering.
+
+**And it found the limit it declares.** Bumping the counts exposed
+`docs/ARCHITECTURE.md:159` reading **"35 numbered sections"** beside a marker
+`recount` had correctly moved to **39** — *unmarked prose*, exactly what both
+`count-check` and `recount` say they cannot see, drifting in the same edit that
+exposed the tooling. Fixed to 36, and verified it is the only such claim in
+the tree.
+
+**Filed: 5.26** — shard the matrix across parallel CI jobs. 5.20.2 tiers by
+*event*; this is the other axis. `guard-matrix.sh`'s filter is a regex on case
+*names*, so "cases 40–78" is inexpressible and `--shard i/N` is needed.
+**Recorded as more than a speedup:** N shards are a full run only if they
+provably partition the set, and a case landing in **zero** shards leaves every
+shard green and the aggregate clean — this repo's most-repeated failure class.
+So the exhaustiveness assertion is part of the task, with its own matrix case,
+because a sharding bug is invisible by construction. **Cheap-first noted:** the
+dominant per-case cost may be `fullcase`'s `cp -R` of the whole repo rather
+than `check.sh`, in which case hardlinks or a worktree per case cut the total
+on **one** runner with zero coverage risk. **Declined deliberately:**
+selecting cases from the diff — it needs a changed-files → cases mapping that
+under-counts silently the day a case ships with no trigger wired.
+
+**Self-indicting.** The missing guard above is the costly one. Also: a commit
+subject unwrapped to **103 characters** and was amended to 57 before pushing,
+since AGENTS.md asks for a short one; and the session-total report given
+mid-session said **three** unjournaled commits when it was **five**, having
+forgotten PR #9's first two.
+
+**What did NOT change:** CONDUCT's ten rules; README; VERSION 0.4.0; skills
+**25**; `recount.sh`, `count-check.sh`'s derivations and `setup` untouched.
+5.4's ordering **still open for the operator** — annotated with both readings
+2026-09-14, nothing moved. Branch cleanup still refused by the permission gate:
+ten local branches and nine on `origin`, all verified content-upstream.
+
+**Validation close.** `check.sh` **39, all clean** on each commit standing
+alone and on the merged tree. Matrix **154 → 156**, full unfiltered run
+**156/156** on the frozen tree `f0ba315`, verified unmoved. CI green
+**11m58s** — the second run below the 15m48s–16m41s band after PR #7's
+12m51s, recorded as two data points rather than a new baseline. Markers
+re-derived after the merge by `recount.sh` itself: `open-scheduled` **30**,
+`checks` **39**, `matrix-cases` **156**, `repo-rules` **7**, skills **25**.
+Wave 5 **9 of 26**; 5.17 at **2 of 6** subtasks. Skill line counts: learn 125,
+journal 121, retro 130, triage 153.
 
 ### Multi-session becomes the default working mode, 5.17.2 closes with a merge that loses a number silently, and a set claim is wrong twice (2026-09-14, 3rd)
 
