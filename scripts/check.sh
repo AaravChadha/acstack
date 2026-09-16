@@ -1079,6 +1079,34 @@ if [ -n "$missing_acc" ]; then
   fail=1
 fi
 
+# 36. /learn's sighting trail stays a LIST, never a stored total (5.17.3).
+#     A `**Seen:** N` you increment cannot survive two sessions: both read 1,
+#     both write 2, git auto-merges the identical edit with no conflict, and
+#     the true value 3 is lost — measured 2026-09-14. recount.sh cannot repair
+#     it either, because an accumulator has no ground truth in the tree to
+#     re-derive from. The fix was to reshape the data, and a reshape with no
+#     guard is a proof that does not persist: nothing else would notice the
+#     template sliding back to a digit.
+#     ASSERTS THE POSITIVE SHAPE, not merely the absence of digits. A
+#     denylist ("no numbers here") certifies nothing about what IS there — so
+#     this requires the template to carry `**Seen:**` followed by an indented
+#     dated line, AND separately rejects any numeric form. Either half
+#     failing alone is a real defect.
+learn_md="skills/learn/SKILL.md"
+if [ -f "$learn_md" ]; then
+  if ! grep -qE '^- \*\*Seen:\*\*$' "$learn_md"; then
+    echo "FAIL seen-shape: $learn_md has no bare '- **Seen:**' line — the sighting trail must be a list, not a stored total (5.17.3)"
+    fail=1
+  elif ! grep -A1 -E '^- \*\*Seen:\*\*$' "$learn_md" | grep -qE '^  - <?[0-9Y]'; then
+    echo "FAIL seen-shape: $learn_md's '- **Seen:**' is not followed by an indented dated line — the count must BE the lines (5.17.3)"
+    fail=1
+  fi
+  if grep -qE '\*\*Seen:\*\* *[0-9]' "$learn_md"; then
+    echo "FAIL seen-shape: $learn_md carries a numeric '**Seen:** N' — a stored total two sessions both increment merges silently and loses one (5.17.3)"
+    fail=1
+  fi
+fi
+
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
     echo "check.sh: no failures, but $skipped check(s) SKIPPED — coverage is incomplete"

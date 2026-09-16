@@ -478,6 +478,26 @@ n = '\n'.join(lines)
 assert n != s, 'seed no-op'
 p.write_text(n)
 EOF"
+# 5.17.3 /learn's sighting trail. TWO cases because the guard has two halves
+# and either failing alone is a real defect: the template regressing to a
+# stored total (the measured multi-session loss), and the list losing its
+# dated line so the "count IS the lines" property quietly stops holding.
+# Seeds are DERIVED: they rewrite whatever the template currently says rather
+# than naming its exact text, so rewording the skill cannot no-op them.
+fullcase "seen-count regresses to a total"  FAIL 'seen-shape' bash -c "python3 - <<'EOF'
+import pathlib, re
+p = pathlib.Path('skills/learn/SKILL.md'); s = p.read_text()
+n = re.sub(r'- \*\*Seen:\*\*\n(  - [^\n]*\n)+', '- **Seen:** 1\n', s, count=1)
+assert n != s, 'seed no-op: the Seen list shape was not found'
+p.write_text(n)
+EOF"
+fullcase "seen list loses its dated line"   FAIL 'seen-shape' bash -c "python3 - <<'EOF'
+import pathlib, re
+p = pathlib.Path('skills/learn/SKILL.md'); s = p.read_text()
+n = re.sub(r'(- \*\*Seen:\*\*\n)(  - [^\n]*\n)+', r'\1', s, count=1)
+assert n != s, 'seed no-op: the Seen list shape was not found'
+p.write_text(n)
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody
