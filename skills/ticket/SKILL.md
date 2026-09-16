@@ -87,7 +87,14 @@ document mode; never guess. Then `gh issue create`:
 Append a numbered task to PLAN.md:
 
 - Under the current open phase, taking the next free task number — existing
-  tasks are NEVER renumbered.
+  tasks are NEVER renumbered. **One carve-out: a number allocated on a
+  branch is provisional until the branch merges.** Two sessions reading the
+  same plan draw the same number, and when the filings land at different
+  offsets git merges them with no conflict (measured 2026-09-16, 5.17.1).
+  So place the new task at the **physical end** of the phase's list, where a
+  concurrent filing collides visibly instead of merging silently — and when
+  two filings do collide, keep both and renumber the **later-merged** one;
+  never drop either.
 - With its acceptance line (or the explicit TBD).
 - No obvious phase → a dated checkbox under `## Open items` instead;
   /triage or the next `/plan replan` finds it a home.
@@ -98,7 +105,8 @@ Append a numbered task to PLAN.md:
 
 ## Report and stop
 
-Report what was filed — the issue URL or the exact PLAN.md line — and
+Report what was filed — the issue URL or the exact PLAN.md line, and in
+document mode that the number is provisional until the branch merges — and
 stop. Capture never starts the work (CONDUCT rule 5): /ticket writing
 code because the fix "looked quick" is exactly the failure mode this
 skill exists to prevent.
