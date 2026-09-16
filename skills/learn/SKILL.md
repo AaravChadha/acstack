@@ -1,6 +1,6 @@
 ---
 name: learn
-description: Capture a lesson as a durable LEARNINGS.md entry - one-line lesson, symptom, cause, fix, context, and a seen-count; dedups against existing entries and proposes promoting recurring lessons into the pack's known-bug-classes. Use when the user says they learned something, wants to capture a lesson or gotcha, or when an investigation closes with a cause worth keeping.
+description: Capture a lesson as a durable LEARNINGS.md entry - one-line lesson, symptom, cause, fix, context, and a dated trail of sightings; dedups against existing entries and proposes promoting recurring lessons into the pack's known-bug-classes. Use when the user says they learned something, wants to capture a lesson or gotcha, or when an investigation closes with a cause worth keeping.
 argument-hint: "<lesson | notes>"
 ---
 
@@ -61,8 +61,18 @@ Shape the input into one LEARNINGS.md entry:
 - **Cause:** <the mechanism, at file:line when known>
 - **Fix:** <what actually resolved it>
 - **Context:** <project area, tech, file — when known>
-- **Seen:** 1
+- **Seen:**
+  - <YYYY-MM-DD> — <what was seen this time, specifically>
 ```
+
+**One line per sighting, and no stored total.** A count you increment cannot
+survive two sessions: both read `Seen: 1`, both write `2`, git auto-merges
+the identical edit with no conflict, and the true value 3 is lost —
+measured 2026-09-14. A list has no such failure, because the number *is* the
+lines. Two different sightings either both survive or conflict visibly; two
+records of the *same* sighting collapse to one, which is correct rather than
+lossy. Make each line specific enough to tell sightings apart — a bare date
+repeated is indistinguishable from the same date recorded twice.
 
 If LEARNINGS.md doesn't exist, create it with this header, then append:
 
@@ -82,13 +92,15 @@ cause is still a guess is captured with `- **Cause:** unconfirmed —
 ## Dedup before append
 
 Scan LEARNINGS.md for an existing entry with the same cause. On a match,
-propose bumping instead of duplicating: increment `**Seen:**`, append
-`last seen YYYY-MM-DD`, and add any new context — the count is the
-signal that makes promotion honest.
+propose recording the new sighting instead of duplicating the entry: **append
+one `**Seen:**` line** dated today and saying what was seen this time, plus
+any new context. Never rewrite or renumber the existing lines — the trail of
+sightings is the signal that makes promotion honest, and an appended line is
+the only shape two sessions can both write safely.
 
 ## Promotion
 
-When an entry's `**Seen:**` reaches 2+, or the lesson is plainly
+When an entry has **two or more `**Seen:**` lines**, or the lesson is plainly
 project-independent, propose promoting it into the pack's
 `../audit/references/known-bug-classes.md`, outputting the exact
 entry in that file's format:

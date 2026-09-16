@@ -105,7 +105,10 @@ correct, not a gap.
 
 Append to JOURNAL.md as a dated entry under `## Key decisions and
 journey`, newest first:
-`### Retro (YYYY-MM-DD — <window>)`. A journal without that heading —
+`### Retro (YYYY-MM-DD — <window>)`. **This is the same anchor `/journal`
+writes at**, so a retro and a journal entry from two concurrent sessions
+conflict — which is the safe outcome, and is resolved by keeping both
+entries rather than choosing one (see `/journal` step 2). A journal without that heading —
 hand-kept rather than seeded from /journal's template — takes the entry
 per that journal's own convention: appended where its entries actually
 go (top of a newest-first record, bottom of a chronological one), with
