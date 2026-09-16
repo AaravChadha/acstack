@@ -537,6 +537,40 @@ new, n = re.subn(r'(<!-- count:[a-z0-9-]+ -->)([0-9]+)(<!-- /count -->)', lambda
 assert n == 1, 'seed no-op: no marker found in JOURNAL.md'
 io.open(p, 'w', encoding='utf-8').write(new)
 EOF"
+# 38: the class-D scope line is one source line per skill; losing it in any
+# of the three, or the roster's size drifting, must fail (5.17.4/.5/.6).
+fullcase "health loses its scope line"  FAIL 'scope' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/health/SKILL.md'
+L = io.open(p, encoding='utf-8').read().split('\n')
+k = [l for l in L if '**Scope:** branch' in l]
+assert k, 'seed no-op: no scope line in health'
+io.open(p, 'w', encoding='utf-8').write('\n'.join(l for l in L if l not in k))
+EOF"
+fullcase "resume loses its scope line"  FAIL 'scope' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/resume/SKILL.md'
+L = io.open(p, encoding='utf-8').read().split('\n')
+k = [l for l in L if '**Scope:** branch' in l]
+assert k, 'seed no-op: no scope line in resume'
+io.open(p, 'w', encoding='utf-8').write('\n'.join(l for l in L if l not in k))
+EOF"
+fullcase "ship loses its scope line"    FAIL 'scope' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/ship/SKILL.md'
+L = io.open(p, encoding='utf-8').read().split('\n')
+k = [l for l in L if '**Scope:** branch' in l]
+assert k, 'seed no-op: no scope line in ship'
+io.open(p, 'w', encoding='utf-8').write('\n'.join(l for l in L if l not in k))
+EOF"
+fullcase "scope roster size drifts"       FAIL 'scope' bash -c "python3 - <<'EOF'
+import io
+p = 'scripts/check.sh'
+s = io.open(p, encoding='utf-8').read()
+old = 'SCOPE_SKILLS=\"health resume ship\"'
+assert s.count(old) == 1, 'seed no-op: roster line not found'
+io.open(p, 'w', encoding='utf-8').write(s.replace(old, 'SCOPE_SKILLS=\"health resume ship audit\"'))
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody

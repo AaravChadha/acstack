@@ -8,12 +8,26 @@ the report quotes the command that produced it, so the user can rerun.
 ```bash
 ls BRIEF.md PLAN.md JOURNAL.md 2>/dev/null           # canonical names
 ls PLANNING_PROMPT.md PLANNING.md STATUS.md 2>/dev/null  # legacy names
-git log -1 --format='%ci %h' -- JOURNAL.md            # journal last touch
-git log -5 --format='%ci %h %s'                       # recent work commits
+# default branch — resolve, never assume (origin/HEAD is unset in a repo made
+# by git init; --verify -q fails silently instead of printing a sentinel)
+d="$(git rev-parse --abbrev-ref --verify -q origin/HEAD 2>/dev/null)"; d="${d#origin/}"
+[ -n "$d" ] || for c in main master trunk; do git rev-parse --verify -q "refs/heads/$c" >/dev/null && d="$c" && break; done
+git rev-parse --verify -q "$d" >/dev/null || echo "docs row: skipped — cannot resolve the default branch"
+# last journal commit reachable from HEAD (journal-commit-format prefix), else JOURNAL.md's last touch
+j="$(git log --format='%h %s' | grep -m1 -E '^[0-9a-f]+ Journal [0-9]')"; j="${j%% *}"
+j="${j:-$(git log -1 --format=%h -- JOURNAL.md)}"
+# THIS branch's unjournaled commits — the row's verdict (on the default, everything since the entry)
+if [ "$(git rev-parse --abbrev-ref HEAD)" = "$d" ]; then own="$(git log --oneline HEAD "^$j" | wc -l)"
+else own="$(git log --oneline HEAD "^$d" "^$j" | wc -l)"; fi
+theirs="$(git log --oneline "$d" "^$j" | wc -l)"       # the default's commits since the entry — info, never this row's ✗
+echo "unjournaled on this branch: $own"; echo "$d since the last entry: $theirs"
 ```
 
-Journal is stale when non-journal commits postdate its last touch by
-more than a session. PLAN check: the topmost `## [ ]` phase must carry
+Journal is stale when `own` — this branch's own non-journal commits since
+its last entry — exceeds a session's worth. `theirs` is other sessions'
+integrated work and is reported as **info**, never as this branch's
+staleness: a whole-log rule fires on every branch forever once two sessions
+commit (5.17.4). PLAN check: the topmost `## [ ]` phase must carry
 an `**Exit criterion:**` whose command is literally runnable.
 
 **Externally-recorded brief (task 4.41).** A missing BRIEF is ✗ by

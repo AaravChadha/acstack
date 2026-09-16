@@ -2,7 +2,7 @@
 name: health
 description: Read-only project checkup - three docs present and fresh, CLAUDE.md pointer intact, conduct block current, config valid, secrets clean, attribution honored, learnings alive, tickets-mode prerequisites met. Every failed check comes with its exact fix command, never applied. Use when the user asks for a health check, a project checkup, or whether the project setup is sane.
 argument-hint: "[notes]"
-allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git ls-files:*), Bash(git remote get-url:*), Bash(ls:*), Bash(cat:*), Bash(grep:*), Bash(command -v:*), Bash(readlink:*), Bash(diff:*), Bash(gh auth status), Bash(gh issue list:*), Bash(gh label list:*)
+allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git rev-parse:*), Bash(wc:*), Bash(git ls-files:*), Bash(git remote get-url:*), Bash(ls:*), Bash(cat:*), Bash(grep:*), Bash(command -v:*), Bash(readlink:*), Bash(diff:*), Bash(gh auth status), Bash(gh issue list:*), Bash(gh label list:*)
 ---
 
 # /health — the five-minute project checkup
@@ -67,8 +67,16 @@ that apply; skip none silently — a check that can't run (e.g. copy
 install instead of symlinks) is reported as `skipped — <why>`.
 
 1. **Docs.** BRIEF/PLAN/JOURNAL present (legacy names accepted and
-   named as such). JOURNAL stale if work commits postdate its last
-   update. PLAN has an open phase with a runnable exit criterion.
+   named as such). JOURNAL stale if **this branch's own** commits postdate
+   its last entry — reachable from HEAD but not from the default branch,
+   never the whole log. Commits on the default since the last journal
+   commit are a separate **info** line (`<default> has N commits since the
+   last entry — other sessions' integrated work`), not this branch's
+   staleness; on the default itself the two coincide and stale means
+   stale. With N sessions a whole-log rule fires forever and stops being
+   read — measured 2026-09-16 on the pack's own repo: 4 "unjournaled"
+   commits on a branch with 0 of its own (5.17.4). PLAN has an open phase
+   with a runnable exit criterion.
 2. **Pointer.** CLAUDE.md is exactly the one-line `@AGENTS.md` pointer.
    Anything else is flagged — never silently rewritten (/plan's rule).
 3. **Conduct.** The marker-fenced `acstack-conduct` block exists in
@@ -140,6 +148,11 @@ and not reported as missing until they land.
 
 First line is the verdict: `HEALTHY` or `<N> issues, <M> info`. Then
 the table — check | ✓ / ✗ / info / skipped | evidence | fix command —
-one row per check above, in order. Close with scope: what was checked,
-what was skipped and why. No prose padding between the verdict and the
-table; the table is the report.
+one row per check above, in order. Close with scope — this line first,
+one source line, the same in every branch-reading skill of this pack,
+because the verdict is about one branch's tree (5.17.4):
+
+**Scope:** branch `<branch>` @ `<sha>` vs `<default>` @ `<sha>` — a verdict about this branch's tree, not the project's; the merged tree is the integrator's to re-check.
+
+Then what was checked, what was skipped and why. No prose padding between
+the verdict and the table; the table is the report.

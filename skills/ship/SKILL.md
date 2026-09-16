@@ -68,6 +68,12 @@ here so the rule stays true everywhere else.
 1. **State.** Working tree clean; current branch is not the default (on
    default → offer to cut `<branch-prefix><slug>`, don't ship from it);
    the branch is ahead of the default by the commits being shipped.
+   **Every gate is branch-local** (5.17.6): its verdict is about this
+   branch's tree at this commit. Gate 4's drift is measured against PLAN
+   and JOURNAL as of this branch, which the integrator may already have
+   moved on the default — the merged tree is theirs to re-check, with the
+   project's re-derivation tool if it has one. The report says so with the
+   canonical scope line (under "The act"), never by implication.
 2. **Tests.** Run the project's suite — the `test-command` config key if
    set, otherwise auto-detected — and record the summary numbers verbatim.
    No suite and no `test-command` → say so plainly; a missing suite is
@@ -132,9 +138,15 @@ with their name on it. The reference carries where the facts come from
 is enough) and what never goes in.
 
 Under `push: branch-pr`, the PR body is report-shaped: what-and-why lede,
-a per-gate evidence table (the test/eval numbers, the doc checks), and an
-out-of-scope line. Under `push: direct` the same content is delivered as
-the report itself, since there is no PR to carry it.
+the scope line, a per-gate evidence table (the test/eval numbers, the doc
+checks), and an out-of-scope line. The scope line is the same in every
+report this pack's branch-reading skills make — one source line, verbatim
+(5.17.6):
+
+**Scope:** branch `<branch>` @ `<sha>` vs `<default>` @ `<sha>` — a verdict about this branch's tree, not the project's; the merged tree is the integrator's to re-check.
+
+Under `push: direct` the same content is delivered as the report itself,
+since there is no PR to carry it.
 
 - **Tickets mode:** the PR carries `Fixes #N` for each issue the branch
   completes (from the commits' `#N` refs and the milestone) and is tied

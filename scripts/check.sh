@@ -25,6 +25,7 @@
 #   33 READONLY_SKILLS states its own size    34 commit subjects match the 3 shapes
 #   35 near-term open tasks state a done-condition
 #   36 /learn sighting trail is a list   37 PLAN.md identifiers are unique
+#   38 class-D skills state the scope of their verdict
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -468,7 +469,11 @@ SAFE_TOOLS="Read|Grep|Glob"
 # list, gh pr view, gh pr diff — so this adds no new class of capability, only
 # a non-GitHub registry. Recorded because widening a security allowlist should
 # never be a silent side effect of building a skill.
-SAFE_BASH="cat|ls|wc|grep|diff|readlink|command -v|git log|git diff|git status|git ls-files|git rev-parse|git check-ignore|git remote get-url|gh auth status|gh issue list|gh label list|gh pr view|gh pr diff|npx prisma migrate status|npm view"
+# `git for-each-ref` and `gh pr list` added 2026-09-16 for /resume's claim
+# check (5.17.5): the first lists refs and has no mutating flag at all; the
+# second is the same class as `gh issue list`, already here. No new class of
+# capability — a ref listing and a GitHub read.
+SAFE_BASH="cat|ls|wc|grep|diff|readlink|command -v|git log|git diff|git status|git ls-files|git rev-parse|git check-ignore|git remote get-url|gh auth status|gh issue list|gh label list|gh pr view|gh pr diff|npx prisma migrate status|npm view|git for-each-ref|gh pr list"
 for s_ in $READONLY_SKILLS; do
   f="skills/$s_/SKILL.md"
   if [ ! -f "$f" ]; then
@@ -1132,6 +1137,34 @@ dup_waves="$(grep -oE '^## \[[ x]\] Wave [0-9A-Z]+(\.[0-9]+)?' PLAN.md | sed -E 
 for w_ in $dup_waves; do
   echo "FAIL identifier: PLAN.md heading 'Wave $w_' appears $(grep -cE "^## \[[ x]\] Wave ${w_//./\\.}( |$)" PLAN.md) times — a merge collision; keep both, renumber the later-merged phase and its tasks (5.17.1)"
   fail=1
+done
+
+# 38. Class-D skills state the scope of their verdict (5.17.4/.5/.6). /health,
+#     /resume and /ship each compute a verdict from git and PLAN state as seen
+#     from one branch — journal staleness, the next unblocked tasks, the
+#     release gates — and each read as project-wide. With several sessions
+#     on one repo that is false: measured 2026-09-16 on this repo, /health's
+#     whole-log rule reported 4 unjournaled commits on a branch with 0 of its
+#     own, all four other sessions' merged PRs. One convention, three
+#     carriers: a canonical scope line in the report, naming the branch and
+#     stating that the merged tree is the integrator's to re-check. Asserted
+#     as a positive shape on ONE source line, so a rewording cannot split it
+#     past this check. The roster states its own size (§33's idiom): three,
+#     because these are the skills whose verdict is computed from
+#     branch-local state and reported as if it were the project's; a fourth
+#     joins with its reason and this count in the same edit.
+SCOPE_SKILLS="health resume ship"
+scope_n=0; for s_ in $SCOPE_SKILLS; do scope_n=$((scope_n + 1)); done
+if [ "$scope_n" -ne 3 ]; then
+  echo "FAIL scope: SCOPE_SKILLS names $scope_n skill(s), expected 3 — a new branch-reading skill joins with its reason and this count in the same edit (5.17.4-6)"
+  fail=1
+fi
+for s_ in $SCOPE_SKILLS; do
+  f="skills/$s_/SKILL.md"
+  if ! grep -qE '\*\*Scope:\*\* branch .*not the project' "$f" 2>/dev/null; then
+    echo "FAIL scope: $f lacks the class-D scope line ('**Scope:** branch … not the project', one source line) — its verdict reads as project-wide (5.17.4-6)"
+    fail=1
+  fi
 done
 
 if [ "$fail" -eq 0 ]; then

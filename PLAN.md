@@ -5091,7 +5091,20 @@ multi-PR build that would otherwise pay full price for every push.
   is *exactly* when multi-session starts and *exactly* when a mandatory PR
   gate is wrong, so closing this task without the caveat would fire the rule
   at the worst possible moment. Do not close 5.16 before 5.21.1 rules it.
-- [ ] **5.17** The skills assume one session. ~~Six of them break when two run
+- [x] **5.17** *(Done 2026-09-16 — six of six subtasks, each class fixed per
+  class, never per skill: **A** allocated identifiers → provisional until
+  merged, §37 (5.17.1); **B** stored aggregates → `recount.sh` (5.17.2);
+  **B′/C** accumulators and same-anchor appends → reshape so the silent
+  merge is *right* (5.17.3); **D** branch-local verdicts → one canonical
+  scope line in /health, /resume and /ship, §38 with a size-stated roster
+  and four matrix cases (5.17.4/.5/.6). Every class was measured before it
+  was designed, and the measurements kept correcting the tasks: .3's
+  conflict was already the safe outcome, .1's only symptom was one
+  `recount.sh` erases, .4's whole-log rule fired on a branch with nothing to
+  journal. **What this does not make true:** that multi-session is *safe* —
+  5.16 (PR-only `main`), 5.22 (registration precedence) and 5.26 (the CI
+  cost of every merge) are open, and the two-worktrees-at-once venue has
+  not been run.)* The skills assume one session. ~~Six of them break when two run
   at once~~ ~~nine~~ **ten**, and none mentions `worktree`, `parallel` or `concurrent`
   anywhere — verified by grep across `skills/` on 2026-09-11. These are not
   adopter problems to defer: acstack is the rule book, so each of these ships
@@ -5354,18 +5367,55 @@ multi-PR build that would otherwise pay full price for every push.
     above must hold for every writer in the class, since a conflict made
     visible in JOURNAL.md while LEARNINGS.md merges silently leaves the
     class open.
-  - [ ] **5.17.4** `/health` reports JOURNAL stale when work commits postdate
+  - [x] **5.17.4** *(Done 2026-09-16. **Measured on this repo, which is the
+    multi-session case:** the whole-log rule saw 4 commits after the last
+    journal commit (`e4d1f07`) on a branch with 0 of its own — all four other
+    sessions' merged PRs. The docs row now derives *this branch's*
+    unjournaled commits (`git log HEAD ^<default> ^<journal-commit>`; on the
+    default, `HEAD ^<journal-commit>`) and reports the default's commits since
+    the entry as a separate **info** line; `references/health-checks.md` §1
+    carries the commands, with default-branch resolution that never trusts an
+    unset `origin/HEAD`. Grants gained `git rev-parse` and `wc`, both already
+    in §13's union. **Acceptance met live, blind, headless, served the edited
+    skill from this checkout:** row 1b `✓ — This branch's own commits since
+    it: 0`, row 1b′ `info — main has 4 commits since the last entry (#14
+    through #17), all merged PRs from other sessions, not this branch's
+    staleness`; verdict HEALTHY; the scope line verbatim at its line 22. The
+    class-D convention, guard and cases are shared with .5/.6 — see 5.17's
+    closure.)* `/health` reports JOURNAL stale when work commits postdate
     its last entry. With N sessions committing it fires permanently, and a
     check that always fires stops being read.
     **Acceptance:** with unjournaled commits from another branch present,
     `/health` distinguishes "this branch is unjournaled" from "someone else
     committed", or states the limit rather than reporting a flat stale.
-  - [ ] **5.17.5** `/resume`'s "next 3 unblocked" hands two sessions the same
+  - [x] **5.17.5** *(Done 2026-09-16. The next-3 list is a proposal, never an
+    assignment: each candidate gets a claim check — a remote branch under
+    `branch-prefix` carrying the task ID via `git for-each-ref`, and an open
+    PR mentioning it via `gh pr list --search` — printed as `may already be
+    taken: …` or `no claim seen as of the last fetch`, with the limit stated:
+    /resume never fetches, and an unpushed session is invisible. Tickets mode
+    reads the assignee and never sets it. The brief's tree line is the scope
+    line. **§13's union widened** by `git for-each-ref` (no mutating flag
+    exists) and `gh pr list` (same class as `gh issue list`), justified in
+    the guard as `npm view` was. **Acceptance met live, blind, headless:** the
+    scope line verbatim at line 4, and next-3 opened with *"Claim check: no
+    remote branch carries 5.17.4, 5.17.5 or 5.17.6, and the open-PR list is
+    empty as of the last fetch at 02:37 today"*. **Not run:** two worktrees
+    simultaneously — the acceptance's literal venue; the same PLAN yields the
+    same list by construction, and the claim check is what the report gains.
+    The run noted, unprompted, that it was served the edited skill through
+    the symlink — consumed form.)* `/resume`'s "next 3 unblocked" hands two sessions the same
     task. Its ahead/behind is per-worktree and already correct; assignment is
     the gap.
     **Acceptance:** `/resume` run in two worktrees does not propose the same
     task to both without saying it may already be taken.
-  - [ ] **5.17.6** `/ship`'s clean-state and docs-drift gates are branch-local
+  - [x] **5.17.6** *(Done 2026-09-16. Gate 1 states that every gate is
+    branch-local and that gate 4's drift is measured against PLAN/JOURNAL as
+    of this branch — the merged tree is the integrator's to re-check, with the
+    project's re-derivation tool; the report and the PR-body template
+    (`references/ship-gates.md`, under `## Gates`) carry the canonical scope
+    line. **Verified as authored and by §38, not live:** /ship pushes, and its
+    whole change is the statement.)* `/ship`'s clean-state and docs-drift gates are branch-local
     but do not say so — drift is measured against a PLAN the integrator may
     already have moved.
     **Acceptance:** `/ship`'s report states the scope of its verdict as the
