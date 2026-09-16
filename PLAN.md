@@ -4959,6 +4959,43 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
   **Acceptance:** two branches each adding golden cases to the same category,
   merged, produce a golden set containing **every** case from both with the
   category minimum recomputed — shown losing cases first on the same seed.
+- [ ] **5.26** Shard the matrix across parallel CI jobs. 5.20.2 tiers by
+  *event* (fast gate on push, full gate before merge); this is the other axis
+  — the full gate itself is **156 cases × ~4.6 s** serially, measured from
+  CI's 11m58s on 2026-09-16. `strategy.matrix` runs N jobs concurrently for
+  the same total runner-minutes plus ~30–60s checkout each, so wall clock
+  falls roughly N-fold at a few percent more cost.
+  **The blocker is `guard-matrix.sh`, not the workflow:** its filter is a
+  regex on case *names*, so there is no way to express "cases 40–78".
+  Needs `--shard i/N` partitioning by index.
+  **And the reason this is not simply a speedup.** CONTRIBUTING's rule is
+  that filtered runs never land, because a partial run is not a full one. N
+  shards *are* a full run **only if they provably partition the set** — and if
+  one case lands in zero shards, every shard reports green and the aggregate
+  looks clean. That is this repo's most-repeated failure class (the `gitcase`
+  shape that under-counted by 5; "derive a guard's scope, don't list it").
+  So sharding must not ship without the exhaustiveness check, and the check
+  needs its own matrix case, since a sharding bug is invisible by
+  construction.
+  **Do the cheap thing first.** At ~4.6 s/case the dominant cost may be
+  `fullcase`'s per-case `cp -R` of the whole repo rather than `check.sh`
+  itself. If so, `cp -Rl`, a tar pipe or a `git worktree` per case cuts the
+  total on a **single** runner with zero coverage risk and no new invariant
+  to guard. Splitting buys speed at the price of a correctness obligation;
+  making cases cheaper buys speed at no price. Measure the split before
+  building either.
+  **Declined deliberately (2026-09-16):** selecting cases from the diff
+  ("only run what the change touches"). It needs a changed-files → cases
+  mapping, which is a hardcoded list that under-counts silently the day a
+  case is added with no trigger wired — and the failure is invisible, since
+  CI goes green having skipped the case that would have caught the bug.
+  Event tiering (5.20.2) delivers the same feedback speed with no automated
+  coverage decision.
+  **Acceptance:** the full matrix runs as N shards whose `RAN=` counts sum to
+  the case count derived by `count-check`'s `matrix-cases` rule, asserted by
+  an aggregating step that **fails when a case is assigned to no shard** —
+  shown failing first by removing one case from the partition. Wall clock
+  measured, not estimated, before and after.
 - [ ] **5.16** Make `main` genuinely PR-only, not merely status-gated.
   `enforce_admins` went on 2026-09-11, so the required `check` status binds
   the owner too — but protection carries no `required_pull_request_reviews`,
