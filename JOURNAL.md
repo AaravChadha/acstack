@@ -175,10 +175,10 @@
   `#N:` commits, `Fixes #N` closes — proven on scratch repo
   `acstack-w2-shakedown` (private; deletion pending user call).
 - Working tree clean; `scripts/check.sh` all clean
-  (**<!-- count:checks -->38<!-- /count -->** checks — numbered sections
+  (**<!-- count:checks -->39<!-- /count -->** checks — numbered sections
   plus 3b, 3c and 13a, including positive controls over seeded
   `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
-  (**<!-- count:matrix-cases -->154<!-- /count -->** cases); `./setup`
+  (**<!-- count:matrix-cases -->156<!-- /count -->** cases); `./setup`
   links all of them. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI
