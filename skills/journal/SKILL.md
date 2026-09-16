@@ -62,6 +62,17 @@ about the wrong product is worse than no answer (conduct rule 8).
    heading `### <what changed> (YYYY-MM-DD[ morning/evening])`. Follow
    `references/worklog-rules.md` for granularity — exact bugs, exact
    numbers, why-X-not-Y, what did NOT change, validation close.
+
+   **Two sessions journaling the same day will conflict here, and that is
+   the tolerable outcome.** Every entry goes in at the same anchor, so
+   concurrent writes collide — measured 2026-09-14: `CONFLICT (content):
+   Merge conflict in JOURNAL.md`. A conflict is *safe*; it stops and asks.
+   **Resolve it by keeping both entries**, newest first, never by dropping
+   one or merging them into a single heading — two sessions did two pieces
+   of work and the record should show both. What must NOT happen silently is
+   a wrong number: if the skeleton stores a derived count, re-derive it with
+   the project's own tool after resolving rather than accepting whichever
+   side git kept.
 3. **Classify any eval results.** Every failure gets a bucket from the
    canonical table in `../audit/references/eval-review-rules.md`: prompt
    issue / grader brittleness / provider flake / data issue / parser

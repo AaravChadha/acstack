@@ -5166,7 +5166,38 @@ acceptance it is auditing. Found while deriving 5.4's acceptance (4.81).
       both writing `seen: 4` never can.
     That reshaping is class C work (same-anchor appends) feeding class B,
     and it is **5.17.3's** to carry, not this subtask's.
-  - [ ] **5.17.3** `/journal` writes entries "newest first" and rewrites the
+  - [x] **5.17.3** *(Done 2026-09-16. **Measured before designing, and the
+    measurement narrowed the task.** Same-day journal writes from two
+    branches: `CONFLICT (content): Merge conflict in JOURNAL.md` — so the
+    acceptance's first arm was **already satisfied**, and the real gap was
+    that no skill said a conflict is the *tolerable* outcome or what a
+    correct resolution looks like. `/journal` step 2 now says it: keep
+    **both** entries, never drop one or merge them into a single heading, and
+    re-derive any stored count after resolving rather than accepting
+    whichever side git kept. `/retro` points at that rule, naming that it
+    writes the same anchor.
+    **The dangerous arm was `/learn`, and it is fixed by reshaping the data
+    rather than recomputing it.** Demonstrated: `Seen: 1`, two sessions each
+    recording one more sighting, both writing `2` — `Merge made by the 'ort'
+    strategy`, no conflict, result **2** where the truth is **3**. `recount`
+    cannot repair it because there is no ground truth to derive from (class
+    B′). Replaced with one dated line per sighting and **no stored total**,
+    then both arms measured on the new shape: two *different* sightings →
+    visible conflict with both preserved; the *same* sighting recorded twice
+    → silent merge to one, which is **correct**, because two records of one
+    sighting are one sighting. **The old number's silent merge is always
+    wrong; the new shape's silent merge is always right** — that asymmetry is
+    the actual fix. Promotion threshold restated from "`Seen:` reaches 2+" to
+    "two or more `Seen:` lines"; `/learn`'s description updated from
+    "a seen-count" to "a dated trail of sightings" and verified in the
+    **consumed** form (the skill listing), not just the file.
+    `/triage` gained the class note: applied box changes move derived totals,
+    so re-derive with the project's tool and state that the post-merge total
+    is the integrator's. Its silent-merge case is 5.17.2's, already closed by
+    `scripts/recount.sh`.
+    check.sh 38 clean; learn 125, journal 121, retro 130, triage 153 lines,
+    all under the 500 budget.)*
+    `/journal` writes entries "newest first" and rewrites the
     top blockquote (`skills/journal/SKILL.md:61,72`); `/retro` appends to the
     same file. Every session therefore writes at the identical anchor. The
     conflict is the tolerable case; the skeleton's count markers auto-merging

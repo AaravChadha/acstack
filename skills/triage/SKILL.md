@@ -61,6 +61,16 @@ Nothing is ever silently deleted or closed: every close carries a written
 reason. Supersede-don't-delete applies to backlogs exactly as it applies
 to decisions.
 
+**Applied actions edit the plan in place, so they collide with other
+sessions.** Closing or reopening a box changes any count derived from those
+boxes; two sessions closing *different* items both hand-write the *same* new
+total, and git auto-merges the identical edit with no conflict — measured
+2026-09-14, leaving the number one out. So: apply the box changes, and
+**re-derive any stored total with the project's own tool** rather than
+editing the digit. State in the applied-actions list that the post-merge
+total belongs to whoever integrates, since this branch cannot see what
+another session closed.
+
 Config: `stale-days` from a `## triage` section in `.claude/acstack.md`
 (default 30).
 
