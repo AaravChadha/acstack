@@ -1226,10 +1226,21 @@ if [ -f "$wf" ] && [ -f "$gm" ]; then
   # positive shape because the default propagation is easy to disable with one
   # continue-on-error, and the result would be a PR that goes green with a
   # failing guard in it.
-  if ! grep -q 'needs.matrix.result' "$wf"; then
-    echo "FAIL shard: $wf's aggregate step never reads needs.matrix.result — a failing shard could pass the fan-in (5.26)"
+  # main's branch protection requires a context named `check`. Sharding renamed
+  # the job that provided it and left none, so the first sharded PR was green
+  # and BLOCKED forever. The job must exist, and — being the ONLY required
+  # context — must vouch for every upstream job, or whatever it omits is
+  # unguarded.
+  if ! grep -qE '^  check:' "$wf"; then
+    echo "FAIL shard: $wf declares no job named 'check' — main's branch protection requires that context and would block every PR forever (5.26)"
     fail=1
   fi
+  for _need in guard matrix; do
+    if ! grep -q "needs.$_need.result" "$wf"; then
+      echo "FAIL shard: $wf's required 'check' job never reads needs.$_need.result — a failing $_need job would pass the fan-in (5.26)"
+      fail=1
+    fi
+  done
 fi
 
 if [ "$fail" -eq 0 ]; then

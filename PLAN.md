@@ -5019,11 +5019,32 @@ multi-PR build that would otherwise pay full price for every push.
   for one CPU; the arithmetic normalisation to 168 cases (~17m55s serial) is
   labelled as such. CI's own before-figures were **18m04s and 18m32s** on two
   consecutive 164-case runs. `checks` 41 → 42; `matrix-cases` 164 → 168.
-  **Not done:** the CI `aggregate` step has never been seen failing — §39's
-  equivalents were each watched, but the fan-in runs only in CI and its first
-  real execution is this task's own PR. Seeding a genuinely missing shard would
-  mean pushing a deliberately broken workflow, so it is stated rather than
-  demonstrated.)* Shard the matrix across parallel CI jobs. 5.20.2 tiers by
+  **The first sharded PR was green and BLOCKED, and that was this task's own
+  defect.** `main`'s branch protection requires a status context named
+  `check`, satisfied until now by the single monolithic job; sharding renamed
+  it to `guard` and left no `check` at all, so PR #20 reported **six green
+  jobs** and could never merge — with `enforce_admins: true`, not even by the
+  owner. The job graph was redesigned without once asking what the gate
+  actually requires. Fixed **in the workflow, never in the protection rule** —
+  a session that rewrites its own gate has none — by naming the fan-in job
+  `check`, which is a better contract than before: the required context is now
+  the only job that can prove every shard reported. Auditing that turned up a
+  **second hole in the same design**: the fan-in `needs: [matrix]` alone and
+  never read `guard`'s result, so a failing `check.sh` would have merged
+  behind a green required context. It now needs both and reads both, and §39
+  asserts a job named `check` exists and reads each upstream result — both
+  arms watched failing on copies.
+  **Not done:** the CI fan-in has never been seen *failing* — §39's
+  equivalents were each watched, but the step runs only in CI, and seeding a
+  genuinely missing shard would mean pushing a deliberately broken workflow.
+  Its passing path did execute on PR #20: `shards reporting: 4/4   cases run:
+  168   declared: 168`.
+  **Measured after-figure, PR #20: 5m39s** against 18m04s/18m32s — **3.2x**.
+  Per-job: guard 16s; shards 3m27s, 4m48s, 4m49s, 4m59s; fan-in 7s. One shard
+  queued 37s behind its siblings and still was not the slowest. The 1.4x
+  spread across identical 42-case shards is runner variance, now the dominant
+  term rather than case count — which is why 8 shards would buy less than the
+  arithmetic suggests.)* Shard the matrix across parallel CI jobs. 5.20.2 tiers by
   *event* (fast gate on push, full gate before merge); this is the other axis
   — the full gate itself is **156 cases × ~4.6 s** serially, measured from
   CI's 11m58s on 2026-09-16. `strategy.matrix` runs N jobs concurrently for

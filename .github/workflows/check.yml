@@ -78,11 +78,24 @@ jobs:
           path: shard-ran.txt
           if-no-files-found: error
 
-  # Fan-in. Artifacts, NOT job outputs: every leg of a matrix writing to
-  # `outputs` overwrites the others, last-writer-wins and silently, so a sum
-  # built that way would be one shard's count wearing the name of all four.
-  aggregate:
-    needs: [matrix]
+  # Fan-in, and THE REQUIRED STATUS CHECK. The name `check` is load-bearing:
+  # main's branch protection requires a context by that name, and until
+  # 2026-09-16 it was satisfied by the single monolithic job. Sharding renamed
+  # that job and left no `check` at all, so the first sharded PR reported six
+  # green jobs and sat BLOCKED forever — green and unmergeable, with
+  # enforce_admins on. Restored here rather than by editing the protection
+  # rule: a session that rewrites its own gate has none.
+  #
+  # It also `needs` BOTH upstream jobs and reads BOTH results. As the only
+  # required context it is the single thing main's gate trusts, so anything it
+  # does not vouch for is effectively unguarded — a failing `guard` job with a
+  # green fan-in would have merged.
+  #
+  # Artifacts, NOT job outputs: every leg of a matrix writing to `outputs`
+  # overwrites the others, last-writer-wins and silently, so a sum built that
+  # way would be one shard's count wearing the name of all four.
+  check:
+    needs: [guard, matrix]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -94,9 +107,15 @@ jobs:
       - name: every shard reported, and their counts sum to the declared set
         run: |
           set -eu
+          if [ "${{ needs.guard.result }}" != "success" ]; then
+            echo "GUARD FAILED: guard job result is '${{ needs.guard.result }}'."
+            echo "  This job is main's only required context, so a green verdict"
+            echo "  here over a red check.sh would merge an unguarded tree."
+            exit 1
+          fi
           if [ "${{ needs.matrix.result }}" != "success" ]; then
             echo "SHARDS FAILED: matrix job result is '${{ needs.matrix.result }}'."
-            echo "  A green aggregate over a red shard is the false pass this"
+            echo "  A green fan-in over a red shard is the false pass this"
             echo "  step exists to refuse. See the failing shard's log."
             exit 1
           fi
