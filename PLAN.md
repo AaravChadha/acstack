@@ -5023,9 +5023,12 @@ multi-PR build that would otherwise pay full price for every push.
   they are guards — leaves a ~5-minute matrix; four shards give ~3. **So
   sharding is the primary move, not the fallback**, and section speed-ups are
   a separate, optional, coverage-sensitive follow-up. The **before** figure the
-  acceptance asks for is in hand: matrix step **11m37s** of an 11m50s run
-  (`gh api repos/<owner>/<repo>/actions/runs/<id>/jobs`, three runs),
-  **4.47 s/case** aggregate over 156; **135** cases (132 `fullcase` + 3
+  acceptance asks for is in hand, and it is a band, not a point: matrix step
+  **11m37s / 11m47s / 17m13s** across three runs (`gh api
+  repos/<owner>/<repo>/actions/runs/<id>/jobs`; the 17-minute one ran on
+  `main` against the same 156 cases — runner variance, so "CI is ~12 min"
+  holds for two of three and the after-figure must be compared as a band
+  too), **4.47 s/case** on the fastest; **135** cases (132 `fullcase` + 3
   `bannedcase`) run the whole `check.sh`, 16 `check` cases run it on a
   stripped tree, 5 `gitcase`. Checkout is **2 s** measured, not the ~30–60 s
   estimated above. One of five local `check.sh` runs stalled **183 s in §8**;
