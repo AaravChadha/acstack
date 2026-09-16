@@ -4987,7 +4987,43 @@ multi-PR build that would otherwise pay full price for every push.
   **Acceptance:** two branches each adding golden cases to the same category,
   merged, produce a golden set containing **every** case from both with the
   category minimum recomputed — shown losing cases first on the same seed.
-- [ ] **5.26** Shard the matrix across parallel CI jobs. 5.20.2 tiers by
+- [x] **5.26** *(Done 2026-09-16. **Operator ruled 4 shards** after the trade
+  was derived: 8 buys ~2 more minutes while doubling the fan-in surface, and N
+  is a parameter rather than a design, so moving later costs one number.
+  `guard-matrix.sh` gains `--shard i/N` and `--list`. **The ordinal is assigned
+  before both the shard test and the name filter, and that order is
+  load-bearing** — assign it after the filter and the same case lands in
+  different shards depending on whether a filter was passed, so the partition
+  stops being a function of the case set alone. Exhaustiveness is asserted in
+  **three independent places**, because a case in zero shards leaves every
+  shard green: each shard computes and checks its own expected count;
+  `check.sh` **§39** walks the partition with `--list` on every commit (~0.02 s
+  per walk, no case executed, no snapshot taken) and asserts the union equals
+  the declared set with no duplicates, **deriving N from the workflow** rather
+  than restating it; and CI's `aggregate` job sums each shard's `RAN` and fails
+  on a shard that never reported — the only one of the three that can see a
+  missing shard. **Artifacts, not matrix job outputs** (matrix legs overwrite
+  one another's `outputs` silently; taken from GitHub's documented behaviour,
+  not measured here, and the design does not depend on it).
+  **Proven, four seeded arms each shown failing first on a copy:** a case in
+  zero shards (`the 4 shards cover 163 of 164 case(s)`, `uncovered: leading
+  hash`), a case in two shards, the `shard:` list disagreeing with the `SHARDS`
+  divisor, and the fan-in dropping `needs.matrix.result`; with §39 deleted all
+  four read `BAD got=PASS want=FAIL`, and the unseeded control is clean. Union
+  of 4 shards = declared, 0 duplicates, set-equal to the unsharded list;
+  repeated at **N=7** where the division is uneven.
+  **Wall clock, measured both ends:** serial **17m04s** at 160 cases (6.40
+  s/case) → **6m06s** for all 168 cases as 4 parallel local shards, tree hash
+  verified unmoved, every shard `RAN=42 passed=42 failed=0`, sum **168 =
+  declared**. That is **~2.9x on one machine**, where four processes contend
+  for one CPU; the arithmetic normalisation to 168 cases (~17m55s serial) is
+  labelled as such. CI's own before-figures were **18m04s and 18m32s** on two
+  consecutive 164-case runs. `checks` 41 → 42; `matrix-cases` 164 → 168.
+  **Not done:** the CI `aggregate` step has never been seen failing — §39's
+  equivalents were each watched, but the fan-in runs only in CI and its first
+  real execution is this task's own PR. Seeding a genuinely missing shard would
+  mean pushing a deliberately broken workflow, so it is stated rather than
+  demonstrated.)* Shard the matrix across parallel CI jobs. 5.20.2 tiers by
   *event* (fast gate on push, full gate before merge); this is the other axis
   — the full gate itself is **156 cases × ~4.6 s** serially, measured from
   CI's 11m58s on 2026-09-16. `strategy.matrix` runs N jobs concurrently for

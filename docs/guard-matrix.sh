@@ -33,8 +33,31 @@ set -uo pipefail
 # RAN=150`, exit 2. The relative-path-from-the-wrong-root class, inside the
 # guard whose job is refusing to vouch for a run it cannot verify.
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
-REPO="${1:?usage: guard-matrix.sh <repo> [case-filter-regex]}"
-ONLY="${2:-}"
+# 5.26: --shard i/N runs one partition of the case set; --list names a
+# shard's cases and runs none of them, which is what makes the partition
+# cheap to ASSERT (check.sh §39) rather than trusted.
+REPO=""; ONLY=""; SHARD_I=""; SHARD_N=""; LIST=0; _pos=0
+_usage() { echo "usage: guard-matrix.sh <repo> [case-filter-regex] [--shard i/N] [--list]" >&2; exit 2; }
+_shard_set() {
+  case "$1" in
+    [1-9]*/[1-9]*) SHARD_I="${1%%/*}"; SHARD_N="${1##*/}" ;;
+    *) echo "guard-matrix: --shard needs i/N with both >= 1 (e.g. --shard 2/4)" >&2; exit 2 ;;
+  esac
+  case "$SHARD_I$SHARD_N" in *[!0-9]*) echo "guard-matrix: --shard i/N must be integers, got $1" >&2; exit 2 ;; esac
+  [ "$SHARD_I" -le "$SHARD_N" ] || { echo "guard-matrix: shard $SHARD_I of $SHARD_N does not exist" >&2; exit 2; }
+}
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --shard)   shift; [ "$#" -gt 0 ] || _usage; _shard_set "$1" ;;
+    --shard=*) _shard_set "${1#--shard=}" ;;
+    --list)    LIST=1 ;;
+    -*)        echo "guard-matrix: unknown option $1" >&2; _usage ;;
+    *)         _pos=$((_pos + 1))
+               case "$_pos" in 1) REPO="$1" ;; 2) ONLY="$1" ;; *) _usage ;; esac ;;
+  esac
+  shift
+done
+[ -n "$REPO" ] || _usage
 WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
 
 # Every case function must gate on the filter, and a new one that forgets
@@ -63,8 +86,13 @@ fi
 # deleted them anyway — and .git was 16M of every 18M copied, measured
 # 2026-08-08 against a 31.3 s/case, ~55-minute run.
 SRC="$WORK/src"
+# --list executes no case, so it needs neither the snapshot nor the hash;
+# skipping both is what keeps §39's partition assertion cheap enough to run
+# on every commit (8 walks in well under a second, versus ~8 x 0.4 s).
+if [ "$LIST" -eq 0 ]; then
 cp -R "$REPO" "$SRC" 2>/dev/null
 rm -rf "$SRC/.git" "$SRC/.acstack-banned"
+fi
 
 # The run still records what the live tree looked like at start, so a
 # mid-run edit is NAMED rather than silently ignored. It is a NOTE, not a
@@ -72,6 +100,8 @@ rm -rf "$SRC/.git" "$SRC/.acstack-banned"
 # aborting a ~15-minute run over an unrelated edit is the cure being worse
 # than the disease.
 tree_hash() { find "$1" -name .git -prune -o -type f -exec shasum {} + 2>/dev/null | sort | shasum | awk '{print $1}'; }
+H0=""
+if [ "$LIST" -eq 0 ]; then
 H0="$(tree_hash "$REPO")"
 
 cp -R "$SRC" "$WORK/pack" 2>/dev/null
@@ -79,6 +109,7 @@ cd "$WORK/pack" || exit 1
 rm -rf skills/*/ 2>/dev/null
 # keep one known-good skill so principles/budget checks have something valid
 mkdir -p skills/good
+fi
 pass=0; failed=0; RAN=0
 
 # --- 5.8: a seed that changed nothing tested nothing -----------------------
@@ -126,8 +157,20 @@ fi
 # The one filter gate. Returns 1 when the case is filtered out, so every
 # case function opens by calling it and returning early. RAN counts only
 # what actually ran, which is what makes a zero-match run detectable.
+# THE ORDINAL IS ASSIGNED BEFORE EVERY TEST, and that order is load-bearing
+# (5.26). Assign it after the name filter and the same case lands in
+# different shards depending on whether a filter was passed — the partition
+# stops being a function of the case set alone, which is the one property
+# every assertion below rests on. RAN still counts only what actually ran,
+# because the zero-match guard reads it as "cases executed".
+_ORD=0
 _case_start() { # case-name
+  _ORD=$((_ORD + 1))
+  if [ -n "$SHARD_N" ]; then
+    [ "$(( (_ORD - 1) % SHARD_N ))" -eq "$((SHARD_I - 1))" ] || return 1
+  fi
   [ -z "$ONLY" ] || printf '%s' "$1" | grep -qE "$ONLY" || return 1
+  if [ "$LIST" -eq 1 ]; then printf '%s\n' "$1"; RAN=$((RAN + 1)); return 1; fi
   RAN=$((RAN + 1))
   return 0
 }
@@ -143,7 +186,7 @@ check() { # name expected body
   else printf '  BAD  %-42s got=%s want=%s\n' "$n" "$got" "$exp"; failed=$((failed+1)); fi
 }
 
-echo "=== frontmatter guard matrix ==="
+[ "$LIST" -eq 1 ] || echo "=== frontmatter guard matrix ==="
 # --- must PASS: valid frontmatter ---
 check "plain valid"            PASS $'---\nname: tc\ndescription: Does a thing. Use when asked.\n---\n'
 check "double-quoted"          PASS $'---\nname: tc\ndescription: "Does a thing: really. Use when asked."\n---\n'
@@ -165,7 +208,7 @@ check "CRLF line endings"      PASS "$(printf -- '---\r\nname: tc\r\ndescription
 check "unknown frontmatter key" FAIL $'---\nname: tc\ndescription: Does a thing. Use when asked.\nbanana: yes\n---\n'
 
 echo
-echo "=== full-tree seeded-defect matrix ==="
+[ "$LIST" -eq 1 ] || echo "=== full-tree seeded-defect matrix ==="
 # Cases here copy the REAL tree (minus .git), seed exactly one defect via a
 # mutation command, and expect check.sh to emit "FAIL <class>". This tests
 # each guard against the tree shape it actually polices; the section above
@@ -571,6 +614,44 @@ old = 'SCOPE_SKILLS=\"health resume ship\"'
 assert s.count(old) == 1, 'seed no-op: roster line not found'
 io.open(p, 'w', encoding='utf-8').write(s.replace(old, 'SCOPE_SKILLS=\"health resume ship audit\"'))
 EOF"
+# 39: the shard partition is the one invariant a sharded run cannot show you
+# — a case in zero shards leaves every shard green and the aggregate clean
+# (5.26). All four seeds derive their target from the file, so a reworded
+# gate or a renumbered shard list cannot quietly no-op them.
+fullcase "matrix case in zero shards"     FAIL 'shard' bash -c "python3 - <<'EOF'
+import io
+p = 'docs/guard-matrix.sh'
+s = io.open(p, encoding='utf-8').read()
+old = '    [ \"\$(( (_ORD - 1) % SHARD_N ))\" -eq \"\$((SHARD_I - 1))\" ] || return 1'
+assert s.count(old) == 1, 'seed no-op: shard gate not found'
+io.open(p, 'w', encoding='utf-8').write(s.replace(old, old + chr(10) + '    [ \"\$_ORD\" -ne 7 ] || return 1'))
+EOF"
+fullcase "matrix case in two shards"      FAIL 'shard' bash -c "python3 - <<'EOF'
+import io
+p = 'docs/guard-matrix.sh'
+s = io.open(p, encoding='utf-8').read()
+old = '    [ \"\$(( (_ORD - 1) % SHARD_N ))\" -eq \"\$((SHARD_I - 1))\" ] || return 1'
+assert s.count(old) == 1, 'seed no-op: shard gate not found'
+new = '    if [ \"\$_ORD\" -ne 7 ]; then' + chr(10) + '  ' + old + chr(10) + '    fi'
+io.open(p, 'w', encoding='utf-8').write(s.replace(old, new))
+EOF"
+fullcase "shard list and divisor disagree" FAIL 'shard' bash -c "python3 - <<'EOF'
+import io, re
+p = '.github/workflows/check.yml'
+s = io.open(p, encoding='utf-8').read()
+m = re.search(r'^( *shard: \[)(.+)(\])\$', s, re.M)
+assert m, 'seed no-op: no shard list found'
+items = [x.strip() for x in m.group(2).split(',')]
+assert len(items) > 1, 'seed no-op: shard list too short to shorten'
+io.open(p, 'w', encoding='utf-8').write(s[:m.start()] + m.group(1) + ', '.join(items[:-1]) + m.group(3) + s[m.end():])
+EOF"
+fullcase "fan-in stops reading shard result" FAIL 'shard' bash -c "python3 - <<'EOF'
+import io
+p = '.github/workflows/check.yml'
+s = io.open(p, encoding='utf-8').read()
+assert 'needs.matrix.result' in s, 'seed no-op: fan-in never read the shard result'
+io.open(p, 'w', encoding='utf-8').write(s.replace('needs.matrix.result', 'needs.matrix.conclusion'))
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody
@@ -897,6 +978,13 @@ fullcase "shell: planted fixture stays excluded" PASS '.*'      bash -c "mkdir -
 fullcase "shell: derivation returning nothing"   FAIL 'syntax' bash -c "printf '#!/usr/bin/env bash\ntrue\n' > scripts/shell-sources.sh"
 
 echo
+# --list produced names, not results; say so and stop before any summary
+# that would read as a run. RAN here means "cases named".
+if [ "$LIST" -eq 1 ]; then
+  echo "LISTED=$RAN${SHARD_N:+ SHARD=$SHARD_I/$SHARD_N} — names only, no case executed"
+  exit 0
+fi
+
 # 4.55a: name a mid-run tree change. Not a failure — every case above read
 # the SAME frozen snapshot, so the results stand; this tells the operator
 # the live tree has moved on, which is the fact that used to arrive
@@ -925,13 +1013,24 @@ if [ -z "$ONLY" ]; then
   # 2026-08-06 that the static count equals the runtime total, on one
   # hand-check. Asserted here instead of assumed.
   _declared="$(grep -cE '^([a-z]+case|check) ' "$SELF")"
-  if [ "$RAN" -ne "$_declared" ]; then
-    echo "MATRIX INCOMPLETE: $_declared cases declared but RAN=$RAN."
-    echo "  An unfiltered run must execute every case; a case that silently"
-    echo "  did not run is coverage the summary would otherwise claim."
+  if [ -z "$SHARD_N" ]; then
+    _expect="$_declared"
+  else
+    # Shard i of N holds ordinals i, i+N, i+2N, ... up to _declared. Each
+    # shard asserts its OWN share, so a broken partition fails inside the
+    # shard rather than waiting for fan-in — the aggregating step still
+    # exists, because only it can notice a shard that never ran at all.
+    if [ "$SHARD_I" -gt "$_declared" ]; then _expect=0
+    else _expect=$(( (_declared - SHARD_I) / SHARD_N + 1 )); fi
+  fi
+  if [ "$RAN" -ne "$_expect" ]; then
+    echo "MATRIX INCOMPLETE: expected $_expect of $_declared declared case(s)${SHARD_N:+ for shard $SHARD_I/$SHARD_N} but RAN=$RAN."
+    echo "  An unfiltered run must execute every case it is responsible for;"
+    echo "  a case that silently did not run is coverage the summary would"
+    echo "  otherwise claim."
     echo "RAN=$RAN passed=$pass failed=$failed"
     exit 2
   fi
 fi
-echo "RAN=$RAN passed=$pass failed=$failed"
+echo "RAN=$RAN passed=$pass failed=$failed${SHARD_N:+ SHARD=$SHARD_I/$SHARD_N DECLARED=$(grep -cE '^([a-z]+case|check) ' "$SELF")}"
 [ "$failed" -eq 0 ]

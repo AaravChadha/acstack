@@ -15,8 +15,16 @@ on:
     branches: [main]
   pull_request:
 
+# 5.26: SHARDS is the divisor and `matrix.shard` is the literal list of
+# shard numbers. They are two places that must agree, so check.sh §39
+# asserts list length == SHARDS and that the list is exactly 1..N — the
+# drift this split would otherwise allow is a shard nobody runs.
+env:
+  SHARDS: 4
+
 jobs:
-  check:
+  # Everything that runs ONCE per push, not once per shard.
+  guard:
     runs-on: ubuntu-latest
     steps:
       # v4 targeted Node 20 and every run carried a deprecation annotation
@@ -32,8 +40,85 @@ jobs:
       # check.sh's own header enumerates every section; that is the count.
       - name: pack guard (every section, includes positive controls)
         run: bash scripts/check.sh
-      - name: guard matrix (every guard shown firing on seeded defects)
-        run: bash docs/guard-matrix.sh "$PWD"
       - name: shellcheck
         # Scope derived, never listed (4.82) — same source check.sh §5 reads.
         run: shellcheck -S warning $(bash scripts/shell-sources.sh)
+
+  # The matrix, partitioned by case ordinal. Wall clock falls ~N-fold for the
+  # same runner-minutes; the correctness obligation that buys is exhaustiveness,
+  # which is asserted in three independent places: each shard checks its own
+  # expected count, check.sh §39 proves the partition covers every case, and
+  # `aggregate` below catches a shard that never ran at all.
+  matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      # A failing shard must NOT cancel its siblings: their results are the
+      # coverage this job exists to report, and losing them to save a minute
+      # is the trade backwards.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v7
+      - name: guard matrix shard ${{ matrix.shard }} of ${{ env.SHARDS }}
+        run: |
+          set -o pipefail
+          bash docs/guard-matrix.sh "$PWD" --shard "${{ matrix.shard }}/${{ env.SHARDS }}" | tee shard.log
+      - name: record this shard's RAN count
+        # Runs even when the shard failed, so `aggregate` can tell "this shard
+        # ran and failed" from "this shard never reported".
+        if: always()
+        run: |
+          grep -oE 'RAN=[0-9]+' shard.log | tail -1 | cut -d= -f2 > shard-ran.txt
+          cat shard-ran.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shard-${{ matrix.shard }}
+          path: shard-ran.txt
+          if-no-files-found: error
+
+  # Fan-in. Artifacts, NOT job outputs: every leg of a matrix writing to
+  # `outputs` overwrites the others, last-writer-wins and silently, so a sum
+  # built that way would be one shard's count wearing the name of all four.
+  aggregate:
+    needs: [matrix]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: shard-*
+          path: shards
+      - name: every shard reported, and their counts sum to the declared set
+        run: |
+          set -eu
+          if [ "${{ needs.matrix.result }}" != "success" ]; then
+            echo "SHARDS FAILED: matrix job result is '${{ needs.matrix.result }}'."
+            echo "  A green aggregate over a red shard is the false pass this"
+            echo "  step exists to refuse. See the failing shard's log."
+            exit 1
+          fi
+          declared="$(grep -cE '^([a-z]+case|check) ' docs/guard-matrix.sh)"
+          reported=0; total=0
+          for i in $(seq 1 "$SHARDS"); do
+            f="shards/shard-$i/shard-ran.txt"
+            if [ ! -s "$f" ]; then
+              echo "SHARD $i REPORTED NOTHING: $f missing or empty."
+              echo "  A shard that never ran leaves every other shard green and"
+              echo "  the aggregate clean — invisible by construction, which is"
+              echo "  why this is asserted rather than assumed."
+              exit 1
+            fi
+            n="$(cat "$f")"; reported=$((reported + 1)); total=$((total + n))
+            echo "  shard $i/$SHARDS ran $n case(s)"
+          done
+          echo "shards reporting: $reported/$SHARDS   cases run: $total   declared: $declared"
+          if [ "$reported" -ne "$SHARDS" ] || [ "$total" -ne "$declared" ]; then
+            echo "MATRIX INCOMPLETE ACROSS SHARDS: $total of $declared case(s) ran."
+            exit 1
+          fi
+          echo "every declared case ran exactly once across $SHARDS shard(s)"
+        env:
+          SHARDS: ${{ env.SHARDS }}

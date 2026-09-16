@@ -26,6 +26,7 @@
 #   35 near-term open tasks state a done-condition
 #   36 /learn sighting trail is a list   37 PLAN.md identifiers are unique
 #   38 class-D skills state the scope of their verdict
+#   39 CI shard partition covers every matrix case
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1166,6 +1167,70 @@ for s_ in $SCOPE_SKILLS; do
     fail=1
   fi
 done
+
+# 39. The CI shard partition covers every matrix case, exactly once (5.26).
+#     Sharding buys wall clock at the price of a correctness obligation: N
+#     shards are a full run ONLY if they provably partition the case set, and
+#     a case landing in ZERO shards leaves every shard green and the aggregate
+#     clean. That is this repo's most-repeated failure class and it is
+#     invisible by construction, so it is proven here on every commit rather
+#     than trusted. Cheap because `--list` executes no case and skips the
+#     snapshot: ~0.02 s per walk, ~0.2 s for the whole section.
+#     N IS DERIVED FROM THE WORKFLOW, never written here — a guard testing 4
+#     while CI runs 8 proves nothing about CI. The workflow states N twice
+#     (the `SHARDS` divisor and the literal `shard:` list), so the two are
+#     asserted to agree first; that split is the drift this section opens with.
+wf=".github/workflows/check.yml"
+gm="docs/guard-matrix.sh"
+if [ -f "$wf" ] && [ -f "$gm" ]; then
+  shards_n="$(sed -n 's/^  SHARDS: *\([0-9][0-9]*\).*/\1/p' "$wf" | head -1)"
+  shards_list="$(sed -n 's/^ *shard: *\[\(.*\)\].*/\1/p' "$wf" | head -1 | tr -d ' ')"
+  if [ -z "$shards_n" ] || [ -z "$shards_list" ]; then
+    echo "FAIL shard: $wf has no 'SHARDS:' divisor or no 'shard: [..]' list — the partition guard cannot derive N (5.26)"
+    fail=1
+  else
+    want_list="$(seq 1 "$shards_n" | paste -sd, -)"
+    if [ "$shards_list" != "$want_list" ]; then
+      echo "FAIL shard: $wf lists shard: [$shards_list] but SHARDS is $shards_n (expected [$want_list]) — a shard nobody runs, or a divisor nobody covers (5.26)"
+      fail=1
+    else
+      _sd="$(mktemp -d)"
+      bash "$gm" "$PWD" --list 2>/dev/null | grep -v '^LISTED=' | grep . | sort > "$_sd/all"
+      : > "$_sd/union"
+      _i=1
+      while [ "$_i" -le "$shards_n" ]; do
+        bash "$gm" "$PWD" --list --shard "$_i/$shards_n" 2>/dev/null | grep -v '^LISTED=' | grep . >> "$_sd/union"
+        _i=$((_i + 1))
+      done
+      sort "$_sd/union" > "$_sd/union_s"
+      _declared="$(grep -cE '^([a-z]+case|check) ' "$gm")"
+      _all="$(grep -c . "$_sd/all" || true)"
+      _uni="$(grep -c . "$_sd/union_s" || true)"
+      _dup="$(uniq -d < "$_sd/union_s" | grep -c . || true)"
+      if [ "$_all" -ne "$_declared" ]; then
+        echo "FAIL shard: --list named $_all case(s) but $_declared are declared — the lister and the counter disagree (5.26)"
+        fail=1
+      elif [ "$_dup" -ne 0 ]; then
+        echo "FAIL shard: $_dup case(s) appear in more than one shard — a partition assigns each case exactly once (5.26)"
+        uniq -d < "$_sd/union_s" | sed 's/^/           /' | head -5
+        fail=1
+      elif [ "$_uni" -ne "$_declared" ] || ! diff -q "$_sd/all" "$_sd/union_s" >/dev/null 2>&1; then
+        echo "FAIL shard: the $shards_n shards cover $_uni of $_declared case(s) — a case in zero shards leaves every shard green (5.26)"
+        comm -23 "$_sd/all" "$_sd/union_s" | sed 's/^/           uncovered: /' | head -5
+        fail=1
+      fi
+      rm -rf "$_sd"
+    fi
+  fi
+  # The fan-in must refuse a green aggregate over a red shard. Asserted as a
+  # positive shape because the default propagation is easy to disable with one
+  # continue-on-error, and the result would be a PR that goes green with a
+  # failing guard in it.
+  if ! grep -q 'needs.matrix.result' "$wf"; then
+    echo "FAIL shard: $wf's aggregate step never reads needs.matrix.result — a failing shard could pass the fan-in (5.26)"
+    fail=1
+  fi
+fi
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
