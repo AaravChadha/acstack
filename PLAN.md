@@ -5535,7 +5535,35 @@ multi-PR build that would otherwise pay full price for every push.
 > gate, which is what this wave is. Tradeoff: the wave now
 > mixes pre-change gates with a post-change one. Revisit if /verify grows
 > enough to stand alone.
-- [ ] **5.27** `check.sh` §11 fires on every post-merge tree, for a reason
+- [x] **5.27** *(Done 2026-09-16. The negative control now asks `count-check`
+  about a document that is correct **by construction**: run it on JOURNAL.md;
+  if that passes, JOURNAL.md is the document; if it reports drift, a temp
+  document is built from the `reality is N (count:name)` lines it just
+  printed — its own output, no second derivation — and asked about instead.
+  **Proven on a copy, shown failing first:** with JOURNAL's `checks` marker
+  seeded +1, the old control fires *REJECTED JOURNAL.md — either a real
+  drift, or the guard rejects everything* and the new one is quiet while §23
+  names the marker; with `count-check`'s comparison replaced by `if true` it
+  fires *REJECTED a document built from its own derivations — the guard
+  rejects what matches it*, and goes silent when the control is deleted.
+  Two matrix cases — `count-check rejecting everything is caught` (FAIL
+  'controls') and `marker drift is not a controls failure` (PASS
+  'controls') — watched in both directions: on the old control the drift
+  case reads `BAD got=FAIL want=PASS`; on the fixed tree both `ok`; with the
+  control deleted the first reads `BAD got=PASS want=FAIL`.
+  `scripts/controls.sh` joined `count-check`'s EXEMPT roster with its reason:
+  the template string it writes *is* the marker syntax, and the stray scan
+  flagged it on the first run — the scan working. `matrix-cases` 158 → 160 by
+  `recount.sh`. **The acceptance's second arm was wrong as filed** and is
+  corrected above: a derivation that is wrong but consistent is invisible to
+  any control built from the guard's own output, so "wrong value" could not
+  discriminate; the arm is the comparison broken. That limit is now stated
+  in the control itself. **Declined, with reason:** a fixture of *correct*
+  values would catch the wrong-derivation case and would rot with every tree
+  change — which is why the live document was used in the first place; a
+  wrong derivation surfaces as a wrong number in a document a human reads,
+  and that is where it gets caught.)*
+  `check.sh` §11 fires on every post-merge tree, for a reason
   that is not a missed plant. `scripts/controls.sh:677-680` is a negative
   control — *count-check accepts JOURNAL.md's correct markers* — and it runs
   `count-check.sh` against the **real** JOURNAL.md, so any genuine marker
@@ -5554,9 +5582,12 @@ multi-PR build that would otherwise pay full price for every push.
   real drift is §23's finding alone.
   **Acceptance:** on a copy with JOURNAL.md's `checks` marker seeded wrong,
   `check.sh` prints the `FAIL count:` line and **no** `FAIL control:
-  count-check REJECTED` line; on a copy where `count-check`'s derivation is
-  made to return a wrong value for every count, the control still fires.
-  Both arms shown, the second first. Out of scope: any other control.
+  count-check REJECTED` line; ~~on a copy where `count-check`'s derivation is
+  made to return a wrong value for every count~~ **(corrected 2026-09-16
+  before build, see the closure)** on a copy where `count-check`'s
+  comparison is broken so it rejects what matches its own derivation, the
+  control still fires. Both arms shown, the second first. Out of scope: any
+  other control.
   *(Number provisional until this branch merges — 5.17.1's rule, applied to
   its own filing.)*
 

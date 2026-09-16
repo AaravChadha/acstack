@@ -674,11 +674,33 @@ if [ -f scripts/count-check.sh ]; then
   done
   # And the other direction: a marker whose value is right must be accepted,
   # or the guard is a blanket rejector and proves nothing by failing.
-  if bash scripts/count-check.sh JOURNAL.md >/dev/null 2>&1; then
-    ok "count-check accepts JOURNAL.md's correct markers"
+  # Asked of a document that is correct BY CONSTRUCTION, never of the real
+  # JOURNAL.md (5.27). Until 2026-09-16 this ran against JOURNAL.md itself,
+  # so every merged tree with real marker drift — the state of every tree
+  # until recount.sh runs — failed here a second time, with a message that
+  # read as a broken guard beside §23's line that already named the marker.
+  # A real drift is §23's finding alone. The document is built from what
+  # count-check ITSELF reports as reality, so the only way it can be
+  # rejected is a guard that rejects what matches it.
+  # LIMIT, stated: a derivation that is wrong but consistent passes this,
+  # because the document is built from that same derivation. That is a
+  # different defect — a wrong number in a doc a human reads — and no
+  # control built from the guard's own output can see it.
+  if kg_out="$(bash scripts/count-check.sh JOURNAL.md 2>&1)"; then
+    kg_doc="JOURNAL.md"      # already matches every derivation
   else
-    bad "count-check REJECTED JOURNAL.md — either a real drift, or the guard rejects everything"
+    kg_doc="$(mktemp)"
+    printf '%s\n' "$kg_out" \
+      | sed -nE 's/^FAIL count: .*reality is ([0-9]+) +\(count:([a-z0-9-]+)\).*/<!-- count:\2 -->\1<!-- \/count -->/p' > "$kg_doc"
   fi
+  if [ ! -s "$kg_doc" ]; then
+    bad "count-check rejected JOURNAL.md for something other than drift, so no known-good document could be built: $(printf '%s\n' "$kg_out" | head -1)"
+  elif bash scripts/count-check.sh "$kg_doc" >/dev/null 2>&1; then
+    ok "count-check accepts a document whose markers match its own derivations"
+  else
+    bad "count-check REJECTED a document built from its own derivations — the guard rejects what matches it"
+  fi
+  [ "$kg_doc" = "JOURNAL.md" ] || rm -f "$kg_doc"
 else
   bad "scripts/count-check.sh missing — marked counts have no control"
 fi

@@ -64,7 +64,11 @@ COVERED="README.md PLAN.md JOURNAL.md CONTRIBUTING.md PRINCIPLES.md docs/ARCHITE
 #                             and guard-matrix.sh are here. Added 2026-09-14;
 #                             it was flagged on its first run, which is the
 #                             stray scan working.
-EXEMPT="scripts/count-check.sh scripts/recount.sh docs/guard-matrix.sh fixtures/count-drift/stale-doc.md fixtures/count-drift/typo-name.md"
+# scripts/controls.sh (5.27): its count-check control writes the marker syntax
+# as a TEMPLATE for a known-good document built from this script's own
+# output — a claim about nothing, so it is exempt on the same footing as
+# guard-matrix.sh, whose seeds write markers too.
+EXEMPT="scripts/count-check.sh scripts/recount.sh docs/guard-matrix.sh scripts/controls.sh fixtures/count-drift/stale-doc.md fixtures/count-drift/typo-name.md"
 #
 # HONEST SCOPE OF THE STRAY SCAN. It finds files carrying a MARKER that are
 # on neither list. A new file making count claims in unmarked prose is still
