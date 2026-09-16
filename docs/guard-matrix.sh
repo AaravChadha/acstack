@@ -517,6 +517,26 @@ assert m, 'seed no-op: no wave heading found'
 s = s.rstrip('\n') + '\n\n## [ ] Wave ' + m.group(1) + ' — duplicate phase (seeded)\n'
 io.open('PLAN.md', 'w', encoding='utf-8').write(s)
 EOF"
+# 5.27: §11's negative control must catch a count-check that rejects what
+# matches it, and must NOT fire on real marker drift — that is §23's finding,
+# and until 2026-09-16 every post-merge tree failed both. Seeds derive their
+# targets from the files; python3 so each asserts it mutated (5.8).
+fullcase "count-check rejecting everything is caught" FAIL 'controls' bash -c "python3 - <<'EOF'
+import io
+p = 'scripts/count-check.sh'
+s = io.open(p, encoding='utf-8').read()
+old = '    if [ \"\$val\" != \"\$want\" ]; then'
+assert s.count(old) == 1, 'seed no-op: comparison line not found'
+io.open(p, 'w', encoding='utf-8').write(s.replace(old, '    if true; then'))
+EOF"
+fullcase "marker drift is not a controls failure" PASS 'controls' bash -c "python3 - <<'EOF'
+import io, re
+p = 'JOURNAL.md'
+s = io.open(p, encoding='utf-8').read()
+new, n = re.subn(r'(<!-- count:[a-z0-9-]+ -->)([0-9]+)(<!-- /count -->)', lambda m: m.group(1) + str(int(m.group(2)) + 1) + m.group(3), s, count=1)
+assert n == 1, 'seed no-op: no marker found in JOURNAL.md'
+io.open(p, 'w', encoding='utf-8').write(new)
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody
