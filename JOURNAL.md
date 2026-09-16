@@ -3,7 +3,24 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-16. **Class C closed by reshaping data rather than
+> **Last update**: 2026-09-16 (2nd entry that day). **5.17 closes at six of
+> six, and the classes held** — class A (provisional identifiers, §37) and
+> class D (one canonical scope line, §38) both landed, after measurement
+> corrected each task: `/ticket` filings at *different* offsets merge with no
+> conflict at all, and in every arm `recount.sh` — the prescribed post-merge
+> step — erased the only symptom, so 5.17.2's tooling was hiding class A.
+> `/health`'s staleness rule was measured firing on a branch with **0** commits
+> of its own beside `main`'s **4**. **A §11 "flake" was a guard reporting one
+> fact twice**: `controls.sh` asked `count-check` about the *real* JOURNAL.md,
+> so every merged tree with real drift failed twice — seen twice, dismissed,
+> then proved deterministic by one seeded marker (5.27, filed and closed the
+> same day). **5.4 reordered** off the end and **5.26 re-scoped**: its
+> cheap-first hypothesis is false — the per-case copy is **0.08 s** against
+> **6.3–6.7 s** of `check.sh`, so sharding is the primary move. `checks`
+> **39 → 41**; matrix **156 → 164**; scheduled open **29**; wave 5 **11 of 27**.
+> Five PRs merged (#14–#18). CI on 164 cases: **18m32s**, above the
+> 11m37s–17m13s band — a data point 5.26 now owns.
+> Earlier the same day. **Class C closed by reshaping data rather than
 > checking it.** `/learn`'s `Seen: N` was an accumulator two sessions could
 > not both increment — both write `2`, git auto-merges the identical edit, the
 > true `3` is lost, and `recount` cannot repair what has no ground truth. Now
@@ -226,7 +243,7 @@
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,
-  **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (17) → 6
+  **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (16) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
 - Next: **wave 5** — ~~5.17.2 first~~ **Verdict (2026-09-14, 3rd):** 5.17.2 is closed (`scripts/recount.sh`, acceptance shown wrong first on a merge that lost a count silently). ~~The remaining multi-session critical path is 5.17.1, .3, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — eight items~~ **Verdict (2026-09-16):** 5.17.3 closed too, so the path is **5.17.1, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — seven items**. All ten affected skills still stand, since multi-session is the default in *every* mode rather than tickets-mode-only. **5.23 `/skill` sits behind them as the leverage point**: patching shipped skills is finite work, a generator that does not know the four classes makes it infinite. **5.4's ordering is OPEN for the operator** — its premise (auditing another session's claim) *is* the new default, yet it is scheduled last from when that was an edge case; both readings recorded in the task, nothing moved. ~~5.15 then 5.17.2~~ **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
@@ -282,7 +299,7 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard; its header enumerates every section — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect (16–29 min; a run the machine sleeps through is not a timing)
+bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect (~17 min at 164 cases; a run the machine sleeps through is not a timing — awake-while holds off IDLE sleep only)
 bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, for iterating
 # then start a new Claude Code session; the whole skill roster loads at start
 ```
@@ -296,11 +313,189 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
 | 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->64<!-- /count -->/<!-- count:wave45-total -->66<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. **2026-08-08:** **4.53** closed — the runner's exit code became a three-state signal (`0` completed / `1` could not complete / `2` completed with errored cases) after cannot-complete and completed-with-errors were measured both exiting `1`; `/ship` gate 3 now reads the value, having read no exit code at all, and a dead `.py` cross-reference the crossref guard cannot see was fixed in passing (guard gap carried as 4.55c). **2026-08-08 → 12:** six more closed — **4.53** three-state runner exit code (`/ship` gate 3 had read no exit code at all), **4.55** three guard input surfaces pinned (snapshot-once matrix that names a mid-run change; count-check roster with a reason per inclusion and exclusion; crossref no longer names extensions, which had hidden a dead `.py` link), **4.54+4.60** a dated four-cluster default-look check replacing the stale violet denylist plus three new tell classes and the first negative-twin controls, **4.56** spec divergence kept and guarded against check.sh's own allowlist, **4.57** `.claude-plugin/` as a second install path proven end-to-end in an isolated config, **4.59** all ten roster gaps ruled mode-first against a 12,000-char startup budget set below what the roadmap costs, scheduling 4.62–4.65. **4.58** closed 2026-08-12 — the strictness ladder was built AND run as shakedown 13 (HELD 3/3), which discharged **4.52's** owed re-test in a venue built for something else. **4.61** split `/audit` 163 → 91 lines and turned the ratio scan into a script plus check.sh §29; **4.62** added `/audit skills` as the fifth target. **2026-08-13 → 14:** three shakedown rounds and nine carriers closed — **15** (`/plan`'s `mode-seed.md` split reachable 3/3; its unattended branch not, because `AskUserQuestion` returns a stub rather than erroring), **16** (4.30's four design acceptances run for the first time: A1/A2/A4 held, **A3 unreachable by construction** since `/design`'s honest-scope rule ships disclosed gaps a blind audit must flag), **17** (the tickets round — nine skills, cold baseline, two-turn gate test, `/health` + bootstrap + `/triage` + `/do` + `/retro` all held). Closed: **4.67** never-guess hoisted above the branch that had scoped it out, **4.68** one home for the unsupplied-section rule, **4.69** the `/design` pairing becomes a blind audit plus a three-bucket diff (and one audit run proved not to be an enumeration — 3 findings then 1 on a byte-identical artifact), **4.70** set claims derived from the artifact, **4.71** RFC 2606 enumerated not sampled, **4.72** **the config resolver had been reporting defaults for any `## Settings` written without a leading `-`, silently, to every skill** — three independent sessions caught it, **4.73** the bootstrap names `build` as its owning mode, **4.74** the template is on disk but not in effect until pushed, **4.75** next-3 is a cap not a quota. **4.66 ruled 2026-08-14** on nine nested-session arms rather than on inference — **(3)+(5)**: a CONDUCT rule-5 carve-out plus a documented user-level `permissions.deny` block the pack never writes; the hook declined, the skill deferred to 5.3, "do nothing" falsified by the arm where the destructive command ran under bypass with no prompt and no denial. Splits into **4.76** (docs + `/health` row + guard) and **4.77** (the clause, live demo owed to 4.50); **4.78** files a stale set-claim found in check.sh in passing. Still open: **4.50** (step 4's interactive halves, now testable via `--session-id`/`-r`, plus `/ticket`, `/investigate`, the failing-acceptance path and `Fixes #N`), **4.76**/**4.77**/**4.78**, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
-| 5 / 6 / 7 — Gates, review board, operate | 🔶 7/15 (wave 5) | /contract-check and /deps review shipped 2026-08-17, /deps upgrade 2026-09-10; 5.11 gave the matrix a case filter the same day, so a targeted run costs ~1 min against a full run of **16m26s and 28m21s** (~6.6 and ~11.3 s/case — load-dependent, so the range is the fact and no single sample is; a third reading of 30m15s was withdrawn 2026-09-11 once the power log showed the machine slept through ~16 min of it, which is the condition a timing sample needs and nobody had checked); 5.13/5.14 filed 2026-09-10 from a host-namespace recheck; 5.7 ruled the cap 12,000 → 13,500 (2026-09-08). Remaining roadmap after the fold rulings is **7 skills, not 16**: /careful, /verify, /board (6.1–6.5 as lenses), /skill, /operate (7.1+7.2), /document, /cost |
+| 5 / 6 / 7 — Gates, review board, operate | 🔶 11/27 (wave 5) | /contract-check and /deps review shipped 2026-08-17, /deps upgrade 2026-09-10; 5.11 gave the matrix a case filter the same day, so a targeted run costs ~1 min against a full run of **16m26s and 28m21s** (~6.6 and ~11.3 s/case — load-dependent, so the range is the fact and no single sample is; a third reading of 30m15s was withdrawn 2026-09-11 once the power log showed the machine slept through ~16 min of it, which is the condition a timing sample needs and nobody had checked); 5.13/5.14 filed 2026-09-10 from a host-namespace recheck; 5.7 ruled the cap 12,000 → 13,500 (2026-09-08). Remaining roadmap after the fold rulings is **7 skills, not 16**: /careful, /verify, /board (6.1–6.5 as lenses), /skill, /operate (7.1+7.2), /document, /cost |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### Class A and class D close, 5.17 ends at six of six, and a flake turns out to be a guard reporting twice (2026-09-16, 2nd)
+
+*(Five PRs reached `main`: **#14** journal de-stale, **#15** two rulings,
+**#16** 5.17.1, **#17** 5.27, **#18** class D. Written after #18 merged.)*
+
+**Two rulings the operator made, both re-derived rather than recalled** (`60fa37e`).
+**5.4's ordering moved off the end.** "Build last" was inherited from a premise
+ruled false on 2026-09-14 — multi-session as an edge case — so it could not
+stand on inertia. The dependency argument for keeping it last is real but
+narrower than it reads: `/verify` consumes a claim, an acceptance and a running
+system, so it allocates no identifier (class A), stores no aggregate (B/B′) and
+appends to no shared anchor (C) — **5.17.1–.3 have no `/verify` referent at
+all**. The dependency lives entirely in class D, and there it is *inheritance*,
+not audit: class D's fix is the convention *state the scope of a verdict as the
+branch*, and `/verify` is a verdict-returning skill run from a branch. Built
+before class D it ships as the eleventh instance of the defect. Now scheduled
+after 5.17.4/.5/.6 and 5.26. **"Only with that angle" is NOT superseded** — the
+crowded-lane scope discipline survives the reorder verbatim, because "build
+last" carried two payloads and only the ordering was wrong.
+
+**5.26's cheap-first hypothesis is measured false.** The task supposed the
+per-case `cp -R` might dominate at ~4.6 s/case, in which case hardlinks or a
+worktree per case would cut the total at no correctness cost. Measured, three
+timed trials each: the `.git`-less snapshot copies in **0.08 s** and `check.sh`
+on that copy takes **6.76 / 6.32 / 6.29 s**. The copy is **~1%** of a case —
+4.55a had already dropped the 40M `.git` once at start, which is what made it
+cheap. Inside `check.sh`, three sections carry **68%**: §5 shellcheck **1.65 s**,
+§11 positive controls **1.53 s**, §8 cross-references **1.35 s**; the other 36
+share **2.2 s**. Even deleting those three — impossible, they are guards —
+leaves a ~5-minute matrix against ~3 for four shards. **So sharding is the
+primary move, not the fallback.** Checkout corrected from the estimated ~30–60 s
+to **2 s** measured. Of 156 cases at the time, **135** ran the whole `check.sh`
+(132 `fullcase` + 3 `bannedcase`), 16 `check` cases ran it on a stripped tree,
+5 were `gitcase`.
+
+**5.17.1 — class A, and the post-merge routine erases its only symptom**
+(`245b6a7`). Three arms on a scratch clone, each branch running `recount.sh`
+before commit, squash-merged, then the integrator's own
+`check.sh` → `recount.sh` → `check.sh`:
+
+| Arm | Merge | After `recount.sh` |
+|---|---|---|
+| `/ticket`, both at the phase end | conflict → keep-both → two `**5.27**` | clean tree, duplicate standing |
+| `/ticket`, end vs numeric neighbour | **clean, `1 file changed, 2 insertions(+)`** | clean tree, duplicate standing |
+| `/plan`, both insert `Wave 5.5` | conflict → two headings **and** two `**5.5.1**` | clean tree, duplicates standing |
+
+In every arm the only line that fired was §23 on the moved count, and
+`recount.sh` cleared it — **the prescribed post-merge sequence erased the sole
+symptom in two commands**, so 5.17.2's own tooling was hiding class A. The
+silent-marker merge reproduced as a side effect: 31/31 merged to a reality of 32.
+**Arm 2 is the dangerous one and this PLAN invites it** — wave 5's list is out of
+numeric order (5.22–5.26 physically precede 5.16–5.21), so "append under the
+current phase" and "insert beside the numeric neighbour" are both reasonable
+readings, and they do not collide textually.
+
+**Fix, per class, four carriers:** a number allocated on a branch is
+**provisional until merged**; on collision keep both and renumber the
+**later-merged** filing — the one carve-out to "existing tasks are NEVER
+renumbered", which was written for one session. `/ticket` also places new tasks
+at the phase's **physical end**, which converts arm 2 into arm 1 (visible
+conflict beats silent merge). `/plan` replan and `plan-template.md` take the
+same rule for decimal phases *and the tasks under them*. `/triage` gains sweep
+item 6 — the adopter-side detection, since its duplicate sweep keys on
+overlapping *text* and cannot see two identical IDs. `check.sh` **§37** fails on
+a repeated bold ID at any indent or a repeated wave heading, scope derived, empty
+set clean, and is **never repaired by a script** because a duplicate identifier
+has no derivation. **Class A is not *prevented*** — sequential integers drawn
+from a shared file cannot be, without an allocator — it is *stated at the gate*,
+which is what the acceptance asked for.
+
+**5.27 — the "flake" was a guard reporting the same fact twice** (`4b8a59c`).
+`check.sh` §11 fired twice during the day and was taken for nondeterminism; it
+then survived **nine clean reruns**. Seeding one marker on a copy proved it
+deterministic: `scripts/controls.sh:677` ran its *negative* control — "count-check
+accepts JOURNAL.md's correct markers", there to catch a guard that rejects
+everything — against the **real** JOURNAL.md. So any genuine marker drift, which
+is the state of **every merged tree until `recount.sh` runs**, failed §11 as well
+as §23, the second time with a message reading as a broken guard. The control
+could not tell a real drift from a broken guard because it never asked the guard
+about a document known to be correct. Now it builds one **by construction**: run
+`count-check` on JOURNAL.md; if that passes it *is* the document; if it reports
+drift, a temp document is assembled from the `reality is N (count:name)` lines it
+just printed — its own output, no second derivation. Only a guard that rejects
+what matches it can fail this. **Limit stated in the code:** a
+wrong-but-consistent derivation passes, because the document is built from that
+derivation. **Declined:** a fixture of correct values — it would catch that case
+and rot with every tree change, which is why the live document was used in the
+first place.
+
+**Class D — 5.17.4/.5/.6, and the premise was true of this very repo**
+(`1985f8a`). `/health`'s rule *"JOURNAL stale if work commits postdate its last
+update"* saw **4** commits after the last journal commit on a branch with **0**
+of its own — all four were other sessions' merged PRs (#14–#17). A session that
+had done nothing was told its journal was stale, and with N sessions that row
+fires forever and stops being read. One convention, three carriers, one guard: a
+canonical **scope line** naming the branch, its sha, the default's, and that the
+merged tree is the integrator's to re-check — **one source line**, identical in
+each. `/health` derives *this branch's* unjournaled commits
+(`git log HEAD ^<default> ^<journal-commit>`) and reports the default's as a
+separate **info** row. `/resume`'s next-3 becomes a proposal, never an
+assignment: each candidate gets a claim check — a remote branch under
+`branch-prefix` carrying the ID, an open PR mentioning it — with its limit
+stated, since `/resume` never fetches and an unpushed session is invisible.
+`/ship` states that all five gates are branch-local and that gate 4's drift is
+measured against a PLAN the integrator may already have moved. **§38** asserts
+the line as a positive shape with a size-stated roster (§33's idiom).
+**§13's union widened** by `git for-each-ref` (no mutating flag exists) and
+`gh pr list` (the class of `gh issue list`, already present) — justified in the
+guard, as `npm view` was, because widening a security allowlist should never be a
+silent side effect.
+
+**Live rounds, blind and headless, served the edited skills from this checkout**
+(5.15's finding used deliberately). `/health`: verdict **HEALTHY (0 issues, 5
+info)**, row 1b `✓ — This branch's own commits since it: 0`, row 1b′
+`info — main has 4 commits since the last entry (#14 through #17), all merged PRs
+from other sessions, not this branch's staleness`, scope line verbatim.
+`/resume`: scope line at its line 4, and next-3 opened
+*"Claim check: no remote branch carries 5.17.4, 5.17.5 or 5.17.6, and the open-PR
+list is empty as of the last fetch at 02:37 today"* — it also noted, unprompted,
+that it had been served the edited skill through the symlink. **`/ship` was not
+run live: it pushes.** Both nested runs reported that their Bash sandbox failed
+on the first command and was disabled for the rest of the run — a
+headless-under-headless artifact of the venue, not of the skills.
+
+**5.17 closes at six of six**, each class fixed per class rather than per skill:
+**A** provisional identifiers + §37 · **B** `recount.sh` · **B′/C** reshape so the
+silent merge is *right* · **D** one scope line + §38. Every class was measured
+before it was designed, and the measurement kept correcting the task: .3's
+conflict was already the safe outcome, .1's only symptom was one `recount.sh`
+erases, .4's rule fired on a branch with nothing to journal. **What this does NOT
+make true: that multi-session is safe.** 5.16 (PR-only `main`), 5.22
+(registration precedence) and 5.26 (the CI cost of every merge) are open, and
+the **two-worktrees-at-once venue was never run** — the single-worktree run shows
+the claim check runs, and the same PLAN yields the same list by construction.
+
+**Self-indicting, three.** The §11 double-report was *seen twice and dismissed*
+before it was seeded — the fix took twenty minutes and the misreading cost a day.
+`check.sh`'s header comment calls itself *"the SINGLE enumeration of what this
+guard covers; adding a section means updating this list in the same commit"*, and
+**§36 landed yesterday without it** — caught only because §37 was being added
+beside it; nothing guards that list, since `count-check` derives from the `# N.`
+lines instead. And 5.26's before-figure was first written as a **point**
+(11m37s) when the three runs it cited were 11m37s / 11m47s / **17m13s** —
+corrected to a band on the same branch before merge, because an after-figure has
+to be compared against the spread, not the best case.
+
+**The matrix timing this session is unusable, and nearly was not noticed.** The
+164-case run reads 02:53:30 → 07:59:23 — five hours. `pmset -g log` shows
+`DarkWake from Deep Idle` about every 15 minutes across the whole window: the
+machine was asleep and the run was suspended and resumed. **`awake-while` holds
+off *idle* sleep only**, which is already written down, and this is the second
+time a slept-through run produced a figure that looked like a measurement. The
+valid local figures stay **158 cases in 17m13s** and **160 in 17m04s**. Results
+themselves are unaffected — every case reads a snapshot taken at start, and
+`git diff --quiet HEAD` confirmed the tracked tree never moved (the run's own
+`MOVED` note was one ignored `.DS_Store`).
+
+**A live data point for 5.26:** CI on the 164-case tree took **18m32s**
+(21:28:17 → 21:46:49Z), **above** the 11m37s–17m13s band measured at 156–160
+cases. Four extra cases do not explain six minutes, so that is runner variance
+stacked on real growth — and the case count only rises.
+
+**What did NOT change:** CONDUCT's ten rules · README (its rewrite is prepped,
+not started) · VERSION 0.4.0 · skills **25** · `setup` · `recount.sh` ·
+`count-check.sh`'s derivations (its EXEMPT roster gained `scripts/controls.sh`
+with a reason, nothing else).
+
+**Validation close.** `check.sh` **39 → 41** sections, all clean on each commit
+standing alone and on each merged tree. Matrix **156 → 164**, full unfiltered
+runs green on all three branches (`158/158`, `160/160`, `164/164`), every new
+guard watched failing first with its section deleted on a copy — §37 two cases,
+5.27 two cases, §38 four cases. Markers re-derived by `recount.sh` after every
+merge, never hand-edited: `checks` **41**, `matrix-cases` **164**,
+`open-scheduled` **30 → 29**, `skills` 25, `repo-rules` 7. Wave 5 **9 of 26 →
+11 of 27**; 5.17 **2 of 6 → 6 of 6**. `recount.sh` reported *"nothing to do"* on
+all five post-merge runs — every drift was caught on its branch first, which is
+what the rule is for.
 
 ### Class C closes by reshaping data rather than checking it, and the guard arrives only because the operator asked for it (2026-09-16)
 
