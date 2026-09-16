@@ -104,6 +104,12 @@ Generate `PLAN.md` following `references/plan-template.md`. The grammar:
   `~~old text~~ → **Verdict (YYYY-MM-DD):** new call — reason.`
 - New scope discovered mid-project becomes a decimal phase (`Phase 3.5`)
   inserted in place, with a Goal explaining why it exists mid-stream.
+  The phase number, and the task numbers under it, are **provisional until
+  the branch merges**: a second session inserting at the same point draws
+  the same number, and a keep-both merge leaves two `Phase 3.5` headings
+  with duplicate task IDs beneath them (measured 2026-09-16, 5.17.1). On
+  collision keep both and renumber the later-merged phase and its tasks;
+  never drop either side.
 - Deferred work leaves a breadcrumb at both ends: the origin notes
   `1.4.2 moved to Phase 3.5 (<reason>)`; the destination names the origin.
 - Reality diverging from plan gets `**Status (YYYY-MM-DD):**` lines under

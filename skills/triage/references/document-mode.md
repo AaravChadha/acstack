@@ -23,3 +23,10 @@ The same rot, PLAN.md-shaped:
    as deliberately deferred.
 5. **Phase-state drift.** Phase headings whose `[ ]`/`[x]` disagrees with
    their children's state or their exit criterion's reality.
+6. **Duplicate identifiers.** Two checkbox lines carrying the same bold
+   task ID, or two phase headings with the same number — the trace of two
+   sessions filing concurrently (5.17.1), which no count re-derivation can
+   repair. Not a content pair: never propose merging them. Propose
+   renumbering the **later-merged** one, both kept. Derive the set rather
+   than eyeballing it: collect every bold ID at the start of a checkbox
+   line, sort, and keep the repeated ones; same for the wave headings.

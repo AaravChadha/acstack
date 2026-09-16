@@ -94,4 +94,6 @@ the rate for item A?'))"` returns the correct number with a source citation.
   first)`; destination re-opens the original numbering.
 - Reality update: `**Status (YYYY-MM-DD):** <measured state vs target,
   with numbers and what's tracked where>` — the original target stays.
-- New mid-project scope: decimal phase (`Phase 3.5`) inserted in place.
+- New mid-project scope: decimal phase (`Phase 3.5`) inserted in place. Its
+  number is provisional until the branch merges; on collision, renumber the
+  later-merged phase and its tasks (5.17.1).

@@ -24,6 +24,7 @@
 #   31 never-guess rule stays unconditional  32 deny set has one canonical home
 #   33 READONLY_SKILLS states its own size    34 commit subjects match the 3 shapes
 #   35 near-term open tasks state a done-condition
+#   36 /learn sighting trail is a list   37 PLAN.md identifiers are unique
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1106,6 +1107,32 @@ if [ -f "$learn_md" ]; then
     fail=1
   fi
 fi
+
+# 37. Identifiers in PLAN.md are unique (5.17.1). Two sessions reading the
+#     same plan both allocate "the next free number". Measured 2026-09-16 on
+#     a scratch clone, three arms: /ticket filings at different offsets
+#     merged with NO conflict; /ticket filings at the same offset and /plan
+#     decimal phases at the same offset conflicted, and the keep-both
+#     resolution that is right for journal entries left two identical IDs
+#     standing. In every arm the only line that fired was §23 on the moved
+#     count, and recount.sh then cleared it — the prescribed post-merge
+#     sequence erased the sole symptom in two commands. A count is
+#     re-derivable; a duplicate identifier is not. It is a collision the
+#     merger must resolve by renumbering the later-merged filing, so it is
+#     FAILED here and never repaired by a script.
+#     SCOPE IS DERIVED, NOT LISTED: every checkbox line's bold ID at any
+#     indent (subtasks included), and every wave heading's number or letter.
+#     Empty set is clean: no duplicates, no output, no failure.
+dup_ids="$(grep -oE '^ *- \[[ x]\] \*\*[0-9]+(\.[0-9]+)*\*\*' PLAN.md | sed -E 's/^ *- \[[ x]\] \*\*//; s/\*\*$//' | sort | uniq -d || true)"
+for id_ in $dup_ids; do
+  echo "FAIL identifier: PLAN.md task ID $id_ appears $(grep -cE "^ *- \[[ x]\] \*\*${id_//./\\.}\*\*" PLAN.md) times — a merge collision; keep both, renumber the later-merged filing (5.17.1)"
+  fail=1
+done
+dup_waves="$(grep -oE '^## \[[ x]\] Wave [0-9A-Z]+(\.[0-9]+)?' PLAN.md | sed -E 's/^## \[[ x]\] Wave //' | sort | uniq -d || true)"
+for w_ in $dup_waves; do
+  echo "FAIL identifier: PLAN.md heading 'Wave $w_' appears $(grep -cE "^## \[[ x]\] Wave ${w_//./\\.}( |$)" PLAN.md) times — a merge collision; keep both, renumber the later-merged phase and its tasks (5.17.1)"
+  fail=1
+done
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then

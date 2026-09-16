@@ -5043,7 +5043,10 @@ multi-PR build that would otherwise pay full price for every push.
   anyway:** its header enumeration (`scripts/check.sh:7-25`, "the SINGLE
   enumeration") stops at §35 — §36 landed 2026-09-16 without the same-commit
   update the header demands, and nothing guards the list, since `count-check`
-  derives from the `# N.` lines instead. Add the §36 line in this task's PR.
+  derives from the `# N.` lines instead. ~~Add the §36 line in this task's
+  PR.~~ **Verdict (2026-09-16):** done in 5.17.1's PR — adding §37 put the
+  header under its own same-commit rule, so both lines landed there; nothing
+  left for this task to carry.
   **Declined deliberately (2026-09-16):** selecting cases from the diff
   ("only run what the change touches"). It needs a changed-files → cases
   mapping, which is a hardcoded list that under-counts silently the day a
@@ -5190,7 +5193,51 @@ multi-PR build that would otherwise pay full price for every push.
   fix for them. The earlier blocker analysis was stated as general and was
   not; recorded here because a reader opening 5.17 reads the task, not the
   journal entry that found this.
-  - [ ] **5.17.1** `/ticket` allocates "the next free task number — existing
+  - [x] **5.17.1** *(Done 2026-09-16. **Measured first, three arms on a
+    scratch clone**, each branch running `recount.sh` before commit, the
+    merge squashed, then the integrator's own `check.sh` → `recount.sh` →
+    `check.sh`: `/ticket` filings at the same anchor **conflicted** and the
+    keep-both resolution left two `**5.27**`; `/ticket` filings at different
+    offsets — the phase's physical end versus beside the numeric neighbour,
+    both reasonable in a list that is out of numeric order — **merged clean,
+    `1 file changed, 2 insertions(+)`**; `/plan` decimal phases at the same
+    anchor conflicted, and keep-both left two `## Wave 5.5` headings **and**
+    two `**5.5.1**`. In every arm the only line that fired was §23 on the
+    moved count, and `recount.sh` then cleared it — **the prescribed
+    post-merge sequence erased the sole symptom in two commands**, so 5.17.2's
+    tooling was hiding class A. Reproduced as a side effect: markers 31/31
+    merged silently against a reality of 32.
+    **Fix, per class:** the convention *a number allocated on a branch is
+    provisional until merged; on collision keep both and renumber the
+    later-merged filing* — the one carve-out to "NEVER renumbered", which was
+    written for one session — carried by `/ticket` document mode (which now
+    also places new tasks at the phase's physical end, so a concurrent filing
+    conflicts visibly instead of merging silently) and its report line;
+    `/plan` replan and `plan-template.md`'s change rules (the phase number
+    and its tasks); `/triage`'s document-mode sweep as item 6, the
+    adopter-side detection — it keyed on content and could not see two IDs;
+    and `check.sh` **§37**, which fails on a repeated bold ID at any indent or
+    a repeated wave heading, scope derived, empty set clean, and is never
+    repaired by a script because a duplicate identifier has no derivation.
+    Two matrix cases seed the ID they duplicate from the file itself; watched
+    both ways — `ok … FAIL` with the guard, `BAD got=PASS want=FAIL` with §37
+    deleted on a copy. **Acceptance met on the fixed tree, all three arms:**
+    `check.sh` names the collision (`FAIL identifier: PLAN.md task ID 5.27
+    appears 2 times`; for `/plan` both `heading 'Wave 5.5'` and `task ID
+    5.5.1`), and `recount.sh` repairs the count while **leaving the
+    identifier failure standing**. The `check.sh` header enumeration gained
+    its missing §36 line here with §37 under the same-commit rule, so 5.26's
+    carrier note is superseded. `checks` 39 → 40 and `matrix-cases` 156 → 158
+    by `recount.sh`. **Found on the way, carried by 5.27:** §11 fires on
+    every post-merge tree because one control runs `count-check` against the
+    real JOURNAL.md. **Not done:** no blind live run of the edited skill
+    text — the defect was found mechanically and the acceptance is
+    mechanical, so the instruction half is verified as authored, not as
+    behaved. Class A is not *prevented* — sequential integers from a shared
+    file cannot be, without an allocator — it is stated at the gate; expected
+    but not observed: since `pull_request` CI checks out the merge ref, the
+    second of two colliding PRs should fail CI once the first is on `main`.)*
+    `/ticket` allocates "the next free task number — existing
     tasks are NEVER renumbered" (`skills/ticket/SKILL.md:87-90`). Two
     sessions read the same PLAN and both allocate the same number; inserted
     at different offsets they auto-merge, and the skill's own rule forbids
@@ -5488,6 +5535,30 @@ multi-PR build that would otherwise pay full price for every push.
 > gate, which is what this wave is. Tradeoff: the wave now
 > mixes pre-change gates with a post-change one. Revisit if /verify grows
 > enough to stand alone.
+- [ ] **5.27** `check.sh` §11 fires on every post-merge tree, for a reason
+  that is not a missed plant. `scripts/controls.sh:677-680` is a negative
+  control — *count-check accepts JOURNAL.md's correct markers* — and it runs
+  `count-check.sh` against the **real** JOURNAL.md, so any genuine marker
+  drift there fails §11 with *"count-check REJECTED JOURNAL.md — either a
+  real drift, or the guard rejects everything"*, beside §23's own line that
+  already names the marker. That is the state of every merged tree until
+  `recount.sh` runs — exactly when the integrator is reading the output.
+  Found 2026-09-16: it fired twice, was taken for a flake, survived nine
+  clean reruns, and a seed then proved it deterministic (JOURNAL `checks`
+  39 → 38 on a copy: both lines fire; `recount` clears both). The control
+  cannot tell a real drift from a broken guard because it never asks the
+  guard about a document known to be correct.
+  **Fix:** derive a known-good document at runtime — every marker set to the
+  value `count-check`'s own derivation reports — and run the negative control
+  against that; a rejection then means the guard rejects everything, and a
+  real drift is §23's finding alone.
+  **Acceptance:** on a copy with JOURNAL.md's `checks` marker seeded wrong,
+  `check.sh` prints the `FAIL count:` line and **no** `FAIL control:
+  count-check REJECTED` line; on a copy where `count-check`'s derivation is
+  made to return a wrong value for every count, the control still fires.
+  Both arms shown, the second first. Out of scope: any other control.
+  *(Number provisional until this branch merges — 5.17.1's rule, applied to
+  its own filing.)*
 
 ## [ ] Wave 6 — The review board
 

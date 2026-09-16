@@ -498,6 +498,25 @@ n = re.sub(r'(- \*\*Seen:\*\*\n)(  - [^\n]*\n)+', r'\1', s, count=1)
 assert n != s, 'seed no-op: the Seen list shape was not found'
 p.write_text(n)
 EOF"
+# 37: duplicate identifiers in PLAN.md are the trace of two concurrent filings
+# (5.17.1). Both seeds derive the ID they duplicate from the file itself, so a
+# renumbered plan cannot no-op them; python3 so each asserts it mutated (5.8).
+fullcase "duplicate task ID in PLAN"      FAIL 'identifier' bash -c "python3 - <<'EOF'
+import io, re
+s = io.open('PLAN.md', encoding='utf-8').read()
+m = re.search(r'^ *- \[[ x]\] \*\*([0-9]+(?:\.[0-9]+)*)\*\*', s, re.M)
+assert m, 'seed no-op: no task ID line found'
+s = s.rstrip('\n') + '\n- [ ] **' + m.group(1) + '** duplicate filing (seeded).\n  **Acceptance:** seeded.\n'
+io.open('PLAN.md', 'w', encoding='utf-8').write(s)
+EOF"
+fullcase "duplicate wave heading in PLAN" FAIL 'identifier' bash -c "python3 - <<'EOF'
+import io, re
+s = io.open('PLAN.md', encoding='utf-8').read()
+m = re.search(r'^## \[[ x]\] Wave ([0-9A-Z]+(?:\.[0-9]+)?)', s, re.M)
+assert m, 'seed no-op: no wave heading found'
+s = s.rstrip('\n') + '\n\n## [ ] Wave ' + m.group(1) + ' — duplicate phase (seeded)\n'
+io.open('PLAN.md', 'w', encoding='utf-8').write(s)
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody
