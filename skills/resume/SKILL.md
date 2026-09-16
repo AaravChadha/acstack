@@ -2,7 +2,7 @@
 name: resume
 description: Resume a project in five minutes - read BRIEF/PLAN/JOURNAL plus git state, deliver a short where-we-are brief, divergence flags (uncommitted work, unjournaled commits, acceptance drift), and the next three unblocked tasks. Use at session start or when the user asks where were we, what's next, to catch up on a project, or to get oriented in an unfamiliar repo.
 argument-hint: "[notes]"
-allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git status:*), Bash(git rev-parse:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(gh issue list:*)
+allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git status:*), Bash(git rev-parse:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(gh issue list:*), Bash(gh pr list:*), Bash(git for-each-ref:*)
 ---
 
 # /resume — resume in five minutes
@@ -83,7 +83,10 @@ about the wrong product is worse than no answer (conduct rule 8).
 - Current phase, its `**Exit criterion:**`, and its checkbox state.
 - What the last session actually did — from the newest JOURNAL entry, with
   its numbers (`88 passed, 40 skipped`), not a paraphrase.
-- The state of the tree: clean or not, current branch, ahead/behind remote.
+- The state of the tree — clean or not, ahead/behind — as the canonical scope
+  line, one source line, because everything below is about this worktree
+  (5.17.5):
+  **Scope:** branch `<branch>` @ `<sha>` vs `<default>` @ `<sha>` — a verdict about this branch's tree, not the project's; the merged tree is the integrator's to re-check.
 
 ## Divergence flags
 
@@ -113,6 +116,18 @@ is still listed, flagged as `no acceptance recorded` — the sibling of
 whose done-condition is unwritten is a real finding about the plan, and
 `/plan-review` or `/triage` is where it gets fixed.
 
+**Two sessions from one base get the same three (5.17.5).** The list is a
+function of this worktree's PLAN, so it is a proposal, never an assignment.
+Before listing a candidate, look for a claim signal and print it beside the
+ID: a remote branch under the project's `branch-prefix` carrying the task ID,
+and an open PR mentioning it —
+`git for-each-ref --format='%(refname:short)' "refs/remotes/origin/<branch-prefix><id>*"`
+and `gh pr list --state open --search "<id>"`. A hit keeps the candidate
+listed, flagged `may already be taken: <branch or PR>`; no hit prints
+`no claim seen as of the last fetch` — /resume never fetches, and a session
+that has not pushed is invisible, so silence is not proof. No remote or no
+`gh` → `claim check skipped — <why>`, never a silent omission.
+
 ## Mode: cold — no doc triad
 
 Full procedure: `references/mode-cold.md` — read it when BRIEF/PLAN/JOURNAL
@@ -130,7 +145,8 @@ checkbox scan becomes a tracker query:
 - `gh issue list` open issues in the current milestone; milestone burn
   stated as open/closed counts against its exit criterion.
 - Next 3 = top unblocked open issues (no `blocked` label) in the current
-  milestone, each with its acceptance section's first line. **The
+  milestone, each with its acceptance section's first line and its
+  assignee — an assigned issue is taken (read it, never set it; 5.17.5). **The
   fewer-than-three rule in "Next 3 unblocked subtasks" above governs here
   too — three is a cap, not a quota, and a `blocked` issue is never listed
   to reach it.** This section omitted that clause until 2026-08-14; with one

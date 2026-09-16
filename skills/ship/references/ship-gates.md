@@ -160,6 +160,8 @@ Two rules for anything written onto the PR itself:
 <one-paragraph lede: what this branch delivers and why now>
 
 ## Gates
+**Scope:** branch `<branch>` @ `<sha>` vs `<default>` @ `<sha>` — a verdict about this branch's tree, not the project's; the merged tree is the integrator's to re-check.
+
 | Gate | Result |
 |---|---|
 | State | clean tree, N commits ahead of <default> |
