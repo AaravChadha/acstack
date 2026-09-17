@@ -206,12 +206,18 @@ Everything it touches, so you can predict it before installing:
 | `eval/` | /eval-spec, /eval-run | Only when you ask for an eval |
 | `~/.acstack/update-stamp` | the runtime | One line, the last update-check date. The only machine-local state |
 
-The pack sends nothing on its own. Five skills reach the network, and each
-does so only on a command you type:
+The pack has one automatic network call and four you trigger.
+
+**Automatic**, with `runtime: on` (the default): the first skill you invoke
+each day runs an update check, which is a single `git fetch` against this
+repo. It is once per day, not once per invocation, and it happens whichever
+skill you ran — so it is not tied to the four below. Set `runtime: off` and
+nothing is automatic.
+
+**On a command you type:**
 
 | You run | It sends |
 |---|---|
-| the once-a-day update check | `git fetch` against this repo |
 | any skill in tickets mode | `gh` calls to your GitHub |
 | `/deps` | one `npm view` per package, to read published metadata |
 | `/ship` | `git push`, and `gh pr create` under `push: branch-pr` |

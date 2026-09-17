@@ -1402,16 +1402,31 @@ if [ -f "$af" ]; then
       echo "FAIL audittargets: no skill-table row advertises /audit anywhere — a six-target skill nobody is told about"
       fail=1
     else
-      printf '%s\n' "$arows" | while IFS= read -r r_; do
+      # STRIP THE `file:line:` PREFIX BEFORE MATCHING. `grep -n` prepends the
+      # path, and the path CONTAINS target names — `./docs/SKILLS.md` holds
+      # the literal string `docs`, so a row that omitted the `docs` target
+      # still matched and the guard passed. Found 2026-09-17 by an external
+      # review of this very commit, hours after the guard was "proven both
+      # arms": the matrix seed only ever removed the alphabetically-last
+      # target (`tests`), which does not appear in any path, so the case
+      # could not reach the defect. One arm of one input is not a proof.
+      # Per-row verdict too: the old aggregate recheck let one incomplete row
+      # borrow a target from another row, so a broken roster passed whenever
+      # a second, complete one existed.
+      bad_rows=0
+      while IFS= read -r r_; do
+        [ -n "$r_" ] || continue
+        loc_="${r_%%:*}"                 # file
+        body_="${r_#*:}"; body_="${body_#*:}"   # strip file: and line:
         for t_ in $t_sections; do
-          printf '%s' "$r_" | grep -q "$t_" \
-            || echo "FAIL audittargets: $af declares target '$t_' but this row omits it — ${r_%%:*} advertises an incomplete roster"
+          printf '%s' "$body_" | grep -q "$t_" || {
+            echo "FAIL audittargets: $af declares target '$t_' but $loc_ advertises a roster row that omits it"
+            bad_rows=1; }
         done
-      done
-      # the subshell above cannot set `fail`, so re-derive the verdict here
-      for t_ in $t_sections; do
-        printf '%s' "$arows" | grep -q "$t_" || fail=1
-      done
+      done <<EOF
+$arows
+EOF
+      [ "$bad_rows" -eq 0 ] || fail=1
     fi
   fi
 fi

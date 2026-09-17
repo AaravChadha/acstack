@@ -7,7 +7,7 @@ allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git diff:*), Bash(git che
 
 # /audit — find what's wrong and report it honestly
 
-Five targets, one stance: verdicts backed by evidence, misses logged rather
+Six targets, one stance: verdicts backed by evidence, misses logged rather
 than massaged, and scope stated so the reader knows what was NOT checked.
 
 `Adjacent skills:` /secure (security-only findings with exploit scenarios) ·

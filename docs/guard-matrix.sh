@@ -789,6 +789,34 @@ f, line = hit
 s = f.read_text(encoding='utf-8')
 f.write_text(s.replace(line, line.replace(', ' + last, '', 1), 1), encoding='utf-8')
 EOF"
+# The name-in-the-path mode. The row lives in docs/SKILLS.md, whose PATH
+# contains "docs", so `grep -q docs` against a `grep -n` line matched the
+# filename prefix and the guard passed on a row that omitted the target.
+# The case above cannot reach this: it removes the alphabetically-last name,
+# which appears in no path. Derived, not hardcoded, so a rename survives.
+fullcase "roster hides a path-named target" FAIL 'audittargets' bash -c "python3 - <<'EOF'
+import io, re, pathlib
+names = re.findall(r'^## Target: ([a-z-]+)', io.open('skills/audit/SKILL.md', encoding='utf-8').read(), re.M)
+assert names, 'seed no-op: no target sections'
+hit = None
+for f in pathlib.Path('.').rglob('*.md'):
+    if '.git' in f.parts:
+        continue
+    for line in f.read_text(encoding='utf-8').split(chr(10)):
+        if not line.startswith('| \`/audit\` |'):
+            continue
+        # a target whose name also occurs in this file's own path
+        for n in names:
+            if n in str(f) and n in line:
+                hit = (f, line, n)
+                break
+    if hit:
+        break
+assert hit, 'seed no-op: no roster row whose path contains one of its own target names'
+f, line, n = hit
+s = f.read_text(encoding='utf-8')
+f.write_text(s.replace(line, line.replace(', ' + n, '', 1).replace(n + ', ', '', 1), 1), encoding='utf-8')
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody
