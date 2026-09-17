@@ -270,7 +270,8 @@ if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; t
   out="$(cd fixtures/eval-run && python3 eval/run.py 2>&1)"; ev_c=$?
   head="$(printf '%s' "$out" | grep '^overall:' || true)"
   case "$head" in
-    *"7/8 (87.5%)"*) ok "/eval-run control: seeded failure lands at 7/8 (87.5%)" ;;
+    *"7/9 (77.8%)"*) ok "/eval-run control: seeded failures land at 7/9 (77.8%)" ;;
+    *"8/9 (88.9%)"*) bad "/eval-run: q11's acceptable_failure carries reason=null and was FORGIVEN — str(None) is the truthy string \"None\", so a case with no written reason counted as a pass (codex review, 2026-09-16)" ;;
     *"6/8 (75.0%)"*) bad "/eval-run: q10's comma-separated concept expected FAILED — the grader is matching the raw string again, so a correct answer scores FAIL (4.52)" ;;
     *100.0%*)        bad "/eval-run reported 100% with a seeded failing case - false pass" ;;
     "")              bad "/eval-run control produced no headline (runner did not complete)" ;;
@@ -286,6 +287,10 @@ if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; t
   # how a headline lies, and it is invisible in the percentage itself.
   printf '%s' "$out" | grep -q 'acceptable_failure applied to 2' \
     || bad "/eval-run did not name both forgiven failures with reasons"
+  # q11 declares acceptable_failure with a JSON null reason. A reason must be
+  # a non-empty STRING; "None" is what str(null) produces, not a reason.
+  printf '%s' "$out" | grep -q 'q11' \
+    && bad "/eval-run forgave q11, whose reason is null — a declaration with no written reason must be ignored"
   printf '%s' "$out" | grep -q 'needs rubric review: 1' \
     || bad "/eval-run silently dropped the rubric case from the report"
   printf '%s' "$out" | grep -q 'skipped (needs-data): 1' \
@@ -327,8 +332,29 @@ if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; t
   if printf '%s' "$b53_out" | grep -q 'did not complete cleanly'; then
     bad "/eval-run: the errored-run line still says 'did not complete cleanly' — a run whose every case has a record IS complete (4.53)"
   fi
-  if [ "$ev_c" = 0 ] && [ "$a53" = 1 ] && [ "$b53" = 2 ]; then
-    ok "/eval-run exit codes separate completed(0) / could-not-complete(1) / completed-with-errors(2)"
+  # D — completed, but NOTHING was graded (every case skipped). Exit 0 means
+  # "every case graded", so this is the one state that cannot honestly claim
+  # it — and it reached 0 anyway, because `errors` was also zero. /ship's
+  # gate 3 reads 0 as a pass, so an entirely-skipped golden set shipped as a
+  # clean gate. Seeded through DATA, never by patching the runner.
+  # (codex review, 2026-09-16)
+  cp -R fixtures/eval-run/eval "$e53/eval3"
+  python3 - "$e53/eval3/golden.jsonl" <<'PYEOF'
+import io, json, sys
+p = sys.argv[1]
+rows = [json.loads(l) for l in io.open(p, encoding="utf-8") if l.strip()]
+assert rows, "seed no-op: golden set is empty"
+for r in rows:
+    r["status"] = "needs-data"
+io.open(p, "w", encoding="utf-8").write("".join(json.dumps(r) + "\n" for r in rows))
+PYEOF
+  d53_out="$(cd "$e53" && python3 eval3/run.py 2>&1)"; d53=$?
+  [ "$d53" = 2 ] \
+    || bad "/eval-run: a run that graded NOTHING exited $d53, want 2 — exit 0 claims every case was graded, and /ship's gate 3 reads it as a pass (codex review)"
+  printf '%s' "$d53_out" | grep -q 'NO SCORE' \
+    || bad "/eval-run: a run that graded nothing printed no NO SCORE line — the headline 'no scored cases' is not a refusal to be read as a score"
+  if [ "$ev_c" = 0 ] && [ "$a53" = 1 ] && [ "$b53" = 2 ] && [ "$d53" = 2 ]; then
+    ok "/eval-run exit codes separate completed(0) / could-not-complete(1) / completed-with-errors(2) / graded-nothing(2)"
   fi
   rm -rf "$e53"
 else

@@ -675,6 +675,29 @@ old = 'needs.' + first + '.result'
 assert old in s, 'seed no-op: ' + old + ' never read'
 io.open(p, 'w', encoding='utf-8').write(s.replace(old, 'needs.NOTAJOB.result'))
 EOF"
+# The eval layer can report a number that is not true (codex review,
+# 2026-09-16). Both seeds restore a defect in the RUNNABLE fixture, so the
+# control catches them by running the code rather than reading it.
+fullcase "eval forgives a null reason"    FAIL 'controls' bash -c "python3 - <<'EOF'
+import io
+p = 'fixtures/eval-run/eval/run.py'
+s = io.open(p, encoding='utf-8').read()
+a = '        return _written_reason(case.get(\"reason\"))'
+b = '        return _written_reason(af.get(\"reason\"))'
+assert a in s and b in s, 'seed no-op: accepted() is not in its fixed form'
+s = s.replace(a, '        return bool(str(case.get(\"reason\", \"\")).strip())')
+s = s.replace(b, '        return bool(str(af.get(\"reason\", \"\")).strip())')
+io.open(p, 'w', encoding='utf-8').write(s)
+EOF"
+fullcase "eval grading nothing exits ok"  FAIL 'controls' bash -c "python3 - <<'EOF'
+import io
+p = 'fixtures/eval-run/eval/run.py'
+s = io.open(p, encoding='utf-8').read()
+i = s.find('    if not scored:')
+assert i != -1, 'seed no-op: the zero-graded guard is already absent'
+j = s.index('    return 2 if errors else 0', i)
+io.open(p, 'w', encoding='utf-8').write(s[:i] + s[j:])
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody
