@@ -3,7 +3,23 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-16 (2nd entry that day). **5.17 closes at six of
+> **Last update**: 2026-09-16 (3rd entry that day). **CI went from ~18 minutes
+> to ~5, and the task that did it broke the merge gate.** The matrix now runs
+> as four parallel shards — 18m04s/18m32s → 5m39s/4m59s/5m27s while the case
+> count grew 164 → 170, **~3.4x**. Exhaustiveness is asserted three ways,
+> because a case in zero shards leaves every shard green: per-shard arithmetic,
+> §39's partition proof on every commit, and CI's fan-in summing `RAN` against
+> the declared count. **Then it broke `main`'s gate.** Branch protection
+> requires a context named `check`; sharding renamed that job and left none, so
+> PR #20 showed **six green jobs and BLOCKED**, unmergeable even by the owner.
+> Fixed in the workflow, never in the protection rule. Auditing that found a
+> second hole — the fan-in never read `guard`'s result. **Both defects were
+> omissions, not wrong values**, which is why the gate's dependency list is now
+> **derived** from the workflow's own job set; its first draft collected `on:`'s
+> triggers as jobs and **the guard fired on its own derivation**. `checks`
+> **41 → 42**; matrix **164 → 170**; scheduled open **28**; wave 5 **12 of 27**.
+> Seven PRs merged (#14–#20).
+> Earlier the same day (2nd entry). **5.17 closes at six of
 > six, and the classes held** — class A (provisional identifiers, §37) and
 > class D (one canonical scope line, §38) both landed, after measurement
 > corrected each task: `/ticket` filings at *different* offsets merge with no
@@ -243,7 +259,7 @@
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,
-  **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (16) → 6
+  **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (15) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
 - Next: **wave 5** — ~~5.17.2 first~~ **Verdict (2026-09-14, 3rd):** 5.17.2 is closed (`scripts/recount.sh`, acceptance shown wrong first on a merge that lost a count silently). ~~The remaining multi-session critical path is 5.17.1, .3, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — eight items~~ **Verdict (2026-09-16):** 5.17.3 closed too, so the path is **5.17.1, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — seven items**. All ten affected skills still stand, since multi-session is the default in *every* mode rather than tickets-mode-only. **5.23 `/skill` sits behind them as the leverage point**: patching shipped skills is finite work, a generator that does not know the four classes makes it infinite. **5.4's ordering is OPEN for the operator** — its premise (auditing another session's claim) *is* the new default, yet it is scheduled last from when that was an edge case; both readings recorded in the task, nothing moved. ~~5.15 then 5.17.2~~ **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
@@ -299,7 +315,8 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard; its header enumerates every section — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect (~17 min at 164 cases; a run the machine sleeps through is not a timing — awake-while holds off IDLE sleep only)
+bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect (~17 min serial; a run the machine sleeps through is not a timing — awake-while holds off IDLE sleep only)
+for i in 1 2 3 4; do bash docs/guard-matrix.sh "$PWD" --shard $i/4 & done; wait   # 5.26: same coverage, ~6 min
 bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, for iterating
 # then start a new Claude Code session; the whole skill roster loads at start
 ```
@@ -313,11 +330,144 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
 | 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->64<!-- /count -->/<!-- count:wave45-total -->66<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. **2026-08-08:** **4.53** closed — the runner's exit code became a three-state signal (`0` completed / `1` could not complete / `2` completed with errored cases) after cannot-complete and completed-with-errors were measured both exiting `1`; `/ship` gate 3 now reads the value, having read no exit code at all, and a dead `.py` cross-reference the crossref guard cannot see was fixed in passing (guard gap carried as 4.55c). **2026-08-08 → 12:** six more closed — **4.53** three-state runner exit code (`/ship` gate 3 had read no exit code at all), **4.55** three guard input surfaces pinned (snapshot-once matrix that names a mid-run change; count-check roster with a reason per inclusion and exclusion; crossref no longer names extensions, which had hidden a dead `.py` link), **4.54+4.60** a dated four-cluster default-look check replacing the stale violet denylist plus three new tell classes and the first negative-twin controls, **4.56** spec divergence kept and guarded against check.sh's own allowlist, **4.57** `.claude-plugin/` as a second install path proven end-to-end in an isolated config, **4.59** all ten roster gaps ruled mode-first against a 12,000-char startup budget set below what the roadmap costs, scheduling 4.62–4.65. **4.58** closed 2026-08-12 — the strictness ladder was built AND run as shakedown 13 (HELD 3/3), which discharged **4.52's** owed re-test in a venue built for something else. **4.61** split `/audit` 163 → 91 lines and turned the ratio scan into a script plus check.sh §29; **4.62** added `/audit skills` as the fifth target. **2026-08-13 → 14:** three shakedown rounds and nine carriers closed — **15** (`/plan`'s `mode-seed.md` split reachable 3/3; its unattended branch not, because `AskUserQuestion` returns a stub rather than erroring), **16** (4.30's four design acceptances run for the first time: A1/A2/A4 held, **A3 unreachable by construction** since `/design`'s honest-scope rule ships disclosed gaps a blind audit must flag), **17** (the tickets round — nine skills, cold baseline, two-turn gate test, `/health` + bootstrap + `/triage` + `/do` + `/retro` all held). Closed: **4.67** never-guess hoisted above the branch that had scoped it out, **4.68** one home for the unsupplied-section rule, **4.69** the `/design` pairing becomes a blind audit plus a three-bucket diff (and one audit run proved not to be an enumeration — 3 findings then 1 on a byte-identical artifact), **4.70** set claims derived from the artifact, **4.71** RFC 2606 enumerated not sampled, **4.72** **the config resolver had been reporting defaults for any `## Settings` written without a leading `-`, silently, to every skill** — three independent sessions caught it, **4.73** the bootstrap names `build` as its owning mode, **4.74** the template is on disk but not in effect until pushed, **4.75** next-3 is a cap not a quota. **4.66 ruled 2026-08-14** on nine nested-session arms rather than on inference — **(3)+(5)**: a CONDUCT rule-5 carve-out plus a documented user-level `permissions.deny` block the pack never writes; the hook declined, the skill deferred to 5.3, "do nothing" falsified by the arm where the destructive command ran under bypass with no prompt and no denial. Splits into **4.76** (docs + `/health` row + guard) and **4.77** (the clause, live demo owed to 4.50); **4.78** files a stale set-claim found in check.sh in passing. Still open: **4.50** (step 4's interactive halves, now testable via `--session-id`/`-r`, plus `/ticket`, `/investigate`, the failing-acceptance path and `Fixes #N`), **4.76**/**4.77**/**4.78**, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
-| 5 / 6 / 7 — Gates, review board, operate | 🔶 11/27 (wave 5) | /contract-check and /deps review shipped 2026-08-17, /deps upgrade 2026-09-10; 5.11 gave the matrix a case filter the same day, so a targeted run costs ~1 min against a full run of **16m26s and 28m21s** (~6.6 and ~11.3 s/case — load-dependent, so the range is the fact and no single sample is; a third reading of 30m15s was withdrawn 2026-09-11 once the power log showed the machine slept through ~16 min of it, which is the condition a timing sample needs and nobody had checked); 5.13/5.14 filed 2026-09-10 from a host-namespace recheck; 5.7 ruled the cap 12,000 → 13,500 (2026-09-08). Remaining roadmap after the fold rulings is **7 skills, not 16**: /careful, /verify, /board (6.1–6.5 as lenses), /skill, /operate (7.1+7.2), /document, /cost |
+| 5 / 6 / 7 — Gates, review board, operate | 🔶 12/27 (wave 5) | /contract-check and /deps review shipped 2026-08-17, /deps upgrade 2026-09-10; 5.11 gave the matrix a case filter the same day, so a targeted run costs ~1 min against a full run of **16m26s and 28m21s** (~6.6 and ~11.3 s/case — load-dependent, so the range is the fact and no single sample is; a third reading of 30m15s was withdrawn 2026-09-11 once the power log showed the machine slept through ~16 min of it, which is the condition a timing sample needs and nobody had checked); 5.13/5.14 filed 2026-09-10 from a host-namespace recheck; 5.7 ruled the cap 12,000 → 13,500 (2026-09-08). Remaining roadmap after the fold rulings is **7 skills, not 16**: /careful, /verify, /board (6.1–6.5 as lenses), /skill, /operate (7.1+7.2), /document, /cost |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### The task that sharded CI broke CI's gate, and both defects were omissions (2026-09-16, 3rd)
+
+*(One squashed commit reached `main` — **PR #20**, carrying three: the shard
+build, the gate repair, and the derived dependency list.)*
+
+**5.26 closed: the guard matrix now runs as four parallel CI jobs** (`68a9563`).
+The before-state was measured, not assumed: **18m04s and 18m32s** on two
+consecutive 164-case runs, up from an 11m37s–17m13s band at 156–160. Two runs
+at ~18 minutes is a baseline rather than variance, and every PR paid it. After:
+**5m39s, 4m59s, 5m27s** across three sharded runs, with the case count growing
+164 → 170 in between — **~3.4x**. Locally the same split takes 168 cases from a
+measured serial **17m04s** to **6m06s** as four parallel shards, tree hash
+verified unmoved; that is only ~2.9x because four processes contend for one
+CPU, where CI gets four runners.
+
+**Operator ruled 4 shards, not 8**, after the trade was derived: 8 buys about
+two more minutes while doubling the fan-in surface, and **N is a parameter, not
+a design** — moving later costs one number. The per-job timings then justified
+the ruling from a direction nobody predicted. Four identical 42-case shards ran
+**3m27s, 4m48s, 4m49s, 4m59s** — a **1.4x spread on identical work**. Wall
+clock is the slowest shard, so runner variance, not case count, is now the
+dominant term; more shards means more draws from that distribution, and 8 would
+buy less than the arithmetic promises. One shard also started **37s** behind its
+siblings, queued, and still was not the slowest.
+
+**The correctness obligation, and why it is asserted three times.** N shards are
+a full run *only* if they provably partition the case set, and a case landing in
+**zero** shards leaves every shard green and the aggregate clean — invisible by
+construction. So: each shard computes the ordinals it owns and refuses to report
+success unless it ran exactly that many; `check.sh` **§39** walks the partition
+with `--list` on every commit (~0.02 s per walk, no case executed, no snapshot
+taken) and asserts the union equals the declared set; and CI's fan-in sums each
+shard's `RAN` against the declared count. Only the third can see a shard that
+**never ran at all**, which is why all three exist rather than the cheapest one.
+The partition was proven at N=4, at **N=7** where the division is uneven, and
+again at 170 cases (**43/43/42/42**, union 170, no duplicates, set-equal to the
+unsharded list).
+
+**The ordinal is assigned before both the shard test and the name filter, and
+that order is load-bearing.** Assign it after the filter and the same case lands
+in different shards depending on whether a filter was passed — the partition
+stops being a function of the case set alone, which is the property every
+assertion above rests on.
+
+**Then the task broke the thing it was supposed to protect.** `main`'s branch
+protection requires a status context named **`check`**, with
+`enforce_admins: true`. That context was the single monolithic job. Sharding
+renamed it to `guard` and added five others, so **no `check` existed at all**:
+PR #20 reported **six green jobs** and `mergeStateStatus: BLOCKED`,
+permanently, not mergeable even by the owner. **The job graph was redesigned
+without once asking what the gate actually requires.**
+
+Fixed **in the workflow, never in the protection rule** — a session that
+rewrites its own gate has none, and that is a standing rule here rather than a
+judgement call made in the moment. The fan-in job is now named `check`, which is
+a *stricter* contract than the monolith it replaces: the required context is the
+only job that can prove every shard reported. **Verified by merge state, not by
+job colour** — `BLOCKED` → `CLEAN` — because six green jobs had already proven
+that colour is not the gate.
+
+**Auditing that fix found a second hole in the same design.** The fan-in
+declared `needs: [matrix]` and never read `guard`'s result, so a failing
+`check.sh` would have merged behind a green required context. It now needs both
+and reads both.
+
+**Both defects were omissions, and that is the transferable part.** Neither was
+a check returning a wrong value: one context stopped existing, one result was
+never read. No amount of verifying *values* catches either — the operator's
+proposed product-of-indicators (`1` for pass, `0` for fail, multiply) is exactly
+what `check.sh` already does internally with its `fail` accumulator, and
+`1 x 1 x 1 = 1` whether there were meant to be three terms or four. What
+defeats omission is **deriving the term set and asserting its size**, which this
+repo already does in `count-check`, in the shard sum, and in §39's union.
+
+**So the gate's own dependency list was derived rather than listed**, on the
+operator's call and before the branch merged. §39 now reads the workflow's
+`jobs:` block and asserts the required `check` job **needs every job but
+itself** and **reads every needed job's result**. The trigger is scheduled
+rather than hypothetical: **5.20.2** is filed to add a fast CI tier to this same
+workflow, and a hand-written `needs` list under-counts silently the day a job
+appears.
+
+**Self-indicting, and the good kind:** the derivation's first draft collected
+`on:`'s triggers — `push`, `pull_request`, `workflow_dispatch` — as jobs,
+because they sit at the same two-space indent as job names. **The guard fired on
+its own derivation and named all three**, about a minute after being written.
+That is the argument for deriving over listing, demonstrated on itself.
+
+**Roads not taken.** Editing the required-status-check list to match the new job
+names — it is the rule the gate is made of, and changing it from inside a
+session is the thing the standing rule forbids. `--admin` to force the merge —
+same reason, one level worse. Selecting cases from the diff — declined earlier
+in 5.26 and still declined: it needs a changed-files → cases mapping, which is a
+hardcoded roster that under-counts silently, and CI goes green having skipped
+the case that would have caught the bug.
+
+**Not done, stated rather than implied:** the CI fan-in has never been seen
+*failing*. §39's equivalents were each watched failing on copies — the `check`
+job renamed away, `guard`'s result unread, a new job the gate ignores, a needed
+job's result never read, a case in zero shards, a case in two shards, the
+`shard:` list disagreeing with its divisor — eight seeded arms in all, each
+`BAD got=PASS want=FAIL` with its guard removed. But the fan-in step itself runs
+only in CI, and seeding a genuinely missing shard means pushing a deliberately
+broken workflow. Its *passing* path did execute: `shards reporting: 4/4
+cases run: 170   declared: 170`.
+
+**README groundwork, uncommitted.** Six comparator READMEs above 100k stars were
+fetched live and measured. acstack's sentences are **not** long — 21.3 mean
+words against a 16.5–42.9 field, and its 52-word maximum is the *shortest*
+maximum in the set — but its em-dash rate is **1.9 per 100 words against
+0.0–0.2**, roughly ten times the field. So the rewrite bar is the opposite of
+"shorten": the prose is already over-compressed, and words must be *spent*
+unpacking clause-stacks into sentences. Length comes out of the **86 table
+rows** instead (33 in Skills, 20 in Settings; the densest comparator has 19, and
+four of six have none). Two strengths to preserve rather than trim: first code
+fence at **7%** of the document against a 21–38% field, and a "who it's *not*
+for" section only ohmyzsh also has. Two of my own earlier findings did not
+survive checking — acstack *does* have a nav row, and **zero** of six use emoji
+in markdown headings, so the pack's no-emoji rule matches the field exactly.
+
+**What did NOT change:** CONDUCT's ten rules · README (measured, not edited) ·
+VERSION 0.4.0 · skills **25** · `recount.sh` · `count-check.sh` · `setup` ·
+branch protection.
+
+**Validation close.** `check.sh` **41 → 42** sections, all clean on each commit
+standing alone and on the merged tree. Matrix **164 → 170** cases. Full
+unfiltered local run before the split: 168 cases in 6m06s across four shards,
+`RAN=42` each, sum **168 = declared**, tree unmoved. CI after: `guard` +
+4 shards + `check`, all SUCCESS, `mergeStateStatus: CLEAN`. Markers re-derived
+by `recount.sh`, never hand-edited: `checks` **42**, `matrix-cases` **170**,
+`open-scheduled` **28**, `skills` 25, `repo-rules` 7. Wave 5 **11 of 27 → 12 of
+27**. Seven PRs merged today (#14–#20).
 
 ### Class A and class D close, 5.17 ends at six of six, and a flake turns out to be a guard reporting twice (2026-09-16, 2nd)
 
