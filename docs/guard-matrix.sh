@@ -757,6 +757,38 @@ old = '\`## Open items\` only'
 assert s.count(old) == 1, 'seed no-op: the fixed code span is not present'
 io.open(p, 'w', encoding='utf-8').write(s.replace(old, '## Open items\` only', 1))
 EOF"
+# 41: /audit's target roster is stated in three places and drifted once
+# already — "described with four targets when it declares five" (5.9).
+fullcase "audit hint drops a target"      FAIL 'audittargets' bash -c "python3 - <<'EOF'
+import io, re
+p = 'skills/audit/SKILL.md'
+s = io.open(p, encoding='utf-8').read()
+m = re.search(r'^argument-hint: *\"([a-z|]+)', s, re.M)
+assert m and '|' in m.group(1), 'seed no-op: no multi-target argument-hint'
+kept = '|'.join(m.group(1).split('|')[:-1])
+io.open(p, 'w', encoding='utf-8').write(s[:m.start(1)] + kept + s[m.end(1):])
+EOF"
+fullcase "roster row hides a target"      FAIL 'audittargets' bash -c "python3 - <<'EOF'
+import io, re, pathlib
+names = re.findall(r'^## Target: ([a-z-]+)', io.open('skills/audit/SKILL.md', encoding='utf-8').read(), re.M)
+assert names, 'seed no-op: no target sections'
+last = sorted(names)[-1]
+# find the advertising row wherever it lives, exactly as check.sh 41 does
+hit = None
+for f in pathlib.Path('.').rglob('*.md'):
+    if '.git' in f.parts:
+        continue
+    for line in f.read_text(encoding='utf-8').split(chr(10)):
+        if line.startswith('| \`/audit\` |') and last in line:
+            hit = (f, line)
+            break
+    if hit:
+        break
+assert hit, 'seed no-op: no skill-table row names ' + last
+f, line = hit
+s = f.read_text(encoding='utf-8')
+f.write_text(s.replace(line, line.replace(', ' + last, '', 1), 1), encoding='utf-8')
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody
