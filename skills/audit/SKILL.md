@@ -1,13 +1,13 @@
 ---
 name: audit
-description: Audit one of five targets. code - defect hunt producing a report with safety checks and adversarial verification evidence; docs - drift check of README/PLAN/JOURNAL against the actual tree, counts, and checkbox reality; eval - failure classification with the never-inflate rule; tests - finds tests that pass without catching, including a mutation spot-check; skills - SKILL.md hygiene. Use when the user asks to audit or review code, a PR, project docs, an eval report, a test suite, or a skill.
-argument-hint: "code|docs|eval|tests|skills [path | PR# | diff range]"
+description: Audit one of six targets. code - defect hunt producing a report with safety checks and adversarial verification evidence; docs - drift check of README/PLAN/JOURNAL against the actual tree, counts, and checkbox reality; eval - failure classification with the never-inflate rule; tests - finds tests that pass without catching, including a mutation spot-check; skills - SKILL.md hygiene; readme - whether the front door works on a stranger, measured against comparator projects. Use when the user asks to audit or review code, a PR, project docs, an eval report, a test suite, or a skill.
+argument-hint: "code|docs|eval|tests|skills|readme [path | PR# | diff range]"
 allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash(git diff:*), Bash(git check-ignore:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(gh pr view:*), Bash(gh pr diff:*)
 ---
 
 # /audit — find what's wrong and report it honestly
 
-Five targets, one stance: verdicts backed by evidence, misses logged rather
+Six targets, one stance: verdicts backed by evidence, misses logged rather
 than massaged, and scope stated so the reader knows what was NOT checked.
 
 `Adjacent skills:` /secure (security-only findings with exploit scenarios) ·
@@ -49,7 +49,7 @@ its path in the report's scope line. If more than one candidate set exists
 list the candidates and STOP. Never pick one silently: a confident answer
 about the wrong product is worse than no answer (conduct rule 8).
 
-**Every line number is pasted, never counted — all five targets.** A
+**Every line number is pasted, never counted — all six targets.** A
 `file:line` in any report comes from line-numbered tool output
 (`grep -n`), not from counting or recall: a wrong line number turns a
 real finding into one the author can dismiss.
@@ -90,6 +90,16 @@ stop, the failure buckets, and the never-inflate rule.
 Full procedure: `references/target-tests.md` — read it when the
 invocation names `tests`, and not otherwise. It carries the five
 no-teeth classes, the mutation spot-check, and the revert discipline.
+
+## Target: readme
+
+Full procedure: `references/target-readme.md` — read it when the
+invocation names `readme`, and not otherwise. It asks whether the front
+door works on a stranger, which `docs` does not: who the project is for,
+whether install is reachable, roster completeness, density and prose
+texture against measured comparators, and capability claims that have gone
+stale. It reports and never rewrites — a README carries the project's
+voice.
 
 ## Target: skills
 

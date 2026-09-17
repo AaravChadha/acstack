@@ -6,6 +6,13 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/AaravChadha/acstack?style=flat&color=555)](https://github.com/AaravChadha/acstack/stargazers)
 
+**Who this is for:** someone who already works with a coding agent and has
+been burned by it reporting success it did not earn — a phase "done" with no
+command run, a score nobody recomputed, a check that never fired. If you have
+never wanted to ask an agent *prove it*, this is overhead you do not need;
+the ["Don't use it if" list](#why-youd-use-it-and-why-you-wouldnt) says so
+plainly.
+
 One idea, applied everywhere: a claim is only as good as the thing that can
 falsify it. A phase is done when its named command passes — not when prose
 says it went well. An eval score is recomputed from the results file on disk,
@@ -23,23 +30,28 @@ JOURNAL, LEARNINGS), diffable in a pull request, not in hidden machine state.
 
 ## See it work
 
-`/do` runs a task's acceptance line **before** doing the work. On a small
-Python project, task 1.1.1 says quoted contractions must count as one word:
+`/do` runs a task's acceptance command **before** doing the work. On a small
+Python project, task 1.1.1 says quoted contractions must count as one word,
+and this is the acceptance command with its real output:
 
 ```
 $ python3 -c "from wordfreq import top_words; assert top_words(\"don't don't stop\")[0] == (\"don't\", 2); print('acceptance PASSES before any work')"
 acceptance PASSES before any work
 ```
 
-It already passes — the tokenizer's character class includes the apostrophe,
-so the task was written against a bug that does not exist. The box is ticked
-with a verdict and **no code is written**.
+It already passed. The tokenizer's character class already includes the
+apostrophe, so the task had been written against a bug that did not exist.
+The box was ticked with that verdict and no code was written.
 
 A runnable acceptance line can tell you the work is unnecessary. Prose
-criteria never do.
+criteria never can.
 
-→ **[The full worked session](docs/EXAMPLE.md)** — the next task does real
-work, with the failing output before the fix and both acceptances after it.
+**What this shows and what it does not.** That is the acceptance command's
+output, captured from the project it ran against — not a transcript of the
+session. The project is not this repo, so the command will not run here.
+See **[the full worked session](docs/EXAMPLE.md)** for the same task with
+every output pasted verbatim, including the next one, which does real work
+and shows the failing output before the fix.
 
 ## Install
 
@@ -68,6 +80,30 @@ Pick `./setup` if you want the install auditable — a readable shell script
 with a real `--dry-run` that never deletes a file it did not create. Pick the
 plugin for one command and managed updates. **Do not run both**, or every
 skill resolves twice.
+
+**To update the clone install:**
+
+```bash
+git -C acstack pull && acstack/setup    # setup again, or new skills stay unlinked
+```
+
+The `./setup` step is not optional. `git pull` brings new skill directories
+down but links nothing, so a pull alone leaves them invisible to Claude Code.
+The plugin install updates itself. What changed in each version is in
+[CHANGELOG.md](CHANGELOG.md).
+
+## What to type first
+
+Three ways in, depending on what you are holding:
+
+| You have | Type | What happens |
+|---|---|---|
+| A new idea, nothing built | `/plan seed` | Writes BRIEF.md, argues with the architecture in writing, then a PLAN.md whose phases have runnable exit criteria |
+| An existing project with a plan | `/resume` | Reads the three documents and the git state, tells you where you are and the next three unblocked tasks |
+| Something broken | `/investigate` | Symptom, repro, hypotheses against evidence, root cause at `file:line` — and a hard stop after three failed fixes |
+
+Then `/do <task>` to work one task end to end, and `/ship` when the branch is
+ready. Everything else is listed in **[the full roster](docs/SKILLS.md)**.
 
 **To install and run the core:** git and bash 3.2+ (the version macOS ships).
 No runtime, no package manager, no build step. macOS/Linux; on Windows, copy
@@ -99,7 +135,7 @@ to install:
   if you switch tools. It is markdown in your repo — no database, no vendor
   state.
 - You want the agent to push back in writing rather than agree with you.
-  That's rule 1 of the conduct contract, not a personality setting.
+  That's rule 4 of the conduct contract, not a personality setting.
 
 **Don't use it if:**
 
@@ -123,54 +159,22 @@ guards are real, but it is pre-1.0 and the roadmap is still moving.
 
 ## Skills
 
-<!-- count:skills -->25<!-- /count --> skills across four stages. Every one is
-typed — `/plan` and `/eval-spec` are additionally hidden from the model's own
-skill list, so they only ever run when you ask for them.
+<!-- count:skills -->25<!-- /count --> skills across four stages, each one typed.
+`/plan` and `/eval-spec` are additionally hidden from the model's own skill
+list, so they run only when you ask for them.
 
-### Plan
-
-| Skill | What it does | Typical invocation |
+| Stage | What it covers | The ones to start with |
 |---|---|---|
-| `/plan` | Frozen BRIEF.md → written architecture pushback → living PLAN.md with runnable exit criteria | `/plan seed` |
-| `/challenge` | Interrogate the BRIEF: premise attacks, a narrower wedge, cost and blast-radius checks | `/challenge` |
-| `/plan-review` | Engineering lock on PLAN.md: data-flow trace, failure modes, test matrix → LOCKED or CHANGES REQUIRED | `/plan-review` |
-| `/eval-spec` | The eval is the spec: golden set, category minimums, refusal cases, pinned grader — written before the system exists | `/eval-spec search` |
+| **Plan** | Turn an idea into a plan with runnable exit criteria, and attack it before building | `/plan`, `/challenge` |
+| **Build** | Do one task end to end, capture work, root-cause failures | `/do`, `/ticket`, `/investigate` |
+| **Verify** | Gates that return a written verdict — security, contracts, dependencies, migrations, evals | `/audit`, `/secure`, `/migrate-check` |
+| **Ship and reflect** | Release behind five gates, then write down what happened | `/ship`, `/journal`, `/learn` |
 
-### Build
+`/audit` takes six targets — code, docs, eval, tests, skills, readme — each
+with its own evidence rule.
 
-| Skill | What it does | Typical invocation |
-|---|---|---|
-| `/do` | Complete one numbered subtask: execute → verify acceptance → tick the exact box → commit plan and code together, locally | `/do 3.2.1` |
-| `/ticket` | Capture a brain-dump as a well-formed work item; unknowns marked TBD, never invented | `/ticket "…"` |
-| `/investigate` | Root-cause before any fix: minimal repro, hypotheses vs evidence, three-strikes stop rule | `/investigate "500 on save"` |
-| `/resume` | Five-minute catch-up: where the project is, divergence flags, next 3 unblocked tasks | `/resume` |
-| `/why` | Decision archaeology: BRIEF → dated PLAN verdicts → JOURNAL → git history, stopping at the first real answer | `/why "the /health name"` |
-| `/refactor` | Behavior-preserving cleanup with proof: green before and after, with the same test count | `/refactor src/parser.py` |
-| `/design` | Production-grade UI: DTCG tokens, wireframe before code, eight production-readiness items, gaps named | `/design "settings page"` |
-
-### Verify
-
-| Skill | What it does | Typical invocation |
-|---|---|---|
-| `/audit` | Five targets — code, docs, eval, tests, skills — each with its own evidence rule | `/audit code src/` |
-| `/secure` | Confidence-gated security review: a finding needs an exploit scenario and a rating. Reports only | `/secure src/` |
-| `/qa` | Exercise the running app: happy-path flows, adversarial inputs, auth probing, exact repro commands | `/qa http://localhost:3000` |
-| `/contract-check` | Breaking-change pre-flight for signatures, response shapes, exports, config keys → written GO/NO-GO | `/contract-check` |
-| `/deps` | Dependency hygiene: is it imported, would stdlib do, is it maintained, does its license fit; `upgrade` mode pre-flights a version bump against your call sites → GO/NO-GO | `/deps` · `/deps upgrade zod 4` |
-| `/migrate-check` | Read-only pre-flight for migrations against shared Postgres, per statement → GO/NO-GO | `/migrate-check` |
-| `/eval-run` | Execute the eval, grade every case by its rule, compute the headline from the results file — never by hand | `/eval-run` |
-| `/design-audit` | Static UI check: off-palette colors, dishonest data labels, AI-slop, leaked internal language | `/design-audit src/ui/` |
-
-### Ship and reflect
-
-| Skill | What it does | Typical invocation |
-|---|---|---|
-| `/ship` | Branch-level release behind five gates: clean state, tests, eval-vs-target, docs drift, attribution | `/ship` |
-| `/journal` | End-of-session JOURNAL.md entry: exact bugs, before→after numbers, PLAN sync | `/journal` |
-| `/retro` | Trend across sessions: velocity vs plan dates, eval-score trend, open-risk status | `/retro week` |
-| `/learn` | Capture a durable lesson to LEARNINGS.md; recurring ones get promoted into known-bug-classes | `/learn "…"` |
-| `/triage` | Backlog hygiene: stale, dupes, missing acceptance, ready work — report first, apply on approval | `/triage` |
-| `/health` | Read-only checkup: docs, pointer, conduct block, config, secrets, attribution — every ✗ with its fix | `/health` |
+**[The full roster →](docs/SKILLS.md)** — all 25 with what each does and how
+it is typically invoked.
 
 `/plan` shadows built-in plan mode (Shift+Tab still enters it) and `/resume`
 shadows built-in session resume (`claude -r` still works). Both kept
@@ -209,15 +213,24 @@ Everything it touches, so you can predict it before installing:
 | `eval/` | /eval-spec, /eval-run | Only when you ask for an eval |
 | `~/.acstack/update-stamp` | the runtime | One line, the last update-check date. The only machine-local state |
 
-Nothing leaves your machine except `git fetch` in the once-a-day update
-check, `gh` calls you initiate in tickets mode, and — when you run `/deps` —
-one `npm view` per package to read its published metadata. That third one
-was missing from this sentence until 2026-09-16 while `check.sh` §13 had
-already admitted it to the read-only command set, justified there as
-"queries the registry and prints metadata, installing nothing". A claim
-about what leaves your machine is worth less than nothing if it is one
-command out of date. There is no telemetry —
-the `telemetry` key is reserved and unimplemented.
+The pack has one automatic network call and four you trigger.
+
+**Automatic**, with `runtime: on` (the default): the first skill you invoke
+each day runs an update check, which is a single `git fetch` against this
+repo. It is once per day, not once per invocation, and it happens whichever
+skill you ran — so it is not tied to the four below. Set `runtime: off` and
+nothing is automatic.
+
+**On a command you type:**
+
+| You run | It sends |
+|---|---|
+| any skill in tickets mode | `gh` calls to your GitHub |
+| `/deps` | one `npm view` per package, to read published metadata |
+| `/ship` | `git push`, and `gh pr create` under `push: branch-pr` |
+| `/qa` | HTTP requests to the endpoint you point it at |
+
+There is no telemetry — the `telemetry` key is reserved and unimplemented.
 
 ## Configuration
 
@@ -369,6 +382,28 @@ will want to drop first.
 | Every skill resolves twice | You installed via **both** `./setup` and the plugin. Remove one |
 | Skills say "runtime off" | Expected on a copy install, with `runtime: off` set, or when the pack root can't be resolved through the symlink. Everything still works as plain markdown |
 | A skill stops and names a missing binary | Working as designed — see [Optional, per capability](#install). Install the binary or use the documented fallback |
+
+## About this document
+
+This README is longer and more table-dense than most:
+<!-- count:readme-lines -->427<!-- /count --> lines,
+<!-- count:readme-h2 -->16<!-- /count --> sections and
+<!-- count:readme-rows -->62<!-- /count --> table rows, against 96–346 / 4–12 /
+0–19 across six comparison projects above 100k stars (measured 2026-09-17).
+Those three numbers are machine-maintained by `scripts/recount.sh` — stating a
+figure about a document *inside* that document changes it, and the first draft
+of this paragraph was wrong the moment it was written. **That is a deliberate choice, and
+naming it is the point** — `/audit readme` treats an undeclared divergence as
+a finding and a declared one as a decision.
+
+The reason: acstack is configured, not just installed. Settings, what each
+skill writes, and the permission rules are reference a reader needs *while
+deciding*, not after. The 25-skill roster did move out to
+[docs/SKILLS.md](docs/SKILLS.md), because an index is not a front door. What
+stays is what you consult before you commit to the tool.
+
+Revisit it if the page stops being scannable; the measurement is cheap to
+re-run and the decision is cheap to reverse.
 
 ## More
 

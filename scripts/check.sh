@@ -28,6 +28,7 @@
 #   38 class-D skills state the scope of their verdict
 #   39 CI shard partition covers every matrix case
 #   40 PLAN.md headings match a known shape
+#   41 /audit's target roster agrees in all three places
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1359,6 +1360,74 @@ if [ -f PLAN.md ]; then
     printf '%s\n' "$badh" | sed 's/^/           /' | head -3
     echo "           An unclosed \` turns prose into a heading, and §35 scopes waves by ^## (5.31)."
     fail=1
+  fi
+fi
+
+# 41. /audit's target roster agrees wherever it is stated (5.9). The roster
+#     lives in THREE places — the `## Target: <name>` sections, the
+#     `argument-hint`, and README's skill table — and they drifted: a
+#     front-door read on 2026-09-08 found /audit "described with four
+#     targets when it declares five". A skill that advertises a target it
+#     does not have sends the reader to nothing; one that hides a target it
+#     does have wastes it.
+#     NAMES, NOT A COUNT. Comparing a spelled-out number ("five") would
+#     re-create the same drift one layer down, and a count agreeing proves
+#     nothing about WHICH names agree. The sections are the source of truth,
+#     because they are the only form with a procedure behind them.
+af="skills/audit/SKILL.md"
+if [ -f "$af" ]; then
+  t_sections="$(sed -n 's/^## Target: \([a-z-]*\).*/\1/p' "$af" | sort -u)"
+  t_hint="$(sed -n 's/^argument-hint: *"\([a-z|]*\).*/\1/p' "$af" | tr '|' '\n' | grep . | sort -u)"
+  if [ -z "$t_sections" ] || [ -z "$t_hint" ]; then
+    echo "FAIL audittargets: $af has no '## Target:' sections or no parseable argument-hint — the roster cannot be derived"
+    fail=1
+  elif [ "$t_sections" != "$t_hint" ]; then
+    echo "FAIL audittargets: $af's '## Target:' sections and its argument-hint name different targets:"
+    echo "           sections:      $(printf '%s' "$t_sections" | tr '\n' ' ')"
+    echo "           argument-hint: $(printf '%s' "$t_hint" | tr '\n' ' ')"
+    fail=1
+  else
+    # WHERE THE ROSTER LIVES IS DERIVED, not named — but by STRUCTURE, not
+    # by keyword. The roster moved out of README's skill table into
+    # docs/SKILLS.md on 2026-09-17 and the first version of this check,
+    # hardcoded to README.md, broke immediately. The second version matched
+    # any markdown naming /audit near the word "target" and swept in
+    # JOURNAL.md, PLAN.md, the guard scripts and .git/COMMIT_EDITMSG — every
+    # file that has ever DISCUSSED the roster, rather than the one that
+    # ADVERTISES it. The advertising form is a skill-table row; discussion
+    # is prose. So: every `| \`/audit\` |` row, wherever it lives, names
+    # every target, and at least one such row must exist.
+    arows="$(grep -rn --include='*.md' --exclude-dir=.git -- '^| `/audit` |' . 2>/dev/null || true)"
+    if [ -z "$arows" ]; then
+      echo "FAIL audittargets: no skill-table row advertises /audit anywhere — a six-target skill nobody is told about"
+      fail=1
+    else
+      # STRIP THE `file:line:` PREFIX BEFORE MATCHING. `grep -n` prepends the
+      # path, and the path CONTAINS target names — `./docs/SKILLS.md` holds
+      # the literal string `docs`, so a row that omitted the `docs` target
+      # still matched and the guard passed. Found 2026-09-17 by an external
+      # review of this very commit, hours after the guard was "proven both
+      # arms": the matrix seed only ever removed the alphabetically-last
+      # target (`tests`), which does not appear in any path, so the case
+      # could not reach the defect. One arm of one input is not a proof.
+      # Per-row verdict too: the old aggregate recheck let one incomplete row
+      # borrow a target from another row, so a broken roster passed whenever
+      # a second, complete one existed.
+      bad_rows=0
+      while IFS= read -r r_; do
+        [ -n "$r_" ] || continue
+        loc_="${r_%%:*}"                 # file
+        body_="${r_#*:}"; body_="${body_#*:}"   # strip file: and line:
+        for t_ in $t_sections; do
+          printf '%s' "$body_" | grep -q "$t_" || {
+            echo "FAIL audittargets: $af declares target '$t_' but $loc_ advertises a roster row that omits it"
+            bad_rows=1; }
+        done
+      done <<EOF
+$arows
+EOF
+      [ "$bad_rows" -eq 0 ] || fail=1
+    fi
   fi
 fi
 
