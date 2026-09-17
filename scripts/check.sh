@@ -29,6 +29,7 @@
 #   39 CI shard partition covers every matrix case
 #   40 PLAN.md headings match a known shape
 #   41 /audit's target roster agrees in all three places
+#   42 /verify's verdict set stays exhaustive
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1429,6 +1430,36 @@ EOF
       [ "$bad_rows" -eq 0 ] || fail=1
     fi
   fi
+fi
+
+# 42. /verify's verdict set stays exhaustive (5.4). The skill's whole
+#     contract is that EVERY input lands on exactly one verdict. It ships
+#     four — CONFIRMED, OVERSTATED, FALSE, UNVERIFIABLE — and the fourth is
+#     the load-bearing one: a claim naming no acceptance fits none of the
+#     other three, and forcing it into FALSE asserts something about a system
+#     that was never tested.
+#     WHY THIS IS GUARDED AT ALL: /migrate-check shipped a `Flagged` SQL class
+#     matching neither of its two verdicts, unnoticed until an external review
+#     on 2026-09-17 (5.31). That gap is invisible — every individual verdict
+#     reads fine, and only the SET is wrong. Dropping UNVERIFIABLE here would
+#     recreate it exactly, and nothing else in the tree would notice.
+#     The roster states its own size (§33's idiom): a fifth verdict joins with
+#     its reason and this count in the same edit.
+vf="skills/verify/SKILL.md"
+if [ -f "$vf" ]; then
+  VERIFY_VERDICTS="CONFIRMED OVERSTATED FALSE UNVERIFIABLE"
+  vv_n=0; for v_ in $VERIFY_VERDICTS; do vv_n=$((vv_n + 1)); done
+  if [ "$vv_n" -ne 4 ]; then
+    echo "FAIL verdicts: VERIFY_VERDICTS names $vv_n verdict(s), expected 4 — a new verdict joins with its reason and this count in the same edit (5.4)"
+    fail=1
+  fi
+  for v_ in $VERIFY_VERDICTS; do
+    grep -q "\*\*$v_\*\*" "$vf" \
+      || { echo "FAIL verdicts: $vf no longer names '$v_' — /verify's contract is that every input lands on exactly one verdict, and a dropped one leaves a class matching none (5.4)"; fail=1; }
+  done
+  # the enumeration must also be STATED as exhaustive, not merely listed
+  grep -qE 'Every input lands on exactly one' "$vf" \
+    || { echo "FAIL verdicts: $vf lists verdicts but no longer claims the set is exhaustive — a list without that claim is what let /migrate-check's Flagged class match nothing (5.4)"; fail=1; }
 fi
 
 if [ "$fail" -eq 0 ]; then

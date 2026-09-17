@@ -817,6 +817,26 @@ f, line, n = hit
 s = f.read_text(encoding='utf-8')
 f.write_text(s.replace(line, line.replace(', ' + n, '', 1).replace(n + ', ', '', 1), 1), encoding='utf-8')
 EOF"
+# 42: /verify's contract is that every input lands on exactly one verdict.
+# Dropping one recreates /migrate-check's Flagged gap, which is invisible
+# because each remaining verdict still reads fine — only the SET is wrong.
+fullcase "verify loses a verdict"         FAIL 'verdicts' bash -c "python3 - <<'EOF'
+import io, re
+p = 'skills/verify/SKILL.md'
+s = io.open(p, encoding='utf-8').read()
+m = re.findall(r'\*\*(CONFIRMED|OVERSTATED|FALSE|UNVERIFIABLE)\*\*', s)
+assert m, 'seed no-op: no bolded verdicts found'
+target = 'UNVERIFIABLE' if 'UNVERIFIABLE' in m else m[-1]
+io.open(p, 'w', encoding='utf-8').write(s.replace('**' + target + '**', '**INCONCLUSIVE**'))
+EOF"
+fullcase "verify drops the exhaustive claim" FAIL 'verdicts' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/verify/SKILL.md'
+s = io.open(p, encoding='utf-8').read()
+old = 'Every input lands on exactly one'
+assert s.count(old) == 1, 'seed no-op: the exhaustiveness claim is not present'
+io.open(p, 'w', encoding='utf-8').write(s.replace(old, 'These are the verdicts'))
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody

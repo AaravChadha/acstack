@@ -4368,6 +4368,13 @@ multi-PR build that would otherwise pay full price for every push.
   currently true on this machine. A probe session at the repo root and one in
   a subdirectory both reported the new skill absent until `./setup` linked it.
   That narrows 5.22's premise and is a fact it should not have to re-derive.
+  **Guarded, because the four-verdict set is the load-bearing part.**
+  `check.sh` **§42** asserts all four are named AND that the skill still
+  claims the set is exhaustive — a list without that claim is exactly what
+  let `/migrate-check`'s Flagged class match nothing. The roster states its
+  own size (§33's idiom). Two matrix cases, both watched failing with §42
+  removed. Without this, dropping a verdict would be invisible: every
+  remaining one still reads fine, and only the SET is wrong.
   **Note:** `~/.claude/skills/verify` now points into this branch. If the
   branch is abandoned the link dangles — which is 5.6's subject.)* /verify — audits a completion *claim* rather than the code:
   re-derives what acceptance demands, runs it against the running system,
