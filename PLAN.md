@@ -979,6 +979,16 @@ reordered, if any.
   **Acceptance:** `--global` is idempotent and never clobbers hand-written
   content in `~/.claude/CLAUDE.md`; `--hook` is a no-op outside acstack
   projects; both are reversible by `--uninstall`.
+  **Declined deliberately (2026-09-16, external review): a repo-level TEAM
+  setup path.** gstack ships `gstack-team-init` so a repo can require or
+  offer the pack to everyone who clones it. Declined because there is no
+  demonstrated friction to fix — the pack has one user, no team is hitting
+  version skew, and the reviewer proposing it also advised against copying
+  gstack's blocking hook. Same reasoning as the multi-harness packaging
+  decline above: build it when demand is real, not when a competitor has it.
+  Recorded rather than dropped, per the carrier rule — if a second person
+  ever installs this pack alongside you, this is the note that says the
+  question was asked and answered, and what would change the answer.
   *Note (2026-07-30, survey):* superpowers' `hooks/session-start` — 49
   lines of zero-dependency bash injecting one gateway skill — is the
   working model for `--hook`. Scope question to settle at build: also a
@@ -4652,6 +4662,21 @@ multi-PR build that would otherwise pay full price for every push.
   project is for, names all three with line numbers; and returns no findings
   against this repo's README as of the 5.9 commit. Both arms shown on a copy
   before the target is trusted.
+  **Added to scope 2026-09-16 (external review): a reader needs more than one
+  way in.** The README's `## See it work` commits its whole first screen to a
+  single `/do` example, so a reader whose problem is not that example has
+  nothing to match themselves against; spec-kit now splits its front door
+  into build / fix-a-bug / assess-an-idea, and acstack has the skills for the
+  equivalent split (`/plan` for new work, `/resume` for picking up existing,
+  `/investigate` for chasing a bug) without any new skill being needed.
+  **This must DISPLACE text, never stack on top of it.** Measured
+  2026-09-16 against six comparators above 100k stars: this README is **386
+  lines with 86 table rows**, where the field runs 96–346 lines and its
+  densest member carries 19 rows — so three more entry points added to the
+  top of an already-dense document makes the real problem worse. The length
+  comes out of the rosters (33 rows under Skills, 20 under Settings), not out
+  of the prose, which the same measurement found is already over-compressed:
+  em-dashes at **1.9 per 100 words against a 0.0–0.2 field**.
 - [ ] **5.10** `/do` ticks a box without ever asking what points AT it.
   `scripts/reach-check.sh` answers that question, but it runs from
   `check.sh` — that is, at commit time, **after** the tick. On 2026-08-16
@@ -5804,6 +5829,23 @@ multi-PR build that would otherwise pay full price for every push.
   documents is resolved by ruling which is canonical, never by editing one
   to match the other silently.
 
+- [ ] **5.32** No private route to report a vulnerability. The repo has been
+  public since 2026-08-03 and carries no `SECURITY.md` at root or under
+  `.github/` (verified 2026-09-16), so someone who finds a problem in a pack
+  that tells agents to run shell commands has two options: open a public
+  issue describing it, or say nothing. Both are bad, and the second is worse
+  because it is invisible. Raised by an external review against spec-kit,
+  which publishes one for the same class of tooling.
+  **The policy text is the operator's to write, not this task's to draft** —
+  it is a public commitment about how *they* will respond, including a
+  timeframe they have to be willing to meet, and a generated one would be a
+  promise nobody made. Note that GitHub's private vulnerability reporting can
+  be enabled with no file at all, which may be the whole answer.
+  **Acceptance:** a finder has a documented non-public route — either
+  `SECURITY.md` naming it, or private vulnerability reporting enabled and the
+  README pointing at it — and the route is confirmed reachable by the
+  operator rather than assumed from the setting being on.
+
 
 ## [ ] Wave 6 — The review board
 
@@ -6259,3 +6301,20 @@ every commit, which is the same trigger without a daemon.
   the principles and runtime blocks already work. **Decide when Wave C's
   trigger fires, not before** — deciding now would be deciding without the
   evidence the trigger exists to produce.
+  **Acceptance (added 2026-09-16, external review — this task had NONE, and
+  §35 does not reach wave 6, so nothing forced one):** a `/skill`-produced
+  SKILL.md ships with an **invocation** test set, not only a behavioural one.
+  At least **10 queries that MUST invoke it** and **10 near-misses that must
+  NOT**, the near-misses drawn from *adjacent skills' territory* rather than
+  from unrelated topics — a description is hijacked by its neighbours, not by
+  strangers, so near-misses sampled at random prove nothing. A **third of
+  each set is held out**, written before the description and never consulted
+  while tuning it, because a description edited until its own examples pass
+  has been fitted to them. The run reports every positive that failed to
+  invoke and every negative that did, **naming which skill answered
+  instead** — "it didn't fire" and "the wrong one fired" are different
+  defects with different fixes. This sits alongside, and does not replace,
+  the RED-GREEN behavioural control and the paired baseline run already
+  described above: those ask whether the skill *works*, this asks whether it
+  is *reached*. Prior art: `anthropics/skills` skill-creator runs repeated
+  positive and negative trigger queries against a held-out set.
