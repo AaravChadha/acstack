@@ -27,6 +27,7 @@
 #   36 /learn sighting trail is a list   37 PLAN.md identifiers are unique
 #   38 class-D skills state the scope of their verdict
 #   39 CI shard partition covers every matrix case
+#   40 PLAN.md headings match a known shape
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1325,6 +1326,40 @@ if [ -f "$wf" ] && [ -f "$gm" ]; then
     IFS=','
   done
   IFS="$_oldifs"
+fi
+
+# 40. Every `## ` heading in PLAN.md matches a known shape (5.31). An
+#     unclosed code span turned prose into a live heading — `## Open items`
+#     rendered twice, the second one a fragment ending mid-sentence — and
+#     nothing noticed for weeks. That is not cosmetic: §35 scopes waves by
+#     `^## `, so a phantom heading INSIDE a wave ends that wave's acceptance
+#     coverage early and every task after it is silently unchecked.
+#     A SHAPE, NOT A ROSTER, and not a count: the two obvious checks were
+#     tried and rejected on evidence. Duplicate-heading detection does not
+#     fire, because the broken span yields DIFFERENT text ("Open items` only,
+#     so a"), not a duplicate. An odd-backtick-per-line scan is unusable
+#     here — 57 lines in PLAN.md and 66 in JOURNAL.md legitimately split a
+#     code span across a hard wrap. What a phantom heading cannot do is match
+#     the three shapes a real one takes.
+if [ -f PLAN.md ]; then
+  # ANCHORED, not prefix-matched. The first draft allowed `^## Open items`
+  # as a prefix — and the phantom heading this section exists to catch IS
+  # `## Open items\` only, so a`, which starts with exactly that. It matched
+  # the allow-pattern and the guard reported clean on its own defect. Caught
+  # by seeding it, which is the only reason it is not still wrong.
+  # The Wave half stays deliberately loose (`Wave .+`) because real headings
+  # carry parentheticals — `Wave B (Deferred) — browser layer …` — and a
+  # tighter form rejected two of them on the first run. It does not need to
+  # be tight: a phantom heading made from prose will not begin `## [ ] Wave`,
+  # and the two headings a phantom CAN imitate are matched exactly.
+  badh="$(grep -nE '^## ' PLAN.md | grep -vE '^[0-9]+:## (Index of waves|\[[ x]\] Wave .+|Open items \(decide as we go\))$' || true)"
+  if [ -n "$badh" ]; then
+    echo "FAIL planhead: PLAN.md has heading(s) matching none of the known shapes"
+    echo "           (## Index of waves | ## [ ] Wave … | ## Open items …):"
+    printf '%s\n' "$badh" | sed 's/^/           /' | head -3
+    echo "           An unclosed \` turns prose into a heading, and §35 scopes waves by ^## (5.31)."
+    fail=1
+  fi
 fi
 
 if [ "$fail" -eq 0 ]; then

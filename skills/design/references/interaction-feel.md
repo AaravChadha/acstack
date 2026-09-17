@@ -81,10 +81,16 @@ motion was bolted on afterwards.
 To project where a flick lands, use the **exponential-decay form**:
 
 ```
-projected = current + velocity * decayRate / (1000 - decayRate)
+projected = current + velocity * decayRate / (1 - decayRate)
 ```
 
-with a decay rate near `0.998`. **Not** the textbook `v² / 2a` — that
+with a decay rate near `0.998` — so the multiplier is `0.998 / 0.002 ≈ 499`,
+a flick that travels roughly 500x its per-frame velocity. **The denominator
+used to read `(1000 - decayRate)`**, which mixes a per-frame ratio with a
+millisecond scale and yields `0.998 / 999.002 ≈ 0.001`: the projected
+landing point sits a thousandth of a pixel from where the finger lifted, so
+a flick would read as a dead stop. Corrected 2026-09-16; the wrong form had
+never been run, which is exactly how a documented formula rots. **Not** the textbook `v² / 2a` — that
 models constant deceleration, which is not what scroll physics does, and it
 overshoots badly at high velocity.
 

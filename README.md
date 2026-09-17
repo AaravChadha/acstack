@@ -210,7 +210,13 @@ Everything it touches, so you can predict it before installing:
 | `~/.acstack/update-stamp` | the runtime | One line, the last update-check date. The only machine-local state |
 
 Nothing leaves your machine except `git fetch` in the once-a-day update
-check, and `gh` calls you initiate in tickets mode. There is no telemetry —
+check, `gh` calls you initiate in tickets mode, and — when you run `/deps` —
+one `npm view` per package to read its published metadata. That third one
+was missing from this sentence until 2026-09-16 while `check.sh` §13 had
+already admitted it to the read-only command set, justified there as
+"queries the registry and prints metadata, installing nothing". A claim
+about what leaves your machine is worth less than nothing if it is one
+command out of date. There is no telemetry —
 the `telemetry` key is reserved and unimplemented.
 
 ## Configuration
