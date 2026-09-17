@@ -16,6 +16,14 @@ fetched live and measured on 2026-09-16: `anthropics/skills`,
 `langchain-ai/langchain`. Re-measure before quoting these as current —
 a number copied from a doc is the thing this pack exists not to do.
 
+**Count the same way the field was counted, or the numbers mean nothing.**
+Lines: `wc -l`. H2 sections: `## ` at line start **outside** fenced blocks —
+a heading inside a code fence is not a heading, and counting raw `^## `
+overstated this pack's own README by one. Table rows: lines starting `|`,
+**excluding** the `|---|` separators. Prose measures strip fenced code,
+HTML, tables, headings and link URLs first. An unstated method is how two
+honest measurements disagree.
+
 | Dimension | The field | Why it matters |
 |---|---|---|
 | Length | 96–346 lines | Past ~350, every comparator adds navigation |

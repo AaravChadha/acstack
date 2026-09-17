@@ -23,23 +23,28 @@ JOURNAL, LEARNINGS), diffable in a pull request, not in hidden machine state.
 
 ## See it work
 
-`/do` runs a task's acceptance line **before** doing the work. On a small
-Python project, task 1.1.1 says quoted contractions must count as one word:
+`/do` runs a task's acceptance command **before** doing the work. On a small
+Python project, task 1.1.1 says quoted contractions must count as one word,
+and this is the acceptance command with its real output:
 
 ```
 $ python3 -c "from wordfreq import top_words; assert top_words(\"don't don't stop\")[0] == (\"don't\", 2); print('acceptance PASSES before any work')"
 acceptance PASSES before any work
 ```
 
-It already passes — the tokenizer's character class includes the apostrophe,
-so the task was written against a bug that does not exist. The box is ticked
-with a verdict and **no code is written**.
+It already passed. The tokenizer's character class already includes the
+apostrophe, so the task had been written against a bug that did not exist.
+The box was ticked with that verdict and no code was written.
 
 A runnable acceptance line can tell you the work is unnecessary. Prose
-criteria never do.
+criteria never can.
 
-→ **[The full worked session](docs/EXAMPLE.md)** — the next task does real
-work, with the failing output before the fix and both acceptances after it.
+**What this shows and what it does not.** That is the acceptance command's
+output, captured from the project it ran against — not a transcript of the
+session. The project is not this repo, so the command will not run here.
+See **[the full worked session](docs/EXAMPLE.md)** for the same task with
+every output pasted verbatim, including the next one, which does real work
+and shows the failing output before the fix.
 
 ## Install
 
@@ -68,6 +73,30 @@ Pick `./setup` if you want the install auditable — a readable shell script
 with a real `--dry-run` that never deletes a file it did not create. Pick the
 plugin for one command and managed updates. **Do not run both**, or every
 skill resolves twice.
+
+**To update the clone install:**
+
+```bash
+git -C acstack pull && acstack/setup    # setup again, or new skills stay unlinked
+```
+
+The `./setup` step is not optional. `git pull` brings new skill directories
+down but links nothing, so a pull alone leaves them invisible to Claude Code.
+The plugin install updates itself. What changed in each version is in
+[CHANGELOG.md](CHANGELOG.md).
+
+## What to type first
+
+Three ways in, depending on what you are holding:
+
+| You have | Type | What happens |
+|---|---|---|
+| A new idea, nothing built | `/plan seed` | Writes BRIEF.md, argues with the architecture in writing, then a PLAN.md whose phases have runnable exit criteria |
+| An existing project with a plan | `/resume` | Reads the three documents and the git state, tells you where you are and the next three unblocked tasks |
+| Something broken | `/investigate` | Symptom, repro, hypotheses against evidence, root cause at `file:line` — and a hard stop after three failed fixes |
+
+Then `/do <task>` to work one task end to end, and `/ship` when the branch is
+ready. Everything else is listed in **[the full roster](docs/SKILLS.md)**.
 
 **To install and run the core:** git and bash 3.2+ (the version macOS ships).
 No runtime, no package manager, no build step. macOS/Linux; on Windows, copy
@@ -99,7 +128,7 @@ to install:
   if you switch tools. It is markdown in your repo — no database, no vendor
   state.
 - You want the agent to push back in writing rather than agree with you.
-  That's rule 1 of the conduct contract, not a personality setting.
+  That's rule 4 of the conduct contract, not a personality setting.
 
 **Don't use it if:**
 
@@ -177,15 +206,18 @@ Everything it touches, so you can predict it before installing:
 | `eval/` | /eval-spec, /eval-run | Only when you ask for an eval |
 | `~/.acstack/update-stamp` | the runtime | One line, the last update-check date. The only machine-local state |
 
-Nothing leaves your machine except `git fetch` in the once-a-day update
-check, `gh` calls you initiate in tickets mode, and — when you run `/deps` —
-one `npm view` per package to read its published metadata. That third one
-was missing from this sentence until 2026-09-16 while `check.sh` §13 had
-already admitted it to the read-only command set, justified there as
-"queries the registry and prints metadata, installing nothing". A claim
-about what leaves your machine is worth less than nothing if it is one
-command out of date. There is no telemetry —
-the `telemetry` key is reserved and unimplemented.
+The pack sends nothing on its own. Five skills reach the network, and each
+does so only on a command you type:
+
+| You run | It sends |
+|---|---|
+| the once-a-day update check | `git fetch` against this repo |
+| any skill in tickets mode | `gh` calls to your GitHub |
+| `/deps` | one `npm view` per package, to read published metadata |
+| `/ship` | `git push`, and `gh pr create` under `push: branch-pr` |
+| `/qa` | HTTP requests to the endpoint you point it at |
+
+There is no telemetry — the `telemetry` key is reserved and unimplemented.
 
 ## Configuration
 

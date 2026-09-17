@@ -5943,6 +5943,26 @@ multi-PR build that would otherwise pay full price for every push.
   README pointing at it — and the route is confirmed reachable by the
   operator rather than assumed from the setting being on.
 
+- [ ] **5.33** Neither the README nor `docs/EXAMPLE.md` contains a captured
+  record of a skill actually running. Both show an **acceptance command's
+  output** — the same `python3 -c "from wordfreq import top_words…"` block —
+  which demonstrates that a runnable acceptance exists, not that an agent
+  behaved. The tagline is "skills that prove their work instead of
+  describing it", so the front door's proof is the one place this gap costs
+  most. Found 2026-09-17 by an external README review, and confirmed by
+  reading both documents: the review reported "no `/do` invocation or
+  verdict" and there is none to find.
+  **This nearly shipped as a fabrication.** A hand-written `/do` transcript
+  was drafted for this section and reverted before commit — inventing the
+  output of the thing the section exists to prove is precisely the defect
+  the pack's own rule forbids, and it would have been invisible to every
+  guard. Recorded so the next person reaches for a capture, not a draft.
+  **Acceptance:** README's proof section contains a transcript captured from
+  a real `/do` run — the invocation, the acceptance command, its output, and
+  the verdict — pasted verbatim, with the scratch project named and its
+  state stated so a reader knows what they could and could not reproduce.
+  A reconstruction, however accurate, does not satisfy this.
+
 
 ## [ ] Wave 6 — The review board
 
