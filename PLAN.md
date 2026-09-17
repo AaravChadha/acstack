@@ -4987,7 +4987,76 @@ multi-PR build that would otherwise pay full price for every push.
   **Acceptance:** two branches each adding golden cases to the same category,
   merged, produce a golden set containing **every** case from both with the
   category minimum recomputed — shown losing cases first on the same seed.
-- [ ] **5.26** Shard the matrix across parallel CI jobs. 5.20.2 tiers by
+- [x] **5.26** *(Done 2026-09-16. **Operator ruled 4 shards** after the trade
+  was derived: 8 buys ~2 more minutes while doubling the fan-in surface, and N
+  is a parameter rather than a design, so moving later costs one number.
+  `guard-matrix.sh` gains `--shard i/N` and `--list`. **The ordinal is assigned
+  before both the shard test and the name filter, and that order is
+  load-bearing** — assign it after the filter and the same case lands in
+  different shards depending on whether a filter was passed, so the partition
+  stops being a function of the case set alone. Exhaustiveness is asserted in
+  **three independent places**, because a case in zero shards leaves every
+  shard green: each shard computes and checks its own expected count;
+  `check.sh` **§39** walks the partition with `--list` on every commit (~0.02 s
+  per walk, no case executed, no snapshot taken) and asserts the union equals
+  the declared set with no duplicates, **deriving N from the workflow** rather
+  than restating it; and CI's `aggregate` job sums each shard's `RAN` and fails
+  on a shard that never reported — the only one of the three that can see a
+  missing shard. **Artifacts, not matrix job outputs** (matrix legs overwrite
+  one another's `outputs` silently; taken from GitHub's documented behaviour,
+  not measured here, and the design does not depend on it).
+  **Proven, four seeded arms each shown failing first on a copy:** a case in
+  zero shards (`the 4 shards cover 163 of 164 case(s)`, `uncovered: leading
+  hash`), a case in two shards, the `shard:` list disagreeing with the `SHARDS`
+  divisor, and the fan-in dropping `needs.matrix.result`; with §39 deleted all
+  four read `BAD got=PASS want=FAIL`, and the unseeded control is clean. Union
+  of 4 shards = declared, 0 duplicates, set-equal to the unsharded list;
+  repeated at **N=7** where the division is uneven.
+  **Wall clock, measured both ends:** serial **17m04s** at 160 cases (6.40
+  s/case) → **6m06s** for all 168 cases as 4 parallel local shards, tree hash
+  verified unmoved, every shard `RAN=42 passed=42 failed=0`, sum **168 =
+  declared**. That is **~2.9x on one machine**, where four processes contend
+  for one CPU; the arithmetic normalisation to 168 cases (~17m55s serial) is
+  labelled as such. CI's own before-figures were **18m04s and 18m32s** on two
+  consecutive 164-case runs. `checks` 41 → 42; `matrix-cases` 164 → 168.
+  **The first sharded PR was green and BLOCKED, and that was this task's own
+  defect.** `main`'s branch protection requires a status context named
+  `check`, satisfied until now by the single monolithic job; sharding renamed
+  it to `guard` and left no `check` at all, so PR #20 reported **six green
+  jobs** and could never merge — with `enforce_admins: true`, not even by the
+  owner. The job graph was redesigned without once asking what the gate
+  actually requires. Fixed **in the workflow, never in the protection rule** —
+  a session that rewrites its own gate has none — by naming the fan-in job
+  `check`, which is a better contract than before: the required context is now
+  the only job that can prove every shard reported. Auditing that turned up a
+  **second hole in the same design**: the fan-in `needs: [matrix]` alone and
+  never read `guard`'s result, so a failing `check.sh` would have merged
+  behind a green required context. It now needs both and reads both, and §39
+  asserts a job named `check` exists and reads each upstream result — both
+  arms watched failing on copies.
+  **Then the gate's own dependency list was derived rather than listed**, on
+  the operator's call and before the branch merged: `check.sh` §39 now reads
+  the workflow's `jobs:` block, asserts the required `check` job **needs every
+  job but itself** and **reads every needed job's result**. The trigger is
+  scheduled, not hypothetical — **5.20.2** is filed to add a fast CI tier, and
+  a hand-written `needs` list under-counts silently the day a job appears. The
+  derivation's first draft collected `on:`'s triggers (`push`,
+  `pull_request`, `workflow_dispatch`) as jobs, because they sit at the same
+  two-space indent; **the guard fired on its own derivation**, which is the
+  argument for deriving in miniature. Two further matrix cases, both watched
+  failing with the block deleted. Case count 168 → 170, which also exercises
+  an **uneven** partition (43/43/42/42, union 170, no duplicates).
+  **Not done:** the CI fan-in has never been seen *failing* — §39's
+  equivalents were each watched, but the step runs only in CI, and seeding a
+  genuinely missing shard would mean pushing a deliberately broken workflow.
+  Its passing path did execute on PR #20: `shards reporting: 4/4   cases run:
+  168   declared: 168`.
+  **Measured after-figure, PR #20: 5m39s** against 18m04s/18m32s — **3.2x**.
+  Per-job: guard 16s; shards 3m27s, 4m48s, 4m49s, 4m59s; fan-in 7s. One shard
+  queued 37s behind its siblings and still was not the slowest. The 1.4x
+  spread across identical 42-case shards is runner variance, now the dominant
+  term rather than case count — which is why 8 shards would buy less than the
+  arithmetic suggests.)* Shard the matrix across parallel CI jobs. 5.20.2 tiers by
   *event* (fast gate on push, full gate before merge); this is the other axis
   — the full gate itself is **156 cases × ~4.6 s** serially, measured from
   CI's 11m58s on 2026-09-16. `strategy.matrix` runs N jobs concurrently for

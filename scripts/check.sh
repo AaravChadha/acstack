@@ -26,6 +26,7 @@
 #   35 near-term open tasks state a done-condition
 #   36 /learn sighting trail is a list   37 PLAN.md identifiers are unique
 #   38 class-D skills state the scope of their verdict
+#   39 CI shard partition covers every matrix case
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1166,6 +1167,107 @@ for s_ in $SCOPE_SKILLS; do
     fail=1
   fi
 done
+
+# 39. The CI shard partition covers every matrix case, exactly once (5.26).
+#     Sharding buys wall clock at the price of a correctness obligation: N
+#     shards are a full run ONLY if they provably partition the case set, and
+#     a case landing in ZERO shards leaves every shard green and the aggregate
+#     clean. That is this repo's most-repeated failure class and it is
+#     invisible by construction, so it is proven here on every commit rather
+#     than trusted. Cheap because `--list` executes no case and skips the
+#     snapshot: ~0.02 s per walk, ~0.2 s for the whole section.
+#     N IS DERIVED FROM THE WORKFLOW, never written here — a guard testing 4
+#     while CI runs 8 proves nothing about CI. The workflow states N twice
+#     (the `SHARDS` divisor and the literal `shard:` list), so the two are
+#     asserted to agree first; that split is the drift this section opens with.
+wf=".github/workflows/check.yml"
+gm="docs/guard-matrix.sh"
+if [ -f "$wf" ] && [ -f "$gm" ]; then
+  shards_n="$(sed -n 's/^  SHARDS: *\([0-9][0-9]*\).*/\1/p' "$wf" | head -1)"
+  shards_list="$(sed -n 's/^ *shard: *\[\(.*\)\].*/\1/p' "$wf" | head -1 | tr -d ' ')"
+  if [ -z "$shards_n" ] || [ -z "$shards_list" ]; then
+    echo "FAIL shard: $wf has no 'SHARDS:' divisor or no 'shard: [..]' list — the partition guard cannot derive N (5.26)"
+    fail=1
+  else
+    want_list="$(seq 1 "$shards_n" | paste -sd, -)"
+    if [ "$shards_list" != "$want_list" ]; then
+      echo "FAIL shard: $wf lists shard: [$shards_list] but SHARDS is $shards_n (expected [$want_list]) — a shard nobody runs, or a divisor nobody covers (5.26)"
+      fail=1
+    else
+      _sd="$(mktemp -d)"
+      bash "$gm" "$PWD" --list 2>/dev/null | grep -v '^LISTED=' | grep . | sort > "$_sd/all"
+      : > "$_sd/union"
+      _i=1
+      while [ "$_i" -le "$shards_n" ]; do
+        bash "$gm" "$PWD" --list --shard "$_i/$shards_n" 2>/dev/null | grep -v '^LISTED=' | grep . >> "$_sd/union"
+        _i=$((_i + 1))
+      done
+      sort "$_sd/union" > "$_sd/union_s"
+      _declared="$(grep -cE '^([a-z]+case|check) ' "$gm")"
+      _all="$(grep -c . "$_sd/all" || true)"
+      _uni="$(grep -c . "$_sd/union_s" || true)"
+      _dup="$(uniq -d < "$_sd/union_s" | grep -c . || true)"
+      if [ "$_all" -ne "$_declared" ]; then
+        echo "FAIL shard: --list named $_all case(s) but $_declared are declared — the lister and the counter disagree (5.26)"
+        fail=1
+      elif [ "$_dup" -ne 0 ]; then
+        echo "FAIL shard: $_dup case(s) appear in more than one shard — a partition assigns each case exactly once (5.26)"
+        uniq -d < "$_sd/union_s" | sed 's/^/           /' | head -5
+        fail=1
+      elif [ "$_uni" -ne "$_declared" ] || ! diff -q "$_sd/all" "$_sd/union_s" >/dev/null 2>&1; then
+        echo "FAIL shard: the $shards_n shards cover $_uni of $_declared case(s) — a case in zero shards leaves every shard green (5.26)"
+        comm -23 "$_sd/all" "$_sd/union_s" | sed 's/^/           uncovered: /' | head -5
+        fail=1
+      fi
+      rm -rf "$_sd"
+    fi
+  fi
+  # The fan-in must refuse a green aggregate over a red shard. Asserted as a
+  # positive shape because the default propagation is easy to disable with one
+  # continue-on-error, and the result would be a PR that goes green with a
+  # failing guard in it.
+  # main's branch protection requires a context named `check`. Sharding renamed
+  # the job that provided it and left none, so the first sharded PR was green
+  # and BLOCKED forever. The job must exist, and — being the ONLY required
+  # context — must vouch for every upstream job, or whatever it omits is
+  # unguarded.
+  if ! grep -qE '^  check:' "$wf"; then
+    echo "FAIL shard: $wf declares no job named 'check' — main's branch protection requires that context and would block every PR forever (5.26)"
+    fail=1
+  fi
+  # SCOPE DERIVED, NOT LISTED (4.82, and the reason this guard exists at all).
+  # The fan-in is main's ONLY required context, so any job it does not depend
+  # on is unguarded — and a hand-written needs list under-counts silently the
+  # day a job is added. 5.20.2 is filed to add exactly that (a fast tier on
+  # push, the slow gate before merge), so the trigger is scheduled, not
+  # hypothetical. Both halves are checked: every job must be NEEDED, and every
+  # needed job's result must be READ.
+  # Scoped to the jobs: block — `on:`'s triggers (push, pull_request,
+  # workflow_dispatch) sit at the SAME two-space indent as job names, and the
+  # first draft of this line collected them as jobs. Found by this guard
+  # firing on its own derivation, which is the argument for deriving in the
+  # first place.
+  _jobs="$(awk '/^jobs:[[:space:]]*$/{j=1; next} j && /^[^[:space:]]/{j=0} j' "$wf" \
+            | sed -n 's/^  \([a-z][a-z0-9_-]*\):[[:space:]]*$/\1/p' | grep -v '^check$' || true)"
+  _needs="$(sed -n 's/^    needs:[[:space:]]*\[\(.*\)\].*/\1/p' "$wf" | head -1 | tr -d ' ')"
+  for _job in $_jobs; do
+    case ",$_needs," in
+      *",$_job,"*) ;;
+      *) echo "FAIL shard: $wf declares job '$_job' but the required 'check' job does not need it — whatever the gate does not depend on is unguarded (5.26)"
+         fail=1 ;;
+    esac
+  done
+  _oldifs="$IFS"; IFS=','
+  for _need in $_needs; do
+    IFS="$_oldifs"
+    if ! grep -q "needs.$_need.result" "$wf"; then
+      echo "FAIL shard: $wf's required 'check' job needs '$_need' but never reads needs.$_need.result — a failing $_need job would pass the fan-in (5.26)"
+      fail=1
+    fi
+    IFS=','
+  done
+  IFS="$_oldifs"
+fi
 
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
