@@ -106,6 +106,13 @@ derive() {
     # two places (AGENTS.md's own "These N" and JOURNAL's restatement) and
     # drifted by hand until 2026-09-11. Bounded by the section heading and
     # the "These N" sentence so a bullet elsewhere in the file cannot inflate it.
+    # README's own shape, claimed in its "About this document" section. A
+    # hand-written figure there is a drift source by construction: stating it
+    # CHANGES it. Measured the way the comparison was measured — headings
+    # outside fenced blocks, table rows excluding `|---|` separators (5.9).
+    readme-lines)   n=$(wc -l < README.md) ;;
+    readme-h2)      n=$(awk '/^```/{f=!f; next} !f && /^## /{c++} END{print c+0}' README.md) ;;
+    readme-rows)    n=$(awk '/^```/{f=!f; next} !f && /^\|/ && !/^\|[[:space:]:-]+\|/{c++} END{print c+0}' README.md) ;;
     repo-rules)     n=$(awk '/^Verification rules \(added/,/^These /' AGENTS.md \
                         | grep -c '^- \*\*') ;;
     *)              return 1 ;;

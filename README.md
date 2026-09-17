@@ -6,6 +6,13 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/AaravChadha/acstack?style=flat&color=555)](https://github.com/AaravChadha/acstack/stargazers)
 
+**Who this is for:** someone who already works with a coding agent and has
+been burned by it reporting success it did not earn — a phase "done" with no
+command run, a score nobody recomputed, a check that never fired. If you have
+never wanted to ask an agent *prove it*, this is overhead you do not need;
+the ["Don't use it if" list](#why-youd-use-it-and-why-you-wouldnt) says so
+plainly.
+
 One idea, applied everywhere: a claim is only as good as the thing that can
 falsify it. A phase is done when its named command passes — not when prose
 says it went well. An eval score is recomputed from the results file on disk,
@@ -375,6 +382,28 @@ will want to drop first.
 | Every skill resolves twice | You installed via **both** `./setup` and the plugin. Remove one |
 | Skills say "runtime off" | Expected on a copy install, with `runtime: off` set, or when the pack root can't be resolved through the symlink. Everything still works as plain markdown |
 | A skill stops and names a missing binary | Working as designed — see [Optional, per capability](#install). Install the binary or use the documented fallback |
+
+## About this document
+
+This README is longer and more table-dense than most:
+<!-- count:readme-lines -->427<!-- /count --> lines,
+<!-- count:readme-h2 -->16<!-- /count --> sections and
+<!-- count:readme-rows -->62<!-- /count --> table rows, against 96–346 / 4–12 /
+0–19 across six comparison projects above 100k stars (measured 2026-09-17).
+Those three numbers are machine-maintained by `scripts/recount.sh` — stating a
+figure about a document *inside* that document changes it, and the first draft
+of this paragraph was wrong the moment it was written. **That is a deliberate choice, and
+naming it is the point** — `/audit readme` treats an undeclared divergence as
+a finding and a declared one as a decision.
+
+The reason: acstack is configured, not just installed. Settings, what each
+skill writes, and the permission rules are reference a reader needs *while
+deciding*, not after. The 25-skill roster did move out to
+[docs/SKILLS.md](docs/SKILLS.md), because an index is not a front door. What
+stays is what you consult before you commit to the tool.
+
+Revisit it if the page stops being scannable; the measurement is cheap to
+re-run and the decision is cheap to reverse.
 
 ## More
 

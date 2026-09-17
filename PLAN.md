@@ -4677,6 +4677,24 @@ multi-PR build that would otherwise pay full price for every push.
   comes out of the rosters (33 rows under Skills, 20 under Settings), not out
   of the prose, which the same measurement found is already over-compressed:
   em-dashes at **1.9 per 100 words against a 0.0–0.2 field**.
+  **Operator ruling (2026-09-17): DECLARE the divergence, do not cut further**
+  — "we can always change later". The 25-skill roster still moved out to
+  `docs/SKILLS.md`, because an index is not a front door; what stays is
+  reference a reader consults *while deciding* — settings, what each skill
+  writes, the permission rules. README gained an `## About this document`
+  section stating the divergence and its reason, which is what turns it from
+  a finding into a decision under this target's own rule.
+  **The declaration was wrong the moment it was written**, and that is worth
+  recording: it quoted 399 lines / 15 sections, and adding the paragraph made
+  the document 423 / 16. Stating a figure about a document *inside* that
+  document changes it. Fixed with the repo's own mechanism — three new
+  `count-check` derivations (`readme-lines`, `readme-h2`, `readme-rows`),
+  measured the way the comparison was measured (headings outside fenced
+  blocks, rows excluding `|---|` separators), so `recount.sh` maintains them.
+  This also means **moving Configuration out is no longer blocked on §9** —
+  it was never attempted, so `check.sh`'s hardcoded `README.md` config-table
+  lookup stands unchanged and un-rederived. If the ruling is revisited, that
+  is the work it implies.
 - [ ] **5.10** `/do` ticks a box without ever asking what points AT it.
   `scripts/reach-check.sh` answers that question, but it runs from
   `check.sh` — that is, at commit time, **after** the tick. On 2026-08-16
