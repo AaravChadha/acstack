@@ -70,8 +70,15 @@ re-derive these; they cost a round's budget once already.
   operations needing no API auth — that result does not generalise to `-p`.
 - **Isolating `HOME` breaks auth too** — credentials resolve through the
   macOS Keychain, not the config directory.
-- **A project-local `.claude/skills/<name>/` does NOT override a globally
-  symlinked skill of the same name.** The session loads the global one.
+- ~~**A project-local `.claude/skills/<name>/` does NOT override a globally
+  symlinked skill of the same name.** The session loads the global one.~~
+  **Verdict (2026-09-14, task 5.15):** measured false for the case that
+  matters. A session opened in a git worktree IS served that worktree's own
+  skills, because the tracked `.claude-plugin/plugin.json` registers
+  `./skills` relative to whichever checkout holds it — so two checkouts give
+  two live copies without touching any symlink. Which registration wins when
+  both exist is still unmeasured and is task 5.22's whole subject; do not
+  infer it from `readlink`.
 
 **Consequence: an A/B between two versions of the SAME skill cannot be run
 on one machine without re-pointing the live `~/.claude/skills/<name>`

@@ -747,6 +747,16 @@ assert s.count(old) >= 1, 'seed no-op: the workflow never invoked check.sh'
 io.open(p, 'w', encoding='utf-8').write(s.replace(old, 'echo seeded-skip'))
 EOF"
 fullcase "plugin manifest deleted"        FAIL 'plugin' rm -f .claude-plugin/plugin.json
+# The real defect: an unclosed code span promotes prose to a live heading,
+# which §35 then reads as the end of a wave's scope (5.31).
+fullcase "unclosed span makes a heading"  FAIL 'planhead' bash -c "python3 - <<'EOF'
+import io
+p = 'PLAN.md'
+s = io.open(p, encoding='utf-8').read()
+old = '\`## Open items\` only'
+assert s.count(old) == 1, 'seed no-op: the fixed code span is not present'
+io.open(p, 'w', encoding='utf-8').write(s.replace(old, '## Open items\` only', 1))
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody

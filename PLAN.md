@@ -79,7 +79,7 @@
 > - **Process prerequisites in prose are invisible to `/resume`.** Its
 >   "unblocked" is defined by checkboxes and `
 
-## Open items` only, so a
+`## Open items` only, so a
 >   prerequisite recorded in prose — like this header's
 >   specs-at-wave-start rule — never blocks a task. Found by the 4.7
 >   item 10 cold start (2026-07-29), which named 4.1 as next when the
@@ -5886,6 +5886,45 @@ multi-PR build that would otherwise pay full price for every push.
   either fixed here or carried by its own task. A conflict between two
   documents is resolved by ruling which is canonical, never by editing one
   to match the other silently.
+  **Progress (2026-09-16): all ten CONFIRMED at file:line, none refuted.**
+  Across both external reviews that is **22 of 22 claims verified and 22
+  confirmed**, which is worth recording precisely because this repo's rule
+  exists on the opposite expectation — a prior round had an agent claim not
+  survive checking.
+  **Six fixed here.** The momentum formula's denominator was `(1000 -
+  decayRate)` against a rate of `0.998`, giving `≈0.001` — a flick projected
+  to land a thousandth of a pixel from the finger; corrected to `(1 -
+  decayRate)` ≈ 499, and the wrong form had plainly never been run. README's
+  *"nothing leaves your machine except…"* omitted `npm view`, which §13's own
+  union had already admitted for `/deps`. PLAN.md:82's unclosed code span was
+  rendering prose as a live `## ` heading. CONTRIBUTING's dev loop documented
+  `./setup --uninstall` as a round-trip, which removes the reader's real
+  installation (25 → 0 links, measured). `shakedown-method.md`'s worktree
+  advice was superseded by 5.15's measurement. CONTRIBUTING repeated the
+  "deliberate exception to rule 10" claim that AGENTS.md struck through on
+  2026-08-14 — a supersession written in one file and not the other.
+  **Guarded:** check.sh **§40** asserts every PLAN.md `## ` heading matches a
+  known shape, because §35 scopes waves by `^## ` and a phantom heading
+  *inside* a wave silently ends that wave's acceptance coverage. Two earlier
+  attempts at this guard were wrong and both were caught by seeding, not by
+  reading: duplicate-heading detection cannot fire (the broken span yields
+  *different* text), an odd-backtick scan is unusable (57 lines in PLAN and
+  66 in JOURNAL legitimately wrap a code span), and the first shape pattern
+  matched `Open items` as a **prefix** — so it accepted the very phantom it
+  was written for.
+  **Four still open, for two different reasons.** Fixable without a ruling:
+  **(i)** the graders still do not fold curly quotes or implement
+  `parse: label:total`, and the runnable fixture's `norm()` calls `.lower()`
+  unconditionally, ignoring `case_sensitive`; **(ii)** `acstack-config`
+  strips `#` as a comment, so `palette: #123456` resolves empty — it warns
+  rather than silently mis-resolving, which softens but does not fix it, and
+  its `banned-palette` omission is still unverified. Needing an operator
+  ruling, because both are conflicts between two documents and this task's
+  own acceptance forbids silently editing one to match: **(iii)** tickets-mode
+  commits — `#42:` (`tickets-mode.md:16`) versus `ticket #42:`
+  (`CONDUCT.md:130`); **(iv)** `/migrate-check`'s **Flagged** class fits
+  neither GO ("every statement is additive") nor NO-GO, so it needs either a
+  third verdict or a stated fold into one of the two.
 
 - [ ] **5.32** No private route to report a vulnerability. The repo has been
   public since 2026-08-03 and carries no `SECURITY.md` at root or under

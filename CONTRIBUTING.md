@@ -12,7 +12,11 @@ guard blocks the commit. Fix the drift; do not skip the check.
 scripts/check.sh                    # the pack guard; its header lists every section, includes positive controls
 bash docs/guard-matrix.sh "$PWD"    # every guard shown firing on a seeded defect (16–29 min; keep the machine awake for all of it)
 bash docs/guard-matrix.sh "$PWD" 'count|reach'   # only cases whose name matches, while iterating
-./setup && ./setup --uninstall      # installer round-trip
+# installer round-trip — NOT on a machine where you actually use acstack.
+# `--uninstall` removes the real links in ~/.claude/skills, so running this
+# on your working machine leaves you with none (measured 2026-09-16: 25 -> 0).
+# Point it at a throwaway config dir instead:
+CLAUDE_CONFIG_DIR="$(mktemp -d)" ./setup && CLAUDE_CONFIG_DIR="$(mktemp -d)" ./setup --uninstall
 ```
 
 **The filter is for iterating, never for landing.** A full run is the bar
@@ -146,9 +150,16 @@ Four rules, each from a defect this repo shipped:
 
 Lowercase `<verb> <object> (<detail>)` subject, a brief what-and-why
 body, no attribution trailers — no `Co-Authored-By`, no "Generated
-with". (This subject style is a deliberate exception to CONDUCT rule
-10's work-item reference: the pack has no per-commit ticket ID. Rule
-10's no-attribution half still binds.)
+with". ~~(This subject style is a deliberate exception to CONDUCT rule
+10's work-item reference: the pack has no per-commit ticket ID.)~~
+**Verdict (2026-08-14, recorded in AGENTS.md; propagated here
+2026-09-16):** that was false — a PLAN task ID *is* a work-item
+reference, so a `task <n>: …` commit **follows** rule 10 rather than
+excepting itself from it. The exception survives only for this third
+shape, where there genuinely is no work item. AGENTS.md documents all
+three shapes and check.sh §34 enforces them; this section covers the
+one a contributor without a task ID will use. Rule 10's no-attribution
+half binds throughout.
 
 State numbers in the body: `matrix 43 → 46`, `19 → 20 skills`. "Fixed
 bugs" is not a commit message.
