@@ -652,6 +652,29 @@ s = io.open(p, encoding='utf-8').read()
 assert 'needs.matrix.result' in s, 'seed no-op: fan-in never read the shard result'
 io.open(p, 'w', encoding='utf-8').write(s.replace('needs.matrix.result', 'needs.matrix.conclusion'))
 EOF"
+# 39: the gate's needs list is DERIVED from the workflow's own job set, so a
+# job added without wiring it into the gate is caught (5.20.2 is filed to add
+# exactly that). Both halves: every job needed, every needed job's result read.
+fullcase "new CI job the gate ignores"    FAIL 'shard' bash -c "python3 - <<'EOF'
+import io
+p = '.github/workflows/check.yml'
+s = io.open(p, encoding='utf-8').read()
+old = chr(10) + '  check:' + chr(10)
+assert s.count(old) == 1, 'seed no-op: fan-in job not found'
+job = chr(10) + '  seeded-tier:' + chr(10) + '    runs-on: ubuntu-latest' + chr(10) + '    steps:' + chr(10) + '      - run: echo seeded' + chr(10)
+io.open(p, 'w', encoding='utf-8').write(s.replace(old, job + old))
+EOF"
+fullcase "gate needs a job but ignores it" FAIL 'shard' bash -c "python3 - <<'EOF'
+import io, re
+p = '.github/workflows/check.yml'
+s = io.open(p, encoding='utf-8').read()
+m = re.search(r'^    needs: \[(.+)\]\$', s, re.M)
+assert m, 'seed no-op: no needs list found'
+first = [x.strip() for x in m.group(1).split(',')][0]
+old = 'needs.' + first + '.result'
+assert old in s, 'seed no-op: ' + old + ' never read'
+io.open(p, 'w', encoding='utf-8').write(s.replace(old, 'needs.NOTAJOB.result'))
+EOF"
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody

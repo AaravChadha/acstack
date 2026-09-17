@@ -1235,12 +1235,38 @@ if [ -f "$wf" ] && [ -f "$gm" ]; then
     echo "FAIL shard: $wf declares no job named 'check' — main's branch protection requires that context and would block every PR forever (5.26)"
     fail=1
   fi
-  for _need in guard matrix; do
+  # SCOPE DERIVED, NOT LISTED (4.82, and the reason this guard exists at all).
+  # The fan-in is main's ONLY required context, so any job it does not depend
+  # on is unguarded — and a hand-written needs list under-counts silently the
+  # day a job is added. 5.20.2 is filed to add exactly that (a fast tier on
+  # push, the slow gate before merge), so the trigger is scheduled, not
+  # hypothetical. Both halves are checked: every job must be NEEDED, and every
+  # needed job's result must be READ.
+  # Scoped to the jobs: block — `on:`'s triggers (push, pull_request,
+  # workflow_dispatch) sit at the SAME two-space indent as job names, and the
+  # first draft of this line collected them as jobs. Found by this guard
+  # firing on its own derivation, which is the argument for deriving in the
+  # first place.
+  _jobs="$(awk '/^jobs:[[:space:]]*$/{j=1; next} j && /^[^[:space:]]/{j=0} j' "$wf" \
+            | sed -n 's/^  \([a-z][a-z0-9_-]*\):[[:space:]]*$/\1/p' | grep -v '^check$' || true)"
+  _needs="$(sed -n 's/^    needs:[[:space:]]*\[\(.*\)\].*/\1/p' "$wf" | head -1 | tr -d ' ')"
+  for _job in $_jobs; do
+    case ",$_needs," in
+      *",$_job,"*) ;;
+      *) echo "FAIL shard: $wf declares job '$_job' but the required 'check' job does not need it — whatever the gate does not depend on is unguarded (5.26)"
+         fail=1 ;;
+    esac
+  done
+  _oldifs="$IFS"; IFS=','
+  for _need in $_needs; do
+    IFS="$_oldifs"
     if ! grep -q "needs.$_need.result" "$wf"; then
-      echo "FAIL shard: $wf's required 'check' job never reads needs.$_need.result — a failing $_need job would pass the fan-in (5.26)"
+      echo "FAIL shard: $wf's required 'check' job needs '$_need' but never reads needs.$_need.result — a failing $_need job would pass the fan-in (5.26)"
       fail=1
     fi
+    IFS=','
   done
+  IFS="$_oldifs"
 fi
 
 if [ "$fail" -eq 0 ]; then

@@ -5034,6 +5034,18 @@ multi-PR build that would otherwise pay full price for every push.
   behind a green required context. It now needs both and reads both, and §39
   asserts a job named `check` exists and reads each upstream result — both
   arms watched failing on copies.
+  **Then the gate's own dependency list was derived rather than listed**, on
+  the operator's call and before the branch merged: `check.sh` §39 now reads
+  the workflow's `jobs:` block, asserts the required `check` job **needs every
+  job but itself** and **reads every needed job's result**. The trigger is
+  scheduled, not hypothetical — **5.20.2** is filed to add a fast CI tier, and
+  a hand-written `needs` list under-counts silently the day a job appears. The
+  derivation's first draft collected `on:`'s triggers (`push`,
+  `pull_request`, `workflow_dispatch`) as jobs, because they sit at the same
+  two-space indent; **the guard fired on its own derivation**, which is the
+  argument for deriving in miniature. Two further matrix cases, both watched
+  failing with the block deleted. Case count 168 → 170, which also exercises
+  an **uneven** partition (43/43/42/42, union 170, no duplicates).
   **Not done:** the CI fan-in has never been seen *failing* — §39's
   equivalents were each watched, but the step runs only in CI, and seeding a
   genuinely missing shard would mean pushing a deliberately broken workflow.
