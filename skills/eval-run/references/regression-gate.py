@@ -85,6 +85,43 @@ def rates(path):
     return {c: (p / n, p, n, e) for c, (p, n, e) in tally.items() if n}
 
 
+def ids(path):
+    """The set of case ids present in a results file, scored or not.
+
+    Deliberately NOT filtered to `status == "scored"`: a case that was
+    scored in the baseline and is skipped now has still lost its coverage,
+    and that is exactly the change this is here to surface.
+    """
+    out = set()
+    for line in pathlib.Path(path).read_text().splitlines():
+        line = line.strip()
+        if line:
+            rec = json.loads(line)
+            if "id" in rec:
+                out.add(str(rec["id"]))
+    return out
+
+
+def duplicate_ids(path):
+    """Ids appearing more than once in ONE results file.
+
+    A duplicate is how a vanished case hides: the totals stay whole because
+    something else filled the slot. Reported separately from `missing`,
+    because a run can have one without the other.
+    """
+    seen, dupes = set(), set()
+    for line in pathlib.Path(path).read_text().splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        rec = json.loads(line)
+        i = str(rec.get("id"))
+        if i in seen:
+            dupes.add(i)
+        seen.add(i)
+    return dupes
+
+
 def main(argv):
     if not 2 <= len(argv) <= 3:
         sys.exit(__doc__.strip().splitlines()[-4].strip())
@@ -117,6 +154,28 @@ def main(argv):
     if gone:
         regressed.append("  categories that vanished from the run: "
                          + ", ".join(gone))
+
+    # CASE IDENTITY, not just totals (external review, 2026-09-16). Every
+    # check above compares AGGREGATES, so a baseline of ids {a, b} and a
+    # current run of {a, a} are indistinguishable: same category, same
+    # count, same rate, no regression reported — while case b silently
+    # stopped being evaluated. Counts cannot see that; only the ids can.
+    prev_ids, cur_ids = ids(argv[2]), ids(argv[1])
+    missing = sorted(prev_ids - cur_ids)
+    if missing:
+        shown = ", ".join(missing[:8]) + (" …" if len(missing) > 8 else "")
+        regressed.append(
+            f"  {len(missing)} baseline case(s) absent from this run: {shown}. "
+            f"A case that vanishes takes its coverage with it, and every "
+            f"other check here compares totals, which a duplicate of a "
+            f"surviving case keeps whole.")
+    dupes = sorted(duplicate_ids(argv[1]))
+    if dupes:
+        regressed.append(
+            f"  case id(s) appearing more than once in this run: "
+            f"{', '.join(dupes[:8])}. Two records under one id inflate a "
+            f"category's count without adding coverage, which is how a "
+            f"missing case stays invisible to every total above.")
 
     if regressed:
         print("regression-gate: BLOCKED — a category fell against the last "

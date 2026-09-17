@@ -149,6 +149,26 @@ for f in skills/*/SKILL.md; do
 $descs
 EOF
 
+  # DUPLICATE KEYS. A YAML parser takes the LAST value for a repeated key;
+  # the `name` read above takes the FIRST (`head -1`). So two `name:` lines
+  # let this guard validate a value the host never sees — the pack's own
+  # "verify the consumed form, not the authored form" rule, broken by the
+  # guard that exists to enforce it. Reproduced 2026-09-16 (external review):
+  # the guard read `tc` while PyYAML read `wrong`, and check.sh exited 0.
+  # The fix is NOT to replicate YAML's precedence — a guard that reimplements
+  # a parser is a second parser to keep in sync. It is to refuse the
+  # ambiguity: a key appears at most once, so first and last are the same
+  # line and there is nothing to disagree about.
+  # `description` is EXCLUDED on purpose: the loop above checks EVERY
+  # description line, so for that key the guard is stricter than the parser
+  # (it can over-report, never under-report) and the matrix case that seeds a
+  # hazard on a second description line must keep failing for ITS reason.
+  dupkeys="$(printf '%s\n' "$fm" | sed -n 's/^\([a-z][a-z-]*\):.*/\1/p' | grep -v '^description$' | sort | uniq -d || true)"
+  if [ -n "$dupkeys" ]; then
+    echo "FAIL frontmatter: $f repeats frontmatter key(s): $(printf '%s' "$dupkeys" | tr '\n' ' ')— a YAML parser takes the LAST value and this guard reads the FIRST, so the value checked is not the value served"
+    fail=1
+  fi
+
   # strict parse: every frontmatter line is a known key (the whole block
   # must survive into the live skill listing, not just the description).
   unknown="$(printf '%s\n' "$fm" | grep -vE '^(name|description|argument-hint|allowed-tools|disable-model-invocation):' | grep -vE '^[[:space:]]*$' || true)"
@@ -824,6 +844,15 @@ done < <(
 #     than none — an adopter installs a version that does not exist. These
 #     are the three facts that can drift without anyone noticing, since
 #     nothing else in the tree reads .claude-plugin/.
+if [ ! -f .claude-plugin/plugin.json ]; then
+  # Absence used to be silence: this whole section ran only `if` the file
+  # existed, so deleting the manifest — which removes the plugin install
+  # route entirely — left check.sh green (external review, 2026-09-16). A
+  # missing manifest is the loudest version of the drift this section
+  # polices, not an exemption from it.
+  echo "FAIL plugin: .claude-plugin/plugin.json is missing — the plugin install route is gone, and this section's checks silently did not run"
+  fail=1
+fi
 if [ -f .claude-plugin/plugin.json ]; then
   pv="$(grep -oE '"version"[[:space:]]*:[[:space:]]*"[^"]+"' .claude-plugin/plugin.json | head -1 | sed -E 's/.*"([^"]+)"$/\1/')"
   rv="$(tr -d '[:space:]' < VERSION 2>/dev/null)"
@@ -1035,20 +1064,31 @@ if [ "$(git rev-parse --is-shallow-repository 2>/dev/null || echo true)" = "true
 else
   subj_bad=0
   while IFS= read -r s_; do
-    case "$s_" in
-      "task "[0-9]*": "*)     ;;   # task-closing, incl. `task 4.68 + 4.67: …`
-      "task "*|"Task "*)
-        echo "FAIL commit-style: subject opens as a task commit but not as \`task <number>: <description>\`: $s_"
-        subj_bad=1 ;;
-      "Journal "[0-9]*)       ;;   # journal entry
-      "Journal "*|"journal "*)
-        echo "FAIL commit-style: subject opens as a journal commit but not as \`Journal <date>: <summary>\`: $s_"
-        subj_bad=1 ;;
-      [a-z]*)                 ;;   # verb-first, lowercase
-      *)
-        echo "FAIL commit-style: subject matches none of AGENTS.md's three shapes: $s_"
-        subj_bad=1 ;;
-    esac
+    # REGEX, NOT GLOB. The shell glob `"task "[0-9]*": "*` means "task ",
+    # then ONE character in 0-9, then anything — so `task 1x: malformed` and
+    # `Journal 2 garbage` both passed a check whose whole job is the three
+    # documented shapes (external review, 2026-09-16). Only the first
+    # character was ever validated. These patterns spell the shapes out:
+    #   task <n>[.<n>...][ + <n>[.<n>...]]: <description>
+    #   Journal <YYYY-MM-DD>[ (<n>{st,nd,rd,th})]: <summary>
+    # "verb-first" stays "starts lowercase" — that is all it can be
+    # mechanically, and §34's header already says so.
+    if printf '%s' "$s_" | grep -qE '^task [0-9]+(\.[0-9]+)*( \+ [0-9]+(\.[0-9]+)*)*: .'; then
+      :                                   # task-closing, incl. `task 4.68 + 4.67: …`
+    elif printf '%s' "$s_" | grep -qE '^[Tt]ask '; then
+      echo "FAIL commit-style: subject opens as a task commit but not as \`task <number>: <description>\`: $s_"
+      subj_bad=1
+    elif printf '%s' "$s_" | grep -qE '^Journal [0-9]{4}-[0-9]{2}-[0-9]{2}( \([0-9]+(st|nd|rd|th)\))?: .'; then
+      :                                   # journal entry, incl. `Journal <date> (3rd): …`
+    elif printf '%s' "$s_" | grep -qE '^[Jj]ournal '; then
+      echo "FAIL commit-style: subject opens as a journal commit but not as \`Journal <date>: <summary>\`: $s_"
+      subj_bad=1
+    elif printf '%s' "$s_" | grep -qE '^[a-z]'; then
+      :                                   # verb-first, lowercase
+    else
+      echo "FAIL commit-style: subject matches none of AGENTS.md's three shapes: $s_"
+      subj_bad=1
+    fi
   done <<EOF
 $(git log --format='%s' -20)
 EOF
@@ -1226,6 +1266,24 @@ if [ -f "$wf" ] && [ -f "$gm" ]; then
   # positive shape because the default propagation is easy to disable with one
   # continue-on-error, and the result would be a PR that goes green with a
   # failing guard in it.
+  # THE WORKFLOW MUST INVOKE THE GUARDS. Nothing asserted that check.yml
+  # actually runs them, so deleting the `run: bash scripts/check.sh` step
+  # left check.sh green while CI checked nothing (external review,
+  # 2026-09-16) — the guard cannot see its own absence from the pipeline.
+  # The roster states its own size (§33's idiom): three entry points, and a
+  # fourth joins with its reason and this count in the same edit.
+  gate_cmds="scripts/check.sh docs/guard-matrix.sh shellcheck"
+  gate_n=0; for g_ in $gate_cmds; do gate_n=$((gate_n + 1)); done
+  if [ "$gate_n" -ne 3 ]; then
+    echo "FAIL shard: gate_cmds names $gate_n entry point(s), expected 3 (5.29)"
+    fail=1
+  fi
+  for g_ in $gate_cmds; do
+    grep -q "$g_" "$wf" || {
+      echo "FAIL shard: $wf never invokes '$g_' — the workflow can drop a guard and this check would not notice (5.29)"
+      fail=1; }
+  done
+
   # main's branch protection requires a context named `check`. Sharding renamed
   # the job that provided it and left none, so the first sharded PR was green
   # and BLOCKED forever. The job must exist, and — being the ONLY required

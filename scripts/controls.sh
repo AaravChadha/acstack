@@ -267,7 +267,19 @@ else bad "/health multi-product fixture lost its workspace marker"; fi
 # Reviewing a fork branch? Read the fixtures/ and scripts/ diff BEFORE
 # running the guard — see CONTRIBUTING.md.
 if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; then
-  out="$(cd fixtures/eval-run && python3 eval/run.py 2>&1)"; ev_c=$?
+  # RUN FROM A COPY, never in the tree. This used to execute in place and
+  # then `rm -rf fixtures/eval-run/eval/results` to clean up after itself —
+  # so the guard every commit is required to pass deleted a whole directory,
+  # not merely the file it had just written. The path is gitignored, so git
+  # could not tell anyone what was lost; a reviewer who left output there
+  # found it gone and could not establish whether their own run destroyed it
+  # (external review, 2026-09-16). The 4.53 block below already copies the
+  # eval dir before running, so this is the file's own established pattern,
+  # not a new one — and a guard that writes nothing into the tree cannot
+  # delete anything from it either.
+  evwork="$(mktemp -d)"
+  cp -R fixtures/eval-run/eval "$evwork/eval"
+  out="$(cd "$evwork" && python3 eval/run.py 2>&1)"; ev_c=$?
   head="$(printf '%s' "$out" | grep '^overall:' || true)"
   case "$head" in
     *"7/9 (77.8%)"*) ok "/eval-run control: seeded failures land at 7/9 (77.8%)" ;;
@@ -295,7 +307,36 @@ if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; t
     || bad "/eval-run silently dropped the rubric case from the report"
   printf '%s' "$out" | grep -q 'skipped (needs-data): 1' \
     || bad "/eval-run silently dropped the needs-data case from the report"
-  rm -rf fixtures/eval-run/eval/results
+  rm -rf "$evwork"
+
+  # The non-regression gate compares AGGREGATES, so a baseline of ids {a,b}
+  # and a run of {a,a} used to look identical: same category, same count,
+  # same rate, nothing reported — while case b stopped being evaluated
+  # (external review, 2026-09-16). Asserted behaviourally, on the real
+  # script, because the defect is in what it compares and not in its text.
+  rg="skills/eval-run/references/regression-gate.py"
+  if [ -f "$rg" ]; then
+    rgw="$(mktemp -d)"
+    python3 - "$rgw" <<'PYEOF'
+import json, sys, pathlib
+d = pathlib.Path(sys.argv[1])
+def w(name, ids):
+    (d / name).write_text("".join(json.dumps(
+        {"id": i, "category": "edge", "status": "scored",
+         "pass": True, "acceptable_failure_applied": False}) + "\n" for i in ids))
+w("base.jsonl", ["a", "b"])
+w("vanished.jsonl", ["a", "a"])
+w("same.jsonl", ["a", "b"])
+PYEOF
+    python3 "$rg" "$rgw/vanished.jsonl" "$rgw/base.jsonl" >/dev/null 2>&1 \
+      && bad "regression-gate ACCEPTED a run where a baseline case vanished behind a duplicate — {a,b} vs {a,a} compares equal on every total (external review)" \
+      || ok "regression-gate blocks when a baseline case id is absent from the run"
+    python3 "$rg" "$rgw/same.jsonl" "$rgw/base.jsonl" >/dev/null 2>&1 \
+      || bad "regression-gate BLOCKED two identical id sets — the identity check rejects everything, which proves nothing by failing"
+    rm -rf "$rgw"
+  else
+    bad "regression-gate.py missing — the non-regression floor has no control"
+  fi
 
   # 4.53: the exit code is a THREE-state signal, and these read the VALUE
   # rather than truthiness. Before 4.53, "could not complete" and
