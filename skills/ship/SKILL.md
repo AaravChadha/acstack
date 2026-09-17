@@ -97,8 +97,23 @@ here so the rule stays true everywhere else.
    Below target BLOCKS the ship
    (this is what makes "the eval is the spec" bite at release time). No
    eval → one honest line, gate passes.
-   **Then the per-category non-regression floor**, which the headline
-   cannot give you: compare the new results file against the LAST
+   **Then the per-category TARGETS from the spec** — these are not the same
+   check as the floor below, and the floor cannot stand in for them. The
+   spec's Targets table states a minimum per category (`refusal | 100%`,
+   `edge | ≥ 80%`, …). Read that table and BLOCK when any category is under
+   its own target, naming the category, its rate and its target. Without
+   this, a category can rise and still be far below the bar it was written
+   to meet: a refusal category going 40% → 60% passes a regression check and
+   fails the spec, and refusal is exactly where that matters. **Forgiven
+   failures do not count toward a category target.** The runner prints a
+   category as `p + af` with the forgiven count in brackets — use the plain
+   `p`, because `/eval-spec` states the policy is "never used to move a
+   category over its target", and reading the bracketed number is precisely
+   that move. No Targets table in the spec → say so plainly and pass this
+   sub-gate; never invent a target.
+
+   **Then the per-category non-regression floor**, which neither the headline
+   nor the targets give you: compare the new results file against the LAST
    COMMITTED one and BLOCK when any category fell, naming the category and
    both rates. A change that lifts the overall number while breaking every
    refusal case clears the target comparison above — refusal is small, so

@@ -5709,6 +5709,101 @@ multi-PR build that would otherwise pay full price for every push.
   other control.
   *(Number provisional until this branch merges — 5.17.1's rule, applied to
   its own filing.)*
+- [x] **5.28** *(Done 2026-09-16. **The eval layer could report a number that
+  was not true**, four ways, all found by an external review and each verified
+  at file:line before anything was built on it.
+  **(a) `reason: null` forgave a failure.** `accepted()` read
+  `bool(str(case.get("reason", "")).strip())`; a key present with a JSON null
+  never reaches the default, and `str(None)` is the truthy four-character
+  string `"None"`. So a case declaring `acceptable_failure` with no written
+  reason was forgiven — in flat contradiction of the docstring two lines
+  above it. Fixed in **both** the template and the runnable fixture: a reason
+  exists only when it is a non-empty **string**, which also rejects a number
+  or a bool. **(b) A run that graded NOTHING exited 0**, and 0 means "every
+  case graded" by the runner's own contract, so a golden set entirely skipped
+  or awaiting rubric review passed `/ship`'s gate 3 as a clean gate. Now
+  exits **2** with a NO SCORE line. **(c) `/ship` never enforced the spec's
+  category targets** — it compared the headline to the overall target and
+  then checked per-category *non-regression*, which is a different question:
+  a refusal category going 40% → 60% passes a regression check and fails a
+  100% target. Gate 3 now reads the Targets table and blocks per category.
+  **(d) Forgiven failures counted toward a category rate** (`p + af`), which
+  `/eval-spec` explicitly forbids — "never used to move a category over its
+  target". Gate 3 now uses the plain pass count.
+  **Proven behaviourally, not textually.** A case **q11** was planted in the
+  fixture golden set carrying `acceptable_failure: true` with `reason: null`
+  and a wrong answer. Fixed tree: `overall: 7/9 (77.8%)`, `acceptable_failure
+  applied to 2`. Bug restored on a copy: `8/9 (88.9%)`, `applied to 3` — an
+  11-point swing from one case, which is the discriminator. `controls.sh`
+  asserts the headline and names q11 directly; a fourth exit-code scenario
+  (D, graded-nothing) joins the three from 4.53, seeded through DATA rather
+  than by patching the runner. Both watched failing on copies, and two matrix
+  cases restore each defect in the runnable fixture.
+  **Scope note:** this repo runs no eval of its own (no `eval/` at root), so
+  the blast radius is adopters, not us — which lowers urgency and not
+  severity, since every one of these is a path where a score lies.)* The eval
+  layer's false passes, from the 2026-09-16 external review.
+  **Acceptance:** a golden case declaring `acceptable_failure` with a null
+  reason scores as a failure; a run where every case is skipped exits
+  non-zero; `/ship`'s gate 3 text names the spec's category targets and
+  excludes forgiven failures from them. Each shown failing first on a copy.
+- [ ] **5.29** Guard checks that can pass without checking their claim — the
+  second group from the 2026-09-16 external review, each verified at
+  file:line. **(a) The frontmatter guard reads a different value than a YAML
+  parser**: `check.sh` §3 takes the FIRST `name:` line via `grep -m1`, while
+  duplicate keys make a YAML parser take the LAST — reproduced, guard sees
+  `tc`, PyYAML sees `wrong`. This is the pack's own *verify the consumed
+  form, not the authored form* rule broken by its own guard, which is why it
+  leads this task. **(b) §34 accepts malformed subjects**: the shell glob
+  `[0-9]*` means *one digit then anything*, so `task 1x: malformed` and
+  `Journal 2 garbage` both pass — reproduced. **(c) A malformed count marker
+  vanishes from validation**: `count-check.sh` matches only markers
+  containing digits, so `<!-- count:skills -->wrong<!-- /count -->` is
+  invisible. **(d) Removing the CI guard step is not detected** — nothing
+  asserts `scripts/check.sh` is actually invoked by the workflow. **(e) A
+  missing `plugin.json` passes**, because plugin validation runs only *if*
+  the file exists. (c)/(d)/(e) are reported but NOT yet verified here.
+  **Acceptance:** each of the five defects seeded on a copy makes
+  `scripts/check.sh` exit non-zero, and each is shown passing before its
+  guard lands. (c), (d) and (e) are confirmed or refuted at file:line first,
+  and a refuted one is recorded as refuted rather than quietly dropped.
+- [ ] **5.30** Two defects with real side effects, from the same review.
+  **(a) The prescribed pre-commit check deletes a directory.**
+  `scripts/controls.sh:293` runs `rm -rf fixtures/eval-run/eval/results`
+  after executing the fixture — deliberate cleanup of output the run itself
+  creates, but it removes the whole directory rather than only what it wrote,
+  so anything a person left there is destroyed by `check.sh`. The reviewer
+  could not establish whether their own run destroyed pre-existing output,
+  because the path is gitignored. **(b) The non-regression gate cannot see a
+  vanished case.** `regression-gate.py`'s `rates()` tallies per category and
+  never records case IDs, so baseline `{a,b}` and current `{a,a}` are
+  indistinguishable — verified by reading. The earlier task at PLAN.md:3092
+  closed *partial-crash* blindness, a different defect; case identity was
+  never filed.
+  **Acceptance:** `check.sh` leaves a sentinel file under
+  `fixtures/eval-run/eval/results/` untouched; and the regression gate blocks
+  when a baseline case ID is absent from the current run, shown failing first
+  on a pair of results files that differ only in case identity.
+- [ ] **5.31** Instruction and documentation conflicts from the same review,
+  none yet verified here: graders disagreeing with `grader-rules.md` on
+  curly-quote normalization, `parse: label:total` and `case_sensitive`;
+  `acstack-config` stripping `#123456` as a comment and omitting
+  `banned-palette` from its all-keys output; `/do` tickets-mode saying
+  `#42:` where CONDUCT.md requires `ticket #42:`; CONTRIBUTING.md claiming
+  this repo has no task IDs and prescribing only lowercase subjects, against
+  AGENTS.md's three shapes; the documented installer round-trip
+  (`./setup && ./setup --uninstall`) uninstalling a real installation; a
+  second live `Open items` heading created by a broken code span at
+  PLAN.md:82; a Flagged SQL statement fitting neither GO nor NO-GO in
+  `/migrate-check`; and the momentum formula in `interaction-feel.md` mixing
+  scales. Also README's outbound-network claim and `shakedown-method.md`'s
+  worktree advice, both suspected stale.
+  **Acceptance:** every item above is confirmed or refuted at file:line, in
+  writing, with the refuted ones recorded as refuted; each confirmed one is
+  either fixed here or carried by its own task. A conflict between two
+  documents is resolved by ruling which is canonical, never by editing one
+  to match the other silently.
+
 
 ## [ ] Wave 6 — The review board
 
