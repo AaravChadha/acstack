@@ -229,7 +229,7 @@
   (**<!-- count:checks -->42<!-- /count -->** checks — numbered sections
   plus 3b, 3c and 13a, including positive controls over seeded
   `fixtures/`); `docs/guard-matrix.sh` proves every guard fires
-  (**<!-- count:matrix-cases -->172<!-- /count -->** cases); `./setup`
+  (**<!-- count:matrix-cases -->183<!-- /count -->** cases); `./setup`
   links all of them. Banned-name list is untracked (`.acstack-banned`) — copy
   `.acstack-banned.example`, or the guard reports SKIPPED.
 - **Wave 4 is closed and the repo is public** (flipped 2026-08-03, CI
@@ -255,7 +255,7 @@
 - Roadmap runs to 32 skills after the fold rulings (25 built, wave 5's
   remaining 2 — /careful, /verify — wave 6's 2 and wave 7's 3; it read
   "39" until shape D and 5.7 made most remaining tasks modes and lenses),
-  **<!-- count:open-scheduled -->32<!-- /count --> scheduled
+  **<!-- count:open-scheduled -->30<!-- /count --> scheduled
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,

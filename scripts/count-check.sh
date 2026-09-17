@@ -124,6 +124,22 @@ for f in "$@"; do
     rest="${hit#*:}"
     name="${rest#*count:}"; name="${name%% *}"
     val="${rest#*-->}";     val="${val%%<*}"
+    # A NON-NUMERIC VALUE IS AN UNCHECKED CLAIM, not a passing one — unless
+    # the marker sits inside a code span, where it is documenting the syntax
+    # rather than asserting a number. Both forms exist in this tree: PLAN.md
+    # explains the mechanism with `…-->twenty-three<!-- …` in backticks, and
+    # the real claims are written bare or bolded. The exemption is narrowed to
+    # NON-NUMERIC values on purpose: a backticked marker carrying digits is
+    # still validated, so this introduces no new blind spot — it only declines
+    # to read prose as arithmetic.
+    case "$val" in
+      ''|*[!0-9]*)
+        if sed -n "${ln}p" "$f" | grep -qF -- "\`<!-- count:$name -->$val<!-- /count -->\`"; then
+          continue   # documented example, not a claim
+        fi
+        echo "FAIL count: $f:$ln has a non-numeric count value '$val' (count:$name) — a marker the checker cannot parse is an UNCHECKED claim, not a passing one; put a syntax example in backticks"
+        fail=1; continue ;;
+    esac
     if ! want="$(derive "$name")"; then
       echo "FAIL count: $f:$ln marks unknown count '$name' — no derivation exists, so this claim was never checked"
       fail=1; continue
@@ -134,7 +150,12 @@ for f in "$@"; do
     else
       verified="$verified $name"
     fi
-  done < <(grep -noE '<!-- count:[a-z0-9-]+ -->[0-9]+<!-- /count -->' "$f" || true)
+  # MATCH ANY VALUE, then validate it. This pattern used to require [0-9]+,
+  # so `<!-- count:skills -->wrong<!-- /count -->` matched nothing and the
+  # claim simply vanished from validation — the guard reported clean on a
+  # marker it could not read (external review, 2026-09-16). A claim the
+  # checker cannot parse is not a passing claim; it is an unchecked one.
+  done < <(grep -noE '<!-- count:[a-z0-9-]+ -->[^<]*<!-- /count -->' "$f" || true)
 done
 
 # Stray scan: a marked count living outside the roster is a claim nobody

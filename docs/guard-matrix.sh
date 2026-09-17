@@ -203,6 +203,10 @@ check "name != dir"            FAIL $'---\nname: other\ndescription: Does a thin
 check "no description"         FAIL $'---\nname: tc\n---\n'
 check "no frontmatter at all"  FAIL $'# just a heading\n\nsome text\n'
 check "unclosed quote"         FAIL $'---\nname: tc\ndescription: "Does a thing. Use when asked.\n---\n'
+# A repeated key: the parser takes the LAST, this guard read the FIRST, so
+# the value checked was not the value served (external review, 2026-09-16).
+check "duplicate name key"     FAIL $'---\nname: tc\ndescription: Does a thing. Use when asked.\nname: wrong\n---\n'
+check "duplicate tools key"    FAIL $'---\nname: tc\ndescription: Does a thing. Use when asked.\nallowed-tools: Read\nallowed-tools: Bash\n---\n'
 check "hazard on 2nd desc line" FAIL $'---\nname: tc\ndescription: fine here.\ndescription: wiring Fixes #N here.\n---\n'
 check "CRLF line endings"      PASS "$(printf -- '---\r\nname: tc\r\ndescription: Does a thing. Use when asked.\r\n---\r\n')"
 check "unknown frontmatter key" FAIL $'---\nname: tc\ndescription: Does a thing. Use when asked.\nbanana: yes\n---\n'
@@ -233,6 +237,30 @@ fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
   else printf '  BAD  %-42s got=%s want=%s\n' "$n" "$got" "$exp"; failed=$((failed+1)); fi
 }
 
+# bespoke: assert on the FILESYSTEM after check.sh, not on its output. The
+# defect this exists for was invisible in stdout — controls.sh ran the eval
+# fixture in place and then `rm -rf`d a whole gitignored directory, so the
+# guard every commit must pass deleted files it never wrote and said nothing
+# (external review, 2026-09-16). A text check cannot catch this: it cannot
+# tell `rm -rf skills/*/` inside a temp copy from the same line in the tree,
+# and the first attempt at one flagged three legitimate copy-local deletions.
+# The property is "my files are still here afterwards", so that is what is
+# asserted.
+treecase() { # name relative-path-to-plant
+  local n="$1" rel="$2"
+  _case_start "$n" || return 0
+  rm -rf "$FULL"; cp -R "$SRC" "$FULL"
+  mkdir -p "$FULL/$(dirname "$rel")"
+  printf 'sentinel — a guard must not delete what it did not write\n' > "$FULL/$rel"
+  ( cd "$FULL" && ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh ) >/dev/null 2>&1
+  if [ -f "$FULL/$rel" ]; then
+    printf '  ok   %-42s survived\n' "$n"; pass=$((pass+1))
+  else
+    printf '  BAD  %-42s DELETED by check.sh — a guard wrote nothing here and removed it anyway\n' "$n"
+    failed=$((failed+1))
+  fi
+}
+
 # bespoke: run check.sh on a clean full copy with a crafted banned list; assert
 # on the OUTPUT TEXT (these cases are about the sweep's own error handling).
 bannedcase() { # name listfile-content required-regex [second-required-regex]
@@ -255,6 +283,7 @@ bannedcase() { # name listfile-content required-regex [second-required-regex]
 }
 
 # clean copy of the real tree must not fail ANY class
+treecase "results dir survives the guard" "fixtures/eval-run/eval/results/SENTINEL.txt"
 fullcase "clean tree stays clean"     PASS '.*' true
 # 4.1 version/changelog agreement
 fullcase "version mismatch"           FAIL 'version' bash -c 'echo 9.9.9 > VERSION'
@@ -698,6 +727,26 @@ assert i != -1, 'seed no-op: the zero-graded guard is already absent'
 j = s.index('    return 2 if errors else 0', i)
 io.open(p, 'w', encoding='utf-8').write(s[:i] + s[j:])
 EOF"
+# Three guards that reported clean on the defect they exist to catch
+# (external review, 2026-09-16): a marker the checker could not parse, a
+# workflow that stopped invoking a guard, and a deleted plugin manifest.
+fullcase "unparseable count marker"       FAIL 'count' bash -c "python3 - <<'EOF'
+import io, re
+p = 'README.md'
+s = io.open(p, encoding='utf-8').read()
+new, n = re.subn(r'<!-- count:([a-z0-9-]+) -->[0-9]+<!-- /count -->', r'<!-- count:\1 -->wrong<!-- /count -->', s, count=1)
+assert n == 1, 'seed no-op: no numeric marker found in README'
+io.open(p, 'w', encoding='utf-8').write(new)
+EOF"
+fullcase "workflow drops a guard step"    FAIL 'shard' bash -c "python3 - <<'EOF'
+import io
+p = '.github/workflows/check.yml'
+s = io.open(p, encoding='utf-8').read()
+old = 'bash scripts/check.sh'
+assert s.count(old) >= 1, 'seed no-op: the workflow never invoked check.sh'
+io.open(p, 'w', encoding='utf-8').write(s.replace(old, 'echo seeded-skip'))
+EOF"
+fullcase "plugin manifest deleted"        FAIL 'plugin' rm -f .claude-plugin/plugin.json
 # 5.17.2 recount repairs what it claims to. Every prior count case asserts the
 # GUARD fires; this one asserts the REPAIR works, which nothing covered — a
 # broken rewriter would leave check.sh red and look identical to drift nobody
@@ -947,6 +996,13 @@ gitcase "commit-style: capitalised subject"   FAIL "Fix the thing"
 gitcase "commit-style: task without colon"    FAIL "task 4.80 missing its colon"
 gitcase "commit-style: capitalised Task"      FAIL "Task 4.80: capitalised"
 gitcase "commit-style: Journal without date"  FAIL "Journal without a date"
+# The glob these replaced validated only the FIRST character after the
+# keyword, so both of these passed §34 (external review, 2026-09-16).
+gitcase "commit-style: non-numeric task id"   FAIL "task 1x: malformed"
+gitcase "commit-style: journal without a real date" FAIL "Journal 2 garbage"
+gitcase "commit-style: dotted task id"        PASS "task 3.2.1: a real subtask"
+gitcase "commit-style: two-task subject"      PASS "task 4.68 + 4.67: one commit closes two"
+gitcase "commit-style: same-day journal"      PASS "Journal 2026-09-16 (3rd): a second entry that day"
 gitcase "commit-style: ordinary verb-first"   PASS "run an ordinary verb-first commit"
 
 # 4.81: §35 near-term tasks state a done-condition. The third case is the one

@@ -5772,7 +5772,41 @@ multi-PR build that would otherwise pay full price for every push.
   reason scores as a failure; a run where every case is skipped exits
   non-zero; `/ship`'s gate 3 text names the spec's category targets and
   excludes forgiven failures from them. Each shown failing first on a copy.
-- [ ] **5.29** Guard checks that can pass without checking their claim — the
+- [x] **5.29** *(Done 2026-09-16. All five verified at file:line first; all
+  five were real. **(a) The frontmatter guard validated a value the parser
+  discards** — §3 read the FIRST `name:` via `head -1`, a YAML parser takes
+  the LAST on a repeated key. Reproduced: guard saw `tc`, PyYAML saw `wrong`,
+  `check.sh` exited 0. The fix is NOT to reimplement YAML precedence — a
+  guard that reimplements a parser is a second parser to keep in sync — but
+  to **refuse the ambiguity**: a key appears at most once, so first and last
+  are the same line. `description` is excluded on purpose, because the loop
+  there checks EVERY line and is therefore stricter than the parser, and the
+  matrix case seeding a hazard on a second description line must keep failing
+  for its own reason. **(b) §34 validated only the first character** after
+  the keyword: the shell glob `"task "[0-9]*": "*` means *one digit, then
+  anything*, so `task 1x: malformed` and `Journal 2 garbage` both passed a
+  check whose entire job is the three documented shapes. Replaced with
+  regexes spelling the shapes out, including `task <a> + <b>:` and
+  `Journal <date> (3rd):`; five new `gitcase`s cover both the rejections and
+  the legitimate forms, so the tightening is shown not to over-reject.
+  **(c) A marker the checker could not parse vanished from validation** —
+  the scan required `[0-9]+`, so `<!-- count:skills -->wrong<!-- /count -->`
+  matched nothing and the claim was simply unchecked. Now any value is
+  matched and then validated, with a narrow exemption: a **backticked**
+  non-numeric marker is documenting the syntax, which is how PLAN.md explains
+  the mechanism. The exemption is restricted to non-numeric values, so a
+  backticked marker carrying digits is still checked and no new blind spot is
+  created. *(Correction: on first run this flagged `PLAN.md:1827`'s
+  `twenty-three` as a stale claim. It is not — it is a syntax example in
+  backticks, and reading it as a defect was wrong.)* **(d) Nothing asserted
+  the workflow invokes the guards**, so deleting the `run: bash
+  scripts/check.sh` step left `check.sh` green while CI checked nothing — a
+  guard cannot see its own absence from the pipeline. Three entry points are
+  now asserted present, with the roster stating its own size. **(e) A missing
+  `plugin.json` passed**, because the whole section ran only `if` the file
+  existed; absence is now the loudest failure it reports, not an exemption.
+  Five matrix cases and two frontmatter cases, every one watched failing with
+  its guard removed.)* Guard checks that can pass without checking their claim — the
   second group from the 2026-09-16 external review, each verified at
   file:line. **(a) The frontmatter guard reads a different value than a YAML
   parser**: `check.sh` §3 takes the FIRST `name:` line via `grep -m1`, while
@@ -5792,7 +5826,31 @@ multi-PR build that would otherwise pay full price for every push.
   `scripts/check.sh` exit non-zero, and each is shown passing before its
   guard lands. (c), (d) and (e) are confirmed or refuted at file:line first,
   and a refuted one is recorded as refuted rather than quietly dropped.
-- [ ] **5.30** Two defects with real side effects, from the same review.
+- [x] **5.30** *(Done 2026-09-16. **(a) The prescribed pre-commit check
+  deleted a directory it did not create.** `controls.sh` ran the eval fixture
+  **in place** and then `rm -rf fixtures/eval-run/eval/results` — so
+  `check.sh`, which every commit must pass, removed a whole gitignored
+  directory rather than the single file it had written, and git could not
+  report what was lost. It now runs from a `mktemp -d` copy and deletes only
+  that, which is the pattern the 4.53 block in the same file already used —
+  a guard that writes nothing into the tree cannot delete anything from it.
+  **The first attempt at a guard for this was wrong and is worth recording:**
+  a `check.sh` section grepping for `rm -rf` against tree paths immediately
+  flagged **three legitimate copy-local deletions**, because static text
+  cannot distinguish `rm -rf skills/*/` inside a temp copy from the same line
+  in the tree. Replaced with a **behavioural** matrix case (`treecase`) that
+  plants a sentinel, runs `check.sh`, and asserts the file is still there —
+  the property itself rather than a proxy for it. Both arms watched: it
+  survives now, and reads `DELETED by check.sh` with the old cleanup
+  restored. **(b) The non-regression gate could not see a vanished case.**
+  Every check in it compared aggregates, so a baseline of ids `{a,b}` against
+  a run of `{a,a}` matched on category, count and rate while case `b` quietly
+  stopped being evaluated. It now compares the **id sets** — reporting
+  baseline cases absent from the run, and separately ids appearing twice in
+  one run, since a duplicate is *how* a missing case stays invisible to every
+  total. Reproduced exactly: the `{a,b}` → `{a,a}` pair now exits 1 naming
+  both, and two identical sets still exit 0, so the check can fail and can
+  also pass.)* Two defects with real side effects, from the same review.
   **(a) The prescribed pre-commit check deletes a directory.**
   `scripts/controls.sh:293` runs `rm -rf fixtures/eval-run/eval/results`
   after executing the fixture — deliberate cleanup of output the run itself
