@@ -60,7 +60,7 @@ git clone https://github.com/AaravChadha/acstack.git acstack
 cd acstack && ./setup      # clone anywhere; setup links from where it lives
 ```
 
-Start a new Claude Code session; the <!-- count:skills -->25<!-- /count -->
+Start a new Claude Code session; the <!-- count:skills -->26<!-- /count -->
 skills load as slash commands. Uninstall with `./setup --uninstall` — it
 removes only symlinks that point into this repo.
 
@@ -73,7 +73,7 @@ claude plugin install acstack@acstack
 
 `claude plugin details acstack@acstack` prints the component inventory and
 projected token cost before you commit to it. acstack's always-on payload is
-<!-- count:skills -->25<!-- /count --> skill descriptions totalling ~10,075
+<!-- count:skills -->26<!-- /count --> skill descriptions totalling ~10,075
 characters, added to every session whether you invoke anything or not.
 
 Pick `./setup` if you want the install auditable — a readable shell script
@@ -159,7 +159,7 @@ guards are real, but it is pre-1.0 and the roadmap is still moving.
 
 ## Skills
 
-<!-- count:skills -->25<!-- /count --> skills across four stages, each one typed.
+<!-- count:skills -->26<!-- /count --> skills across four stages, each one typed.
 `/plan` and `/eval-spec` are additionally hidden from the model's own skill
 list, so they run only when you ask for them.
 
@@ -284,7 +284,7 @@ guesses and never silently degrades.
 
 Two marker-fenced blocks open every SKILL.md verbatim. The canonical copies
 live here and `scripts/check.sh` enforces byte-identity across all
-<!-- count:skills -->25<!-- /count --> of them, so changing a word is a
+<!-- count:skills -->26<!-- /count --> of them, so changing a word is a
 deliberate, visible edit to 26 files at once.
 
 <!-- acstack:principles -->

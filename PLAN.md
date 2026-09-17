@@ -4333,7 +4333,43 @@ multi-PR build that would otherwise pay full price for every push.
   into the turn — and this skill's shakedown is where that evidence gets
   refreshed, since /careful is the gate for precisely the class that no
   longer prompts. CONDUCT.md §5 carries the matching evidence note.
-- [ ] **5.4** /verify — audits a completion *claim* rather than the code:
+- [x] **5.4** *(Done 2026-09-17. `/verify` ships at 124 lines, description
+  **427** chars (total 10,305 → 10,732 of 12,000), with
+  `references/verdict-shapes.md`. **Deliberately NOT in `READONLY_SKILLS`** —
+  running an acceptance writes caches, temp files and test databases; its
+  constraint is its own and stated: it never edits the project, the claim, or
+  the acceptance, and never rewrites an acceptance to make it pass.
+  **The angle held.** `/do` runs acceptance before ticking its own box,
+  `/ship` gates a branch, `/triage` catches boxes that now fail — all audit
+  your own work as you do it. `/verify` only takes a claim from outside, and
+  says so and stops if handed this session's own work.
+  **FOUR verdicts, not three.** The acceptance names CONFIRMED / OVERSTATED /
+  FALSE; **UNVERIFIABLE** was added because a claim naming no acceptance fits
+  none of them, and forcing it into FALSE asserts something about a system
+  that was never tested. Added directly because of 5.31(iv), found the same
+  day: `/migrate-check`'s Flagged class matches neither of its two verdicts.
+  Shipping the same gap knowingly was not defensible.
+  **Acceptance met live, all four, against a running system.** Fixture
+  `fixtures/verify/` is a real project — `wc.py` plus a PLAN carrying three
+  acceptance lines — seeded so `longest` returns the first word rather than
+  the longest, and `CLAIMS.md` carries four claims from "another session".
+  Blind headless runs: **A → CONFIRMED**, **B → OVERSTATED**, **C → FALSE**,
+  **D → UNVERIFIABLE**. C pasted `python3 wc.py longest "a bb ccc"` → `a`
+  against an expected `ccc`, and **tested three ways its own verdict could be
+  wrong** — a broken harness (no: 1.1 passes on the same interpreter), a tie
+  (no: `ccc` is uniquely longest), a misreading of "longest" (no: reordering
+  showed the output tracks scan position). B named the passing clause and the
+  failing one separately, and checked the apostrophe survived the shell before
+  trusting 1.2's pass — a harness check nothing instructed.
+  **Measured on the way (relevant to 5.22):** this machine runs acstack
+  **symlink-installed, not plugin-installed** — `claude plugin list` shows
+  only `codex@openai-codex`. So `.claude-plugin/plugin.json`'s `./skills`
+  registration is **inert here**, and "two registrations coexist" is not
+  currently true on this machine. A probe session at the repo root and one in
+  a subdirectory both reported the new skill absent until `./setup` linked it.
+  That narrows 5.22's premise and is a fact it should not have to re-derive.
+  **Note:** `~/.claude/skills/verify` now points into this branch. If the
+  branch is abandoned the link dangles — which is 5.6's subject.)* /verify — audits a completion *claim* rather than the code:
   re-derives what acceptance demands, runs it against the running system,
   reports CONFIRMED / OVERSTATED / FALSE. ~~**Build last**~~ **and only with
   that angle** — this is the crowded lane *(the ordering half is superseded
