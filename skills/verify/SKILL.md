@@ -108,10 +108,18 @@ Its constraint is its own and is stated rather than inherited:
    another session is, by this pack's default working mode, about **another
    branch**. Running its acceptance in your own checkout tests a tree the
    claim was never making a statement about, and a FALSE earned that way is
-   confidently wrong about correct work. Record the branch and short SHA the
-   acceptance ran against; if that is not the claim's revision, either check
-   the claim's revision out or report **UNVERIFIABLE** naming the mismatch.
-   A verdict that does not say which tree it ran on is not a verdict.
+   confidently wrong about correct work.
+   **A branch and SHA do not identify a dirty tree.** `git checkout` carries
+   non-conflicting tracked edits and every untracked file across with it, so
+   a report can name the claimant's revision while the acceptance actually
+   ran against a hybrid of their commit and your uncommitted work. Run it in
+   a **clean isolated worktree at the exact SHA** — `git worktree add` to a
+   temp path — or, if you run in place, put `git status --porcelain` in the
+   report and account for every line of it. Record the branch, the short
+   SHA, and whether the tree was clean. If the revision is not the claim's,
+   report **UNVERIFIABLE** naming the mismatch. A verdict that does not say
+   which tree it ran on is not a verdict; one that names a SHA while testing
+   a hybrid is worse, because it looks precise.
 4. **Run it against the running system**, and paste the command and its
    output verbatim. Reading the diff cannot produce any of these verdicts;
    that is `/audit code`'s job, not this one.
@@ -142,8 +150,8 @@ about the system that was never tested.
 ## Report shape
 
 Verdict on the first line. Then: the claim as given, the restatement, the
-acceptance as found (with its `file:line`), **the branch and short SHA the
-acceptance ran against**, the command, its verbatim output, and a closing
+acceptance as found (with its `file:line`), **the branch, the short SHA, and whether
+the tree was clean**, the command, its verbatim output, and a closing
 scope line — what this establishes and what it does
 not. A verdict with no pasted output is not a verdict.
 

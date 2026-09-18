@@ -44,7 +44,7 @@ proposition; the reader will generalise unless told where the edge is.
 Restated: `wc.py count "a b c"` prints `3`, which is what task 1.1's own
 acceptance line demands.
 
-Acceptance found at `fixtures/verify/PLAN.md:9-10` - the claimant's, not one
+Acceptance found at `fixtures/verify/PLAN.md:12-13` - the claimant's, not one
 invented here.
 
 Ran against: `feature/5.4-verify` @ the working tree, which is the revision
@@ -67,21 +67,40 @@ summarise" is the defect this footnote exists to stop recurring.)*
 
 ## Worked: OVERSTATED
 
-> **Claim:** "Fixed the network claim in the README."
+> **Claim:** "Phase 1 is done. Counting handles contractions and longest works."
 
-Restated: README's statement of what leaves the machine matches what the
-tree can actually run.
+Restated, three clauses, each with an acceptance already written:
+1. *Phase 1 is done* - all of 1.1, 1.2 and 1.3 pass.
+2. *Counting handles contractions* - task 1.2.
+3. *longest works* - task 1.3.
 
-The claim is true in part, and both parts must be named:
+Acceptance found at `fixtures/verify/PLAN.md:12-17` - one `**Acceptance:**` line
+per subtask. **Every clause gets its own run.** An OVERSTATED verdict
+asserted from reading, rather than from running each clause, is the failure
+this example exists to prevent: it would be a verdict with no pasted output,
+which the hard rules forbid.
 
-- **Passed:** `npm view` was added, and it is genuinely used by `/deps`.
-- **Failed:** `/ship` pushes and opens PRs, `/qa` sends HTTP to whatever
-  endpoint it is pointed at, and every skill's runtime preamble runs an
-  update check that `git fetch`es once a day. Three paths still unlisted.
+Ran against: `feature/5.4-verify`, clean tree.
 
-**OVERSTATED, not FALSE:** something real was fixed. Reporting FALSE here
-would be its own overstatement, and the claimant would be right to reject
-the verdict — which costs you the next one.
+```
+$ python3 wc.py count "a b c"
+3
+$ python3 wc.py count "don't stop"
+2
+$ python3 wc.py longest "a bb ccc"
+a
+```
+
+**The clause that passed:** "Counting handles contractions." 1.2 demanded
+`2` and printed `2`. 1.1 also passed: demanded `3`, printed `3`.
+
+**The clause that failed:** "longest works." 1.3 demanded `ccc` and printed
+`a`. Because 1.3 fails, clause 1 - "Phase 1 is done" - fails with it,
+notwithstanding the ticked `[x]` box on that task.
+
+**OVERSTATED, not FALSE:** two of three clauses hold. Reporting FALSE would
+be its own overstatement, and the claimant would be right to reject the
+verdict - which costs you the next one.
 
 ## Worked: FALSE
 
@@ -90,7 +109,7 @@ the verdict — which costs you the next one.
 Restated: `wc.py longest "a bb ccc"` prints `ccc`, which is task 1.3's own
 acceptance line.
 
-Acceptance found at `fixtures/verify/PLAN.md:13-14` - the claimant's own.
+Acceptance found at `fixtures/verify/PLAN.md:16-17` - the claimant's own.
 
 Ran against: `feature/5.4-verify` @ the working tree.
 

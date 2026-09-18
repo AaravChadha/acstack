@@ -1486,6 +1486,19 @@ if [ -f "$vf" ]; then
   # skill went stale. That is the direction the /migrate-check defect actually
   # ran: a class ADDED with no verdict, not a verdict deleted. §33's idiom is
   # derive-then-diff-against-a-claim-elsewhere, and this now implements it.
+  # THE REQUIRED VOCABULARY IS A FLOOR HELD OUTSIDE THE SKILL. Deriving the
+  # set from the skill's own table and then checking those same names are in
+  # it is tautological: rename every UNVERIFIABLE to INCONCLUSIVE and the
+  # derivation finds four names, the heading still says four, and nothing
+  # fires. That is exactly what the `verify loses a verdict` matrix case
+  # seeds, and this section's previous version reported got=PASS want=FAIL
+  # against it — the third distinct way §42 has been wrong. A floor cannot
+  # be renamed out of existence by editing the file it polices.
+  VERIFY_FLOOR="CONFIRMED OVERSTATED FALSE UNVERIFIABLE"
+  for v_ in $VERIFY_FLOOR; do
+    grep -q "\*\*$v_\*\*" "$vf" \
+      || { echo "FAIL verdicts: $vf no longer names the required verdict '$v_' — renaming one does not change the count, so only a floor held outside the skill can catch it (5.4)"; fail=1; }
+  done
   VERIFY_VERDICTS="$(grep -oE '^\| \*\*[A-Z]+\*\*' "$vf" | grep -oE '[A-Z]+' | sort -u)"
   vv_n=0; for v_ in $VERIFY_VERDICTS; do vv_n=$((vv_n + 1)); done
   vv_claim="$(grep -oE '^## The ([a-z]+) verdicts' "$vf" | awk '{print $3}')"

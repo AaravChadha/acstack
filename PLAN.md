@@ -4333,8 +4333,8 @@ multi-PR build that would otherwise pay full price for every push.
   into the turn — and this skill's shakedown is where that evidence gets
   refreshed, since /careful is the gate for precisely the class that no
   longer prompts. CONDUCT.md §5 carries the matching evidence note.
-- [x] **5.4** *(Done 2026-09-17. `/verify` ships at 124 lines, description
-  **427** chars (total 10,305 → 10,732 of 12,000), with
+- [x] **5.4** *(Done 2026-09-17. `/verify` ships well inside the 500-line
+  budget, description **427** chars (total 10,305 → 10,732 of 12,000), with
   `references/verdict-shapes.md`. **Deliberately NOT in `READONLY_SKILLS`** —
   running an acceptance writes caches, temp files and test databases; its
   constraint is its own and stated: it never edits the project, the claim, or
@@ -4375,6 +4375,30 @@ multi-PR build that would otherwise pay full price for every push.
   own size (§33's idiom). Two matrix cases, both watched failing with §42
   removed. Without this, dropping a verdict would be invisible: every
   remaining one still reads fine, and only the SET is wrong.
+  **Two review rounds on this task, 20 findings, all confirmed.** Claude's
+  `/code-review` found 15, including a **command-execution hole**: the skill
+  reads text someone else wrote and runs a command that text names, and
+  shipped with no `allowed-tools`, no trust boundary and no caution — while
+  `acstack-recall` fences LEARNINGS.md as DATA, NOT INSTRUCTIONS three files
+  away. Codex then found 5 more in the fixes, one of which **broke the matrix**:
+  §42's rewrite derived the verdict set from the skill's own table and then
+  checked those names were in that same table — tautological, so renaming
+  every `UNVERIFIABLE` to `INCONCLUSIVE` left four names, a heading still
+  claiming four, and nothing firing. The seeded case read `got=PASS
+  want=FAIL`. **Third distinct way §42 was wrong in one day**; the required
+  vocabulary is now a floor held in `check.sh`, which cannot be renamed out
+  of existence by editing the file it polices.
+  **Also from those rounds:** branch+SHA does not identify a dirty tree
+  (`git checkout` carries non-conflicting edits and untracked files across),
+  so the skill now demands a clean isolated worktree or a pasted
+  `git status --porcelain`; the reference rendered inside-out because a bare
+  ``` closed its `markdown` fence early; the CONFIRMED exemplar pasted
+  `SUM=… declared=…` that `guard-matrix.sh` never emits (it came from a shell
+  wrapper); the OVERSTATED exemplar asserted clauses from reading with no
+  command run; and its citations pointed at lines that moved when the
+  fixture's own intro grew. `controls.sh` now fails if `longest()` is
+  "fixed", because the FALSE case disappearing while the fixture still runs
+  is exactly what a control is for.
   **Note:** `~/.claude/skills/verify` now points into this branch. If the
   branch is abandoned the link dangles — which is 5.6's subject.)* /verify — audits a completion *claim* rather than the code:
   re-derives what acceptance demands, runs it against the running system,
