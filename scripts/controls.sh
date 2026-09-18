@@ -772,6 +772,37 @@ else
   bad "scripts/count-check.sh missing — marked counts have no control"
 fi
 
+# --- /verify: the fixture must still carry its seeded verdicts (5.4) ---
+# /verify's acceptance needs one project producing all four verdicts. If a
+# well-meaning edit "fixes" wc.py's longest(), claim C stops being FALSE and
+# the skill's hardest case silently stops being tested — the fixture would
+# still exist and still run, which is exactly the shape a control exists to
+# catch. Asserts the three acceptance outcomes PLAN.md states, by running
+# them, not by reading the file.
+if [ -f fixtures/verify/wc.py ] && command -v python3 >/dev/null 2>&1; then
+  v_count="$(cd fixtures/verify && python3 wc.py count 'a b c' 2>&1)"
+  v_contr="$(cd fixtures/verify && python3 wc.py count "don't stop" 2>&1)"
+  v_long="$(cd fixtures/verify && python3 wc.py longest 'a bb ccc' 2>&1)"
+  [ "$v_count" = "3" ] \
+    || bad "/verify fixture: task 1.1's acceptance now prints '$v_count', want 3 — the CONFIRMED case is gone (5.4)"
+  [ "$v_contr" = "2" ] \
+    || bad "/verify fixture: task 1.2's acceptance now prints '$v_contr', want 2 — the OVERSTATED case needs a passing clause (5.4)"
+  if [ "$v_long" = "ccc" ]; then
+    bad "/verify fixture: longest() was FIXED — it prints 'ccc', so task 1.3 now passes and the FALSE case no longer exists (5.4)"
+  elif [ "$v_long" != "a" ]; then
+    bad "/verify fixture: task 1.3's acceptance prints '$v_long', want the seeded 'a' — the FALSE case changed shape (5.4)"
+  fi
+  v_claims="$(grep -c '^## Claim' fixtures/verify/CLAIMS.md 2>/dev/null || echo 0)"
+  [ "$v_claims" = "4" ] \
+    || bad "/verify fixture: CLAIMS.md carries $v_claims claim(s), want 4 — one per verdict, and the fourth is the one most easily dropped (5.4)"
+  if [ "$v_count" = "3" ] && [ "$v_contr" = "2" ] && [ "$v_long" = "a" ] && [ "$v_claims" = "4" ]; then
+    ok "/verify fixture still produces all four verdicts (1.1 pass, 1.2 pass, 1.3 seeded-fail, 4 claims)"
+  fi
+else
+  printf '  SKIP /verify fixture control: python3 absent or fixture missing — NOT verified\n'
+  skipped=$((skipped + 1))
+fi
+
 # --- /resume cold mode: the two prohibitions are the point (4.63) ---
 # The mode's value is what it REFUSES to do in a stranger's repo. A
 # reference that keeps its reading list but loses "do not scaffold" or

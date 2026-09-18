@@ -270,8 +270,8 @@
   2026-07-29, extended since; AGENTS.md's own "These 7 are repo-binding"
   is the enumeration.
 - Remote live (2026-07-27); **public as of 2026-08-03**, `main` pushed.
-- Roadmap runs to 32 skills after the fold rulings (25 built, wave 5's
-  remaining 2 — /careful, /verify — wave 6's 2 and wave 7's 3; it read
+- Roadmap runs to 32 skills after the fold rulings (26 built, wave 5's
+  remaining 1 — /careful — wave 6's 2 and wave 7's 3; it read
   "39" until shape D and 5.7 made most remaining tasks modes and lenses),
   **<!-- count:open-scheduled -->30<!-- /count --> scheduled
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
@@ -280,7 +280,7 @@
   **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (18) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
-- Next: **wave 5** — ~~5.17.2 first~~ **Verdict (2026-09-14, 3rd):** 5.17.2 is closed (`scripts/recount.sh`, acceptance shown wrong first on a merge that lost a count silently). ~~The remaining multi-session critical path is 5.17.1, .3, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — eight items~~ **Verdict (2026-09-16):** 5.17.3 closed too, so the path is **5.17.1, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — seven items**. All ten affected skills still stand, since multi-session is the default in *every* mode rather than tickets-mode-only. **5.23 `/skill` sits behind them as the leverage point**: patching shipped skills is finite work, a generator that does not know the four classes makes it infinite. **5.4's ordering is OPEN for the operator** — its premise (auditing another session's claim) *is* the new default, yet it is scheduled last from when that was an edge case; both readings recorded in the task, nothing moved. ~~5.15 then 5.17.2~~ **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 last by decision; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
+- Next: **wave 5** — ~~5.17.2 first~~ **Verdict (2026-09-14, 3rd):** 5.17.2 is closed (`scripts/recount.sh`, acceptance shown wrong first on a merge that lost a count silently). ~~The remaining multi-session critical path is 5.17.1, .3, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — eight items~~ **Verdict (2026-09-16):** 5.17.3 closed too, so the path is **5.17.1, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — seven items**. All ten affected skills still stand, since multi-session is the default in *every* mode rather than tickets-mode-only. **5.23 `/skill` sits behind them as the leverage point**: patching shipped skills is finite work, a generator that does not know the four classes makes it infinite. ~~**5.4's ordering is OPEN for the operator**~~ **Verdict (2026-09-16):** ruled — /verify scheduled after 5.17.4/.5/.6 and 5.26, and **shipped 2026-09-17**.  **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 since shipped; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-17: 5.4, 5.28, 5.29, 5.30, 5.9 (partial). Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
   4.45–4.47 carry three findings from a survey of two high-star
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
@@ -472,7 +472,7 @@ of the thing that section exists to prove is the defect the pack forbids, and
 no guard would have seen it.**
 
 **Operator ruling (density): declare, do not cut** — "we can always change
-later". README is <!-- count:readme-lines -->427<!-- /count --> lines,
+later". README is <!-- count:readme-lines -->428<!-- /count --> lines,
 <!-- count:readme-h2 -->16<!-- /count --> sections and
 <!-- count:readme-rows -->62<!-- /count --> table rows against the field's
 96–346 / 4–12 / 0–19, and now says so in an `## About this document` section

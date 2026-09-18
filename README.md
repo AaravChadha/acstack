@@ -73,7 +73,7 @@ claude plugin install acstack@acstack
 
 `claude plugin details acstack@acstack` prints the component inventory and
 projected token cost before you commit to it. acstack's always-on payload is
-<!-- count:skills -->26<!-- /count --> skill descriptions totalling ~10,075
+<!-- count:skills -->26<!-- /count --> skill descriptions totalling ~10,730
 characters, added to every session whether you invoke anything or not.
 
 Pick `./setup` if you want the install auditable — a readable shell script
@@ -173,7 +173,7 @@ list, so they run only when you ask for them.
 `/audit` takes six targets — code, docs, eval, tests, skills, readme — each
 with its own evidence rule.
 
-**[The full roster →](docs/SKILLS.md)** — all 25 with what each does and how
+**[The full roster →](docs/SKILLS.md)** — all 26 with what each does and how
 it is typically invoked.
 
 `/plan` shadows built-in plan mode (Shift+Tab still enters it) and `/resume`
@@ -285,7 +285,8 @@ guesses and never silently degrades.
 Two marker-fenced blocks open every SKILL.md verbatim. The canonical copies
 live here and `scripts/check.sh` enforces byte-identity across all
 <!-- count:skills -->26<!-- /count --> of them, so changing a word is a
-deliberate, visible edit to 26 files at once.
+deliberate, visible edit to 27 files at once (26 skills plus README's
+canonical copy).
 
 <!-- acstack:principles -->
 ## Operating principles
@@ -386,7 +387,7 @@ will want to drop first.
 ## About this document
 
 This README is longer and more table-dense than most:
-<!-- count:readme-lines -->427<!-- /count --> lines,
+<!-- count:readme-lines -->428<!-- /count --> lines,
 <!-- count:readme-h2 -->16<!-- /count --> sections and
 <!-- count:readme-rows -->62<!-- /count --> table rows, against 96–346 / 4–12 /
 0–19 across six comparison projects above 100k stars (measured 2026-09-17).

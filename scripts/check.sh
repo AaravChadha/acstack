@@ -388,12 +388,44 @@ EOF
 
 # 10. Verdict-first stance present in every report-shaped skill (five of
 #     them violated the pack's own stance while it was documented nowhere
-#     mechanical). Enumerated list — update it when a report skill lands.
-REPORT_SKILLS="audit challenge design-audit health migrate-check plan-review qa resume retro secure triage why"
+#     mechanical).
+#     MEMBERSHIP IS DERIVED, NOT LISTED (5.4). This was a hardcoded roster of
+#     twelve names, and it under-counted on the very commit that added
+#     /verify — a skill whose description literally returns four verdicts and
+#     whose report shape is "Verdict on the first line". That is the
+#     under-counts-silently-the-day-a-name-appears class the pack has already
+#     recorded. A skill is report-shaped when its own SKILL.md carries a
+#     `## Report shape` section or promises a verdict in its description;
+#     both are the skill's own words, so a new one enrols itself.
+# The historical roster is a FLOOR, not the definition. Deriving alone was
+# measured narrower than the list it replaced — it dropped audit,
+# design-audit, resume, retro and triage, which carry a verdict stance
+# without saying "verdict" in their description or heading. Shrinking the
+# checked set while claiming to widen it is the same silent under-count one
+# layer down, so the two are unioned: the floor cannot regress, and a new
+# skill enrols itself without anyone remembering.
+REPORT_FLOOR="audit challenge design-audit health migrate-check plan-review qa resume retro secure triage why"
+REPORT_SKILLS="$REPORT_FLOOR"
+for f in skills/*/SKILL.md; do
+  s_="$(basename "$(dirname "$f")")"
+  case " $REPORT_SKILLS " in *" $s_ "*) continue ;; esac
+  if grep -qE '^## Report shape' "$f" \
+     || awk '/^description:/{print; exit}' "$f" | grep -qiE 'verdict|GO/NO-GO|GO or NO-GO'; then
+    REPORT_SKILLS="$REPORT_SKILLS $s_"
+  fi
+done
 for s in $REPORT_SKILLS; do
   grep -qi 'verdict' "skills/$s/SKILL.md" \
     || { echo "FAIL verdict: skills/$s/SKILL.md never states its verdict stance"; fail=1; }
 done
+# The derivation must not collapse to nothing: an empty roster would pass
+# this section silently, which is the failure it exists to prevent.
+rs_n=0; for s in $REPORT_SKILLS; do rs_n=$((rs_n + 1)); done
+rf_n=0; for s in $REPORT_FLOOR; do rf_n=$((rf_n + 1)); done
+if [ "$rs_n" -lt "$rf_n" ]; then
+  echo "FAIL verdict: $rs_n report-shaped skill(s) checked, below the floor of $rf_n — the set shrank, which is the under-count this derivation replaced"
+  fail=1
+fi
 
 # 11. Positive controls: every check-shaped skill's documented detection
 #     command is re-run against a seeded fixture (scripts/controls.sh).
@@ -1447,10 +1479,25 @@ fi
 #     its reason and this count in the same edit.
 vf="skills/verify/SKILL.md"
 if [ -f "$vf" ]; then
-  VERIFY_VERDICTS="CONFIRMED OVERSTATED FALSE UNVERIFIABLE"
+  # DERIVE THE SET FROM THE SKILL, then diff it against the skill's own prose
+  # claim. The first version of this section listed four names here and
+  # compared them to a literal `4` three lines below — both in this file, so a
+  # single coordinated edit satisfied it while `## The four verdicts` in the
+  # skill went stale. That is the direction the /migrate-check defect actually
+  # ran: a class ADDED with no verdict, not a verdict deleted. §33's idiom is
+  # derive-then-diff-against-a-claim-elsewhere, and this now implements it.
+  VERIFY_VERDICTS="$(grep -oE '^\| \*\*[A-Z]+\*\*' "$vf" | grep -oE '[A-Z]+' | sort -u)"
   vv_n=0; for v_ in $VERIFY_VERDICTS; do vv_n=$((vv_n + 1)); done
-  if [ "$vv_n" -ne 4 ]; then
-    echo "FAIL verdicts: VERIFY_VERDICTS names $vv_n verdict(s), expected 4 — a new verdict joins with its reason and this count in the same edit (5.4)"
+  vv_claim="$(grep -oE '^## The ([a-z]+) verdicts' "$vf" | awk '{print $3}')"
+  case "$vv_claim" in
+    three) vv_want=3 ;; four) vv_want=4 ;; five) vv_want=5 ;; six) vv_want=6 ;;
+    *) vv_want="" ;;
+  esac
+  if [ -z "$vv_want" ]; then
+    echo "FAIL verdicts: $vf has no '## The <n> verdicts' heading to check the set against — the enumeration claims nothing (5.4)"
+    fail=1
+  elif [ "$vv_n" -ne "$vv_want" ]; then
+    echo "FAIL verdicts: $vf's table defines $vv_n verdict(s) but its heading claims '$vv_claim' — a verdict added or removed without updating the claim is the stale-set-claim class (5.4)"
     fail=1
   fi
   for v_ in $VERIFY_VERDICTS; do

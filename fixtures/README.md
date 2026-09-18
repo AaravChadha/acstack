@@ -45,6 +45,7 @@ and surface-3's sinks, SRI, and Actions injection), `design-audit/`
 (off-palette hex, unlabeled mockData, hedge copy), `health/`
 (non-pointer CLAUDE.md, tracked `.env`), `audit/` (Unicode lookalikes
 with verified bytes), `migrate-check/` (DROP TABLE, RENAME COLUMN),
-`qa/` (live server, auth gap, uncaught crash), `multi-product/` (two
+`verify/` (a real project whose `longest` is seeded wrong, so one claim
+per verdict holds), `qa/` (live server, auth gap, uncaught crash), `multi-product/` (two
 document sets plus a workspace marker), `eval-run/` (a golden set whose
 seeded failure must produce 6/7, not 100%).

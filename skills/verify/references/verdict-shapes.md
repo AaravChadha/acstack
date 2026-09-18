@@ -2,17 +2,21 @@
 
 ## Template
 
-```markdown
+~~~markdown
 **Verdict: <CONFIRMED | OVERSTATED | FALSE | UNVERIFIABLE>**
 
-**Claim as given:** <quoted verbatim, with its source — PR #N, a session
+**Claim as given:** <quoted verbatim, with its source - PR #N, a session
 message, a ticked box at file:line>
 
 **Restated as testable:** <the proposition that must hold>
 <if this is a guess because the claimant is unavailable, say so here>
 
-**Acceptance found:** <file:line, quoted> — or *none found*, which is the
+**Acceptance found:** <file:line, quoted> - or *none found*, which is the
 UNVERIFIABLE case.
+
+**Ran against:** <branch> @ <short SHA> - and whether that is the claim's
+own revision. A verdict that does not say which tree it ran on is not a
+verdict.
 
 **Command run:**
 ```
@@ -22,31 +26,44 @@ $ <exact command>
 
 **What this establishes:** <the narrow thing the output proves>
 **What it does not:** <the adjacent things a reader might assume>
-```
+~~~
+
+**The outer fence is ~~~ on purpose.** The template contains a fenced
+block, and an inner ``` closes an outer ``` at the first match - which is how
+the first version of this file rendered inside-out, dropping its central
+field entirely. The pack's own rule is to verify the *consumed* form; a
+template that only reads correctly in the source is not a template.
 
 The last two lines are not padding. A passing command proves one
 proposition; the reader will generalise unless told where the edge is.
 
 ## Worked: CONFIRMED
 
-> **Claim:** "The shard partition covers every case."
+> **Claim:** "1.1 is done - counting works."
 
-Restated: the union of all N shards equals the declared case set, with no
-duplicates and none missing.
+Restated: `wc.py count "a b c"` prints `3`, which is what task 1.1's own
+acceptance line demands.
 
-Acceptance found at `PLAN.md` — *"the full matrix runs as N shards whose
-`RAN=` counts sum to the case count derived by `count-check`'s
-`matrix-cases` rule."*
+Acceptance found at `fixtures/verify/PLAN.md:9-10` - the claimant's, not one
+invented here.
+
+Ran against: `feature/5.4-verify` @ the working tree, which is the revision
+the claim was made about.
 
 ```
-$ for i in 1 2 3 4; do bash docs/guard-matrix.sh "$PWD" --shard $i/4; done
-RAN=47 ... RAN=47 ... RAN=47 ... RAN=46
-SUM=187  declared=187
+$ python3 wc.py count "a b c"
+3
 ```
 
-**Establishes:** the four shards partition the 187 declared cases exactly.
-**Does not establish:** that the cases themselves are adequate, or that a
-fifth shard would be handled — only this N was run.
+**Establishes:** the acceptance PLAN.md names for 1.1 holds on this tree.
+**Does not establish:** that `count` is correct for any other input - this
+acceptance tests exactly one string - nor anything about tasks 1.2 or 1.3.
+
+*(Pasted from a real run in `fixtures/verify/`. An earlier version of this
+example showed a `SUM=... declared=...` line that `guard-matrix.sh` never
+emits - it came from a shell wrapper around the tool, not from the tool.
+Composed output in the exemplar for a skill whose hard rule is "paste, never
+summarise" is the defect this footnote exists to stop recurring.)*
 
 ## Worked: OVERSTATED
 
@@ -68,25 +85,39 @@ the verdict — which costs you the next one.
 
 ## Worked: FALSE
 
-> **Claim:** "The guard was proven both arms, so the roster check is sound."
+> **Claim:** "1.3 is done - longest returns the longest word."
 
-Restated: a roster row omitting any declared target makes `check.sh` fail.
+Restated: `wc.py longest "a bb ccc"` prints `ccc`, which is task 1.3's own
+acceptance line.
+
+Acceptance found at `fixtures/verify/PLAN.md:13-14` - the claimant's own.
+
+Ran against: `feature/5.4-verify` @ the working tree.
 
 ```
-$ # remove the 'docs' target from the roster row, then:
-$ bash scripts/check.sh | grep audittargets
-$ echo "exit=$?"
-exit=1
+$ python3 wc.py longest "a bb ccc"
+a
 ```
 
-No output, exit 1 from `grep` — the guard did **not** fire. `grep -n`
-prepends the path, and `./docs/SKILLS.md` contains the literal string
-`docs`, so the row matched the filename.
+Expected `ccc`. Got `a` - the first word by scan order, not the longest.
 
-**Establishes:** the named acceptance does not hold for at least one input.
-**Does not establish:** that the guard is worthless — it fires correctly on
-every target whose name does not appear in a path. FALSE is a verdict on the
-**claim**, not a score for the work.
+**Diagnostic probe, not the acceptance.** Reordering the same word set shows
+the output tracks position rather than length:
+
+```
+$ python3 wc.py longest "ccc bb a"
+ccc
+```
+
+That probe sharpens the verdict; it is **not** pasted as the acceptance
+result, and it would not have rescued the claim if it had passed. Step 5
+requires the probe; the hard rules forbid substituting it for the run.
+
+**Establishes:** the acceptance PLAN.md names for 1.3 does not hold on this
+tree.
+**Does not establish:** anything about 1.1 or 1.2, which are separate claims
+with separate acceptances - nor that `longest` is wrong for every input.
+FALSE is a verdict on the **claim**, not a score for the work.
 
 ## Worked: UNVERIFIABLE
 
