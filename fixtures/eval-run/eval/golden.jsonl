@@ -9,3 +9,6 @@
 {"id": "q9", "category": "edge", "input": "capital of narnia", "expected": "narnia city", "grade_rule": "exact", "acceptable_failure": {"reason": "fictional place; object form of the schema, which used to crash the runner"}}
 {"id": "q10", "category": "edge", "input": "capital of nowhere", "expected": "unknown, not a country", "grade_rule": "concept"}
 {"id": "q11", "category": "happy-path", "input": "capital of narnia", "expected": "cair paravel", "grade_rule": "exact", "acceptable_failure": true, "reason": null}
+{"id": "q12", "category": "grader", "input": "quote for france", "expected": "\"Paris\" - the 'City of Light'", "grade_rule": "exact"}
+{"id": "q13", "category": "grader", "input": "country code for france", "expected": "fr", "grade_rule": "exact", "case_sensitive": true}
+{"id": "q14", "category": "grader", "input": "invoice total for france", "expected": "42.50", "grade_rule": "numeric-tolerance:0.5", "parse": "label:total"}

@@ -114,14 +114,41 @@ fi
 it — a reader who stops after one line must still get the answer. Restate
 it at the end as a written block, always:
 
-- `**Verdict: GO**` — only when every statement is additive, history is
-  clean, and the backup path is named. Include the exact next commands in
+**Two verdicts, reached by an ordered decision procedure.** Work the steps
+in order and stop at the first that applies; the step that stops is the
+reason, and it is named in the verdict line. An ordered procedure rather
+than a pair of definitions, because definitions leave gaps: these two were
+written as *"every statement is additive"* and *"any destructive
+statement"*, and a migration of additive **plus flagged** statements
+matched neither — `CREATE INDEX` on a large table returned no verdict at
+all. That is the same exhaustive-but-not-decidable defect `/verify` found
+in its own four verdicts (5.4), one layer down. Fixed 2026-09-19 by ruling,
+not by widening GO.
+
+1. Any **destructive** statement without an explicit user-acknowledged plan
+   and a confirmed backup → **NO-GO**.
+2. History drift, migration-folder reuse, or no identifiable backup path →
+   **NO-GO**.
+3. Any **flagged** statement whose named safe-alternative check has not
+   been run → **NO-GO**, naming the check and the statement. Flagged is
+   *"needs a look, often fine"* — this step is the look. It is a stop
+   because `references/sql-classification.md` says to classify DOWN when in
+   doubt, and an unrun check is doubt.
+4. Otherwise — every statement **additive**, or **flagged** with its check run and
+   passed; history clean; backup path named → **GO**.
+
+- `**Verdict: GO**` — step 4 only. Include the exact next commands in
   order.
-- `**Verdict: NO-GO — <reason>**` — for any destructive statement without
-  an explicit user-acknowledged plan, missing undo path, folder reuse, or
-  history drift. Include: what to check (expected row counts, expected
+- `**Verdict: NO-GO — <reason>**` — steps 1–3, the reason being the step
+  that stopped. Include: what to check (expected row counts, expected
   `migrate status` output), and a symptom → cause → action table for the
   likely failure modes.
+
+**A flagged NO-GO is not a destructive NO-GO**, and the report must not
+blur them: say which step stopped it, so "run this one check" is never
+read as "this migration drops data". Both clear the same way — the
+acknowledgement path below — but they are different facts about the
+migration.
 
 Destructive operations are never a hard stop forever — they are a stop
 until the user explicitly acknowledges the classification table and the

@@ -170,6 +170,18 @@ with an acceptance, or the README config table treated as the expected set).
 FALSE because it cannot be shown.** Both assert something about the system
 that was never tested.
 
+**Verdict (2026-09-19):** this claim is no longer UNVERIFIABLE on this repo,
+and the example is kept because of how it stopped being one. 5.31 did the
+thing the report asked for — it made README's config table the expected set,
+as `check.sh` §43 — and the claim then verified as **CONFIRMED and
+understated**: four documented keys were missing from the helper, not one.
+The lesson survives its own example. UNVERIFIABLE was the right verdict at
+the time, it named what would settle the question, and following that
+instruction found a defect larger than the claim. A verifier who had softened
+it to CONFIRMED would have recorded the right verdict for the wrong reason
+and stopped at one key; a verifier who had softened it to FALSE would have
+closed a real defect. Read the shape here, not the status of this one claim.
+
 ## Checking your own reading
 
 Before writing the verdict, ask what would make it wrong. Two modes, both

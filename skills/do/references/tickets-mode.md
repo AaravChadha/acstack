@@ -13,7 +13,12 @@ Any failure → name the exact missing precondition, offer document mode.
 2. **Branch.** `<branch-prefix><n>-<slug>` (e.g. `feature/42-fix-parser`)
    — issue work is branch work. Created locally; not pushed.
 3. **Work and commit.** Subjects use the tickets shape per CONDUCT rule 10:
-   `#42: <subject>`. Issue-body checklist items are ticked via
+   `ticket #42: <subject>`. The bare `#42:` form stood here until
+   2026-09-19, citing the very rule it contradicted — the 2026-07-29 verdict
+   in PLAN.md's `## Open items` switched tickets mode to `ticket #<n>:` and
+   named this file in its rollout; CONDUCT.md got the edit and this one did
+   not. The `#` is kept deliberately: GitHub auto-links `#42` in a subject,
+   so dropping it would trade a working cross-reference for nothing. Issue-body checklist items are ticked via
    `gh issue edit` as they complete — the issue tracks progress the way
    PLAN.md checkboxes do in document mode.
 4. **Verify.** Run the issue's `## Acceptance criteria` before anything

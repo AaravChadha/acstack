@@ -5952,7 +5952,7 @@ multi-PR build that would otherwise pay full price for every push.
   `fixtures/eval-run/eval/results/` untouched; and the regression gate blocks
   when a baseline case ID is absent from the current run, shown failing first
   on a pair of results files that differ only in case identity.
-- [ ] **5.31** Instruction and documentation conflicts from the same review,
+- [x] **5.31** *(Done 2026-09-19.)* Instruction and documentation conflicts from the same review,
   none yet verified here: graders disagreeing with `grader-rules.md` on
   curly-quote normalization, `parse: label:total` and `case_sensitive`;
   `acstack-config` stripping `#123456` as a comment and omitting
@@ -5997,19 +5997,98 @@ multi-PR build that would otherwise pay full price for every push.
   66 in JOURNAL legitimately wrap a code span), and the first shape pattern
   matched `Open items` as a **prefix** — so it accepted the very phantom it
   was written for.
-  **Four still open, for two different reasons.** Fixable without a ruling:
-  **(i)** the graders still do not fold curly quotes or implement
-  `parse: label:total`, and the runnable fixture's `norm()` calls `.lower()`
-  unconditionally, ignoring `case_sensitive`; **(ii)** `acstack-config`
-  strips `#` as a comment, so `palette: #123456` resolves empty — it warns
-  rather than silently mis-resolving, which softens but does not fix it, and
-  its `banned-palette` omission is still unverified. Needing an operator
-  ruling, because both are conflicts between two documents and this task's
-  own acceptance forbids silently editing one to match: **(iii)** tickets-mode
-  commits — `#42:` (`tickets-mode.md:16`) versus `ticket #42:`
-  (`CONDUCT.md:130`); **(iv)** `/migrate-check`'s **Flagged** class fits
-  neither GO ("every statement is additive") nor NO-GO, so it needs either a
-  third verdict or a stated fold into one of the two.
+  ~~**Four still open, for two different reasons.**~~ **(i) and (ii) closed
+  2026-09-19; two remain, both awaiting an operator ruling.**
+
+  **(i) Fixed — three grader rules stated and honored nowhere.**
+  `grader-rules.md` names curly-vs-straight quotes a classic silent killer,
+  pins numeric parsing with `"parse": "label:total"`, and makes case folding
+  conditional on `case_sensitive`. Measured: NFKC folds U+00A0 and U+202F on
+  its own and leaves U+2013, U+2014 and all four curly quotes untouched, so
+  only the en-dash was ever folded. `parse` appeared in **one file in the
+  repo** — the canonical spec — and in no implementation. The runnable
+  fixture's `norm()` took no `fold_case` parameter at all. All three now hold
+  in `runner-template.md` and `fixtures/eval-run/eval/run.py`, `parse` is
+  documented in the spec template where case authors meet it, and
+  `case_sensitive` is honored under `concept` as well as `exact` — the rule
+  is stated under "Normalize before comparing", not under one rule name.
+  Proved by three golden cases (q12–q14) measured **discriminating** against
+  the same subject table with only the grading logic reverted: q12
+  `False→True`, q14 `False→True`, and **q13 `True→False`** — folding case
+  unconditionally scored a wrong-SHAPE answer as correct, so the old runner
+  reported a pass it had no right to. Fixture headline `7/9 (77.8%)` →
+  `9/12 (75.0%)`; controls.sh pins the new figure and asserts `grader: 2/3`
+  per-case, and its two alternative headlines were **re-derived by seeding**
+  rather than arithmetic — one of them (`6/8`) had been stale against a 7/9
+  baseline.
+
+  **(ii) Fixed — and the reported claim was understated.** `value_from()`
+  treated any `#` as a comment, so `palette: #123456` resolved empty; it
+  warned, which softened the failure without fixing it. A comment is now a
+  `#` followed by whitespace or end-of-line. Requiring whitespace merely
+  *before* the `#` was tried and rejected: a comma-separated hex list carries
+  ` #` internally, so that rule truncates `#123456, #abcdef` to `#123456,`.
+  Every inline comment in `templates/acstack.md` is written `# `, so all of
+  them still strip — checked, not assumed. **The `banned-palette` sub-claim
+  is CONFIRMED and was understated**: `KEYS` omitted **four** documented keys
+  — `banned-palette`, `variance`, `motion`, `density` — so each was invisible
+  twice, unlistable and unwarnable, and three of them had documented defaults
+  the helper did not carry. Guarded by check.sh **§43**, which **derives** the
+  expected set from README's config table rather than restating it, keyed on
+  the table's header text because that table has already moved once. Both
+  arms seeded and watched fire: dropping a key from `KEYS` fails, and
+  changing README's header fails too rather than passing silently when the
+  oracle disappears. This retires `/verify`'s worked UNVERIFIABLE example as
+  a live question — its report named "the README config table treated as the
+  expected set" as what would settle it, and that is exactly what was built;
+  the example is kept with a dated note, because following its instruction
+  found a defect four times larger than the claim.
+
+  **(iii) Ruled and applied 2026-09-19 — and it was not a conflict.**
+  Investigating it found the decision already made: PLAN.md's `## Open items`
+  carries a **[x] Verdict (2026-07-29)** setting tickets mode to
+  `ticket #<n>: <description>`, keeping the `#` so GitHub auto-links it, and
+  that verdict names its own rollout — CONDUCT rule 10, `/do`, `/ship`,
+  README. CONDUCT.md:130 got the edit. **Exactly one site did not**, and sat
+  for seven weeks stating `#42: <subject>` directly beneath the words *"per
+  CONDUCT rule 10"* — citing the rule it contradicted. So the two documents
+  were never peers: one was canonical and the other was an unfinished
+  rollout, which is a different defect with a different fix. **Operator
+  ruling: apply the 2026-07-29 verdict, and guard it.** `check.sh` **§44**
+  forbids the retired bare `#<n>:` shape in any pack markdown — derived, so
+  a NEW site copying the old form fails on the commit that adds it — and
+  separately requires CONDUCT.md to still STATE the canonical form, because
+  a guard that only forbids the wrong shape passes cleanly on a file that
+  states no shape at all. Both arms seeded and watched fire.
+
+  **(iv) Ruled and applied 2026-09-19: fold into NO-GO, as an ordered
+  decision procedure.** The gap is confirmed —
+  `references/sql-classification.md` defines three classes and says every
+  statement gets exactly one, while `SKILL.md` defined two verdicts *by
+  definition*: GO as "every statement is additive", NO-GO as "any
+  destructive statement". A migration of additive **plus flagged**
+  statements matched neither, so `CREATE INDEX` on a large table returned no
+  verdict at all. **Operator ruling: no third verdict.** The steps are now
+  worked in order, stopping at the first that applies — destructive
+  unacknowledged → NO-GO; drift, folder reuse or no backup path → NO-GO; a
+  flagged statement whose named check has not been run → NO-GO; otherwise
+  GO. Folding DOWN rather than widening GO is the classification file's own
+  *"when in doubt, classify DOWN"* applied to itself, and it reuses NO-GO's
+  existing acknowledge-and-proceed path rather than inventing a second one.
+  The report must say WHICH step stopped it, so a flagged NO-GO is never
+  read as a destructive one. Guarded by `check.sh` **§45**, written against
+  §42's four wrong forms: classes are derived from the reference (a `## `
+  section carrying a `| Statement |` table, so a fourth class is covered the
+  commit it lands and the prose section correctly is not a class), checked
+  against SKILL.md — **two files, so one coordinated edit cannot satisfy
+  both** — scoped to the procedure section rather than the whole file or a
+  `**bold**` pattern, with the three shipped classes as a floor held outside
+  the file. Three arms seeded and watched fire, one of which reproduces the
+  original defect exactly: a fourth class reaching no verdict.
+
+  This also retires the premise 5.4 and §42 cite — *"`/migrate-check`'s
+  Flagged class matches nothing"* — which stays as written in their dated
+  records, being true when written and the reason UNVERIFIABLE exists.
 
 - [ ] **5.32** No private route to report a vulnerability. The repo has been
   public since 2026-08-03 and carries no `SECURITY.md` at root or under

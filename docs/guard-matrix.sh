@@ -727,6 +727,42 @@ assert i != -1, 'seed no-op: the zero-graded guard is already absent'
 j = s.index('    return 2 if errors else 0', i)
 io.open(p, 'w', encoding='utf-8').write(s[:i] + s[j:])
 EOF"
+# 5.31: three rules grader-rules.md states and no runner honored — curly
+# quotes, case_sensitive, and `parse: label:total`. Each seed restores the
+# defect in the RUNNABLE fixture, so the control catches it by running the
+# code rather than reading it. Each was measured to flip exactly one case:
+# q12 and q14 from pass to fail, q13 from fail to PASS — q13 is the sharp
+# one, because folding case unconditionally scores a wrong-SHAPE answer as
+# correct, which is a false pass rather than a missed catch.
+fullcase "grader stops folding curly quotes" FAIL 'controls' bash -c "python3 - <<'EOF'
+import io
+p = 'fixtures/eval-run/eval/run.py'
+s = io.open(p, encoding='utf-8').read()
+a = 'for bad, good in LOOKALIKES.items():'
+assert a in s, 'seed no-op: the lookalike fold is not in its fixed form'
+b = 'for bad, good in [(chr(0x2013), chr(0x2d))]:'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, b))
+EOF"
+fullcase "grader folds case unconditionally"  FAIL 'controls' bash -c "python3 - <<'EOF'
+import io
+p = 'fixtures/eval-run/eval/run.py'
+s = io.open(p, encoding='utf-8').read()
+a = '    return s.lower() if fold_case else s'
+assert a in s, 'seed no-op: norm() is not in its fixed form'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, '    return s.lower()'))
+EOF"
+fullcase "grader ignores the parse label"     FAIL 'controls' bash -c "python3 - <<'EOF'
+import io
+p = 'fixtures/eval-run/eval/run.py'
+s = io.open(p, encoding='utf-8').read()
+a = '        av = _pick_number(actual, case)'
+c = '        ev = _pick_number(expected, case, authored=True)'
+assert a in s and c in s, 'seed no-op: the numeric branch is not in its fixed form'
+s = s.replace(a, '        av = (_numbers(actual) or [None])[0]')
+s = s.replace(c, '        ev = (_numbers(expected) or [None])[0]')
+io.open(p, 'w', encoding='utf-8').write(s)
+EOF"
+
 # Three guards that reported clean on the defect they exist to catch
 # (external review, 2026-09-16): a marker the checker could not parse, a
 # workflow that stopped invoking a guard, and a deleted plugin manifest.
@@ -1165,6 +1201,74 @@ echo
 # by the baseline: the fixture it plants does not exist until the seed runs,
 # so a guard that swept fixtures/ would fail it. Case 3 guards the derivation
 # itself, since an empty list would silently lint nothing and still pass.
+# 5.31 acstack-config's key roster. The helper's KEYS list is hardcoded and
+# under-counted by four; §43 derives the expected set from README's config
+# table instead. Two arms, because a derived guard has two ways to go quiet:
+# the roster loses a key, and the ORACLE it derives from disappears.
+fullcase "config: KEYS drops a documented key" FAIL 'config-keys' bash -c "python3 - <<'EOF'
+import io
+p = 'bin/acstack-config'
+s = io.open(p, encoding='utf-8').read()
+a = ' banned-palette variance'
+assert a in s, 'seed no-op: KEYS is not in its fixed form'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, ' variance', 1))
+EOF"
+fullcase "config: README's key table moves"    FAIL 'config-keys' bash -c "python3 - <<'EOF'
+import io
+p = 'README.md'
+s = io.open(p, encoding='utf-8').read()
+a = '| Key | Values (default first) | Consumed by |'
+assert a in s, 'seed no-op: the config table header is already absent'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, '| Setting | Values (default first) | Consumed by |', 1))
+EOF"
+
+# 5.31 (iii): the tickets commit subject. A decision recorded in one file
+# and applied in another is invisible to every check that reads one file.
+fullcase "ticket: bare '#42:' subject returns"  FAIL 'ticket-subject' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/references/tickets-mode.md'
+s = io.open(p, encoding='utf-8').read()
+a = '`ticket #42: <subject>`'
+assert a in s, 'seed no-op: the corrected shape is not present'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, '`#42: <subject>`', 1))
+EOF"
+fullcase "ticket: CONDUCT loses the canon form" FAIL 'ticket-subject' bash -c "python3 - <<'EOF'
+import io
+p = 'CONDUCT.md'
+s = io.open(p, encoding='utf-8').read()
+a = 'ticket #42: '
+assert a in s, 'seed no-op: CONDUCT never stated the canonical form'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, 'ticket #42-'))
+EOF"
+
+# 5.31 (iv): every SQL statement class must reach a verdict. Arm one
+# reproduces the original defect exactly — a class matching no verdict.
+fullcase "sql: a class reaches no verdict"      FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/migrate-check/references/sql-classification.md'
+s = io.open(p, encoding='utf-8').read()
+assert '## Destructive' in s, 'seed no-op: the reference is not in its expected form'
+s += chr(10) + '## Deferred (new class, no verdict step)' + chr(10) * 2
+s += '| Statement | Notes |' + chr(10) + '|---|---|' + chr(10) + '| SOMETHING | placeholder |' + chr(10)
+io.open(p, 'w', encoding='utf-8').write(s)
+EOF"
+fullcase "sql: procedure stops being ordered"   FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/migrate-check/SKILL.md'
+s = io.open(p, encoding='utf-8').read()
+a = 'stop at the first that applies'
+assert a in s, 'seed no-op: the ordering statement is already absent'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, 'consider each one', 1))
+EOF"
+fullcase "sql: a class is deleted outright"     FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/migrate-check/references/sql-classification.md'
+s = io.open(p, encoding='utf-8').read()
+i = s.index('## Flagged'); j = s.index('## Destructive')
+assert i < j, 'seed no-op: the class sections are not in their expected order'
+io.open(p, 'w', encoding='utf-8').write(s[:i] + s[j:])
+EOF"
+
 fullcase "shell: new script enters the lint set" FAIL 'syntax' bash -c "printf '#!/usr/bin/env bash\ncd /tmp\necho hi\n' > scripts/newthing.sh"
 fullcase "shell: planted fixture stays excluded" PASS '.*'      bash -c "mkdir -p fixtures/shell-scope && printf '#!/usr/bin/env bash\ncd /tmp\necho hi\n' > fixtures/shell-scope/planted.sh"
 fullcase "shell: derivation returning nothing"   FAIL 'syntax' bash -c "printf '#!/usr/bin/env bash\ntrue\n' > scripts/shell-sources.sh"
