@@ -1228,9 +1228,16 @@ fullcase "ticket: bare '#42:' subject returns"  FAIL 'ticket-subject' bash -c "p
 import io
 p = 'skills/do/references/tickets-mode.md'
 s = io.open(p, encoding='utf-8').read()
-a = '`ticket #42: <subject>`'
+# chr(96) is a backtick. A literal one here is COMMAND SUBSTITUTION: the
+# seed body sits inside a double-quoted bash -c argument, which the shell
+# parses before python ever runs, so the backticked subject was executed
+# as a command and the replacement never matched. The tree went unchanged
+# and the case tested nothing, while the guard it exists for reported
+# clean. Caught by the matrix SEED NO-OP detector, not by reading it.
+q = chr(96)
+a = q + 'ticket #42: <subject>' + q
 assert a in s, 'seed no-op: the corrected shape is not present'
-io.open(p, 'w', encoding='utf-8').write(s.replace(a, '`#42: <subject>`', 1))
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, q + '#42: <subject>' + q, 1))
 EOF"
 fullcase "ticket: CONDUCT loses the canon form" FAIL 'ticket-subject' bash -c "python3 - <<'EOF'
 import io
