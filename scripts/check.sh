@@ -418,6 +418,37 @@ for s in $REPORT_SKILLS; do
   grep -qi 'verdict' "skills/$s/SKILL.md" \
     || { echo "FAIL verdict: skills/$s/SKILL.md never states its verdict stance"; fail=1; }
 done
+# THE WORD IS NOT THE INSTRUCTION. `grep -qi verdict` is satisfied by a
+# verdict TABLE, a heading, or the description — so a skill could lose every
+# "put the verdict first" instruction and stay green on the strength of
+# vocabulary it keeps for other reasons. Measured: 11 of the 18 report-shaped
+# skills carry an explicit verdict-first statement; the other 7 (audit,
+# design-audit, plan-review, resume, retro, triage, plan) legitimately do not
+# — /resume delivers a brief, /retro a trend review. So this is a FLOOR over
+# the skills that make the claim, not a rule imposed on those that never did.
+# A skill joins the floor when it starts promising verdict-first output.
+# SCOPED TO WHERE THE INSTRUCTION LIVES, not to the word. A file-wide grep
+# for verdict+first is satisfied by a sentence about DECISION order — a
+# seeded run proved it: stripping both of /verify's report instructions left
+# "the first that applies is the verdict" in its decision table, and the
+# check stayed green. Fifth time in two days a lexical pattern has matched
+# adjacent text meaning something else. So: the instruction must appear in a
+# report/verdict SECTION, or the skill must cite gate-shape.md, which is the
+# canonical home of "Verdict first" and is how /contract-check and /deps
+# legitimately inherit it (cited, not copied — 4.17's rule).
+VERDICT_FIRST_FLOOR="challenge contract-check deps design eval-run health migrate-check qa secure why verify"
+for s in $VERDICT_FIRST_FLOOR; do
+  [ -f "skills/$s/SKILL.md" ] || continue
+  vf_sec="$(awk '/^## Report shape|^## The verdict|^## The report|^## Report/{f=1;next} f&&/^## /{exit} f' "skills/$s/SKILL.md")"
+  if printf '%s' "$vf_sec" | grep -qiE '(verdict[^.]{0,40}first|first[^.]{0,40}verdict|verdict is the report)'; then
+    :
+  elif grep -q 'gate-shape.md' "skills/$s/SKILL.md"; then
+    :
+  else
+    echo "FAIL verdict: skills/$s/SKILL.md promises verdict-first output but neither its report section instructs it nor does it cite gate-shape.md — the bare word survives in tables and decision prose, so only the instruction in place can be checked (5.4)"
+    fail=1
+  fi
+done
 # The derivation must not collapse to nothing: an empty roster would pass
 # this section silently, which is the failure it exists to prevent.
 rs_n=0; for s in $REPORT_SKILLS; do rs_n=$((rs_n + 1)); done
@@ -1499,7 +1530,13 @@ if [ -f "$vf" ]; then
     grep -q "\*\*$v_\*\*" "$vf" \
       || { echo "FAIL verdicts: $vf no longer names the required verdict '$v_' — renaming one does not change the count, so only a floor held outside the skill can catch it (5.4)"; fail=1; }
   done
-  VERIFY_VERDICTS="$(grep -oE '^\| \*\*[A-Z]+\*\*' "$vf" | grep -oE '[A-Z]+' | sort -u)"
+  # Match the bolded ALL-CAPS token ANYWHERE in a table row, not at a fixed
+  # column. The first form anchored on '^| **NAME**' and broke the moment a
+  # '#' ordering column was added ahead of it — deriving zero verdicts
+  # against a heading claiming four. The guard caught that, which is the
+  # point, but an anchor tied to column position is a guard that fails on
+  # formatting rather than on meaning.
+  VERIFY_VERDICTS="$(grep -oE '^\|.*\*\*[A-Z]{4,}\*\*' "$vf" | grep -oE '[A-Z]{4,}' | sort -u)"
   vv_n=0; for v_ in $VERIFY_VERDICTS; do vv_n=$((vv_n + 1)); done
   vv_claim="$(grep -oE '^## The ([a-z]+) verdicts' "$vf" | awk '{print $3}')"
   case "$vv_claim" in

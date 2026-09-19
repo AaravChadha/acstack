@@ -779,7 +779,18 @@ fi
 # still exist and still run, which is exactly the shape a control exists to
 # catch. Asserts the three acceptance outcomes PLAN.md states, by running
 # them, not by reading the file.
-if [ -f fixtures/verify/wc.py ] && command -v python3 >/dev/null 2>&1; then
+# A MISSING FIXTURE IS A FAILURE, NOT A SKIP. The first form took the SKIP
+# branch when wc.py was absent, so deleting the fixture removed the control
+# and left controls.sh exiting 0 — the required positive control vanishing
+# while the guard stays green is the exact shape §11 exists to prevent.
+# SKIP is reserved for an unavailable interpreter, which is an environment
+# fact rather than a missing plant.
+if [ ! -f fixtures/verify/wc.py ] || [ ! -f fixtures/verify/CLAIMS.md ] || [ ! -f fixtures/verify/PLAN.md ]; then
+  bad "/verify fixture: wc.py, CLAIMS.md or PLAN.md is missing — the control for the four-verdict acceptance is gone, not skipped (5.4)"
+elif ! command -v python3 >/dev/null 2>&1; then
+  printf '  SKIP /verify fixture control: python3 absent — NOT verified\n'
+  skipped=$((skipped + 1))
+else
   v_count="$(cd fixtures/verify && python3 wc.py count 'a b c' 2>&1)"
   v_contr="$(cd fixtures/verify && python3 wc.py count "don't stop" 2>&1)"
   v_long="$(cd fixtures/verify && python3 wc.py longest 'a bb ccc' 2>&1)"
@@ -792,15 +803,30 @@ if [ -f fixtures/verify/wc.py ] && command -v python3 >/dev/null 2>&1; then
   elif [ "$v_long" != "a" ]; then
     bad "/verify fixture: task 1.3's acceptance prints '$v_long', want the seeded 'a' — the FALSE case changed shape (5.4)"
   fi
+  # COUNTING HEADINGS PROVES NOTHING ABOUT THE PLANTS. Four `## Claim`
+  # headings survive if Claim D is rewritten into a second passing 1.1
+  # claim, or if the PLAN's acceptance lines are edited away — and the
+  # UNVERIFIABLE case would be gone with every assertion still green. So
+  # each plant is checked for what makes it that verdict.
   v_claims="$(grep -c '^## Claim' fixtures/verify/CLAIMS.md 2>/dev/null || echo 0)"
   [ "$v_claims" = "4" ] \
     || bad "/verify fixture: CLAIMS.md carries $v_claims claim(s), want 4 — one per verdict, and the fourth is the one most easily dropped (5.4)"
+  # three acceptance lines, one per subtask, still present and still naming
+  # the commands the verdicts are produced from
+  v_acc="$(grep -c '^  \*\*Acceptance:\*\*' fixtures/verify/PLAN.md 2>/dev/null || echo 0)"
+  [ "$v_acc" = "3" ] \
+    || bad "/verify fixture: PLAN.md carries $v_acc acceptance line(s), want 3 — the verdicts are produced by running these, so removing one removes a verdict (5.4)"
+  # Claim D is the UNVERIFIABLE plant: it must name NO acceptance, i.e. must
+  # not reference a numbered task the PLAN gives an acceptance for.
+  v_d="$(awk '/^## Claim D/{f=1;next} f&&/^## /{exit} f' fixtures/verify/CLAIMS.md 2>/dev/null)"
+  if [ -z "$v_d" ]; then
+    bad "/verify fixture: Claim D is gone — that is the UNVERIFIABLE plant, the verdict most easily lost (5.4)"
+  elif printf '%s' "$v_d" | grep -qE '1\.[123]'; then
+    bad "/verify fixture: Claim D now references a numbered task, so an acceptance exists for it and it is no longer the UNVERIFIABLE plant (5.4)"
+  fi
   if [ "$v_count" = "3" ] && [ "$v_contr" = "2" ] && [ "$v_long" = "a" ] && [ "$v_claims" = "4" ]; then
     ok "/verify fixture still produces all four verdicts (1.1 pass, 1.2 pass, 1.3 seeded-fail, 4 claims)"
   fi
-else
-  printf '  SKIP /verify fixture control: python3 absent or fixture missing — NOT verified\n'
-  skipped=$((skipped + 1))
 fi
 
 # --- /resume cold mode: the two prohibitions are the point (4.63) ---

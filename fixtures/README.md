@@ -39,7 +39,7 @@ Consequences of living in the tree, all intended:
 
 ## What each directory plants
 
-The eight fixture directories: `secure/` (planted keys, `!.env`
+The nine fixture directories: `secure/` (planted keys, `!.env`
 negation, unauth route, surface-4's deserialization/crypto/TLS/XXE,
 and surface-3's sinks, SRI, and Actions injection), `design-audit/`
 (off-palette hex, unlabeled mockData, hedge copy), `health/`

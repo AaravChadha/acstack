@@ -115,7 +115,13 @@ Its constraint is its own and is stated rather than inherited:
    ran against a hybrid of their commit and your uncommitted work. Run it in
    a **clean isolated worktree at the exact SHA** — `git worktree add` to a
    temp path — or, if you run in place, put `git status --porcelain` in the
-   report and account for every line of it. Record the branch, the short
+   report and account for every line of it.
+   **Remove the worktree when you are done, on both the pass and the fail
+   path.** `git worktree remove <path>`, then `git worktree prune` if the
+   directory is already gone. A verification that leaves worktrees behind
+   accumulates stale registrations and can block a later branch deletion —
+   and under a sandbox the removal may need running outside it, since
+   `.git/worktrees` is often write-protected. Record the branch, the short
    SHA, and whether the tree was clean. If the revision is not the claim's,
    report **UNVERIFIABLE** naming the mismatch. A verdict that does not say
    which tree it ran on is not a verdict; one that names a SHA while testing
@@ -136,12 +142,25 @@ Every input lands on exactly one. A class that fits none is the defect this
 enumeration exists to avoid — `/migrate-check` shipped with a Flagged class
 matching neither of its two verdicts, found by review on 2026-09-17.
 
-| Verdict | When | Requires |
-|---|---|---|
-| **CONFIRMED** | The named acceptance ran and passed | The command and its output, pasted. "It looks right" is not this verdict |
-| **OVERSTATED** | True in part | The clause that passed **and** the clause that failed, named separately |
-| **FALSE** | The named acceptance does not hold | The command run and the output observed — never an inference from reading |
-| **UNVERIFIABLE** | No acceptance is named, or the system cannot be run here | What is missing and what would make it verifiable. This is a refusal, not a pass |
+**Exhaustive AND mutually exclusive.** The first version of this table was
+only the former: for a claim true in part, *"the named acceptance does not
+hold"* (FALSE) and *"true in part"* (OVERSTATED) both matched the same
+evidence, so the skill could legitimately report either. A set with an
+overlap is the same defect as a set with a gap — `/migrate-check`'s Flagged
+class inverted — and it is worse, because two verifiers reach opposite
+verdicts from identical output and both are following the rules.
+
+Decide **in this order**; the first that applies is the verdict:
+
+| # | Verdict | When | Requires |
+|---|---|---|---|
+| 1 | **UNVERIFIABLE** | No acceptance is named, or no clause could be executed here | What is missing and what would make it verifiable. A refusal, not a pass |
+| 2 | **CONFIRMED** | Every clause that was run passed, and none was left unrun | Each command, its output, and its **exit status**, pasted |
+| 3 | **OVERSTATED** | At least one clause passed **and** at least one failed | Both sets named separately, each with its own command and output |
+| 4 | **FALSE** | No clause passed | The commands run and the outputs observed — never an inference from reading |
+
+A one-clause claim can only be UNVERIFIABLE, CONFIRMED or FALSE; OVERSTATED
+needs at least two clauses, because "in part" has no meaning otherwise.
 
 **UNVERIFIABLE is not a soft FALSE.** A claim nobody wrote an acceptance for
 is a finding about the *claim*, and reporting FALSE would assert something

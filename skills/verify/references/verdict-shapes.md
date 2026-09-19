@@ -22,7 +22,15 @@ verdict.
 ```
 $ <exact command>
 <verbatim output, not summarised>
+exit=<status>
 ```
+
+**The exit status is not optional.** For a test runner, a linter or a
+`grep`, success is carried by the status and the output may be empty, or
+identical on pass and fail. A CONFIRMED that pastes only stdout has not
+preserved the evidence that the command passed. Record it for every verdict,
+and say so explicitly when a command could not execute at all — that is
+UNVERIFIABLE, not FALSE.
 
 **What this establishes:** <the narrow thing the output proves>
 **What it does not:** <the adjacent things a reader might assume>
@@ -47,12 +55,13 @@ acceptance line demands.
 Acceptance found at `fixtures/verify/PLAN.md:12-13` - the claimant's, not one
 invented here.
 
-Ran against: `feature/5.4-verify` @ the working tree, which is the revision
-the claim was made about.
+Ran against: `feature/5.4-verify` @ `9fac6a3`, tree clean
+(`git status --porcelain` empty) — the revision the claim was made about.
 
 ```
 $ python3 wc.py count "a b c"
 3
+exit=0
 ```
 
 **Establishes:** the acceptance PLAN.md names for 1.1 holds on this tree.
@@ -80,15 +89,19 @@ asserted from reading, rather than from running each clause, is the failure
 this example exists to prevent: it would be a verdict with no pasted output,
 which the hard rules forbid.
 
-Ran against: `feature/5.4-verify`, clean tree.
+Ran against: `feature/5.4-verify` @ `9fac6a3`, tree clean
+(`git status --porcelain` empty).
 
 ```
 $ python3 wc.py count "a b c"
 3
+exit=0
 $ python3 wc.py count "don't stop"
 2
+exit=0
 $ python3 wc.py longest "a bb ccc"
 a
+exit=0
 ```
 
 **The clause that passed:** "Counting handles contractions." 1.2 demanded
@@ -111,11 +124,13 @@ acceptance line.
 
 Acceptance found at `fixtures/verify/PLAN.md:16-17` - the claimant's own.
 
-Ran against: `feature/5.4-verify` @ the working tree.
+Ran against: `feature/5.4-verify` @ `9fac6a3`, tree clean
+(`git status --porcelain` empty).
 
 ```
 $ python3 wc.py longest "a bb ccc"
 a
+exit=0
 ```
 
 Expected `ccc`. Got `a` - the first word by scan order, not the longest.
