@@ -3,7 +3,24 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-17. **Four external reviews, 28 of 28 findings
+> **Last update**: 2026-09-19. **/verify ships after three review rounds and
+> 29 findings on one branch** (5.4, PR #28) — a skill that audits a claim made
+> by *someone else* against the running system, with four verdicts produced
+> live from a seeded fixture. Session total across reviewers: **57 for 57**.
+> **It shipped with a command-execution hole**: the skill reads text someone
+> else wrote and runs a command that text names, with no trust boundary, while
+> `acstack-recall` fences LEARNINGS.md as DATA, NOT INSTRUCTIONS three files
+> away. **Its verdict set was exhaustive but not mutually exclusive** — FALSE
+> and OVERSTATED both matched a partly-true claim, which is `/migrate-check`'s
+> gap inverted. **§42 was wrong four distinct ways in two days**, each fix
+> looking right when written, and only the last was caught by the guard
+> itself — the third was caught by the matrix going red on a run *reported as
+> about to be green before it had been read*. Five instances of one class:
+> **a check satisfied by adjacent text meaning something else**. Composed
+> evidence shipped twice in exemplars for a rule against it. `checks`
+> **42 → 45**; matrix **170 → 189**; skills **25 → 26**; scheduled open **30**;
+> wave 5 **16 of 33**.
+> Earlier (2026-09-17). **Four external reviews, 28 of 28 findings
 > confirmed at file:line, none refuted** — and every defect sat in code this
 > repo had already written, guarded and re-read. The mechanism is
 > independence, not capability: the guards that were wrong the same day were
@@ -277,7 +294,7 @@
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,
-  **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (18) → 6
+  **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (17) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
 - Next: **wave 5** — ~~5.17.2 first~~ **Verdict (2026-09-14, 3rd):** 5.17.2 is closed (`scripts/recount.sh`, acceptance shown wrong first on a merge that lost a count silently). ~~The remaining multi-session critical path is 5.17.1, .3, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — eight items~~ **Verdict (2026-09-16):** 5.17.3 closed too, so the path is **5.17.1, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — seven items**. All ten affected skills still stand, since multi-session is the default in *every* mode rather than tickets-mode-only. **5.23 `/skill` sits behind them as the leverage point**: patching shipped skills is finite work, a generator that does not know the four classes makes it infinite. ~~**5.4's ordering is OPEN for the operator**~~ **Verdict (2026-09-16):** ruled — /verify scheduled after 5.17.4/.5/.6 and 5.26, and **shipped 2026-09-17**.  **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 since shipped; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-17: 5.4, 5.28, 5.29, 5.30, 5.9 (partial). Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
@@ -353,6 +370,154 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### /verify ships after three review rounds, and §42 is wrong four distinct ways (2026-09-19)
+
+*(One squashed commit reached `main` — **PR #28**, five commits: the skill, its
+guard, and three rounds of review fixes. 5.4 closes, the task whose ordering
+was ruled forward on 2026-09-16.)*
+
+**`/verify` audits a claim made by someone else** — another session, agent,
+teammate, or PR body — against the running system rather than the diff. Its
+angle was the constraint: `/do` runs acceptance before ticking its own box,
+`/ship` gates a branch, `/triage` catches boxes that now fail, and all three
+audit *your own* work as you do it. `/verify` takes only a claim from
+outside, and stops if handed this session's work. It sits deliberately
+outside `READONLY_SKILLS`, because running an acceptance writes caches and
+test databases.
+
+**Acceptance met live, four verdicts against a running system.**
+`fixtures/verify/` is a real project — `wc.py` plus a PLAN with three
+acceptance lines, seeded so `longest` returns the first word rather than the
+longest, and `CLAIMS.md` carrying one claim per verdict. Blind headless runs
+returned **CONFIRMED / OVERSTATED / FALSE / UNVERIFIABLE** in order. Two
+behaviours exceeded the instructions: the FALSE run tested three ways its own
+verdict could be wrong (broken harness, a tie, a misreading of "longest") and
+kept the diagnostic probe separate from the acceptance; the OVERSTATED run
+checked the apostrophe survived the shell before trusting 1.2's pass.
+
+**Three review rounds, 29 findings on this branch, all real.** Claude's
+`/code-review` found 15; codex found 5 in those fixes, then 9 more over the
+whole branch. Session total across all tasks: **57 for 57**. The conclusion
+is **not** that one reviewer is better. Every defect found sat in code this
+session had already written, guarded and re-read — while the guards that were
+wrong the same day were caught by **seeding**, with no second model involved.
+The mechanism is independence, not capability.
+
+**A command-execution hole in the skill whose job is distrusting claims.**
+`/verify` reads text someone else wrote and *runs a command that text names* —
+untrusted input in trusted position — and shipped with no `allowed-tools`, no
+trust boundary and no caution, while `acstack-recall` fences LEARNINGS.md as
+**DATA, NOT INSTRUCTIONS** three files away. It now treats the claim as
+evidence never instructions, shows the acceptance command for approval before
+running it, and refuses outright — **UNVERIFIABLE, not FALSE** — when the
+named acceptance would fetch or execute remote content.
+
+**The verdict set was exhaustive but not mutually exclusive.** For a claim
+true in part, *"the named acceptance does not hold"* (FALSE) and *"true in
+part"* (OVERSTATED) both matched the same evidence, so two verifiers could
+reach opposite verdicts from identical output and **both be following the
+rules**. UNVERIFIABLE had been added precisely to avoid `/migrate-check`'s
+Flagged gap — a class matching *no* verdict — and the overlap is that defect
+inverted. The four are now an ordered decision procedure, and a one-clause
+claim cannot be OVERSTATED at all, because "in part" needs two clauses.
+
+**§42 was wrong four distinct ways in two days**, each fix looking correct
+when written:
+
+| # | The form | Why it passed |
+|---|---|---|
+| 1 | Presence only | A class **added** with no verdict fired nothing — `/migrate-check`'s own defect, reproduced |
+| 2 | Literal `4` beside its own list | Both in one file, three lines apart; one coordinated edit satisfies both |
+| 3 | Derived from the table it checks | Tautological — rename every `UNVERIFIABLE` and four names remain |
+| 4 | Anchored on `^\| \*\*NAME\*\*` | Adding an ordering column moved the token off the line start; derived zero against a heading claiming four |
+
+Only #4 was caught by the guard itself. #3 was caught by the matrix going
+red — **on a run reported as about to be green before it had been read**.
+What holds is a **floor held outside the file it polices**, plus an anchor
+matching content rather than column position.
+
+**Five instances of one class: a check satisfied by adjacent text.** §41's
+`grep -n` prefix carrying `./docs/SKILLS.md` so a row omitting the `docs`
+target matched the **filename**; §42 deriving from its own table; §10's word
+`verdict` surviving in tables and headings; the *fix* to §10 matching *"the
+first that applies is the verdict"* — a sentence about **decision** order, not
+report order; and `count-check` reading a backticked syntax example as a
+claim. Every one looked right and every one was green. §10 is now scoped to
+the report section or a `gate-shape.md` citation, which is how
+`/contract-check` and `/deps` legitimately inherit the rule.
+
+**Composed evidence shipped twice, in exemplars for a rule against it.** The
+CONFIRMED worked example pasted `SUM=… declared=…`, which `guard-matrix.sh`
+never emits — it came from a **shell wrapper around** the tool. The OVERSTATED
+example asserted a passing and a failing clause from *reading*, with no
+command run at all. Both in a file whose skill's hard rule is *"paste, never
+summarise"*. Both now captured from real runs, with the diagnostic probe
+labelled, exit status recorded, and the SHA and clean-tree state the template
+demands. **The FALSE example shows `exit=0`** — the command succeeded and
+printed the wrong answer, which is why exit status alone is not sufficient
+either.
+
+**A branch and SHA do not identify a dirty tree.** `git checkout` carries
+non-conflicting tracked edits and every untracked file across, so a report
+could name the claimant's revision while the acceptance ran against a hybrid.
+The skill now requires a clean isolated worktree at the exact SHA — removed
+on both paths — or a pasted `git status --porcelain` accounted for line by
+line. Multi-session being the default is exactly what makes this the normal
+case rather than the edge.
+
+**Guards that assume where a document lives, and rosters that under-count.**
+§10's `REPORT_SKILLS` was a hardcoded list that under-counted **on the very
+commit adding `/verify`** — and deriving membership proved *narrower* than the
+list it replaced, dropping five skills. The historical roster is now a floor
+unioned with the derivation: **12 checked before, 18 now**, with a separate
+**verdict-first floor of 11** (the other 7 never promised it — `/resume`
+delivers a brief, `/retro` a trend review). `controls.sh` took the SKIP branch
+when the fixture was missing, so deleting it removed the control and left the
+guard green; a missing plant is now `bad`, and counting four claim headings is
+replaced by validating each plant — Claim D must name **no** acceptance or it
+is no longer the UNVERIFIABLE case.
+
+**Measured, and it narrows 5.22:** this machine runs acstack
+**symlink-installed, not plugin-installed** — `claude plugin list` shows only
+`codex@openai-codex`, so `.claude-plugin/plugin.json`'s `./skills`
+registration is **inert here**. Probe sessions at the repo root *and* in a
+subdirectory both reported the new skill absent until `./setup` linked it.
+"Two registrations coexist" is not currently true on this machine.
+
+**Tooling and policy.** The codex plugin's costs, measured rather than
+assumed: a review of a 9-file diff took **21m08s**, 3.4× a sharded CI run, so
+a review sets the pre-push wait. `/codex:review` carries
+`disable-model-invocation` — the model cannot invoke it, which removes the
+risk of an author steering a review of their own work. Every run needs the
+sandbox off (`~/.codex` holds sqlite state), and **that path must never be
+allowlisted**, because `auth.json` sits at its top level with no narrower
+subpath. The **Stop** hook is a 900-second review gate, off by default, left
+off. `/codex:rescue` declined: a reviewer that has been fixing bugs here is no
+longer independent of it. **Policy:** review per-PR for skill logic, guards
+and the eval layer; skip journal and PLAN-only PRs; whole-repo pass at wave
+boundaries; re-review bounded — findings **inside the fix diff** are fixed,
+findings elsewhere are filed, or there is no termination condition.
+
+**Self-indicting, four.** A matrix was about to be reported green **before it
+had been read**, and it was red. A branch was cut from `main` while an
+unmerged PR touched the same guard files — the fourth time. A `for s in $F`
+loop returned "0 of 18" because **zsh does not word-split unquoted `$VAR`**,
+a gotcha already written down here, and the false result was nearly reported
+as a finding about the skills. And a review round's wall clock spanned
+overnight, so no duration figure was taken from it.
+
+**What did NOT change:** CONDUCT's ten rules · VERSION 0.4.0 · `setup` ·
+branch protection · `check.sh` §9's hardcoded README config-table lookup,
+untouched because Configuration never moved.
+
+**Validation close.** `check.sh` **42 → 45** sections, clean on every commit
+standing alone and on the merged tree. Matrix **189/189**, sum equals
+declared, tree hash **UNMOVED**, 8m00s across four shards. Every new guard
+watched failing with its section removed; the fixture control watched firing
+when `longest()` is "fixed". Markers by `recount.sh`: `checks` **45**,
+`matrix-cases` **189**, `skills` **26**, `open-scheduled` **30**. Wave 5
+**15 of 33 → 16 of 33**. One PR merged (#28).
 
 ### Four external reviews, 28 of 28 findings confirmed, and a guard that passed its own both-arms proof (2026-09-17)
 
