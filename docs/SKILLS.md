@@ -35,6 +35,7 @@ skill list, so they only ever run when you ask for them.
 | Skill | What it does | Typical invocation |
 |---|---|---|
 | `/audit` | Six targets — code, docs, eval, tests, skills, readme — each with its own evidence rule | `/audit code src/` |
+| `/verify` | Audit a completion claim made by **someone else** against the running system — CONFIRMED / OVERSTATED / FALSE / UNVERIFIABLE, with the command and its output | `/verify "auth is done"` |
 | `/secure` | Confidence-gated security review: a finding needs an exploit scenario and a rating. Reports only | `/secure src/` |
 | `/qa` | Exercise the running app: happy-path flows, adversarial inputs, auth probing, exact repro commands | `/qa http://localhost:3000` |
 | `/contract-check` | Breaking-change pre-flight for signatures, response shapes, exports, config keys → written GO/NO-GO | `/contract-check` |

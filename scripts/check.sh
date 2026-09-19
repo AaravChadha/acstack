@@ -29,6 +29,7 @@
 #   39 CI shard partition covers every matrix case
 #   40 PLAN.md headings match a known shape
 #   41 /audit's target roster agrees in all three places
+#   42 /verify's verdict set stays exhaustive
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -387,12 +388,75 @@ EOF
 
 # 10. Verdict-first stance present in every report-shaped skill (five of
 #     them violated the pack's own stance while it was documented nowhere
-#     mechanical). Enumerated list — update it when a report skill lands.
-REPORT_SKILLS="audit challenge design-audit health migrate-check plan-review qa resume retro secure triage why"
+#     mechanical).
+#     MEMBERSHIP IS DERIVED, NOT LISTED (5.4). This was a hardcoded roster of
+#     twelve names, and it under-counted on the very commit that added
+#     /verify — a skill whose description literally returns four verdicts and
+#     whose report shape is "Verdict on the first line". That is the
+#     under-counts-silently-the-day-a-name-appears class the pack has already
+#     recorded. A skill is report-shaped when its own SKILL.md carries a
+#     `## Report shape` section or promises a verdict in its description;
+#     both are the skill's own words, so a new one enrols itself.
+# The historical roster is a FLOOR, not the definition. Deriving alone was
+# measured narrower than the list it replaced — it dropped audit,
+# design-audit, resume, retro and triage, which carry a verdict stance
+# without saying "verdict" in their description or heading. Shrinking the
+# checked set while claiming to widen it is the same silent under-count one
+# layer down, so the two are unioned: the floor cannot regress, and a new
+# skill enrols itself without anyone remembering.
+REPORT_FLOOR="audit challenge design-audit health migrate-check plan-review qa resume retro secure triage why"
+REPORT_SKILLS="$REPORT_FLOOR"
+for f in skills/*/SKILL.md; do
+  s_="$(basename "$(dirname "$f")")"
+  case " $REPORT_SKILLS " in *" $s_ "*) continue ;; esac
+  if grep -qE '^## Report shape' "$f" \
+     || awk '/^description:/{print; exit}' "$f" | grep -qiE 'verdict|GO/NO-GO|GO or NO-GO'; then
+    REPORT_SKILLS="$REPORT_SKILLS $s_"
+  fi
+done
 for s in $REPORT_SKILLS; do
   grep -qi 'verdict' "skills/$s/SKILL.md" \
     || { echo "FAIL verdict: skills/$s/SKILL.md never states its verdict stance"; fail=1; }
 done
+# THE WORD IS NOT THE INSTRUCTION. `grep -qi verdict` is satisfied by a
+# verdict TABLE, a heading, or the description — so a skill could lose every
+# "put the verdict first" instruction and stay green on the strength of
+# vocabulary it keeps for other reasons. Measured: 11 of the 18 report-shaped
+# skills carry an explicit verdict-first statement; the other 7 (audit,
+# design-audit, plan-review, resume, retro, triage, plan) legitimately do not
+# — /resume delivers a brief, /retro a trend review. So this is a FLOOR over
+# the skills that make the claim, not a rule imposed on those that never did.
+# A skill joins the floor when it starts promising verdict-first output.
+# SCOPED TO WHERE THE INSTRUCTION LIVES, not to the word. A file-wide grep
+# for verdict+first is satisfied by a sentence about DECISION order — a
+# seeded run proved it: stripping both of /verify's report instructions left
+# "the first that applies is the verdict" in its decision table, and the
+# check stayed green. Fifth time in two days a lexical pattern has matched
+# adjacent text meaning something else. So: the instruction must appear in a
+# report/verdict SECTION, or the skill must cite gate-shape.md, which is the
+# canonical home of "Verdict first" and is how /contract-check and /deps
+# legitimately inherit it (cited, not copied — 4.17's rule).
+VERDICT_FIRST_FLOOR="challenge contract-check deps design eval-run health migrate-check qa secure why verify"
+for s in $VERDICT_FIRST_FLOOR; do
+  [ -f "skills/$s/SKILL.md" ] || continue
+  vf_sec="$(awk '/^## Report shape|^## The verdict|^## The report|^## Report/{f=1;next} f&&/^## /{exit} f' "skills/$s/SKILL.md")"
+  if printf '%s' "$vf_sec" | grep -qiE '(verdict[^.]{0,40}first|first[^.]{0,40}verdict|verdict is the report)'; then
+    :
+  elif grep -q 'gate-shape.md' "skills/$s/SKILL.md"; then
+    :
+  else
+    echo "FAIL verdict: skills/$s/SKILL.md promises verdict-first output but neither its report section instructs it nor does it cite gate-shape.md — the bare word survives in tables and decision prose, so only the instruction in place can be checked (5.4)"
+    fail=1
+  fi
+done
+# The derivation must not collapse to nothing: an empty roster would pass
+# this section silently, which is the failure it exists to prevent.
+rs_n=0; for s in $REPORT_SKILLS; do rs_n=$((rs_n + 1)); done
+rf_n=0; for s in $REPORT_FLOOR; do rf_n=$((rf_n + 1)); done
+if [ "$rs_n" -lt "$rf_n" ]; then
+  echo "FAIL verdict: $rs_n report-shaped skill(s) checked, below the floor of $rf_n — the set shrank, which is the under-count this derivation replaced"
+  fail=1
+fi
 
 # 11. Positive controls: every check-shaped skill's documented detection
 #     command is re-run against a seeded fixture (scripts/controls.sh).
@@ -1429,6 +1493,70 @@ EOF
       [ "$bad_rows" -eq 0 ] || fail=1
     fi
   fi
+fi
+
+# 42. /verify's verdict set stays exhaustive (5.4). The skill's whole
+#     contract is that EVERY input lands on exactly one verdict. It ships
+#     four — CONFIRMED, OVERSTATED, FALSE, UNVERIFIABLE — and the fourth is
+#     the load-bearing one: a claim naming no acceptance fits none of the
+#     other three, and forcing it into FALSE asserts something about a system
+#     that was never tested.
+#     WHY THIS IS GUARDED AT ALL: /migrate-check shipped a `Flagged` SQL class
+#     matching neither of its two verdicts, unnoticed until an external review
+#     on 2026-09-17 (5.31). That gap is invisible — every individual verdict
+#     reads fine, and only the SET is wrong. Dropping UNVERIFIABLE here would
+#     recreate it exactly, and nothing else in the tree would notice.
+#     The roster states its own size (§33's idiom): a fifth verdict joins with
+#     its reason and this count in the same edit.
+vf="skills/verify/SKILL.md"
+if [ -f "$vf" ]; then
+  # DERIVE THE SET FROM THE SKILL, then diff it against the skill's own prose
+  # claim. The first version of this section listed four names here and
+  # compared them to a literal `4` three lines below — both in this file, so a
+  # single coordinated edit satisfied it while `## The four verdicts` in the
+  # skill went stale. That is the direction the /migrate-check defect actually
+  # ran: a class ADDED with no verdict, not a verdict deleted. §33's idiom is
+  # derive-then-diff-against-a-claim-elsewhere, and this now implements it.
+  # THE REQUIRED VOCABULARY IS A FLOOR HELD OUTSIDE THE SKILL. Deriving the
+  # set from the skill's own table and then checking those same names are in
+  # it is tautological: rename every UNVERIFIABLE to INCONCLUSIVE and the
+  # derivation finds four names, the heading still says four, and nothing
+  # fires. That is exactly what the `verify loses a verdict` matrix case
+  # seeds, and this section's previous version reported got=PASS want=FAIL
+  # against it — the third distinct way §42 has been wrong. A floor cannot
+  # be renamed out of existence by editing the file it polices.
+  VERIFY_FLOOR="CONFIRMED OVERSTATED FALSE UNVERIFIABLE"
+  for v_ in $VERIFY_FLOOR; do
+    grep -q "\*\*$v_\*\*" "$vf" \
+      || { echo "FAIL verdicts: $vf no longer names the required verdict '$v_' — renaming one does not change the count, so only a floor held outside the skill can catch it (5.4)"; fail=1; }
+  done
+  # Match the bolded ALL-CAPS token ANYWHERE in a table row, not at a fixed
+  # column. The first form anchored on '^| **NAME**' and broke the moment a
+  # '#' ordering column was added ahead of it — deriving zero verdicts
+  # against a heading claiming four. The guard caught that, which is the
+  # point, but an anchor tied to column position is a guard that fails on
+  # formatting rather than on meaning.
+  VERIFY_VERDICTS="$(grep -oE '^\|.*\*\*[A-Z]{4,}\*\*' "$vf" | grep -oE '[A-Z]{4,}' | sort -u)"
+  vv_n=0; for v_ in $VERIFY_VERDICTS; do vv_n=$((vv_n + 1)); done
+  vv_claim="$(grep -oE '^## The ([a-z]+) verdicts' "$vf" | awk '{print $3}')"
+  case "$vv_claim" in
+    three) vv_want=3 ;; four) vv_want=4 ;; five) vv_want=5 ;; six) vv_want=6 ;;
+    *) vv_want="" ;;
+  esac
+  if [ -z "$vv_want" ]; then
+    echo "FAIL verdicts: $vf has no '## The <n> verdicts' heading to check the set against — the enumeration claims nothing (5.4)"
+    fail=1
+  elif [ "$vv_n" -ne "$vv_want" ]; then
+    echo "FAIL verdicts: $vf's table defines $vv_n verdict(s) but its heading claims '$vv_claim' — a verdict added or removed without updating the claim is the stale-set-claim class (5.4)"
+    fail=1
+  fi
+  for v_ in $VERIFY_VERDICTS; do
+    grep -q "\*\*$v_\*\*" "$vf" \
+      || { echo "FAIL verdicts: $vf no longer names '$v_' — /verify's contract is that every input lands on exactly one verdict, and a dropped one leaves a class matching none (5.4)"; fail=1; }
+  done
+  # the enumeration must also be STATED as exhaustive, not merely listed
+  grep -qE 'Every input lands on exactly one' "$vf" \
+    || { echo "FAIL verdicts: $vf lists verdicts but no longer claims the set is exhaustive — a list without that claim is what let /migrate-check's Flagged class match nothing (5.4)"; fail=1; }
 fi
 
 if [ "$fail" -eq 0 ]; then
