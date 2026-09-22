@@ -6086,6 +6086,48 @@ multi-PR build that would otherwise pay full price for every push.
   the file. Three arms seeded and watched fire, one of which reproduces the
   original defect exactly: a fourth class reaching no verdict.
 
+  **Second review round on (iv), 2026-09-19: four findings, all four
+  CONFIRMED at file:line, every one inside this task's own fix.** The
+  ordered procedure shipped with the defect it was written to close, in two
+  new places: an **acknowledged** destructive statement with a confirmed
+  backup failed step 1's condition and then failed step 4's, and a flagged
+  check that had **run and failed** matched neither step 3 nor step 4 —
+  both reached no verdict. Cause: step 4 was written as a *condition*
+  rather than a catch-all, so "Otherwise" was contradicted by its own
+  gloss. Worse, the paragraph distinguishing a flagged NO-GO from a
+  destructive one said both *"clear the same way — the acknowledgement
+  path"*, which let an `ADD UNIQUE` clear on acknowledgement **without
+  running its duplicate check** — a safety bypass introduced by the very
+  edit that added the step forcing that check. Each step now states its own
+  clearing condition, and step 4 is conditionless by declaration. Coverage
+  is shown rather than asserted: all **24** states of (environment ×
+  destructive × flagged) map to exactly one step, every step reachable.
+
+  **§45 as first written was decoration**, and this is the sharper lesson.
+  It grepped the whole procedure SECTION for each class name — including
+  the explanatory prose, which names all three — so deleting a verdict step
+  outright left it silent, measured. Its Arm A seed had passed for the
+  wrong reason: it *added* a fourth class, a name absent from the prose,
+  testing the addition direction only. **Direction coverage and input
+  coverage are different axes** — §41's lesson, cited inside §45's own
+  comment while a different axis of it was being failed. Citing a rule in a
+  comment is not obeying it. The reviewer's *finding* was right and its
+  *proposed fix* was insufficient, which is why a proposed remedy is
+  verified like any other claim: restricting the grep to the numbered steps
+  still passes, because step 4 legitimately enumerates all three classes as
+  the consequence of steps 1–3 and contains "flagged" twice. What works is
+  a **step-count floor held outside the file** (§33's roster-states-its-own-
+  size idiom), plus the catch-all declaration as its own assertion. Both
+  directions are now seeded and watched fire.
+
+  **The header roster was left stale**, its own contract being that adding
+  a section updates the list in the same commit: §§43–45 were added and the
+  enumeration still ended at 42, and `docs/ARCHITECTURE.md` read "42
+  numbered sections plus 3b, 3c and 13a — 48 checks", which totals 45.
+  `recount.sh` repairs MARKED counts only, and the marked 48 was correct
+  throughout — this is unmarked-prose drift, the seventh instance. Derived
+  and corrected: **45 numbered + 3 lettered = 48**.
+
   This also retires the premise 5.4 and §42 cite — *"`/migrate-check`'s
   Flagged class matches nothing"* — which stays as written in their dated
   records, being true when written and the reason UNVERIFIABLE exists.

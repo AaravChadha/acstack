@@ -30,6 +30,8 @@
 #   40 PLAN.md headings match a known shape
 #   41 /audit's target roster agrees in all three places
 #   42 /verify's verdict set stays exhaustive
+#   43 config keys cover README's table    44 tickets commit subject agrees
+#   45 every SQL class reaches a verdict
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1662,20 +1664,36 @@ if [ -f "$mc_ref" ] && [ -f "$mc_skill" ]; then
     echo "FAIL sql-verdict: $mc_ref yields $mc_n statement class(es); the three shipped classes are a floor held HERE, outside the file, so a deleted or renamed class cannot quietly shrink its own check"
     fail=1
   else
-    # SCOPED to the decision procedure, not the whole file: a bare grep over
-    # SKILL.md passes on any mention anywhere (§42's presence-only form), and
-    # matching `**bold**` anchors on FORMATTING, which is §42's
-    # column-position mistake wearing different clothes. The section is the
-    # unit that must name every class, so the section is what is read.
+    # Three properties, because name-presence alone cannot express this one.
+    # Codex found the first version broken and was right; its suggested fix —
+    # restrict the grep to the numbered steps — is NOT sufficient, measured:
+    # step 4 legitimately enumerates all three classes as the CONSEQUENCE of
+    # steps 1-3, so it contains "flagged" twice and deleting step 3 still
+    # greps clean. A count floor is what actually catches a deleted step.
     mc_proc="$(awk '/ordered decision procedure/{f=1} f&&/^## /{exit} f' "$mc_skill")"
+    mc_steps="$(printf '%s\n' "$mc_proc" | grep -cE '^[0-9]+\. ' || true)"
     if [ -z "$mc_proc" ]; then
       echo "FAIL sql-verdict: $mc_skill has no 'ordered decision procedure' section — the block every statement class must be named in has gone"
       fail=1
     else
+      # (a) FLOOR, held here rather than in the file it polices: the shipped
+      # procedure has four steps. Deleting one is the regression the class
+      # names cannot see, per the comment above.
+      if [ "$mc_steps" -lt 4 ]; then
+        echo "FAIL sql-verdict: $mc_skill's decision procedure has $mc_steps numbered step(s); four shipped, and a deleted step leaves a class unrouted while every remaining step still reads correctly (5.31, external review)"
+        fail=1
+      fi
+      # (b) every class defined in the reference is named in the procedure.
       for c in $mc_classes; do
         printf '%s\n' "$mc_proc" | grep -qi "$c" \
           || { echo "FAIL sql-verdict: statement class '$c' is defined in $mc_ref but never named in $mc_skill's decision procedure — a class that reaches no verdict is the gap that returned nothing for additive-plus-flagged (5.31)"; fail=1; }
       done
+      # (c) the terminal step must stay a TRUE catch-all. This is the exact
+      # property whose loss produced the second defect: step 4 carried a
+      # condition, so an acknowledged-destructive migration and a
+      # failed-flagged check matched no step at all.
+      printf '%s\n' "$mc_proc" | grep -q 'no condition of its own' \
+        || { echo "FAIL sql-verdict: $mc_skill's terminal step no longer declares it has no condition of its own — a conditional last step is how states reach no verdict (5.31, external review)"; fail=1; }
     fi
   fi
   # The procedure must also be STATED as ordered and stop-at-first, or the

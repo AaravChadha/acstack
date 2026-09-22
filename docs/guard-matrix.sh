@@ -1259,6 +1259,24 @@ s += chr(10) + '## Deferred (new class, no verdict step)' + chr(10) * 2
 s += '| Statement | Notes |' + chr(10) + '|---|---|' + chr(10) + '| SOMETHING | placeholder |' + chr(10)
 io.open(p, 'w', encoding='utf-8').write(s)
 EOF"
+fullcase "sql: a verdict step is deleted"        FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/migrate-check/SKILL.md'
+s = io.open(p, encoding='utf-8').read()
+i = s.index('3. Any **flagged** statement')
+j = s.index('4. Otherwise')
+assert i < j, 'seed no-op: the numbered steps are not in their expected form'
+io.open(p, 'w', encoding='utf-8').write(s[:i] + s[j:])
+EOF"
+fullcase "sql: terminal step regains a condition" FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/migrate-check/SKILL.md'
+s = io.open(p, encoding='utf-8').read()
+a = '**This step has no condition of its own**'
+assert a in s, 'seed no-op: the catch-all declaration is already absent'
+b = '**This step applies when the prerequisites hold**'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, b, 1))
+EOF"
 fullcase "sql: procedure stops being ordered"   FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
 import io
 p = 'skills/migrate-check/SKILL.md'
