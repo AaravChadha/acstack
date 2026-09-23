@@ -14,16 +14,7 @@ confirmation; the cost of under-caution is data.
 | `ADD CONSTRAINT … NOT VALID` | Validates future writes only |
 | `CREATE EXTENSION IF NOT EXISTS` | Idempotent |
 
-## Flagged (needs a look, often fine) — NO-GO until the look happens
-
-**Where this class lands:** step 3 of `SKILL.md`'s ordered decision
-procedure. A flagged statement whose safe-alternative check has not been
-run is a **NO-GO**, naming the check; once the check is run and passes, it
-does not block a GO. The class had no verdict at all until 2026-09-19 —
-GO required *every* statement additive and NO-GO required a *destructive*
-one, so an additive-plus-flagged migration matched neither and the skill
-returned nothing. Folding it into NO-GO rather than GO is this file's own
-classify-DOWN rule applied to itself.
+## Flagged (needs a look, often fine)
 
 | Statement | Risk | Safe alternative |
 |---|---|---|

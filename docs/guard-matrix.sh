@@ -1248,51 +1248,6 @@ assert a in s, 'seed no-op: CONDUCT never stated the canonical form'
 io.open(p, 'w', encoding='utf-8').write(s.replace(a, 'ticket #42-'))
 EOF"
 
-# 5.31 (iv): every SQL statement class must reach a verdict. Arm one
-# reproduces the original defect exactly — a class matching no verdict.
-fullcase "sql: a class reaches no verdict"      FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
-import io
-p = 'skills/migrate-check/references/sql-classification.md'
-s = io.open(p, encoding='utf-8').read()
-assert '## Destructive' in s, 'seed no-op: the reference is not in its expected form'
-s += chr(10) + '## Deferred (new class, no verdict step)' + chr(10) * 2
-s += '| Statement | Notes |' + chr(10) + '|---|---|' + chr(10) + '| SOMETHING | placeholder |' + chr(10)
-io.open(p, 'w', encoding='utf-8').write(s)
-EOF"
-fullcase "sql: a verdict step is deleted"        FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
-import io
-p = 'skills/migrate-check/SKILL.md'
-s = io.open(p, encoding='utf-8').read()
-i = s.index('3. Any **flagged** statement')
-j = s.index('4. Otherwise')
-assert i < j, 'seed no-op: the numbered steps are not in their expected form'
-io.open(p, 'w', encoding='utf-8').write(s[:i] + s[j:])
-EOF"
-fullcase "sql: terminal step regains a condition" FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
-import io
-p = 'skills/migrate-check/SKILL.md'
-s = io.open(p, encoding='utf-8').read()
-a = '**This step has no condition of its own**'
-assert a in s, 'seed no-op: the catch-all declaration is already absent'
-b = '**This step applies when the prerequisites hold**'
-io.open(p, 'w', encoding='utf-8').write(s.replace(a, b, 1))
-EOF"
-fullcase "sql: procedure stops being ordered"   FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
-import io
-p = 'skills/migrate-check/SKILL.md'
-s = io.open(p, encoding='utf-8').read()
-a = 'stop at the first that applies'
-assert a in s, 'seed no-op: the ordering statement is already absent'
-io.open(p, 'w', encoding='utf-8').write(s.replace(a, 'consider each one', 1))
-EOF"
-fullcase "sql: a class is deleted outright"     FAIL 'sql-verdict' bash -c "python3 - <<'EOF'
-import io
-p = 'skills/migrate-check/references/sql-classification.md'
-s = io.open(p, encoding='utf-8').read()
-i = s.index('## Flagged'); j = s.index('## Destructive')
-assert i < j, 'seed no-op: the class sections are not in their expected order'
-io.open(p, 'w', encoding='utf-8').write(s[:i] + s[j:])
-EOF"
 
 fullcase "shell: new script enters the lint set" FAIL 'syntax' bash -c "printf '#!/usr/bin/env bash\ncd /tmp\necho hi\n' > scripts/newthing.sh"
 fullcase "shell: planted fixture stays excluded" PASS '.*'      bash -c "mkdir -p fixtures/shell-scope && printf '#!/usr/bin/env bash\ncd /tmp\necho hi\n' > fixtures/shell-scope/planted.sh"

@@ -114,66 +114,14 @@ fi
 it — a reader who stops after one line must still get the answer. Restate
 it at the end as a written block, always:
 
-**Two verdicts, reached by an ordered decision procedure.** Work the steps
-in order and stop at the first that applies; the step that stops is the
-reason, and it is named in the verdict line. An ordered procedure rather
-than a pair of definitions, because definitions leave gaps: these two were
-written as *"every statement is additive"* and *"any destructive
-statement"*, and a migration of additive **plus flagged** statements
-matched neither — `CREATE INDEX` on a large table returned no verdict at
-all. That is the same exhaustive-but-not-decidable defect `/verify` found
-in its own four verdicts (5.4), one layer down. Fixed 2026-09-19 by ruling,
-not by widening GO.
-
-1. History drift, migration-folder reuse, or no identifiable backup path →
-   **NO-GO**. First because it invalidates every later judgement: a
-   destructive plan cannot be acknowledged against a history that does not
-   match the database, and a backup cannot be confirmed with no path to
-   take it to.
-2. Any **destructive** statement lacking EITHER an explicit user-acknowledged
-   plan OR a confirmed backup → **NO-GO**.
-3. Any **flagged** statement whose named safe-alternative check has not been
-   run, **or has been run and failed** → **NO-GO**, naming the check and the
-   statement. Flagged is *"needs a look, often fine"* — this step is the
-   look. It stops because `references/sql-classification.md` says to
-   classify DOWN when in doubt, and both an unrun check and a failed one
-   are doubt.
-4. Otherwise → **GO**. **This step has no condition of its own** — it is
-   whatever steps 1–3 did not stop. What that leaves is exactly: every
-   statement **additive**, **flagged** with its named check run and passed,
-   or **destructive** with an acknowledged plan and a confirmed backup;
-   history clean; backup path named. That sentence is a *consequence* of
-   steps 1–3 and never a test. Stating it as a test is what broke the
-   previous version: an acknowledged destructive statement passed step 1's
-   condition and then failed step 4's, and a flagged check that had run and
-   FAILED matched neither step 3 nor step 4, so both reached no verdict at
-   all — the same defect this procedure replaced, reintroduced inside the
-   replacement (external review, 2026-09-19).
-
-- `**Verdict: GO**` — step 4 only. Include the exact next commands in
+- `**Verdict: GO**` — only when every statement is additive, history is
+  clean, and the backup path is named. Include the exact next commands in
   order.
-- `**Verdict: NO-GO — <reason>**` — steps 1–3, the reason being the step
-  that stopped. Include: what to check (expected row counts, expected
+- `**Verdict: NO-GO — <reason>**` — for any destructive statement without
+  an explicit user-acknowledged plan, missing undo path, folder reuse, or
+  history drift. Include: what to check (expected row counts, expected
   `migrate status` output), and a symptom → cause → action table for the
   likely failure modes.
-
-**A flagged NO-GO is not a destructive NO-GO, and they do not clear the
-same way.** Name the step that stopped it, so *"run this one check"* is
-never read as *"this migration drops data"* — and because the way out
-differs per step:
-
-- **Step 1** clears by resolving the drift, using a new timestamped folder,
-  or identifying a backup path.
-- **Step 2** clears when the user explicitly acknowledges the classification
-  table and the backup is confirmed taken.
-- **Step 3** clears ONLY when the named check has been run and has PASSED.
-  **Acknowledgement does not clear it.** An `ADD UNIQUE` is not made safe by
-  someone agreeing it might be unsafe; it is made safe by the duplicate scan
-  returning nothing. This paragraph previously said both NO-GOs cleared *"the
-  same way — the acknowledgement path"*, which let a flagged statement
-  through on acknowledgement alone and negated step 3 outright — a bypass
-  introduced by the very edit that added step 3 (external review,
-  2026-09-19).
 
 Destructive operations are never a hard stop forever — they are a stop
 until the user explicitly acknowledges the classification table and the

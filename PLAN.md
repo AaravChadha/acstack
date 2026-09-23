@@ -6061,72 +6061,63 @@ multi-PR build that would otherwise pay full price for every push.
   a guard that only forbids the wrong shape passes cleanly on a file that
   states no shape at all. Both arms seeded and watched fire.
 
-  **(iv) Ruled and applied 2026-09-19: fold into NO-GO, as an ordered
-  decision procedure.** The gap is confirmed —
-  `references/sql-classification.md` defines three classes and says every
-  statement gets exactly one, while `SKILL.md` defined two verdicts *by
-  definition*: GO as "every statement is additive", NO-GO as "any
-  destructive statement". A migration of additive **plus flagged**
-  statements matched neither, so `CREATE INDEX` on a large table returned no
-  verdict at all. **Operator ruling: no third verdict.** The steps are now
-  worked in order, stopping at the first that applies — destructive
-  unacknowledged → NO-GO; drift, folder reuse or no backup path → NO-GO; a
-  flagged statement whose named check has not been run → NO-GO; otherwise
-  GO. Folding DOWN rather than widening GO is the classification file's own
-  *"when in doubt, classify DOWN"* applied to itself, and it reuses NO-GO's
-  existing acknowledge-and-proceed path rather than inventing a second one.
-  The report must say WHICH step stopped it, so a flagged NO-GO is never
-  read as a destructive one. Guarded by `check.sh` **§45**, written against
-  §42's four wrong forms: classes are derived from the reference (a `## `
-  section carrying a `| Statement |` table, so a fourth class is covered the
-  commit it lands and the prose section correctly is not a class), checked
-  against SKILL.md — **two files, so one coordinated edit cannot satisfy
-  both** — scoped to the procedure section rather than the whole file or a
-  `**bold**` pattern, with the three shipped classes as a floor held outside
-  the file. Three arms seeded and watched fire, one of which reproduces the
-  original defect exactly: a fourth class reaching no verdict.
+  **(iv) Ruled 2026-09-19; the ruling stands, the IMPLEMENTATION is carried
+  by 5.34.** The gap is confirmed: `references/sql-classification.md`
+  defines three classes and says every statement gets exactly one, while
+  `SKILL.md` defined two verdicts *by definition* — GO as "every statement
+  is additive", NO-GO as "any destructive statement" — so a migration of
+  additive **plus flagged** statements matched neither and `CREATE INDEX` on
+  a large table returned no verdict at all. **Operator ruling: no third
+  verdict; Flagged folds into NO-GO.** That ruling is canonical and is not
+  reopened.
 
-  **Second review round on (iv), 2026-09-19: four findings, all four
-  CONFIRMED at file:line, every one inside this task's own fix.** The
-  ordered procedure shipped with the defect it was written to close, in two
-  new places: an **acknowledged** destructive statement with a confirmed
-  backup failed step 1's condition and then failed step 4's, and a flagged
-  check that had **run and failed** matched neither step 3 nor step 4 —
-  both reached no verdict. Cause: step 4 was written as a *condition*
-  rather than a catch-all, so "Otherwise" was contradicted by its own
-  gloss. Worse, the paragraph distinguishing a flagged NO-GO from a
-  destructive one said both *"clear the same way — the acknowledgement
-  path"*, which let an `ADD UNIQUE` clear on acknowledgement **without
-  running its duplicate check** — a safety bypass introduced by the very
-  edit that added the step forcing that check. Each step now states its own
-  clearing condition, and step 4 is conditionless by declaration. Coverage
-  is shown rather than asserted: all **24** states of (environment ×
-  destructive × flagged) map to exactly one step, every step reachable.
+  **Three implementations of it were written and all three were defective**,
+  each found by external review, each opening a new hole while closing the
+  last:
+  1. Verdicts defined by *conditions* — an **acknowledged** destructive
+     statement with a confirmed backup, and a flagged check that had **run
+     and failed**, matched no step at all.
+  2. Terminal step made an unconditional catch-all — which fixed those two
+     and made **unverified** history reach **GO**. On the non-Prisma stacks
+     SKILL.md:69-83 explicitly supports, history is not checked at all, and
+     step 1 caught only *known* drift. Measured: **4 of 36 states**, each
+     contradicting SKILL.md:82's own "verify applied-migration history
+     manually before the GO".
+  3. Flagged clearing stated as *"ONLY when the named check has been run and
+     has PASSED"* — but only **1 of the 4** Flagged rows names a runnable
+     check. `CREATE INDEX` names a **rewrite**, `SET DEFAULT` a human
+     **confirmation**, the widening type change a **verification**. Three of
+     four rows were left with no clearance path, and the rule was generalised
+     from the single row (`ADD UNIQUE`) quoted to justify it — a claim about
+     a set written without enumerating the set.
 
-  **§45 as first written was decoration**, and this is the sharper lesson.
-  It grepped the whole procedure SECTION for each class name — including
-  the explanatory prose, which names all three — so deleting a verdict step
-  outright left it silent, measured. Its Arm A seed had passed for the
-  wrong reason: it *added* a fourth class, a name absent from the prose,
-  testing the addition direction only. **Direction coverage and input
-  coverage are different axes** — §41's lesson, cited inside §45's own
-  comment while a different axis of it was being failed. Citing a rule in a
-  comment is not obeying it. The reviewer's *finding* was right and its
-  *proposed fix* was insufficient, which is why a proposed remedy is
-  verified like any other claim: restricting the grep to the numbered steps
-  still passes, because step 4 legitimately enumerates all three classes as
-  the consequence of steps 1–3 and contains "flagged" twice. What works is
-  a **step-count floor held outside the file** (§33's roster-states-its-own-
-  size idiom), plus the catch-all declaration as its own assertion. Both
-  directions are now seeded and watched fire.
+  **Decision 2026-09-22: the implementation is reverted out of this branch**
+  and carried by 5.34. `skills/migrate-check/` returns byte-identical to
+  `main`, `check.sh` §45 and its five matrix cases are removed with it.
+  Reason: on `main` the Flagged class returns **no verdict**, which stops; the
+  branch returned a **false GO** on unverified history, which does not. A
+  false GO is worse than no verdict, so "better than main" was not available
+  and shipping it would have been a safety regression on a supported path.
+  5.31's acceptance is met by the clause it already carries — *"each
+  confirmed one is either fixed here or carried by its own task"*.
 
-  **The header roster was left stale**, its own contract being that adding
-  a section updates the list in the same commit: §§43–45 were added and the
-  enumeration still ended at 42, and `docs/ARCHITECTURE.md` read "42
-  numbered sections plus 3b, 3c and 13a — 48 checks", which totals 45.
-  `recount.sh` repairs MARKED counts only, and the marked 48 was correct
-  throughout — this is unmarked-prose drift, the seventh instance. Derived
-  and corrected: **45 numbered + 3 lettered = 48**.
+  **Why a fourth in-flight patch was declined.** The three failures share one
+  cause: the procedure asks *"did I detect a problem?"* and treats **no
+  detection as no problem**, so whatever the steps do not detect falls
+  through the terminal into GO. That is structural, not a wording slip, and
+  it is compounded by an artefact spanning more axes than four prose steps
+  hold: evidence state per check (clean / drift / **unverified**), statement
+  class (3), remediation kind (**4**, not 1), and stack family, which decides
+  whether evidence is *obtainable at all*. The bolded axes were each
+  discovered one review late.
+
+  **Evidence discipline, recorded because it failed here.** Each fix was
+  verified against a state model **I wrote**, and round 2's model encoded
+  history as a boolean — so it could not represent the failing state and
+  returned "all 24 states covered, every step reachable". A model authored by
+  whoever authored the procedure inherits the blind spot. Any model for 5.34
+  must be **derived from the documents** (classes and clearance kinds parsed
+  out of the classification table), not hand-listed.
 
   This also retires the premise 5.4 and §42 cite — *"`/migrate-check`'s
   Flagged class matches nothing"* — which stays as written in their dated
@@ -6170,35 +6161,50 @@ multi-PR build that would otherwise pay full price for every push.
   A reconstruction, however accurate, does not satisfy this.
 
 
-- [ ] **5.34** `/migrate-check`'s ordered decision procedure has never been
-  exercised by a live run. 5.31(iv) replaced a two-verdict definition with a
-  four-step procedure, and the correction of *that* was itself found by
-  review to leave two states unrouted plus a safety bypass — an `ADD UNIQUE`
-  clearing on acknowledgement without its duplicate check. Every fix to date
-  is verified **mechanically**: `check.sh` §45's three arms, and a 24-state
-  enumeration of (environment × destructive × flagged) that I wrote. Both
-  check the AUTHORED procedure. Neither shows that an agent handed a real
-  migration reaches the right verdict, and this repo's own rule is that a
-  fix for a behaviourally-found defect stays unverified until a live run
-  re-tests it in the venue that found it. The 24-state model is also mine:
-  if I mis-identified a dimension, the model agrees with the procedure and
-  both are wrong together.
-  **Why it is its own task, not part of 5.31:** 5.31's acceptance was
-  confirm-or-refute-at-file:line for ten documentation conflicts, and that
-  is met. This is a *behavioural* claim about a skill, which needs a seeded
-  migration and a blind session — a different venue and a different cost.
-  Filed 2026-09-19 rather than left as a sentence in a report, per the
-  carrier-task rule: three rules were binding with nobody owning the work
-  until an audit found them orphaned.
-  **Acceptance:** against a seeded scratch project carrying a migration with
-  (a) an acknowledged destructive statement plus confirmed backup, (b) a
-  flagged statement whose check has not run, (c) a flagged statement whose
-  check ran and FAILED, and (d) an additive-only migration, a blind session
-  returns exactly one verdict per case — GO, NO-GO, NO-GO, GO — each naming
-  the step that decided it. The flagged-unrun case must NOT clear on an
-  offered acknowledgement: if the session accepts acknowledgement in place
-  of running the check, the bypass is still live in behaviour whatever the
-  text says. Transcript captured, not summarised.
+- [ ] **5.34** `/migrate-check` needs the 5.31(iv) ruling implemented in a
+  shape that does not leak, and then verified live. ~~Filed 2026-09-19 as
+  the live-verification carrier for the ordered procedure.~~ **Restated
+  2026-09-22:** that procedure was reverted out of its branch after three
+  defective implementations (see 5.31(iv)), so there is no procedure left to
+  verify — this task now carries **both** the re-shape and its proof. The
+  ruling itself is settled and not reopened: two verdicts, Flagged folds
+  into NO-GO.
+  **The shape to build: default-deny.** Every version so far asked *"did I
+  detect a problem?"* and treated no detection as no problem, so anything the
+  steps missed fell through the terminal into GO. Invert it — **GO requires
+  every evidence item affirmatively satisfied; anything else, including *not
+  checked*, is NO-GO naming the first unsatisfied item.** Unknown then
+  defaults to stop, which is the direction `sql-classification.md` already
+  mandates with "classify DOWN when in doubt". Regression-tested 2026-09-22
+  against all four found defects plus two controls: all six land correctly
+  under **one** rule change rather than four patches — acknowledged
+  destructive + backup → GO, failed flagged check → NO-GO, unverified
+  history → NO-GO, `CREATE INDEX` rewritten to CONCURRENTLY → GO.
+  **`sql-classification.md` needs a clearance-kind column.** Its Flagged
+  table names a heterogeneous "safe alternative" — one runnable check, one
+  rewrite, one human confirmation, one manual verification — and all four
+  were read as checks. Each row must state what clears it.
+  **The guard that replaces §45** keys on the two things prose cannot fake:
+  the terminal is default-deny, and **every** Flagged row names a clearance
+  kind (parse the table, require the column non-empty). Unlike §45's class
+  names, neither can be satisfied by adjacent explanatory text.
+  **Acceptance:** (1) the re-shaped procedure is in place with the clearance
+  column, and the replacement guard fails with its section removed **and**
+  on a Flagged row whose clearance kind is blank — both seeded and watched.
+  (2) A state model **derived from the documents** — classes and clearance
+  kinds parsed out of the classification table, evidence items parsed out of
+  SKILL.md, never hand-listed — reports every state reaching exactly one
+  verdict. Round 2's hand-built model encoded history as a boolean, could not
+  represent the failing state, and reported full coverage; a derived model
+  cannot silently omit a dimension the documents contain, and the residual is
+  stated: it still cannot catch a dimension neither the documents nor the
+  author considered. (3) A blind live session against a seeded migration
+  returns the right verdict for: acknowledged-destructive + confirmed backup,
+  flagged-check-unrun, flagged-check-ran-and-FAILED, flagged-cleared-by-
+  rewrite, **unverified history on a non-Prisma stack**, and additive-only —
+  each naming the item that decided it. The flagged-unrun case must NOT clear
+  on an offered acknowledgement, and the unverified-history case must NOT
+  reach GO. Transcript captured, not summarised.
 
 ## [ ] Wave 6 — The review board
 
