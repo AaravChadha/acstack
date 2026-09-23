@@ -6170,6 +6170,36 @@ multi-PR build that would otherwise pay full price for every push.
   A reconstruction, however accurate, does not satisfy this.
 
 
+- [ ] **5.34** `/migrate-check`'s ordered decision procedure has never been
+  exercised by a live run. 5.31(iv) replaced a two-verdict definition with a
+  four-step procedure, and the correction of *that* was itself found by
+  review to leave two states unrouted plus a safety bypass — an `ADD UNIQUE`
+  clearing on acknowledgement without its duplicate check. Every fix to date
+  is verified **mechanically**: `check.sh` §45's three arms, and a 24-state
+  enumeration of (environment × destructive × flagged) that I wrote. Both
+  check the AUTHORED procedure. Neither shows that an agent handed a real
+  migration reaches the right verdict, and this repo's own rule is that a
+  fix for a behaviourally-found defect stays unverified until a live run
+  re-tests it in the venue that found it. The 24-state model is also mine:
+  if I mis-identified a dimension, the model agrees with the procedure and
+  both are wrong together.
+  **Why it is its own task, not part of 5.31:** 5.31's acceptance was
+  confirm-or-refute-at-file:line for ten documentation conflicts, and that
+  is met. This is a *behavioural* claim about a skill, which needs a seeded
+  migration and a blind session — a different venue and a different cost.
+  Filed 2026-09-19 rather than left as a sentence in a report, per the
+  carrier-task rule: three rules were binding with nobody owning the work
+  until an audit found them orphaned.
+  **Acceptance:** against a seeded scratch project carrying a migration with
+  (a) an acknowledged destructive statement plus confirmed backup, (b) a
+  flagged statement whose check has not run, (c) a flagged statement whose
+  check ran and FAILED, and (d) an additive-only migration, a blind session
+  returns exactly one verdict per case — GO, NO-GO, NO-GO, GO — each naming
+  the step that decided it. The flagged-unrun case must NOT clear on an
+  offered acknowledgement: if the session accepts acknowledgement in place
+  of running the check, the bypass is still live in behaviour whatever the
+  text says. Transcript captured, not summarised.
+
 ## [ ] Wave 6 — The review board
 
 **Goal:** Multi-perspective review — the team — expressed as lenses, not
