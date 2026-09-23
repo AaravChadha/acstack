@@ -88,7 +88,7 @@ so; an absent baseline reported as a clean pass is false confidence.
 |---|---|
 | exact | normalized string equality (Unicode NFKC, trimmed, case folded unless the case sets `case_sensitive: true`) |
 | concept | expected is a **comma-separated** list of concept keywords; each is matched as a normalized substring and pass = ALL present, in any phrasing. A comma-free expected is therefore ONE keyword — read the note under the line format before writing one |
-| numeric-tolerance:<x> | parsed number within ±x (absolute) or ±x% (suffix `%`) of expected |
+| numeric-tolerance:<x> | parsed number within ±x (absolute) or ±x% (suffix `%`) of expected. The FIRST number in the answer is graded unless the case pins one with `"parse": "label:<name>"` |
 | rubric:<name> | LLM-graded against the named rubric below; grader model + prompt pinned here |
 
 ### Rubrics
@@ -120,7 +120,16 @@ a fabricated answer waiting to be counted the day the status changes. Superseded
 {"id": "hp-002", "category": "happy-path", "input": "…", "expected": "positive", "grade_rule": "exact", "case_sensitive": true}
 {"id": "rf-003", "category": "refusal", "input": "…", "expected": "cannot, out of scope", "grade_rule": "concept"}
 {"id": "ed-002", "category": "edge", "input": "…", "expected": "…", "grade_rule": "numeric-tolerance:0.5", "acceptable_failure": true, "reason": "source data itself ambiguous — see spec"}
+{"id": "ed-003", "category": "edge", "input": "…", "expected": "42.50", "grade_rule": "numeric-tolerance:0.5", "parse": "label:total"}
 ```
+
+`parse: label:<name>` belongs on any numeric row whose answer carries more
+than one number — a page number, a subtotal, an item count. Without it the
+FIRST number is graded, which is how a correct total gets scored against a
+page number. The label is matched on a word boundary, so pinning `total`
+does not read `subtotal`; when the label is absent from the answer the case
+fails rather than falling back to the first number, because that fallback is
+the misgrade the key exists to prevent.
 
 `case_sensitive: true` belongs on a row whose expected's SHAPE is part
 of the contract (an exact lowercase label); the grader then keeps case

@@ -11,7 +11,14 @@ PROJECT_CFG=".claude/acstack.md"
 
 # pack defaults — mirror README's config table; update both together (the
 # config-reachability guard keys off README, and this list feeds `all`).
-KEYS='mode tracking push branch-prefix test-command db attribution telemetry runtime stale-days base-url palette product-names backup-command subtask-commit-format journal-commit-format'
+# Every key README's config table documents must appear here: this list is
+# what `all` prints and what warn_unparsed can see, so a key missing from it
+# is invisible twice over. It under-counted by FOUR until 5.31 —
+# banned-palette, variance, motion and density — and the omission was
+# reported as one key, which is how a hardcoded roster fails: silently, and
+# by more than anyone noticed. check.sh's config-keys guard derives the
+# expected set from README's table so the next addition cannot drift here.
+KEYS='mode tracking push branch-prefix test-command db attribution telemetry runtime stale-days base-url palette product-names banned-palette variance motion density backup-command subtask-commit-format journal-commit-format'
 default_for() {
   case "$1" in
     mode) echo "standard" ;;
@@ -25,6 +32,13 @@ default_for() {
     stale-days) echo "30" ;;
     subtask-commit-format) echo "task <number>: <description>" ;;
     journal-commit-format) echo "Journal <date>: <summary>" ;;
+    # The violet-gradient family, canonical in design-audit's ai-tells.md.
+    # README documents this key as HAVING a default, so resolving it to
+    # empty made the helper disagree with its own front door.
+    banned-palette) echo "#8b5cf6, #a855f7, #7c3aed, #6366f1, #d946ef" ;;
+    variance) echo "balanced" ;;
+    motion) echo "standard" ;;
+    density) echo "comfortable" ;;
     *) echo "" ;;   # test-command, base-url, palette, product-names, backup-command: unset
   esac
 }
@@ -41,8 +55,18 @@ section_of() { # file section-name
 # the only form README's key table implies — resolved to the DEFAULT with no
 # warning. Three separate live sessions caught the pack disagreeing with its
 # own config file before anyone caught the regex.
+# A comment is a '#' followed by WHITESPACE (or ending the line). A '#'
+# followed by anything else opens a VALUE and is kept — because
+# `palette: #123456` and `banned-palette: #7c3aed, #a855f7` are the
+# documented way to write those two keys, and the old pattern
+# (`[[:space:]]*#.*$`) ate them to empty. It warned, which softened the
+# failure without fixing it: /design-audit ran with no palette at all.
+# Requiring whitespace merely BEFORE the '#' is not enough either — a
+# comma-separated hex list carries ' #' internally, so that rule truncates
+# `#123456, #abcdef` to `#123456,`. Measured against templates/acstack.md:
+# every inline comment there is written '# ', so all of them still strip.
 value_from() { # key
-  sed -n "s/^[[:space:]]*-\{0,1\}[[:space:]]*$1:[[:space:]]*//p" | head -1 | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//'
+  sed -n "s/^[[:space:]]*-\{0,1\}[[:space:]]*$1:[[:space:]]*//p" | head -1 | sed -E -e 's/[[:space:]]*#([[:space:]].*)?$//' -e 's/[[:space:]]*$//'
 }
 
 # A known key that is PRESENT in a section but yields no value is the silent

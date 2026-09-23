@@ -282,12 +282,12 @@ if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; t
   out="$(cd "$evwork" && python3 eval/run.py 2>&1)"; ev_c=$?
   head="$(printf '%s' "$out" | grep '^overall:' || true)"
   case "$head" in
-    *"7/9 (77.8%)"*) ok "/eval-run control: seeded failures land at 7/9 (77.8%)" ;;
-    *"8/9 (88.9%)"*) bad "/eval-run: q11's acceptable_failure carries reason=null and was FORGIVEN — str(None) is the truthy string \"None\", so a case with no written reason counted as a pass (codex review, 2026-09-16)" ;;
-    *"6/8 (75.0%)"*) bad "/eval-run: q10's comma-separated concept expected FAILED — the grader is matching the raw string again, so a correct answer scores FAIL (4.52)" ;;
+    *"9/12 (75.0%)"*) ok "/eval-run control: seeded failures land at 9/12 (75.0%)" ;;
+    *"10/12 (83.3%)"*) bad "/eval-run: q11's acceptable_failure carries reason=null and was FORGIVEN — str(None) is the truthy string \"None\", so a case with no written reason counted as a pass (codex review, 2026-09-16)" ;;
+    *"8/12 (66.7%)"*) bad "/eval-run: q10's comma-separated concept expected FAILED — the grader is matching the raw string again, so a correct answer scores FAIL (4.52)" ;;
     *100.0%*)        bad "/eval-run reported 100% with a seeded failing case - false pass" ;;
     "")              bad "/eval-run control produced no headline (runner did not complete)" ;;
-    *)               bad "/eval-run headline changed: $head (expected 7/8 (87.5%))" ;;
+    *)               bad "/eval-run headline changed: $head (expected 9/12 (75.0%))" ;;
   esac
   # 4.52: the concept splitter, asserted per-case rather than only through
   # the headline, so a revert names its own cause. q10's answer differs from
@@ -299,6 +299,14 @@ if [ -f fixtures/eval-run/eval/run.py ] && command -v python3 >/dev/null 2>&1; t
   # how a headline lies, and it is invisible in the percentage itself.
   printf '%s' "$out" | grep -q 'acceptable_failure applied to 2' \
     || bad "/eval-run did not name both forgiven failures with reasons"
+  # 5.31: three rules grader-rules.md states and every runner ignored until
+  # now. Each case is DISCRIMINATING — measured by reverting the grading
+  # logic against this same subject table: q12 False->True, q13 True->False,
+  # q14 False->True. q13 is the sharp one: folding case unconditionally
+  # PASSED an answer whose shape was wrong, so the old runner reported a
+  # pass it had no right to.
+  printf '%s' "$out" | grep -q 'grader: 2/3' \
+    || bad "/eval-run: the grader category is not 2/3 — one of the three normalization rules (curly quotes, case_sensitive, parse: label:total) regressed (5.31)"
   # q11 declares acceptable_failure with a JSON null reason. A reason must be
   # a non-empty STRING; "None" is what str(null) produces, not a reason.
   printf '%s' "$out" | grep -q 'q11' \

@@ -20,9 +20,13 @@ Whatever the language, a runner MUST:
 3. Grade each case by its own `grade_rule` — `exact`, `concept`,
    `numeric-tolerance:<x>`, `rubric:<name>` — normalizing Unicode
    (NFKC), case, and whitespace before any string compare. NFKC folds
-   U+202F and U+00A0 to spaces on its own; U+2013 needs an explicit
-   fold. A grader that fails on invisible characters reports a subject
-   failure that never happened. Case folds only when the case does not
+   U+202F and U+00A0 to spaces on its own; **U+2013, U+2014 and all four
+   curly quotes do not fold, and each needs an explicit one** — measured,
+   not assumed. A grader that fails on invisible characters reports a
+   subject failure that never happened. A numeric case may pin WHICH
+   number is graded with `"parse": "label:<name>"`; without it the first
+   number in the answer is read, which is how a verbose answer gets
+   scored on its page number. Case folds only when the case does not
    carry `case_sensitive: true` — a flag the spec template documents,
    so a scaffold that folds unconditionally silently ignores the spec.
 4. Apply `acceptable_failure` ONLY when the case carries a `reason`
@@ -97,13 +101,24 @@ SUBJECT_MODEL = ""
 if not SUBJECT_MODEL:
     sys.exit("NO SCORE: SUBJECT_MODEL is unset — pin the subject model before running")
 
+# The lookalike folds NFKC does NOT perform, measured rather than assumed:
+# NFKC maps U+00A0 and U+202F to a space on its own, and leaves U+2013,
+# U+2014 and all four curly quotes exactly as they are. grader-rules.md
+# names curly-vs-straight quotes and en-dash-vs-hyphen as classic silent
+# killers, so each one is folded explicitly here.
+LOOKALIKES = {"\u2013": "-", "\u2014": "-",
+              "\u2018": "'", "\u2019": "'",
+              "\u201c": '"', "\u201d": '"'}
+
 def norm(s, fold_case=True):
-    """NFKC folds NBSP and narrow-NBSP to spaces on its own; the en-dash
-    needs an explicit fold. Case folds by default — `exact` means the same
-    answer, not the same keystrokes — EXCEPT when the case carries
-    `case_sensitive: true`: then the output's shape is part of the
-    contract and case is kept."""
-    s = unicodedata.normalize("NFKC", str(s)).replace("\u2013", "-")
+    """NFKC folds NBSP and narrow-NBSP to spaces on its own; the en-dash,
+    the em-dash and the curly quotes each need an explicit fold. Case
+    folds by default — `exact` means the same answer, not the same
+    keystrokes — EXCEPT when the case carries `case_sensitive: true`:
+    then the output's shape is part of the contract and case is kept."""
+    s = unicodedata.normalize("NFKC", str(s))
+    for bad, good in LOOKALIKES.items():
+        s = s.replace(bad, good)
     s = re.sub(r"\s+", " ", s).strip()
     return s.lower() if fold_case else s
 
@@ -179,6 +194,42 @@ def accepted(case):
         return _written_reason(af.get("reason"))
     return False
 
+def _numbers(s):
+    return [float(x) for x in re.findall(r"-?\d+\.?\d*", str(s))]
+
+def _pick_number(s, case, authored=False):
+    """The number a numeric case is graded on. Default: the FIRST number in
+    the string. When the case pins a label — `"parse": "label:total"` per
+    grader-rules.md — it is the first number AFTER that label instead, so a
+    verbose answer is not graded on its page number.
+
+    Absent label, absent grade: when a label is pinned and the string does
+    not contain it, this returns None and the case FAILS. It never falls
+    back to the first number, because that silent fallback is the exact
+    misgrade the `parse` key exists to prevent.
+
+    `authored=True` marks the golden case's own `expected`, which the case
+    author writes and is normally the bare number: the label is honored
+    there when present and the first number read when it is not. The
+    asymmetry is deliberate — `expected` is written, `actual` is produced.
+    """
+    parse = str(case.get("parse", "")).strip()
+    label = parse[len("label:"):].strip() if parse.startswith("label:") else ""
+    if label:
+        hay = norm(s)
+        # \b so a pinned `total` is not matched inside `subtotal` — the
+        # first thing a naive substring search gets wrong, and it reads the
+        # subtotal's number with no sign anything went astray.
+        m = re.search(r"\b" + re.escape(norm(label)) + r"\b", hay)
+        if m:
+            after = _numbers(hay[m.end():])
+            if after:
+                return after[0]
+        if not authored:
+            return None
+    nums = _numbers(s)
+    return nums[0] if nums else None
+
 def grade(case, actual):
     """True / False, or None when the rule cannot be machine-graded."""
     rule = case.get("grade_rule", "exact")
@@ -201,17 +252,22 @@ def grade(case, actual):
         keys = [k for k in (p.strip() for p in str(expected).split(",")) if k]
         if not keys:                  # an empty expected must never auto-pass
             return False
-        return all(norm(k) in norm(actual) for k in keys)
+        # `case_sensitive` is a rule about COMPARISON, not about one rule
+        # name — grader-rules.md states it under "Normalize before
+        # comparing", so a cased identifier pinned by a concept case is
+        # enforced here exactly as it is under `exact`.
+        fold = not case.get("case_sensitive", False)
+        return all(norm(k, fold) in norm(actual, fold) for k in keys)
     if rule.startswith("numeric-tolerance:"):
         raw = rule.split(":", 1)[1].strip()
         relative = raw.endswith("%")           # the spec allows ±x and ±x%
         tol = float(raw.rstrip("%"))
-        nums = lambda s: [float(x) for x in re.findall(r"-?\d+\.?\d*", str(s))]
-        a, e = nums(actual), nums(expected)
-        if not (a and e):
+        av = _pick_number(actual, case)
+        ev = _pick_number(expected, case, authored=True)
+        if av is None or ev is None:
             return False
-        limit = abs(e[0]) * tol / 100 if relative else tol
-        return abs(a[0] - e[0]) <= limit
+        limit = abs(ev) * tol / 100 if relative else tol
+        return abs(av - ev) <= limit
     if rule.startswith("rubric:"):
         return None          # judged by a human or a model, never invented here
     raise ValueError(f"unknown grade_rule: {rule}")

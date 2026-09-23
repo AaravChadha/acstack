@@ -5952,7 +5952,7 @@ multi-PR build that would otherwise pay full price for every push.
   `fixtures/eval-run/eval/results/` untouched; and the regression gate blocks
   when a baseline case ID is absent from the current run, shown failing first
   on a pair of results files that differ only in case identity.
-- [ ] **5.31** Instruction and documentation conflicts from the same review,
+- [x] **5.31** *(Done 2026-09-19.)* Instruction and documentation conflicts from the same review,
   none yet verified here: graders disagreeing with `grader-rules.md` on
   curly-quote normalization, `parse: label:total` and `case_sensitive`;
   `acstack-config` stripping `#123456` as a comment and omitting
@@ -5997,19 +5997,131 @@ multi-PR build that would otherwise pay full price for every push.
   66 in JOURNAL legitimately wrap a code span), and the first shape pattern
   matched `Open items` as a **prefix** — so it accepted the very phantom it
   was written for.
-  **Four still open, for two different reasons.** Fixable without a ruling:
-  **(i)** the graders still do not fold curly quotes or implement
-  `parse: label:total`, and the runnable fixture's `norm()` calls `.lower()`
-  unconditionally, ignoring `case_sensitive`; **(ii)** `acstack-config`
-  strips `#` as a comment, so `palette: #123456` resolves empty — it warns
-  rather than silently mis-resolving, which softens but does not fix it, and
-  its `banned-palette` omission is still unverified. Needing an operator
-  ruling, because both are conflicts between two documents and this task's
-  own acceptance forbids silently editing one to match: **(iii)** tickets-mode
-  commits — `#42:` (`tickets-mode.md:16`) versus `ticket #42:`
-  (`CONDUCT.md:130`); **(iv)** `/migrate-check`'s **Flagged** class fits
-  neither GO ("every statement is additive") nor NO-GO, so it needs either a
-  third verdict or a stated fold into one of the two.
+  ~~**Four still open, for two different reasons.**~~ **(i) and (ii) closed
+  2026-09-19; two remain, both awaiting an operator ruling.**
+
+  **(i) Fixed — three grader rules stated and honored nowhere.**
+  `grader-rules.md` names curly-vs-straight quotes a classic silent killer,
+  pins numeric parsing with `"parse": "label:total"`, and makes case folding
+  conditional on `case_sensitive`. Measured: NFKC folds U+00A0 and U+202F on
+  its own and leaves U+2013, U+2014 and all four curly quotes untouched, so
+  only the en-dash was ever folded. `parse` appeared in **one file in the
+  repo** — the canonical spec — and in no implementation. The runnable
+  fixture's `norm()` took no `fold_case` parameter at all. All three now hold
+  in `runner-template.md` and `fixtures/eval-run/eval/run.py`, `parse` is
+  documented in the spec template where case authors meet it, and
+  `case_sensitive` is honored under `concept` as well as `exact` — the rule
+  is stated under "Normalize before comparing", not under one rule name.
+  Proved by three golden cases (q12–q14) measured **discriminating** against
+  the same subject table with only the grading logic reverted: q12
+  `False→True`, q14 `False→True`, and **q13 `True→False`** — folding case
+  unconditionally scored a wrong-SHAPE answer as correct, so the old runner
+  reported a pass it had no right to. Fixture headline `7/9 (77.8%)` →
+  `9/12 (75.0%)`; controls.sh pins the new figure and asserts `grader: 2/3`
+  per-case, and its two alternative headlines were **re-derived by seeding**
+  rather than arithmetic — one of them (`6/8`) had been stale against a 7/9
+  baseline.
+
+  **(ii) Fixed — and the reported claim was understated.** `value_from()`
+  treated any `#` as a comment, so `palette: #123456` resolved empty; it
+  warned, which softened the failure without fixing it. A comment is now a
+  `#` followed by whitespace or end-of-line. Requiring whitespace merely
+  *before* the `#` was tried and rejected: a comma-separated hex list carries
+  ` #` internally, so that rule truncates `#123456, #abcdef` to `#123456,`.
+  Every inline comment in `templates/acstack.md` is written `# `, so all of
+  them still strip — checked, not assumed. **The `banned-palette` sub-claim
+  is CONFIRMED and was understated**: `KEYS` omitted **four** documented keys
+  — `banned-palette`, `variance`, `motion`, `density` — so each was invisible
+  twice, unlistable and unwarnable, and three of them had documented defaults
+  the helper did not carry. Guarded by check.sh **§43**, which **derives** the
+  expected set from README's config table rather than restating it, keyed on
+  the table's header text because that table has already moved once. Both
+  arms seeded and watched fire: dropping a key from `KEYS` fails, and
+  changing README's header fails too rather than passing silently when the
+  oracle disappears. This retires `/verify`'s worked UNVERIFIABLE example as
+  a live question — its report named "the README config table treated as the
+  expected set" as what would settle it, and that is exactly what was built;
+  the example is kept with a dated note, because following its instruction
+  found a defect four times larger than the claim.
+
+  **(iii) Ruled and applied 2026-09-19 — and it was not a conflict.**
+  Investigating it found the decision already made: PLAN.md's `## Open items`
+  carries a **[x] Verdict (2026-07-29)** setting tickets mode to
+  `ticket #<n>: <description>`, keeping the `#` so GitHub auto-links it, and
+  that verdict names its own rollout — CONDUCT rule 10, `/do`, `/ship`,
+  README. CONDUCT.md:130 got the edit. **Exactly one site did not**, and sat
+  for seven weeks stating `#42: <subject>` directly beneath the words *"per
+  CONDUCT rule 10"* — citing the rule it contradicted. So the two documents
+  were never peers: one was canonical and the other was an unfinished
+  rollout, which is a different defect with a different fix. **Operator
+  ruling: apply the 2026-07-29 verdict, and guard it.** `check.sh` **§44**
+  forbids the retired bare `#<n>:` shape in any pack markdown — derived, so
+  a NEW site copying the old form fails on the commit that adds it — and
+  separately requires CONDUCT.md to still STATE the canonical form, because
+  a guard that only forbids the wrong shape passes cleanly on a file that
+  states no shape at all. Both arms seeded and watched fire.
+
+  **(iv) Ruled 2026-09-19; the ruling stands, the IMPLEMENTATION is carried
+  by 5.34.** The gap is confirmed: `references/sql-classification.md`
+  defines three classes and says every statement gets exactly one, while
+  `SKILL.md` defined two verdicts *by definition* — GO as "every statement
+  is additive", NO-GO as "any destructive statement" — so a migration of
+  additive **plus flagged** statements matched neither and `CREATE INDEX` on
+  a large table returned no verdict at all. **Operator ruling: no third
+  verdict; Flagged folds into NO-GO.** That ruling is canonical and is not
+  reopened.
+
+  **Three implementations of it were written and all three were defective**,
+  each found by external review, each opening a new hole while closing the
+  last:
+  1. Verdicts defined by *conditions* — an **acknowledged** destructive
+     statement with a confirmed backup, and a flagged check that had **run
+     and failed**, matched no step at all.
+  2. Terminal step made an unconditional catch-all — which fixed those two
+     and made **unverified** history reach **GO**. On the non-Prisma stacks
+     SKILL.md:69-83 explicitly supports, history is not checked at all, and
+     step 1 caught only *known* drift. Measured: **4 of 36 states**, each
+     contradicting SKILL.md:82's own "verify applied-migration history
+     manually before the GO".
+  3. Flagged clearing stated as *"ONLY when the named check has been run and
+     has PASSED"* — but only **1 of the 4** Flagged rows names a runnable
+     check. `CREATE INDEX` names a **rewrite**, `SET DEFAULT` a human
+     **confirmation**, the widening type change a **verification**. Three of
+     four rows were left with no clearance path, and the rule was generalised
+     from the single row (`ADD UNIQUE`) quoted to justify it — a claim about
+     a set written without enumerating the set.
+
+  **Decision 2026-09-22: the implementation is reverted out of this branch**
+  and carried by 5.34. `skills/migrate-check/` returns byte-identical to
+  `main`, `check.sh` §45 and its five matrix cases are removed with it.
+  Reason: on `main` the Flagged class returns **no verdict**, which stops; the
+  branch returned a **false GO** on unverified history, which does not. A
+  false GO is worse than no verdict, so "better than main" was not available
+  and shipping it would have been a safety regression on a supported path.
+  5.31's acceptance is met by the clause it already carries — *"each
+  confirmed one is either fixed here or carried by its own task"*.
+
+  **Why a fourth in-flight patch was declined.** The three failures share one
+  cause: the procedure asks *"did I detect a problem?"* and treats **no
+  detection as no problem**, so whatever the steps do not detect falls
+  through the terminal into GO. That is structural, not a wording slip, and
+  it is compounded by an artefact spanning more axes than four prose steps
+  hold: evidence state per check (clean / drift / **unverified**), statement
+  class (3), remediation kind (**4**, not 1), and stack family, which decides
+  whether evidence is *obtainable at all*. The bolded axes were each
+  discovered one review late.
+
+  **Evidence discipline, recorded because it failed here.** Each fix was
+  verified against a state model **I wrote**, and round 2's model encoded
+  history as a boolean — so it could not represent the failing state and
+  returned "all 24 states covered, every step reachable". A model authored by
+  whoever authored the procedure inherits the blind spot. Any model for 5.34
+  must be **derived from the documents** (classes and clearance kinds parsed
+  out of the classification table), not hand-listed.
+
+  This also retires the premise 5.4 and §42 cite — *"`/migrate-check`'s
+  Flagged class matches nothing"* — which stays as written in their dated
+  records, being true when written and the reason UNVERIFIABLE exists.
 
 - [ ] **5.32** No private route to report a vulnerability. The repo has been
   public since 2026-08-03 and carries no `SECURITY.md` at root or under
@@ -6048,6 +6160,98 @@ multi-PR build that would otherwise pay full price for every push.
   state stated so a reader knows what they could and could not reproduce.
   A reconstruction, however accurate, does not satisfy this.
 
+
+- [ ] **5.34** `/migrate-check` needs the 5.31(iv) ruling implemented in a
+  shape that does not leak, and then verified live. ~~Filed 2026-09-19 as
+  the live-verification carrier for the ordered procedure.~~ **Restated
+  2026-09-22:** that procedure was reverted out of its branch after three
+  defective implementations (see 5.31(iv)), so there is no procedure left to
+  verify — this task now carries **both** the re-shape and its proof. The
+  ruling itself is settled and not reopened: two verdicts, Flagged folds
+  into NO-GO.
+  **The shape to build: default-deny.** Every version so far asked *"did I
+  detect a problem?"* and treated no detection as no problem, so anything the
+  steps missed fell through the terminal into GO. Invert it — **GO requires
+  every evidence item affirmatively satisfied; anything else, including *not
+  checked*, is NO-GO naming the first unsatisfied item.** Unknown then
+  defaults to stop, which is the direction `sql-classification.md` already
+  mandates with "classify DOWN when in doubt". Regression-tested 2026-09-22
+  against all four found defects plus two controls: all six land correctly
+  under **one** rule change rather than four patches — acknowledged
+  destructive + backup → GO, failed flagged check → NO-GO, unverified
+  history → NO-GO, `CREATE INDEX` rewritten to CONCURRENTLY → GO.
+  **`sql-classification.md` needs a clearance-kind column.** Its Flagged
+  table names a heterogeneous "safe alternative" — one runnable check, one
+  rewrite, one human confirmation, one manual verification — and all four
+  were read as checks. Each row must state what clears it.
+  **The guard that replaces §45** keys on the two things prose cannot fake:
+  the terminal is default-deny, and **every** Flagged row names a clearance
+  kind (parse the table, require the column non-empty). Unlike §45's class
+  names, neither can be satisfied by adjacent explanatory text.
+  **Acceptance:** (1) the re-shaped procedure is in place with the clearance
+  column, and the replacement guard fails with its section removed **and**
+  on a Flagged row whose clearance kind is blank — both seeded and watched.
+  (2) A state model **derived from the documents** — classes and clearance
+  kinds parsed out of the classification table, evidence items parsed out of
+  SKILL.md, never hand-listed — reports every state reaching exactly one
+  verdict. Round 2's hand-built model encoded history as a boolean, could not
+  represent the failing state, and reported full coverage; a derived model
+  cannot silently omit a dimension the documents contain, and the residual is
+  stated: it still cannot catch a dimension neither the documents nor the
+  author considered. (3) A blind live session against a seeded migration
+  returns the right verdict for: acknowledged-destructive + confirmed backup,
+  flagged-check-unrun, flagged-check-ran-and-FAILED, flagged-cleared-by-
+  rewrite, **unverified history on a non-Prisma stack**, and additive-only —
+  each naming the item that decided it. The flagged-unrun case must NOT clear
+  on an offered acknowledgement, and the unverified-history case must NOT
+  reach GO. Transcript captured, not summarised.
+
+- [ ] **5.35** The verification discipline this repo actually uses is not
+  written down anywhere it binds. `AGENTS.md`'s verification rules say
+  evidence you wrote about your own work is not evidence until something
+  independent tries to break it — but nothing states *what* independent
+  means operationally, so in practice it has meant "whatever was run that
+  day". Ruled 2026-09-22: **three factors before a push, not one.**
+  1. **The guard matrix** — mechanical, catches seeded-defect regressions.
+  2. **An independent reviewer that did not write the code** — currently the
+     Codex plugin, ~21-40 min depending on diff size, typed by the operator
+     because it carries `disable-model-invocation`.
+  3. **2-4 agents tasked to DISPROVE, launched concurrently with (2)** so
+     they cost no additional wall clock. Their brief is where the work is
+     *wrong* — edge cases, states the author never enumerated, claims that
+     do not hold — not an audit. Fan-out stays at 2-4; a dozen at once was
+     tried and rejected.
+  **Warrant, stated honestly:** the other repo rules were each written from a
+  defect this repo *shipped*. This one was caught pre-merge, which is a
+  weaker warrant, and it is recorded as such rather than dressed up. The
+  evidence is 5.31(iv): **three successive implementations, three defects**
+  — an unrouted state, then a false GO on unverified history, then three of
+  four remediation kinds left unclearable — with `check.sh` clean and the
+  matrix **green on every one of them**. The external reviewer found them one
+  round at a time, each round inside the previous round's fix. Every defect
+  was an edge case in a state space the author had enumerated personally and
+  got wrong, which is precisely what factor 3 exists to catch *before*
+  factor 2 spends half an hour arriving at it one defect per pass.
+  **Two constraints the rule must carry, or it rots:**
+  - **Name no vendor as the requirement.** The rule is "an independent
+    reviewer that did not write the code"; Codex is the current *instance*,
+    named the way these rules already name `git grep -E` or the `sk-` regex
+    as instances. This repo is public, and a rule that reads "run Codex"
+    bakes a dependency into discipline an adopter may not have.
+  - **Scope it, or it will be quietly disobeyed.** All three factors for
+    skill logic, guards and the eval layer; the matrix alone for docs- and
+    journal-only PRs. This mirrors the existing Codex policy and the
+    re-test rule's own instruction: narrow a rule that stops being
+    affordable rather than stop obeying it.
+  **Acceptance:** the rule is stated as a `- **…**` bullet inside AGENTS.md's
+  verification-rules block, carrying both constraints above; `recount.sh`
+  re-derives `count:repo-rules` to **8** without the marker being hand-edited
+  (count-check's derivation is the `^- \*\*` count in that block, so a rule
+  written in any other shape does not count and that is the intended
+  signal); and the **first PR after it lands that touches skill logic,
+  guards or the eval layer runs all three factors**, with the journal
+  recording what each one found — including "nothing", which is the result
+  that tells you whether factor 3 earns its place.
 
 ## [ ] Wave 6 — The review board
 

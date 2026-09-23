@@ -30,6 +30,7 @@
 #   40 PLAN.md headings match a known shape
 #   41 /audit's target roster agrees in all three places
 #   42 /verify's verdict set stays exhaustive
+#   43 config keys cover README's table    44 tickets commit subject agrees
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1557,6 +1558,83 @@ if [ -f "$vf" ]; then
   # the enumeration must also be STATED as exhaustive, not merely listed
   grep -qE 'Every input lands on exactly one' "$vf" \
     || { echo "FAIL verdicts: $vf lists verdicts but no longer claims the set is exhaustive — a list without that claim is what let /migrate-check's Flagged class match nothing (5.4)"; fail=1; }
+fi
+
+# 43. acstack-config's key roster covers README's config table (5.31). KEYS
+#     is a HARDCODED list and it under-counted by FOUR — banned-palette,
+#     variance, motion, density — so `acstack-config` never listed them and
+#     warn_unparsed could not see them either: a key the pack documents,
+#     invisible twice over. The external review reported it as ONE key
+#     (banned-palette); deriving the set found three more. That is the
+#     failure mode of a hardcoded roster — it under-counts silently, and by
+#     more than the person who noticed it noticed. So this guard DERIVES the
+#     expected set from README's table instead of restating it: the same
+#     floor-vs-list lesson as §10's REPORT_SKILLS, applied before the drift
+#     rather than after. README's table is the front door's own statement of
+#     what is configurable, which is why it is the oracle here.
+#     HONEST SCOPE: coverage only. It proves every documented key is KNOWN
+#     to the helper, never that the helper resolves it correctly — that is
+#     what controls.sh's behavioural probe is for.
+if [ -f README.md ] && [ -f bin/acstack-config ]; then
+  ck_keys="$(sed -n "s/^KEYS='\(.*\)'[[:space:]]*$/\1/p" bin/acstack-config)"
+  # Keyed on the table's HEADER text, not a line number: the table has moved
+  # once already (5.9 reshaped the front door) and three guards broke that
+  # day for hardcoding where a document lives.
+  ck_rows="$(awk -F'|' '
+      /^\| *Key *\| *Values/ {f=1; next}
+      f && /^\|[ -]*-[ -]*\|/     {next}
+      f && !/^\|/                {f=0}
+      f {print $2}' README.md)"
+  if [ -z "$ck_keys" ]; then
+    echo "FAIL config-keys: bin/acstack-config has no KEYS='...' line — the helper's roster cannot be read, so nothing is checked"
+    fail=1
+  elif [ -z "$ck_rows" ]; then
+    echo "FAIL config-keys: README.md has no '| Key | Values ...' config table — the expected key set cannot be derived (the table moved or its header changed)"
+    fail=1
+  else
+    ck_missing=""
+    # A row whose first cell is a `## Section` is documented as a section
+    # and not a key — README says so in that cell, and the helper is right
+    # not to carry it.
+    for k in $(printf '%s\n' "$ck_rows" | grep -o '`[a-z][a-z-]*`' | tr -d '`' | sort -u); do
+      case " $ck_keys " in
+        *" $k "*) ;;
+        *) ck_missing="$ck_missing $k" ;;
+      esac
+    done
+    if [ -n "$ck_missing" ]; then
+      echo "FAIL config-keys: README documents config key(s)$ck_missing that bin/acstack-config's KEYS never lists — the helper cannot resolve, list, or warn about them (5.31)"
+      fail=1
+    fi
+  fi
+fi
+
+# 44. The tickets-mode commit subject agrees wherever it is stated (5.31).
+#     The 2026-07-29 verdict switched tickets mode from `#42:` to
+#     `ticket #42:` and named its own rollout — CONDUCT rule 10, /do, /ship,
+#     README. CONDUCT got the edit; /do's tickets-mode.md did not, and sat
+#     for seven weeks stating `#42: <subject>` directly under the words "per
+#     CONDUCT rule 10" — citing the rule it contradicted. Nothing failed,
+#     because a decision recorded in one file and applied in another is
+#     invisible to every mechanical check that does not compare the two.
+#     DERIVED, not listed: any pack markdown stating a backticked
+#     `#<n>: <something>` as a commit subject is a hit, so a NEW site
+#     copying the old shape fails on the commit that adds it.
+ct_hits="$(grep -rnE '`#([0-9]+|<[a-z]+>|N)[^`]*: [^`]+`' \
+      --include='*.md' skills CONDUCT.md README.md AGENTS.md 2>/dev/null \
+      | grep -v 'ticket #' || true)"
+if [ -n "$ct_hits" ]; then
+  echo "FAIL ticket-subject: the retired bare '#<n>:' tickets commit shape is stated where the current shape is 'ticket #<n>:' (CONDUCT.md rule 10, verdict 2026-07-29):"
+  printf '%s\n' "$ct_hits"
+  fail=1
+fi
+# The canonical statement must still BE there — a guard that only forbids
+# the wrong form passes cleanly on a file that states no form at all, which
+# is how §41 and §10 both went quiet. Floor held outside the file it
+# polices, per 5.4's lesson.
+if ! grep -q 'ticket #42: ' CONDUCT.md; then
+  echo "FAIL ticket-subject: CONDUCT.md no longer states the canonical 'ticket #42: ...' subject — the shape every other site is checked against has vanished"
+  fail=1
 fi
 
 if [ "$fail" -eq 0 ]; then
