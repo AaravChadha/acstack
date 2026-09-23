@@ -6206,6 +6206,53 @@ multi-PR build that would otherwise pay full price for every push.
   on an offered acknowledgement, and the unverified-history case must NOT
   reach GO. Transcript captured, not summarised.
 
+- [ ] **5.35** The verification discipline this repo actually uses is not
+  written down anywhere it binds. `AGENTS.md`'s verification rules say
+  evidence you wrote about your own work is not evidence until something
+  independent tries to break it — but nothing states *what* independent
+  means operationally, so in practice it has meant "whatever was run that
+  day". Ruled 2026-09-22: **three factors before a push, not one.**
+  1. **The guard matrix** — mechanical, catches seeded-defect regressions.
+  2. **An independent reviewer that did not write the code** — currently the
+     Codex plugin, ~21-40 min depending on diff size, typed by the operator
+     because it carries `disable-model-invocation`.
+  3. **2-4 agents tasked to DISPROVE, launched concurrently with (2)** so
+     they cost no additional wall clock. Their brief is where the work is
+     *wrong* — edge cases, states the author never enumerated, claims that
+     do not hold — not an audit. Fan-out stays at 2-4; a dozen at once was
+     tried and rejected.
+  **Warrant, stated honestly:** the other repo rules were each written from a
+  defect this repo *shipped*. This one was caught pre-merge, which is a
+  weaker warrant, and it is recorded as such rather than dressed up. The
+  evidence is 5.31(iv): **three successive implementations, three defects**
+  — an unrouted state, then a false GO on unverified history, then three of
+  four remediation kinds left unclearable — with `check.sh` clean and the
+  matrix **green on every one of them**. The external reviewer found them one
+  round at a time, each round inside the previous round's fix. Every defect
+  was an edge case in a state space the author had enumerated personally and
+  got wrong, which is precisely what factor 3 exists to catch *before*
+  factor 2 spends half an hour arriving at it one defect per pass.
+  **Two constraints the rule must carry, or it rots:**
+  - **Name no vendor as the requirement.** The rule is "an independent
+    reviewer that did not write the code"; Codex is the current *instance*,
+    named the way these rules already name `git grep -E` or the `sk-` regex
+    as instances. This repo is public, and a rule that reads "run Codex"
+    bakes a dependency into discipline an adopter may not have.
+  - **Scope it, or it will be quietly disobeyed.** All three factors for
+    skill logic, guards and the eval layer; the matrix alone for docs- and
+    journal-only PRs. This mirrors the existing Codex policy and the
+    re-test rule's own instruction: narrow a rule that stops being
+    affordable rather than stop obeying it.
+  **Acceptance:** the rule is stated as a `- **…**` bullet inside AGENTS.md's
+  verification-rules block, carrying both constraints above; `recount.sh`
+  re-derives `count:repo-rules` to **8** without the marker being hand-edited
+  (count-check's derivation is the `^- \*\*` count in that block, so a rule
+  written in any other shape does not count and that is the intended
+  signal); and the **first PR after it lands that touches skill logic,
+  guards or the eval layer runs all three factors**, with the journal
+  recording what each one found — including "nothing", which is the result
+  that tells you whether factor 3 earns its place.
+
 ## [ ] Wave 6 — The review board
 
 **Goal:** Multi-perspective review — the team — expressed as lenses, not
