@@ -6253,6 +6253,26 @@ multi-PR build that would otherwise pay full price for every push.
   recording what each one found — including "nothing", which is the result
   that tells you whether factor 3 earns its place.
 
+- [ ] **5.36** The 2026-07-29 tickets-commit verdict is still one site short.
+  It named four: CONDUCT rule 10, `/do`, `/ship`, and README's
+  `subtask-commit-format` row. 5.31(iii) fixed `/do` — its
+  `references/tickets-mode.md:16` had stated `#42:` beneath the words "per
+  CONDUCT rule 10" for seven weeks. Enumerated 2026-09-22 rather than
+  assumed: CONDUCT.md carries `ticket #` three times and is correct; `/ship`
+  owes nothing, because its only commit-subject handling is gate 4's
+  journal-mention check, which matches subjects against JOURNAL.md and
+  hardcodes no format; **README is the remaining gap** — its
+  `subtask-commit-format` row shows only the document-mode default
+  `task <number>: <description>`, and the string `ticket #` appears nowhere
+  in the file, so a reader configuring tickets mode is never told the subject
+  shape their commits will take.
+  **Acceptance:** README states the tickets-mode subject shape
+  (`ticket #<n>: <description>`) where a tickets-mode reader meets it, and
+  `grep -c 'ticket #' README.md` returns non-zero; check.sh §44 still passes,
+  since it forbids the bare form and requires CONDUCT to keep stating the
+  canonical one. Small; grouped with any other README work rather than
+  shipped alone.
+
 ## [ ] Wave 6 — The review board
 
 **Goal:** Multi-perspective review — the team — expressed as lenses, not

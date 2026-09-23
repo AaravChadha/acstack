@@ -3,7 +3,38 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-19. **/verify ships after three review rounds and
+> **Last update**: 2026-09-22. **5.31 closes, and `/migrate-check`'s fix is
+> reverted after three tries** (PR #30). Three of its four remaining conflicts
+> are fixed: three grader rules stated in `grader-rules.md` and honored
+> nowhere (NFKC leaves **all four curly quotes** and both dashes alone —
+> measured; `parse: label:total` existed in **one file in the repo** and no
+> implementation; the fixture's `norm()` had no `fold_case` argument, so
+> `case_sensitive` was documented at four sites and honored at none);
+> `acstack-config` reading any `#` as a comment, so `palette: #123456`
+> resolved **empty**, with the reported one-key omission **confirmed and
+> understated at four**; and a tickets-mode commit shape that was never a
+> conflict but a **seven-week-old half-applied verdict**, stating `#42:`
+> directly beneath the words "per CONDUCT rule 10". **The fourth was ruled,
+> implemented three times, and reverted** — conditions left two states
+> unrouted; an unconditional catch-all fixed those and let **unverified
+> history reach GO** (4 of 36 states); strict clearance left **3 of 4**
+> Flagged rows with no path. Reverted because on `main` Flagged returns **no
+> verdict, which stops**, and the branch returned a **false GO, which does
+> not**. Every version asked *"did I detect a problem?"* and treated no
+> detection as no problem. **A state model written by the procedure's own
+> author shares its blind spot**: round 2's encoded history as a boolean,
+> could not represent the failing state, and reported full coverage — a risk
+> 5.34's text had named in writing one message earlier. **A reviewer's remedy
+> is a claim too**: Codex's finding on §45 was right and its proposed fix was
+> insufficient, measured. Six self-indictments, five of one shape — a signal
+> satisfied by something adjacent to what was being measured, including a
+> commit that **landed while check.sh was failing** because `|tail &&` reads
+> the pipeline's last status. **Ruled: three factors before a push** — matrix,
+> an independent reviewer, and 2-4 agents tasked to DISPROVE run concurrently
+> with it (5.35). 2 Codex reviews, **6 findings, 6 confirmed**. `checks`
+> **45 → 47**; matrix **194 → 196**; scheduled open **31**; wave 5 **17 of
+> 36**.
+> Earlier (2026-09-19). **/verify ships after three review rounds and
 > 29 findings on one branch** (5.4, PR #28) — a skill that audits a claim made
 > by *someone else* against the running system, with four verdicts produced
 > live from a seeded fixture. Session total across reviewers: **57 for 57**.
@@ -258,8 +289,11 @@
   closes the eval loop the pack's flagship methodology had left open;
   wave 4.5 added three more (/why, /refactor, /design).
 - Tickets mode (`tracking: tickets`) is live in /plan and /do — bootstrap,
-  `#N:` commits, `Fixes #N` closes — proven on scratch repo
-  `acstack-w2-shakedown` (private; deletion pending user call).
+  `ticket #N:` commits, `Fixes #N` closes. The subject shape is
+  `ticket #N:` per CONDUCT rule 10 and the 2026-07-29 verdict; **README does
+  not yet state it** (5.36). The scratch-repo proof predates the change and
+  used the old bare `#N:`, which is why the wave-2 entry below still
+  describes that shape — history stays as written.
 - Working tree clean; `scripts/check.sh` all clean
   (**<!-- count:checks -->47<!-- /count -->** checks — numbered sections
   plus 3b, 3c and 13a, including positive controls over seeded
@@ -290,7 +324,7 @@
 - Roadmap runs to 32 skills after the fold rulings (26 built, wave 5's
   remaining 1 — /careful — wave 6's 2 and wave 7's 3; it read
   "39" until shape D and 5.7 made most remaining tasks modes and lenses),
-  **<!-- count:open-scheduled -->31<!-- /count --> scheduled
+  **<!-- count:open-scheduled -->32<!-- /count --> scheduled
   open tasks** (machine-checked by check.sh §23 since 2026-08-06 — before
   that, re-counted by hand and wrong four times): wave 4
   **closed at 17/17** → 4.5 (post-launch hardening,
@@ -365,11 +399,201 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | 3 — Ship + reflect | ✅ | 7 new skills (/learn, /health, /qa, /secure, /design-audit, /retro, /ship); 19 SKILL.md files now, 21 reference files; specs → build → independent review (9 findings, 0 blocking) → two-venue shakedown (seeded scratch app + acstack) that earned a real secret-regex fix |
 | 4 — Distribution + launch | ✅ | Built 2026-07-30/31: VERSION+CHANGELOG, guard sections 6–14, fixtures + controls layer, runtime preamble + bin/, CI, dry-run honesty, allowed-tools, referral block, multi-product detection, /eval-run (20th skill), PRINCIPLES/ARCHITECTURE/CONTRIBUTING/README v2. Launch checklist green; **flipped public 2026-08-03** |
 | 4.5 — Post-launch hardening | 🔶 <!-- count:wave45-done -->64<!-- /count -->/<!-- count:wave45-total -->66<!-- /count --> | 4.16, 4.13, Phase 1 (4.33–4.39), 4.40 ladder, 4.11 /why, 4.10 /audit tests, 4.19 /refactor, 4.18 degradation paths, 4.41, 4.29, **4.27 ai-tells**, **4.30 /design**, **4.28 skill hygiene**, **4.32 root-cause clustering**, **4.42 shakedown 11** (all five shakedown-10 fixes held live). **4.43/4.44:** the front-door verdict chose sharpening over opening wave 5, and the sharpened opening shipped same-day (stranger-read pass caught 3 defects in the draft, all author-favouring, all fixed). **Reopened 2026-08-06 and four of five closed the same day** — **4.45** eval-runner isolation (flags verified against the live CLI, which corrected the task's own premise), **4.46** per-category non-regression floor (fixture is a discriminator: overall rises 50.0% → 66.7% while refusal collapses 100% → 0%), **4.47** owed-carrier reachability (mechanism chosen by measurement after the bare-numeric approach returned six false positives), **4.48** count-drift moved out of /audit docs into check.sh §23 and blocked its own completion commit. **4.49 closed 2026-08-07 with a scope verdict** — `/plan`, `/do` and `/triage` split (32,234 → 25,301 bytes, −6,933 ≈ 1,733 tokens, 0 lines lost); `/design` and `/eval-run` measured and DECLINED, having zero conditional content. **Shakedown 12 ran 2026-08-07**: five segments HELD, and it found a hole in `regression-gate.py` shipped the same day — a category collapsing 100% → 25% via crashes passed the gate clean. **2026-08-07 (later):** **4.51** closed — the non-regression gate blocks on coverage collapse as a second axis, after a 100% → 25% collapse passed it clean; **4.52** closed — `concept` expecteds split on commas at all three sites, fixing a contradiction that mis-graded every multi-keyword expected in the pack, including the template's own example row. An outside survey (ECC, the awesome lists, the design field, the Agent Skills spec) added **4.54–4.61**; three stale counts were fixed and CI gained a `workflow_dispatch` lever. **2026-08-08:** **4.53** closed — the runner's exit code became a three-state signal (`0` completed / `1` could not complete / `2` completed with errored cases) after cannot-complete and completed-with-errors were measured both exiting `1`; `/ship` gate 3 now reads the value, having read no exit code at all, and a dead `.py` cross-reference the crossref guard cannot see was fixed in passing (guard gap carried as 4.55c). **2026-08-08 → 12:** six more closed — **4.53** three-state runner exit code (`/ship` gate 3 had read no exit code at all), **4.55** three guard input surfaces pinned (snapshot-once matrix that names a mid-run change; count-check roster with a reason per inclusion and exclusion; crossref no longer names extensions, which had hidden a dead `.py` link), **4.54+4.60** a dated four-cluster default-look check replacing the stale violet denylist plus three new tell classes and the first negative-twin controls, **4.56** spec divergence kept and guarded against check.sh's own allowlist, **4.57** `.claude-plugin/` as a second install path proven end-to-end in an isolated config, **4.59** all ten roster gaps ruled mode-first against a 12,000-char startup budget set below what the roadmap costs, scheduling 4.62–4.65. **4.58** closed 2026-08-12 — the strictness ladder was built AND run as shakedown 13 (HELD 3/3), which discharged **4.52's** owed re-test in a venue built for something else. **4.61** split `/audit` 163 → 91 lines and turned the ratio scan into a script plus check.sh §29; **4.62** added `/audit skills` as the fifth target. **2026-08-13 → 14:** three shakedown rounds and nine carriers closed — **15** (`/plan`'s `mode-seed.md` split reachable 3/3; its unattended branch not, because `AskUserQuestion` returns a stub rather than erroring), **16** (4.30's four design acceptances run for the first time: A1/A2/A4 held, **A3 unreachable by construction** since `/design`'s honest-scope rule ships disclosed gaps a blind audit must flag), **17** (the tickets round — nine skills, cold baseline, two-turn gate test, `/health` + bootstrap + `/triage` + `/do` + `/retro` all held). Closed: **4.67** never-guess hoisted above the branch that had scoped it out, **4.68** one home for the unsupplied-section rule, **4.69** the `/design` pairing becomes a blind audit plus a three-bucket diff (and one audit run proved not to be an enumeration — 3 findings then 1 on a byte-identical artifact), **4.70** set claims derived from the artifact, **4.71** RFC 2606 enumerated not sampled, **4.72** **the config resolver had been reporting defaults for any `## Settings` written without a leading `-`, silently, to every skill** — three independent sessions caught it, **4.73** the bootstrap names `build` as its owning mode, **4.74** the template is on disk but not in effect until pushed, **4.75** next-3 is a cap not a quota. **4.66 ruled 2026-08-14** on nine nested-session arms rather than on inference — **(3)+(5)**: a CONDUCT rule-5 carve-out plus a documented user-level `permissions.deny` block the pack never writes; the hook declined, the skill deferred to 5.3, "do nothing" falsified by the arm where the destructive command ran under bypass with no prompt and no denial. Splits into **4.76** (docs + `/health` row + guard) and **4.77** (the clause, live demo owed to 4.50); **4.78** files a stale set-claim found in check.sh in passing. Still open: **4.50** (step 4's interactive halves, now testable via `--session-id`/`-r`, plus `/ticket`, `/investigate`, the failing-acceptance path and `Fixes #N`), **4.76**/**4.77**/**4.78**, plus 4.3 telemetry and 4.4 `setup --global`, the last two adopter-gated |
-| 5 / 6 / 7 — Gates, review board, operate | 🔶 16/33 (wave 5) | /contract-check and /deps review shipped 2026-08-17, /deps upgrade 2026-09-10; 5.11 gave the matrix a case filter the same day, so a targeted run costs ~1 min against a full run of **16m26s and 28m21s** (~6.6 and ~11.3 s/case — load-dependent, so the range is the fact and no single sample is; a third reading of 30m15s was withdrawn 2026-09-11 once the power log showed the machine slept through ~16 min of it, which is the condition a timing sample needs and nobody had checked); 5.13/5.14 filed 2026-09-10 from a host-namespace recheck; 5.7 ruled the cap 12,000 → 13,500 (2026-09-08). Remaining roadmap after the fold rulings is **6 skills, not 16** (/verify shipped 2026-09-17): /careful, /board (6.1–6.5 as lenses), /skill, /operate (7.1+7.2), /document, /cost |
+| 5 / 6 / 7 — Gates, review board, operate | 🔶 17/36 (wave 5) | /contract-check and /deps review shipped 2026-08-17, /deps upgrade 2026-09-10; 5.11 gave the matrix a case filter the same day, so a targeted run costs ~1 min against a full run of **16m26s and 28m21s** (~6.6 and ~11.3 s/case — load-dependent, so the range is the fact and no single sample is; a third reading of 30m15s was withdrawn 2026-09-11 once the power log showed the machine slept through ~16 min of it, which is the condition a timing sample needs and nobody had checked); 5.13/5.14 filed 2026-09-10 from a host-namespace recheck; 5.7 ruled the cap 12,000 → 13,500 (2026-09-08). Remaining roadmap after the fold rulings is **6 skills, not 16** (/verify shipped 2026-09-17): /careful, /board (6.1–6.5 as lenses), /skill, /operate (7.1+7.2), /document, /cost |
 | B — Browser layer | ⬜ | Unscheduled, demand-triggered; unblocks rendered QA, a11y, design, perf |
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### 5.31 closes, and /migrate-check's fix is reverted after three tries (2026-09-22)
+
+*(One squashed commit reached `main` — **PR #30**, six commits. 5.31 closes;
+5.34 and 5.35 are filed. `/migrate-check` ends the day byte-identical to
+where it started, which is the point of the entry.)*
+
+**5.31's last four documentation conflicts closed.** Three fixed, one ruled
+and carried.
+
+**(i) Three grader rules stated in `grader-rules.md` and honored nowhere.**
+Measured rather than recalled: NFKC folds U+00A0 and U+202F to spaces on its
+own and leaves U+2013, U+2014 and **all four curly quotes** untouched, so only
+the en-dash was ever folded — in a file naming curly-vs-straight quotes a
+classic silent killer. `parse: label:total` appeared in **exactly one file in
+the repo**, the canonical spec, and in no implementation. The runnable
+fixture's `norm()` took no `fold_case` argument at all, so `case_sensitive`
+was documented at four sites and honored at none, which is the defect §22
+exists to catch and cannot see: §22 checks the TOKEN is present, and all four
+sites had it. Proved with three fixture cases measured **discriminating**
+against the same subject table with only the grading logic reverted: q12
+`False→True`, q14 `False→True`, **q13 `True→False`** — folding case
+unconditionally scored a wrong-SHAPE answer as correct, so the old runner
+reported a pass it had no right to. Fixture headline `7/9 (77.8%)` →
+`9/12 (75.0%)`. The **first** before-arm was a confound and was thrown away:
+it used the old `run.py`, whose subject table lacks the new inputs, so all
+three cases returned `"unknown"` and the arm tested a missing dictionary
+entry rather than the grader.
+
+**(ii) `acstack-config` read any `#` as a comment**, so `palette: #123456`
+resolved **empty** — it warned, which softened the failure without fixing it,
+and `/design-audit` ran with no palette. A comment is now `#` followed by
+whitespace or end-of-line. Requiring whitespace merely *before* the `#` was
+tried and **rejected**: a comma-separated hex list carries ` #` internally,
+so that rule truncates `#123456, #abcdef` to `#123456,`. Every inline comment
+in `templates/acstack.md` is written `# `, checked rather than assumed. The
+reported `banned-palette` omission is **CONFIRMED and was understated**:
+`KEYS` omitted **four** documented keys — `banned-palette`, `variance`,
+`motion`, `density` — three carrying documented defaults the helper never
+returned. A hardcoded roster under-counts silently and by more than the
+person who noticed it noticed. **This retires `/verify`'s worked UNVERIFIABLE
+example as a live question**: its report named "the README config table
+treated as the expected set" as what would settle it, §43 now derives exactly
+that, and following the instruction found a defect four times larger than the
+claim. The example is kept with a dated note.
+
+**(iii) Not a conflict at all.** The decision already existed — a **[x]
+Verdict (2026-07-29)** in `## Open items` setting `ticket #<n>:` and naming
+its own rollout across CONDUCT rule 10, `/do`, `/ship` and README.
+CONDUCT.md:130 got the edit; `skills/do/references/tickets-mode.md:16` did
+not, and sat for seven weeks stating `#42: <subject>` **directly beneath the
+words "per CONDUCT rule 10"** — citing the rule it contradicted. Two
+documents that were never peers: one canonical, one an unfinished rollout,
+which is a different defect with a different fix.
+
+**(iv) Ruled, implemented three times, and reverted.** The ruling stands —
+two verdicts, Flagged folds into NO-GO, no third verdict. Every
+implementation of it was defective, each found by external review, each
+opening a hole while closing the last:
+
+| # | The form | What it opened |
+|---|---|---|
+| 1 | Verdicts defined by *conditions* | an **acknowledged** destructive statement with a confirmed backup, and a flagged check that had **run and failed**, matched no step at all |
+| 2 | Terminal step made an unconditional catch-all | fixed those two and let **unverified** history reach **GO** — 4 of 36 states, contradicting SKILL.md:82's own "verify applied-migration history manually before the GO" |
+| 3 | Flagged clears "ONLY when the named check has run and PASSED" | only **1 of 4** Flagged rows names a runnable check; the others name a rewrite, a human confirmation and a manual verification, so three rows had no clearance path |
+
+**Reverted rather than patched a fourth time, and the reason is a
+comparison, not fatigue.** On `main` the Flagged class returns **no
+verdict**, which stops. The branch returned a **false GO** on unverified
+history, which does not. A false GO is worse than no verdict, so "better than
+main" was never available and shipping it would have been a safety regression
+on a stack `SKILL.md:69-83` advertises support for. `skills/migrate-check/`
+is byte-identical to `main`; §45 and its five matrix cases went with it.
+5.31 closes on the clause it already carried — *each confirmed item is either
+fixed here or carried by its own task* — **not** on any claim that (iv) is
+implemented, and the record says so in those words.
+
+**The rollout (iii) belongs to is still one site short — enumerated, not
+assumed.** The 2026-07-29 verdict named four sites. CONDUCT.md carries
+`ticket #` three times and is correct; `/do` is fixed here; **`/ship` owes
+nothing**, because its only commit-subject handling is gate 4's
+journal-mention check, which matches against JOURNAL.md and hardcodes no
+format; and **README is the gap** — its `subtask-commit-format` row shows
+only the document-mode default and the string `ticket #` appears **nowhere**
+in the file, so a reader configuring tickets mode is never told what shape
+their subjects take. Filed as **5.36** rather than written down as a
+sentence. Checking the other three is what turned "probably still
+incomplete" into one named file.
+
+**The through-line, which is about the artefact and not the three
+mistakes.** Every version asked *"did I detect a problem?"* and treated **no
+detection as no problem**, so whatever the steps did not detect fell through
+the terminal into GO — and round 2 made that structural *by design*, to fix
+round 1. Compounded by an artefact spanning more axes than four prose steps
+hold: evidence state per check (clean / drift / **unverified**), statement
+class (3), remediation kind (**4**, not 1), and stack family, which decides
+whether evidence is *obtainable at all*. The bolded axes were each discovered
+one review late. The replacement shape, regression-tested against all four
+found defects plus two controls and landing all six correctly under **one**
+rule change: **default-deny** — GO requires every evidence item affirmatively
+satisfied; anything else, including *not checked*, is NO-GO naming the first
+unsatisfied item. Carried by 5.34, not built here.
+
+**A model written by the author of the procedure inherits the author's blind
+spot.** Round 2's fix was verified against a 24-state enumeration of
+(environment × destructive × flagged) that reported *"all 24 covered, every
+step reachable"*. It encoded history as a **boolean** — clean or not-clean —
+so it could not represent "could not be checked" and agreed with the
+procedure because both shared one omission. The corrected model has 36
+states. **5.34's own task text had named this risk in writing** — *"if I
+mis-identified a dimension, the model agrees with the procedure and both are
+wrong together"* — one message before it happened. Its acceptance now
+requires the model be **derived from the documents**, with the residual
+stated: a derived model still cannot catch a dimension neither the documents
+nor the author considered.
+
+**A reviewer's remedy is a claim, not a fix.** Codex correctly found §45
+could not catch the regression it existed for. Its proposed remedy —
+restrict the grep to the numbered steps — is **insufficient**, measured: the
+terminal step legitimately enumerates all three class names as a consequence
+of steps 1–3, so it contains "flagged" twice and deleting the flagged step
+still greps clean. Applying the remedy as written would have left the guard
+decorative *and recorded it as fixed*. What worked was a **step-count floor
+held outside the file**. Both halves of a review now get verified, not just
+the finding.
+
+**Two guards shipped, one seeded in both directions from the start.** §43
+derives the expected config-key set from README's table rather than restating
+it (keyed on the table's header text, because that table has already moved
+once and three guards broke that day for hardcoding where a document lives);
+§44 forbids the retired bare `#<n>:` commit shape anywhere in pack markdown
+**and** separately requires CONDUCT.md to still STATE the canonical form,
+because a guard that only forbids the wrong shape passes cleanly on a file
+stating no shape at all. Every arm seeded and watched fire.
+
+**Self-indicting, six, and five are one shape.** A check I was relying on was
+quietly satisfied — or invalidated — by something adjacent to what I thought
+I was measuring: **(1)** a matrix seed carried literal backticks inside a
+double-quoted `bash -c` argument, so the shell command-substituted the
+subject before python ran, the tree went unchanged and the case asserted
+nothing while its guard reported clean — caught by the matrix's own SEED
+NO-OP detector, not by reading it; **(2)** the committing chain was
+`check.sh | tail && git commit`, and a pipeline's status is the LAST
+element's, so `tail`'s 0 masked check.sh's 1 and **a commit failing the guard
+landed anyway** (squashed out); **(3)** a seed harness used
+`grep … | head || echo SILENT`, where `head` exits 0 and the fallback can
+never print; **(4)** PLAN.md was edited **during** a matrix run, moving the
+tree hash and costing a re-run — after flagging that exact hazard earlier the
+same session; **(5)** and **(6)** two counts derived with my own regex instead
+of the repo's oracle — `46` against `count-check`'s 45 for check.sh sections,
+and `175` against its 196 for matrix cases, because the oracle's
+`^([a-z]+case|check) ` is deliberately shape-agnostic and mine named four
+shapes. The oracle exists precisely because a fifth shape once landed and
+under-counted by 5.
+
+**Tooling and policy.** Two Codex reviews, **6 findings, 6 confirmed at
+`file:line`, none refuted** — 4 then 2, the second round's both sitting
+*inside* the first round's fix. Its citations checked out too
+(`AGENTS.md:65-72`, `83-87`, `199-202`). A review of a +703/-62 diff took
+**~38 min**, against 21m08s for a 9-file diff, so review time scales with the
+diff and sets the pre-push wait. Both runs need the sandbox off —
+`~/.claude/plugins` is write-protected and the first attempt died on
+`EPERM … mkdir …/state/…/jobs`. **`claude doctor` run inside the sandbox
+reports the sandbox's own restrictions as installation problems** — it
+claimed the keychain was unwritable and auto-update impossible; outside the
+jail, *"No installation issues found."* CLI **2.1.270 → 2.1.280**. **Ruled:
+three factors before a push, not one** — the guard matrix, an independent
+reviewer that did not write the code, and 2-4 agents tasked to DISPROVE
+launched *concurrently* with the reviewer so they cost no extra wall clock.
+Filed as 5.35 with its warrant recorded as **weaker** than the seven existing
+repo rules, which each came from a defect that shipped; this one was caught
+pre-merge.
+
+**What did NOT change:** CONDUCT's ten rules · VERSION 0.4.0 · `setup` ·
+branch protection · `README.md` (untouched by this branch, which is why 5.9
+stayed blocked — §43 now derives from its config table) ·
+`skills/migrate-check/` · the 30 local and 30 remote branches awaiting the
+operator's cleanup.
+
+**Validation close.** `check.sh` **45 → 47** sections (44 numbered + 3
+lettered; briefly 48 before §45 was reverted out), clean on every commit
+standing alone **and on the merged tree**. Matrix **194 → 196**, RAN sum
+equals DECLARED, tree hash **UNMOVED**, on `beff626` with a clean tree — the
+run before it was discarded for a moved hash and the one before *that* was
+red. CI green on all six checks (`check` 6s, `guard` 13s, four matrix shards
+4m26s–6m59s). `recount.sh` on the merged tree: *"nothing to do — every marked
+count already matches its derivation"*. Markers: `checks` **47**,
+`matrix-cases` **196**, `skills` **26**, `open-scheduled` **31**,
+`repo-rules` **7** (5.35 files the rule; it does not add it). Wave 5 **16 of
+33 → 17 of 36**. One PR merged (#30).
 
 ### /verify ships after three review rounds, and §42 is wrong four distinct ways (2026-09-19)
 
