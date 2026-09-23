@@ -411,7 +411,7 @@ people will want to drop first.
 ## About this document
 
 This README is longer and has more tables than most. It has
-<!-- count:readme-lines -->457<!-- /count --> lines,
+<!-- count:readme-lines -->461<!-- /count --> lines,
 <!-- count:readme-h2 -->16<!-- /count --> sections and
 <!-- count:readme-rows -->62<!-- /count --> table rows. Six comparison
 projects with over 100k stars had 96–346 lines, 4–12 sections and 0–19 table
@@ -435,6 +435,10 @@ If the page gets hard to scan, this should be revisited. The measurement is
 quick to re-run, and the decision is easy to reverse.
 
 ## More
+
+**Found a security problem?** Please report it privately through GitHub's
+[Report a vulnerability](https://github.com/AaravChadha/acstack/security/advisories/new)
+form rather than opening a public issue. Only the maintainer sees the report.
 
 | Document | What's in it |
 |---|---|

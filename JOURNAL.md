@@ -1053,7 +1053,7 @@ of the thing that section exists to prove is the defect the pack forbids, and
 no guard would have seen it.**
 
 **Operator ruling (density): declare, do not cut** — "we can always change
-later". README is <!-- count:readme-lines -->457<!-- /count --> lines,
+later". README is <!-- count:readme-lines -->461<!-- /count --> lines,
 <!-- count:readme-h2 -->16<!-- /count --> sections and
 <!-- count:readme-rows -->62<!-- /count --> table rows against the field's
 96–346 / 4–12 / 0–19, and now says so in an `## About this document` section
