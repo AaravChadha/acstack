@@ -6316,6 +6316,40 @@ multi-PR build that would otherwise pay full price for every push.
   **is** — both shown on a copy. Skill logic, so all three review factors
   apply (5.35's scope).
 
+- [ ] **5.38** Three guard scans walk the whole folder, so a git worktree
+  nested under `.claude/worktrees/` — where `claude --worktree` puts every
+  parallel session — is scanned as if it were part of the main checkout.
+  Found 2026-09-23 when the post-merge `check.sh` for PR #32 failed **11
+  times** in the main checkout on a merged tree that was clean: every counted
+  file inside `.claude/worktrees/5.9-readme-prose/` hit `count-check`'s "on
+  neither count-check roster", and `recount.sh` refused the lot as
+  non-repairable. The merged tree itself passed in a separate `git clone`.
+  **Enumerated, not assumed** — the whole-tree walkers are
+  `scripts/count-check.sh:180` (`grep -rl … .`, the one that fired),
+  `scripts/check.sh:1465` (every `/audit` roster row in any `.md`) and
+  `scripts/shell-sources.sh:26` (`find .`, the lint set). The last two passed
+  only because the worktree's copy matched `main`; a peer's **unfinished**
+  work in its worktree would be judged by the integrator's check, which is
+  the worse failure. The banned-name sweep (`check.sh:93`) names its
+  directories and is unaffected. `.claude/worktrees/` is also not
+  gitignored, so the main checkout shows `?? .claude/` whenever one exists.
+  **Constraint that rules out the obvious fix:** scoping the walkers to
+  `git ls-files` breaks the guard matrix, which runs `check.sh` in a copy with
+  no `.git` (`shell-sources.sh:18-21` records this as the reason `find` was
+  chosen, after §34 fell into the same trap). Two shapes survive: prune the
+  path `.claude/worktrees` in each walker, or prune **any directory that
+  holds its own `.git`** — structural, so it also covers a worktree created
+  somewhere other than the default path, where a path list would silently
+  miss it. Pick by measurement, not preference; whichever is chosen, the
+  three walkers should share one definition rather than three copies.
+  **Acceptance:** with a worktree present under `.claude/worktrees/` carrying
+  a marked-count file **and** a deliberately stale count, `check.sh` in the
+  main checkout is clean; a stale count seeded in a **tracked** file of the
+  main checkout still fails; `.claude/worktrees/` is gitignored; and the full
+  matrix still passes (the no-`.git` copy is the case the constraint exists
+  for). Each arm shown on a copy. Guard logic, so all three review factors
+  apply (5.35's scope).
+
 ## [ ] Wave 6 — The review board
 
 **Goal:** Multi-perspective review — the team — expressed as lenses, not
