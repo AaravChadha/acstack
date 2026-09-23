@@ -3,7 +3,20 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-22. **5.31 closes, and `/migrate-check`'s fix is
+> **Last update**: 2026-09-23. **The README is rewritten in plain words, and
+> a worktree turns out to break the integrator's own check** (PRs #32, #33).
+> The prose pass took README's em-dash rate **1.80 → 0.20** per 100 words,
+> re-derived live rather than trusted, after the operator rejected the first
+> register as hard to read; 5.36 closed with it. Re-measuring the comparator
+> field found it had moved (5.37). The post-merge `check.sh` then failed **11
+> times** on a clean merged tree, because `count-check` scanned a worktree
+> nested under `.claude/worktrees/` — filed as 5.38 with three sites, and
+> corrected to **five** when the matrix's own change notice fired on a
+> `.DS_Store`. All 32 merged branches were deleted after a per-branch check
+> (merged PR and an identical tip), and GitHub's auto-delete is on. `checks`
+> **47**; matrix **196**; scheduled open **32 → 33**; wave 5 **17 of 36 → 18
+> of 38**.
+> Earlier (2026-09-22). **5.31 closes, and `/migrate-check`'s fix is
 > reverted after three tries** (PR #30). Three of its four remaining conflicts
 > are fixed: three grader rules stated in `grader-rules.md` and honored
 > nowhere (NFKC leaves **all four curly quotes** and both dashes alone —
@@ -32,7 +45,9 @@
 > the pipeline's last status. **Ruled: three factors before a push** — matrix,
 > an independent reviewer, and 2-4 agents tasked to DISPROVE run concurrently
 > with it (5.35). 2 Codex reviews, **6 findings, 6 confirmed**. `checks`
-> **45 → 47**; matrix **194 → 196**; scheduled open **31**; wave 5 **17 of
+> **45 → 47**; matrix **194 → 196**; scheduled open ~~**31**~~ **32**
+> *(corrected 2026-09-23: 5.36 was filed in this entry's own commit, after
+> the figure was written)*; wave 5 **17 of
 > 36**.
 > Earlier (2026-09-19). **/verify ships after three review rounds and
 > 29 findings on one branch** (5.4, PR #28) — a skill that audits a claim made
@@ -332,7 +347,7 @@
   **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (17) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
-- Next: **wave 5** — ~~5.17.2 first~~ **Verdict (2026-09-14, 3rd):** 5.17.2 is closed (`scripts/recount.sh`, acceptance shown wrong first on a merge that lost a count silently). ~~The remaining multi-session critical path is 5.17.1, .3, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — eight items~~ **Verdict (2026-09-16):** 5.17.3 closed too, so the path is **5.17.1, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — seven items**. All ten affected skills still stand, since multi-session is the default in *every* mode rather than tickets-mode-only. **5.23 `/skill` sits behind them as the leverage point**: patching shipped skills is finite work, a generator that does not know the four classes makes it infinite. ~~**5.4's ordering is OPEN for the operator**~~ **Verdict (2026-09-16):** ruled — /verify scheduled after 5.17.4/.5/.6 and 5.26, and **shipped 2026-09-17**.  **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 since shipped; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-17: 5.4, 5.28, 5.29, 5.30, 5.9 (partial). Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
+- Next: **wave 5** — ~~5.17.2 first~~ **Verdict (2026-09-14, 3rd):** 5.17.2 is closed (`scripts/recount.sh`, acceptance shown wrong first on a merge that lost a count silently). ~~The remaining multi-session critical path is 5.17.1, .3, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — eight items~~ **Verdict (2026-09-16):** 5.17.3 closed too, so the path is **5.17.1, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — seven items**. All ten affected skills still stand, since multi-session is the default in *every* mode rather than tickets-mode-only. **5.23 `/skill` sits behind them as the leverage point**: patching shipped skills is finite work, a generator that does not know the four classes makes it infinite. ~~**5.4's ordering is OPEN for the operator**~~ **Verdict (2026-09-16):** ruled — /verify scheduled after 5.17.4/.5/.6 and 5.26, and **shipped 2026-09-17**.  **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 since shipped; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-23: 5.36, and 5.9's prose pass (5.9 stays open on its own acceptance); filed 5.37 and 5.38. Shipped 2026-09-17: 5.4, 5.28, 5.29, 5.30, 5.9 (partial). Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
   4.45–4.47 carry three findings from a survey of two high-star
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
@@ -405,6 +420,178 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### The README is rewritten in plain words, and a worktree breaks the integrator's check (2026-09-23)
+
+*(Two squashed PRs reached `main`: **#32** (5.36 closed, 5.9's prose pass)
+and **#33** (5.38 filed). Both docs-only, so matrix-only under the
+three-factor scope. The branch cleanup the last handoff carried as open is
+done.)*
+
+**The cold-start test the operator set.** The session opened with `/resume`
+on the 2026-09-22 entry, to see whether it rebuilt the picture without the
+handoff. Mostly yes. Three gaps: its "What did NOT change" sentence read as
+if §43 were what **blocked** 5.9, when §43 reaching `main` is what
+**unblocked** it; nothing said 5.9's remainder was the prose register; and
+the work order existed only in the handoff. It also carried `open-scheduled`
+**31** where the marker said **32**, because 5.36 was filed in the journal
+commit itself, after the figure was written. Both are now corrected in place
+with dated notes. A number written into prose describes the tree at the
+moment of writing, and the entry's own commit can move it.
+
+**5.9's prose pass: the number was re-derived, and the bar it was measured
+against had moved.** README measured **1.80** em-dashes per 100 words live
+(37 in 2,050), against the recorded 1.9, using `target-readme.md`'s stated
+method. The six comparators, fetched live, gave **0.00 / 0.40 / 0.19 / 0.04
+/ 0.00 / 4.70**, so the recorded "0.0–0.2" field no longer holds. langchain's
+4.70 is **18 of 22** list glosses (`**Term** — definition`); counting only
+dashes inside sentences gives **0.85**, and the live field becomes
+**0.00–0.85**. README's in-sentence rate was **1.66**, twice the highest
+comparator. The conclusion survived and the bar did not. superpowers (399
+lines) and ohmyzsh (588) also now sit outside the recorded 96–346 length
+field. Filed as **5.37**, since `target-readme.md` is skill logic.
+
+**The register was set by the operator, not by the measure.** The first
+rewrite of the opening took it to 0.00 and was rejected: *"i have to
+concentrate to understand what you want and saying getting burned with this
+just makes it sound weird. just say normally"*. The second version, in plain words
+("people who use a coding agent and have had it say work was done when it
+wasn't"), was approved, and the rest of the document followed it. Result:
+**1.80 → 0.20** (37 → 5), mean sentence **20.3 → 17.5** words, **428 → 457**
+lines. All five remaining dashes are inside the canonical `acstack:principles`
+block, left alone on purpose because changing it is a 27-file edit. No
+heading, anchor, config key cell or canonical block changed. Before the
+rewrite, every README phrase a guard or matrix seed depends on was mapped:
+the config table's header and key cells, `task <number>: <description>`
+(seed at `guard-matrix.sh:404`), `journal-commit-format` (seed at `:299`),
+and the three canonical blocks.
+
+**5.36 closed, and the obvious wording would have been a new error.**
+README now states `ticket #<n>: <description>` in the `subtask-commit-format`
+row and in the `tracking: tickets` paragraph. The row also says the key
+covers **document mode only**, because tickets mode always uses `ticket #<n>:`
+whatever the key says (`skills/do/references/tickets-mode.md:15`). Putting
+the tickets shape in the key's value cell would have told readers the key
+sets it. `grep -c 'ticket #' README.md` **0 → 2**.
+
+**A README critique from another agent session was checked at file:line
+before anything was built on it.** Four of its claims held or were
+consistent (an 18-row settings table, about 53 table rows, 36 dashes in
+about 1,750 words, and care around the principles block). One was false: a
+"dated internal correction" in a network paragraph at line 180, where line
+180 is the `/plan` shadowing note and the network paragraph (then 216-222)
+carries no such story. One asked for something that already existed (a
+first-command path, `## What to type first`). One conflicted with the
+2026-09-17 ruling (trim the reference sections). None changed the plan.
+
+**Self-indicting, six, and three are the same shape as last session's.**
+**(1)** Branch classification first used `if ! git merge-tree … | head -1`.
+A pipeline's status is its last element's, so git's conflict exit was masked
+by `head`'s 0, and all 61 refs came back "has new content". That is the third
+recurrence of the `| tail &&` shape the 2026-09-22 entry named. It was caught
+because 61 of 61 was implausible for merged work, not by reading the code.
+**(2)** Enumerating the whole-folder walkers for 5.38 with a hand-written
+regex missed two sites already known: `check.sh:1465`, whose pattern
+contains `|`, and `guard-matrix.sh:102`, which starts from `$1`. A second
+filter written to narrow the list dropped **every** line, including the
+known ones. The final list came from reading all 36 lines by eye.
+**(3)** 5.38 was first filed as **three** sites from a grep of `scripts/`
+alone. The matrix's own "tree changed during this run" note exposed the
+other two, which is the recorded rule — a claim about a set enumerates the
+set — failing again one layer down. **(4)** I told the operator the 5.38 fix
+was `git ls-files` before reading `shell-sources.sh:18-21`, which records why
+that breaks the matrix: it runs `check.sh` in a copy with no `.git`.
+Corrected once the code was read. **(5)** Two overclaims in my own rewrite,
+caught before commit: "Every task has an acceptance command" (not true, and
+`/do` refuses to tick one without it, `skills/do/SKILL.md:102`), and
+"Proper Windows support is not planned" where the original said only
+*symlink* support. **(6)** The first section chosen to demonstrate the
+register, `## See it work`, was the **least** compressed prose section at
+0.64. It was swapped for the opening at 1.58 after measuring per section.
+
+**5.38: a worktree inside the repo folder breaks the integrator's check.**
+After #32 merged, `check.sh` failed **11 times** in the main checkout: every
+counted file inside `.claude/worktrees/5.9-readme-prose/` hit "on neither
+count-check roster", and `recount.sh` refused them all as non-repairable. The
+merged tree itself passed in a separate `git clone`. A `git archive` export
+was not good enough for that check, because 23 lines of `check.sh` invoke
+git.
+`claude --worktree` puts every parallel session in that folder, so this is
+the default multi-session layout rather than an edge case. The five sites:
+`count-check.sh:180`, `check.sh:1465`, `shell-sources.sh:26`,
+`guard-matrix.sh:93` (the snapshot every case copies, so a worktree would
+ride into all of them; **predicted, not measured**) and `guard-matrix.sh:102`.
+**Why not `git ls-files`:** the matrix copy has no `.git`. The task names
+the two shapes that survive: prune the path, or prune any folder that holds
+its own `.git`.
+
+**Removing the worktree went wrong in a new way.** `git worktree remove` run
+inside the sandbox deleted **8 tracked files** from the worktree, then hit
+`Operation not permitted` on the folder and on `.git/worktrees/<name>`. That
+left a half-removed worktree which a plain `remove` then refused as
+modified. The `--force` retry, with the sandbox off, was **denied by the
+auto-mode classifier** as irreversible local destruction, and the session
+stopped there. Nothing was lost, because all 8 files existed on `main` and
+on the branch. When the operator ran the command a few minutes later, the
+worktree was already gone; what removed it was not established. Related:
+`git worktree add -b` fails in the sandbox trying to write upstream tracking
+to `.git/config`, but the branch is still created, and
+`git worktree add <path> <branch>` then works. **Why a plain branch for
+5.38 and not a worktree:** a worktree under `.claude/worktrees/` would have
+reproduced the very defect being filed.
+
+**The branch cleanup, checked per branch rather than trusted as
+"content-upstream".** **32** local and **31** remote branches. `git branch
+--merged` cannot see squash merges, and a content test against today's
+`main` gives false positives on branches `main` has since moved past, so
+the rule was: **the PR is MERGED and the branch tip on both sides equals the
+PR's `headRefOid`.** **31 of 31** passed. `scratch/5.15-demo` (local only,
+no PR) passed a line check instead: **27 of 27** added lines are verbatim in
+`main`'s PLAN.md, each checked separately. The operator ran both deletions
+after the command text was compared mechanically against the verified list
+(32 and 31 names, no duplicates, no `main`, no open PRs, no hooks,
+`core.hooksPath` or aliases). Each deleted tip in the output then matched
+its merged PR head, **31 of 31**. `origin/test/ci-seeded-violation`, the
+unmerged PR #1 from 2026-07-31, survived as a stale local record until
+`fetch --prune`.
+
+**Two settings changed by the operator, each read back afterwards.**
+GitHub `delete_branch_on_merge` **false → true** (set in the UI, read back
+via the API). It fired on #33 a few seconds after the merge.
+`fetch.prune=true` was set **repo-local**, not global, so another repo's
+fetch cannot drop a teammate's accidentally deleted branch from the
+operator's copy. **Road not taken:** `gh pr merge --delete-branch`. It also
+deletes the local branch, which for a squash merge presumably means a force
+delete (gh 2.89.0's help does not say; not verified), so a commit made after
+the push is lost silently. It also fails partway when the branch is checked
+out in a worktree. Local deletion stays a separate step behind the tip
+check.
+
+**Tooling and timings.** Matrix **8m32s** (on `5c6dbb3`) and **10m05s** (on
+`af3321c`). One run was cut off by a session restart at about 30 of 49 cases
+per shard and was reported as incomplete, not green. Another printed "tree
+changed during this run"; the only path touched was `.DS_Store` at +538 s,
+which `guard-matrix.sh:102`'s whole-folder hash counts. That result was
+still valid for its commit (git tree hash unmoved), and the note is what
+exposed sites 4 and 5. CI on #32: `check` 5s, `guard` 14s, shards
+6m32s / 4m39s / 6m40s / 5m23s. On #33: 8s, 18s, 6m38s / 6m35s / 5m26s /
+6m40s. The harness reported the model as Opus 5.5 (`claude-opus-5-5[1m]`);
+the `/model` menu itself cannot be read from inside a session. No Codex
+review ran: both PRs were docs-only.
+
+**What did NOT change:** CONDUCT's ten rules · VERSION 0.4.0 · every
+SKILL.md · `check.sh` and every guard (5.38 is filed, not fixed) · the
+matrix's 196 cases · `setup` · the principles block · branch protection ·
+`/migrate-check` (5.34 still not due).
+
+**Validation close.** `check.sh` clean on every commit and on merged `main`
+after each PR (`c8da5be`: *"check.sh: all clean"*). `recount.sh` on merged
+`main`: *"nothing to do — every marked count already matches its
+derivation"*. Matrix **196 / 196** on both PR heads, `RAN` summed to
+`DECLARED`, tree hash unmoved. Markers: `checks` **47**, `matrix-cases`
+**196**, `skills` **26**, `open-scheduled` **32 → 33** (−1 for 5.36, +1 for
+5.37, +1 for 5.38), `repo-rules` **7**, `readme-lines` **428 → 457**. Wave 5
+**17 of 36 → 18 of 38**. Branches **32 local + 31 remote → `main` only**.
 
 ### 5.31 closes, and /migrate-check's fix is reverted after three tries (2026-09-22)
 
@@ -580,7 +767,10 @@ pre-merge.
 
 **What did NOT change:** CONDUCT's ten rules · VERSION 0.4.0 · `setup` ·
 branch protection · `README.md` (untouched by this branch, which is why 5.9
-stayed blocked — §43 now derives from its config table) ·
+stayed blocked — §43 now derives from its config table) *(note 2026-09-23:
+this reads as if §43 were what blocked 5.9. It was the other way round: the
+two collided on the same file, and with §43 on `main` 5.9 was unblocked.
+A cold `/resume` of this entry could not tell)* ·
 `skills/migrate-check/` · the 30 local and 30 remote branches awaiting the
 operator's cleanup.
 
@@ -592,7 +782,8 @@ run before it was discarded for a moved hash and the one before *that* was
 red. CI green on all six checks (`check` 6s, `guard` 13s, four matrix shards
 4m26s–6m59s). `recount.sh` on the merged tree: *"nothing to do — every marked
 count already matches its derivation"*. Markers: `checks` **47**,
-`matrix-cases` **196**, `skills` **26**, `open-scheduled` **31**,
+`matrix-cases` **196**, `skills` **26**, `open-scheduled` ~~**31**~~ **32**
+*(corrected 2026-09-23: 5.36 was filed in this entry's own commit)*,
 `repo-rules` **7** (5.35 files the rule; it does not add it). Wave 5 **16 of
 33 → 17 of 36**. One PR merged (#30).
 
