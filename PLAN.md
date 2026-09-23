@@ -4762,6 +4762,16 @@ multi-PR build that would otherwise pay full price for every push.
   it was never attempted, so `check.sh`'s hardcoded `README.md` config-table
   lookup stands unchanged and un-rederived. If the ruling is revisited, that
   is the work it implies.
+  **Prose pass (2026-09-23): the register is unpacked, not shortened.** Em-dashes
+  **1.80 → 0.20** per 100 words across the whole README (37 → 5), re-derived
+  live rather than taken from the recorded 1.9; mean sentence **20.3 → 17.5**
+  words. All five that remain sit inside the canonical `acstack:principles`
+  block, excluded deliberately — changing it is a 27-file edit and a separate
+  call. Operator steer: plain words over precise jargon ("say it normally"),
+  one section shown and approved before the register changed anywhere else.
+  Length rose **428 → 456** lines, which the 2026-09-17 ruling (declare, do
+  not cut) already covers. No heading, anchor, table key cell or canonical
+  block changed. **Re-deriving the bar found it stale**: filed as 5.37.
 - [ ] **5.10** `/do` ticks a box without ever asking what points AT it.
   `scripts/reach-check.sh` answers that question, but it runs from
   `check.sh` — that is, at commit time, **after** the tick. On 2026-08-16
@@ -6253,7 +6263,17 @@ multi-PR build that would otherwise pay full price for every push.
   recording what each one found — including "nothing", which is the result
   that tells you whether factor 3 earns its place.
 
-- [ ] **5.36** The 2026-07-29 tickets-commit verdict is still one site short.
+- [x] **5.36** *(Done 2026-09-23. README now states the tickets subject shape
+  in two places a tickets-mode reader meets it: the `subtask-commit-format`
+  row, which also says the key governs document mode only — tickets mode
+  always uses `ticket #<n>:` per `skills/do/references/tickets-mode.md:15`,
+  so a row implying the key sets it would have been a new error — and the
+  `tracking: tickets` paragraph, with a worked `ticket #42:` example.
+  `grep -c 'ticket #' README.md` **0 → 2**; §44 clean. The 2026-07-29
+  rollout's four sites are now all carried: CONDUCT, `/do`, `/ship` (owes
+  nothing) and README. Grouped with 5.9's prose pass, as the acceptance
+  asked.)*
+  The 2026-07-29 tickets-commit verdict is still one site short.
   It named four: CONDUCT rule 10, `/do`, `/ship`, and README's
   `subtask-commit-format` row. 5.31(iii) fixed `/do` — its
   `references/tickets-mode.md:16` had stated `#42:` beneath the words "per
@@ -6272,6 +6292,29 @@ multi-PR build that would otherwise pay full price for every push.
   since it forbids the bare form and requires CONDUCT to keep stating the
   canonical one. Small; grouped with any other README work rather than
   shipped alone.
+
+- [ ] **5.37** `/audit readme`'s measured bar no longer reproduces, and its
+  prose-texture method cannot tell two kinds of dash apart. Found 2026-09-23
+  re-deriving 5.9's em-dash figure live against the same six comparators
+  `skills/audit/references/target-readme.md` names. **The field moved:**
+  `obra/superpowers` is now **399** lines and `ohmyzsh` **588**, both outside
+  the stated 96–346; superpowers' em-dash rate is **0.40**, outside the
+  stated 0.0–0.2. **The method conflates two things:** `langchain` measures
+  **4.70** per 100 words, 25x the stated ceiling, but **18 of its 22** dashes
+  are list glosses (`**Term** — definition`), not clauses stacked into a
+  sentence; counting in-sentence dashes only gives **0.85**, and the live
+  field becomes **0.00–0.85**. Check 8's stated purpose is detecting
+  clause-stacking, which a list gloss is not, so as written the check would
+  flag a normal glossary as over-compressed. README's `## About this
+  document` quotes the 2026-09-17 figures with their date, which keeps it
+  true as history; it is not edited here.
+  **Acceptance:** `target-readme.md` states the re-measured field with its
+  date, and check 8's method separates list-label dashes from in-sentence
+  ones in words a reader can apply by hand; a seeded README carrying ten
+  `**Term** — gloss` bullets and no in-sentence dashes is **not** reported
+  as over-compressed, and one carrying the same dashes inside sentences
+  **is** — both shown on a copy. Skill logic, so all three review factors
+  apply (5.35's scope).
 
 ## [ ] Wave 6 — The review board
 
