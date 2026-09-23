@@ -6133,7 +6133,24 @@ multi-PR build that would otherwise pay full price for every push.
   Flagged class matches nothing"* — which stays as written in their dated
   records, being true when written and the reason UNVERIFIABLE exists.
 
-- [ ] **5.32** No private route to report a vulnerability. The repo has been
+- [x] **5.32** *(Done 2026-09-23. The operator enabled GitHub's private
+  vulnerability reporting in the UI; read back via
+  `gh api repos/AaravChadha/acstack/private-vulnerability-reporting` →
+  `{"enabled":true}`. README's `## More` section now links to the report
+  form and asks for a private report instead of a public issue, with no
+  promise about response time, since that wording is the operator's. **No
+  `SECURITY.md`**: the setting was the whole answer, as this task
+  anticipated. **Reachability was checked from a stranger's side, not
+  inferred from the setting:** an unauthenticated fetch of
+  `/security` returned 200 with a "Report a vulnerability" link to
+  `/security/advisories/new`, and that URL answered **302** to
+  `github.com/login?return_to=…/security/advisories/new`, i.e. sign in and
+  land on the form. The operator's own screenshot showed only the owner view
+  ("See reported vulnerabilities"), which cannot show what a finder sees.
+  **The acceptance asks for confirmation "by the operator"; what happened is
+  a logged-out fetch by the session, which the operator reviewed and ruled
+  sufficient ("counts").** Recorded as that, not as a click-through.)*
+  No private route to report a vulnerability. The repo has been
   public since 2026-08-03 and carries no `SECURITY.md` at root or under
   `.github/` (verified 2026-09-16), so someone who finds a problem in a pack
   that tells agents to run shell commands has two options: open a public
