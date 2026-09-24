@@ -38,6 +38,20 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_DIR"
 fail=0
 skipped=0
+
+# 5.20.2: the matrix skips its three slowest sections (5, 8, 11: about 6 of
+# check.sh's 9 seconds) for a case whose guard class none of them prints.
+# The skip set comes from the environment and is empty in every normal run
+# (pre-commit, CI's guard job), and a skip is announced and counted, so a
+# run with sections skipped can never report itself as clean. The matrix
+# derives which sections are skippable from the `if ! _skip N` lines below
+# and which classes each prints from its FAIL lines; see guard-matrix.sh.
+_skip() {
+  case " ${ACSTACK_SKIP_SECTIONS:-} " in
+    *" $1 "*) echo "SKIP §$1: listed in ACSTACK_SKIP_SECTIONS"; skipped=$((skipped + 1)); return 0 ;;
+  esac
+  return 1
+}
 WORKTMP_RO="$(mktemp)"; trap 'rm -f "$WORKTMP_RO"' EXIT
 
 extract_principles() {
@@ -226,6 +240,7 @@ done
 #    and CI's shellcheck step reads the same script. Until 2026-08-16 three
 #    rosters lived here and in check.yml and no two agreed — 7 files got
 #    `bash -n`, 6 got shellcheck, and four scripts were linted by nothing.
+if ! _skip 5; then
 shell_sources="$(bash scripts/shell-sources.sh)"
 if [ -z "$shell_sources" ]; then
   echo "FAIL syntax: scripts/shell-sources.sh returned no files — the derivation is broken"
@@ -241,6 +256,7 @@ if command -v shellcheck >/dev/null 2>&1; then
     echo "FAIL syntax: shellcheck reported findings in the derived shell set (listed above)"
     fail=1
   fi
+fi
 fi
 
 # 6. VERSION / CHANGELOG agreement. VERSION is one bare semver line and must
@@ -274,6 +290,7 @@ done
 #        so ../../<skill>/references/… resolves there too);
 #    plus: repo-root-relative skills/<x>/references/ citations are
 #    themselves a failure — they resolve in this repo but not on installs.
+if ! _skip 8; then
 XREF_EXCEPTIONS='doctor|script|api|dev|acstack|sandbox|node'
 #   doctor  — Claude Code's built-in diagnostic, named in /health's lineage note
 #   script  — the </script> HTML fragment in /qa's adversarial bank
@@ -340,6 +357,7 @@ if [ -s "$WORKTMP_RO" ]; then
   echo "FAIL crossref: pack-relative path inside an emitted template block — it will not resolve in the adopter's copy:"
   cat "$WORKTMP_RO"
   fail=1
+fi
 fi
 
 # 9. Config-key reachability: every key in README's config table appears in
@@ -465,6 +483,7 @@ fi
 #     command is re-run against a seeded fixture (scripts/controls.sh).
 #     A pattern edit that stops catching its plant fails HERE, before it
 #     ships as a false pass.
+if ! _skip 11; then
 if [ -d fixtures ]; then
   if ! ctrl_out="$(bash scripts/controls.sh 2>&1)"; then
     echo "FAIL controls: a documented check missed its seeded plant:"
@@ -474,6 +493,7 @@ if [ -d fixtures ]; then
 else
   echo "FAIL controls: fixtures/ directory missing — the positive-control layer is gone"
   fail=1
+fi
 fi
 
 # 12. Runtime preamble: marker-fenced block present in every SKILL.md,

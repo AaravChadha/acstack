@@ -219,6 +219,56 @@ echo
 # tests frontmatter parsing in isolation.
 FULL="$WORK/full"
 
+# 5.20.2: which of check.sh's slow sections this case may skip. Derived per
+# case from the case's OWN copy of check.sh (some cases mutate check.sh), in
+# three steps, each failing safe:
+#   1. the skippable sections are the ones wrapped in `if ! _skip N; then`,
+#      and a wrapper outside section N stops the whole run, since the
+#      section numbers would no longer mean what the wrapper says;
+#   2. a section's classes are the literal labels of its FAIL lines; a FAIL
+#      whose label is computed (`FAIL $x`) makes the section never skipped;
+#   3. a section is skipped only if NONE of its labels matches this case's
+#      class, tested with the same `grep -E` the case's assertion uses.
+# A skipped section cannot change the outcome: the assertion only greps for
+# "FAIL (<class>)", which that section cannot print, and no later section
+# reads its variables (checked 2026-09-24: shell_sources and XREF_EXCEPTIONS
+# are read nowhere else; its loop variables are set again before use).
+_skip_set() { # check.sh-path class-regex -> space-separated sections to skip
+  local f="$1" cls="$2" rows sec lab keep out=""
+  [ -f "$f" ] || return 0
+  rows="$(awk '
+    /^# [0-9]+[a-z]?\. / { sec = $2; sub(/\.$/, "", sec) }
+    /^if ! _skip [0-9]+[a-z]?; then$/ { n = $4; sub(/;$/, "", n)
+      if (n != sec) { print "MISPLACED " n " " sec; next }
+      skippable[n] = 1 }
+    { line = $0
+      while ((i = index(line, "FAIL ")) > 0) {
+        rest = substr(line, i + 5)
+        if (match(rest, /^[a-z][a-z-]*/)) labels[sec] = labels[sec] " " substr(rest, 1, RLENGTH)
+        else dynamic[sec] = 1
+        line = rest
+      } }
+    END { for (n in skippable) print "SECTION " n " " (dynamic[n] ? "DYNAMIC" : "LABELS") labels[n] }
+  ' "$f")"
+  if printf '%s\n' "$rows" | grep -q '^MISPLACED '; then
+    echo "MATRIX: an \`if ! _skip N\` wrapper sits outside section N in $f:" >&2
+    printf '%s\n' "$rows" | grep '^MISPLACED ' >&2
+    exit 2
+  fi
+  while read -r _ sec kind labs; do
+    [ -n "$sec" ] || continue
+    [ "$kind" = LABELS ] || continue
+    keep=0
+    for lab in $labs; do
+      printf 'FAIL %s' "$lab" | grep -qE "FAIL ($cls)" && { keep=1; break; }
+    done
+    [ "$keep" -eq 1 ] || out="$out $sec"
+  done <<EOF_SKIP
+$(printf '%s\n' "$rows" | grep '^SECTION ')
+EOF_SKIP
+  printf '%s' "${out# }"
+}
+
 fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
   local n="$1" exp="$2" cls="$3"; shift 3
   _case_start "$n" || return 0
@@ -231,7 +281,8 @@ fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
     printf '  BAD  %-42s SEED NO-OP — tree unchanged, the case tested nothing\n' "$n"
     failed=$((failed+1)); return 0
   fi
-  out="$(cd "$FULL" && ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
+  local skip; skip="$(_skip_set "$FULL/scripts/check.sh" "$cls")" || exit 2
+  out="$(cd "$FULL" && ACSTACK_SKIP_SECTIONS="$skip" ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
   if printf '%s' "$out" | grep -qE "FAIL ($cls)"; then got=FAIL; else got=PASS; fi
   if [ "$got" = "$exp" ]; then printf '  ok   %-42s %s\n' "$n" "$got"; pass=$((pass+1))
   else printf '  BAD  %-42s got=%s want=%s\n' "$n" "$got" "$exp"; failed=$((failed+1)); fi
