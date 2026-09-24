@@ -5803,7 +5803,23 @@ multi-PR build that would otherwise pay full price for every push.
     the caveat into 5.16 so the two cannot be closed inconsistently.
     **Acceptance:** 5.16's trigger carries the mode caveat, and the hackathon
     protection posture is stated together with what it gives up.
-  - [x] **5.21.2** *(Done 2026-09-24, by a live rehearsal the operator ran
+  - [x] **5.21.2** ~~[x]~~ → **Verdict (2026-09-24): re-opened.** The
+    acceptance says the run "produces no conflict", and the run below
+    conflicted on `pantry/__init__.py`, which its plan gave to two tracks on
+    purpose, breaking the template's own rule that every file sits in exactly
+    one "Edits only" cell. So the tick claimed more than the run showed. A
+    later run that day (5.21's status, "live re-test") does meet it.
+    **Verdict (2026-09-24, operator's call): closed again on that run.** Its
+    plan put every file the plan creates in exactly one "Edits only" cell
+    (PLAN.md shared by design, edited only by `/do`), and five landings from
+    three sessions produced no conflict. ~~That run meets the acceptance
+    exactly.~~ **Correction (same day, a disprove-agent):** the acceptance
+    names "the two-owner run in the parent acceptance", and the parent's run
+    has "no gate", while ruling (A) kept the merge gate, so every run is
+    gated; this run was. The ownership half is met; the "no gate" wording
+    conflicts with ruling (A). **Operator ruled (2026-09-24): keep it
+    closed;** the "no gate" wording is 5.21's to fix when 5.21 closes.
+    *(Done 2026-09-24, by a live rehearsal the operator ran
     in three interactive sessions on main at c544238, approving every
     `git merge` and `git update-ref` prompt as at the event. All four tasks
     landed on `main`: storage 23:52:27, README 23:54:13 (branched 19 s after
@@ -6013,6 +6029,59 @@ multi-PR build that would otherwise pay full price for every push.
   that the allowed prose form still passes. Each behaviour fix was shown
   both ways in a scratch repo (`test-round7.sh`, `test-base-check.sh`);
   **none has been re-tested live**, and the owed live run above covers them.
+  **Status (2026-09-24, live re-test): the owed live run is done and
+  passed.** Three interactive terminals on a scratch project built from the
+  current template (lane block and `.gitignore` copied out of it, every file
+  the plan creates in exactly one "Edits only" cell, PLAN.md shared by
+  design), with `.claude/acstack.md` left **uncommitted** on purpose, the
+  operator refusing one `update-ref` prompt and, by the operator's account,
+  approving the rest; the transcripts (auto mode) log only the refusal.
+  All five tasks landed and Phase 1 closed: 1.1 11:08:06, 1.3 11:09:38, 1.4
+  11:12:42, 1.2.1 11:13:58, 1.5 11:17:32, about 12 minutes from the first
+  `/do` to the phase tick. **No merge conflicted** (three clean merges of
+  `main` into a branch). Every earlier position of `main` in its reflog is
+  contained in the final `c87b9c3`, and a fresh clone of `main` passes all
+  six acceptance commands (1.5's is the exit criterion itself). What it exercised, each
+  read from the session transcripts: every session started in the detached
+  main checkout, made its worktree with `git worktree add` or found the
+  existing one, and moved in with `EnterWorktree`; two sessions
+  ran a second task in the same worktree on a new branch from `main`; both
+  of those second tasks printed **`mode=standard (default)`** in the
+  worktree and still followed the lane, **but this does not isolate the
+  AGENTS.md switch**: each had read the lane during its first task, started
+  in the main checkout where the config says hackathon, so `mode=standard`
+  was never its only signal (only one cites the block); the swap the
+  operator refused came after 1.2's closing commit, and a **fresh** session
+  started in the main checkout entered that worktree, treated both commits
+  as its own and landed them, **but this does not distinguish the fix**:
+  step 5 now writes the closing commit in the task's own format
+  (`task 1.2.1: close 1.2`), which the old subject rule also accepted, so
+  the branch-name rule is shown only in the scratch test
+  (`test-round7.sh` §1); two swaps were refused live with git's
+  `is at … but expected …` and each retried and landed on the session's
+  next attempt (for 1.2.1, the third swap overall, counting the refused
+  prompt); the last task ran the phase exit criterion and
+  ticked the phase; no report said anything about prompts it had not seen,
+  which is the approved arm of the report-wording re-test. A
+  disprove-agent checked this paragraph against the reflog and transcripts
+  and found six errors, five in the author's favour, all corrected here.
+  ~~**Still owed:** a session whose only signal is the worktree (started
+  inside it, as the lane's fallback does when `EnterWorktree` is missing).~~
+  **Done the same day, headless:** a fresh `claude -p "/do 2.1"` started
+  inside an existing worktree, on a non-task branch, with no
+  `.claude/acstack.md` there. It printed `mode=standard (default)` and
+  still followed the lane: task branch looked up by ID, `MERGE_HEAD` and
+  clean-tree checks, `git switch -c feature/2.1-count-chars refs/heads/main`,
+  commit, the landing checks, then `git update-ref`, which the operator's
+  ask rule refused in headless mode; the session stopped there, reported
+  the refusal as it saw it, and `main` stayed put. So the AGENTS.md switch
+  works when it is the only signal. No control was run without the block
+  (the lane's "When the lane applies" rule covers that case in text only).
+  Two findings: a
+  report guessed that another session was "still committing" when it had
+  stopped at the refused swap (a model inference, not a lane step); and
+  Claude Code refused the pack's runtime preamble in both worktree sessions
+  that ran it, filed as 5.40.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
@@ -6659,6 +6728,29 @@ multi-PR build that would otherwise pay full price for every push.
   host version. README's limits list then names the option-before-subcommand
   form with that result, or states that it is caught if it is. The measured
   wording lands in the list, not an assumed one.
+
+- [ ] **5.40** Claude Code refuses the pack's runtime preamble in a session
+  that `EnterWorktree` moved into a worktree. Measured 2026-09-24 in the
+  hackathon lane's live re-test, 2 of 2 worktree sessions that ran it:
+  "this command runs a command whose name is computed at runtime inside a
+  construct too complex to verify, so it cannot be shown not to be git.
+  Refusing to run it — a worktree-isolated session's git operations must
+  target its own worktree. Split it into plain, separate commands". The
+  preamble calls `"$pack/bin/acstack-config"`, a path read from `readlink` at
+  runtime. All 26 SKILL.md files carry the same block, so every skill
+  should hit this in every such session; measured for `/do` only.
+  Both sessions recovered by running the three steps separately, as the
+  message says; that is the model working around the preamble, not the
+  preamble working. A session **started** inside a worktree folder (headless,
+  the same day) ran the preamble with no refusal, so the check seems to
+  apply only to sessions `EnterWorktree` moved (one observation). Not yet
+  measured: whether a `claude --worktree` session is treated the same way,
+  and whether any form of the preamble passes.
+  **Acceptance:** in a session moved into a worktree by `EnterWorktree`, a
+  skill's runtime preamble runs as written with no refusal, read from the
+  transcript, with a control showing the current form refused on the same
+  host version; or, if no form passes, the preamble's stated degradation
+  covers this case and the README says so.
 
 ## [ ] Wave 6 — The review board
 
