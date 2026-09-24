@@ -5817,7 +5817,8 @@ multi-PR build that would otherwise pay full price for every push.
     names "the two-owner run in the parent acceptance", and the parent's run
     has "no gate", while ruling (A) kept the merge gate, so every run is
     gated; this run was. The ownership half is met; the "no gate" wording
-    conflicts with ruling (A) and is raised with the operator.
+    conflicts with ruling (A). **Operator ruled (2026-09-24): keep it
+    closed;** the "no gate" wording is 5.21's to fix when 5.21 closes.
     *(Done 2026-09-24, by a live rehearsal the operator ran
     in three interactive sessions on main at c544238, approving every
     `git merge` and `git update-ref` prompt as at the event. All four tasks
