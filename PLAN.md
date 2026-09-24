@@ -5831,7 +5831,8 @@ multi-PR build that would otherwise pay full price for every push.
     text only: no live run has re-tested it yet** (owed under 5.21, per
     AGENTS.md's re-test rule; raised by Codex).)* *(Status 2026-09-23: the template has a `## File
     ownership` table, one track per file, with PLAN.md shared and edited only
-    by `/do`. **Not yet closed:** the acceptance's run is owed. Rehearsal 3
+    by `/do`. ~~**Not yet closed:** the acceptance's run is owed.~~ → superseded by the
+    Done note above. Rehearsal 3
     used the table and produced no conflict, but only **two** tasks reached
     `main` (1.2.1, then 1.4.1), and the one merge on top of another track's
     work (1.4.1) got through only because that session ran
@@ -5902,6 +5903,13 @@ multi-PR build that would otherwise pay full price for every push.
   stopped and resolved). What still stands between 5.21 and closing is
   5.20.2's fast tier, and a live landing that re-tests the lane's corrected
   report wording (sessions state only what they observed about prompts).
+  ~~That re-test is the only live run owed.~~ **Verdict (2026-09-24):** it is
+  not. The rehearsal ran the lane at c544238, which had no "Before the task"
+  section at all, so no interactive session has run what every session now
+  does first: creating and entering its worktree, the C0-C2 checks and the
+  resume path. The owed live run covers all of it (found by a seventh
+  disprove-agent; two headless runs of that flow worked and stopped
+  correctly at the `update-ref` ask rule, which is partial evidence only).
   **Status (2026-09-24):** the re-test's **refusal arm** ran headless and
   passed: with the `update-ref` rule refusing, the session reported "needed
   your permission and got 'you haven't granted it yet'. I stopped there"
@@ -5943,7 +5951,9 @@ multi-PR build that would otherwise pay full price for every push.
   ways in a scratch repo; one gap surfaced (plain `git status --porcelain`
   shows `?? pkg/`, hiding `pkg/__pycache__/`) and the lane now lists every
   untracked file with `--untracked-files=all`. **A fifth agent** then
-  demonstrated seven more, fixed and each re-tested both ways: every session
+  demonstrated seven more, all fixed; the five that change behaviour were
+  each re-tested both ways, and the other two are a rewording and a stated
+  limit, which have no second way to test: every session
   started after the first landing stopped, because the main checkout still
   sat on the old commit (the HEAD-equals-`main` condition is dropped, since
   the worktree is built from `refs/heads/main` anyway); a worktree on `main`
@@ -5969,8 +5979,40 @@ multi-PR build that would otherwise pay full price for every push.
   reinstalls first; web acceptances must not hit a fixed port the demo may
   hold; pytest's parent `conftest.py` pickup is stated with its fix; and a
   failing demo refresh gets a next step. The resume, ID lookup and
-  second-task branch were each shown both ways in a scratch repo. **Not
-  independently reviewed yet:** this last round.
+  second-task branch were each shown both ways in a scratch repo. ~~**Not
+  independently reviewed yet:** this last round.~~ → reviewed below.
+  **Status (2026-09-24, seventh round): Codex plus five disprove-agents,
+  each on its own angle** (resume, parallel landings, real stacks,
+  consistency and the guard, and one with no angle). One finding was worse
+  than every earlier one: **a session inside its worktree was not in
+  hackathon mode at all**, because `.claude/acstack.md` is uncommitted and a
+  worktree is built from `main`; a live headless `/do` in a worktree printed
+  `mode=standard` and landed only because the model looked further. `/do` now
+  switches into the lane on the AGENTS.md block, which is committed.
+  Codex and four agents (one demonstrated, three argued) independently
+  found that resume sorted commits by subject, so step 5's closing commit or a configured commit format stopped
+  it; resume now goes by branch name. Also fixed: a half-done merge found
+  on resume is aborted rather than finished by removing files (in a scratch
+  repo an agent deleted another track's file from `main` that way); an unfinished task
+  resumes building instead of landing; switching to an existing branch
+  re-runs C; a failing merged-tree acceptance gets a fix-and-retry path;
+  step 5 commits only PLAN.md and re-checks the tree; the reinstall uses
+  `npm ci`; a pre-swap `is-ancestor <base> HEAD` check stops a stale sha from
+  dropping a commit; retries go to ten attempts, since a simulation of 1495
+  landings had a session with 1-3 minute tasks lose six times in a row
+  (`main` never lost a commit in it); a worktree folder is checked before
+  `git worktree add -b`, which creates the branch even when it fails on the
+  folder (found by this round's own test). The template gains a
+  `.gitignore` block (in an agent's scratch projects a Python 3.9 `.venv`,
+  `.coverage`, `*.egg-info/` and `.next/` each stopped a landing), a no-server rule for acceptances (a
+  leftover server answered a merged tree's `curl`, reproduced here), a
+  Phase 0 commit of the setup, a leaf acceptance under each subtask, "give
+  each session its task ID", and a `'*.env*'` secrets check (`'*.env'` missed
+  `.env.local`, reproduced). §46(b) is now an allowlist: seven planted
+  bypasses had passed its pattern; each is a matrix case now, with a control
+  that the allowed prose form still passes. Each behaviour fix was shown
+  both ways in a scratch repo (`test-round7.sh`, `test-base-check.sh`);
+  **none has been re-tested live**, and the owed live run above covers them.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

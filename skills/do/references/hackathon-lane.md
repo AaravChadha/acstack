@@ -1,9 +1,10 @@
 # /do — hackathon lane (`mode: hackathon`)
 
-Read this only when the resolved config sets `mode: hackathon`. It changes
-two things: before the task starts, the session gets onto its own task
-branch built from the local `main`; and after step 4's commit, `/do` merges
-the task into `main` itself. Everything else is unchanged, including the
+Read this when the project's AGENTS.md carries the `acstack:hackathon-lane`
+block (see `/do`'s pointer to this file for why the block, not the config,
+is the switch). It changes two things: before the task starts, the session
+gets onto its own task branch built from the local `main`; and after step
+4's commit, `/do` merges the task into `main` itself. Everything else is unchanged, including the
 rule that a task with no `**Acceptance:**` line is not ticked.
 
 ## Why the lane exists
@@ -28,8 +29,8 @@ under a second with no conflicts. The missing piece was the step, not git.
   acceptance, plus a parent's acceptance or a phase's exit criterion only
   when that landing completes them.
 - **It does not read the date.** Switching it off after the event means
-  removing `mode: hackathon` from `.claude/acstack.md` and the
-  `acstack:hackathon-lane` block from AGENTS.md.
+  removing the `acstack:hackathon-lane` block from AGENTS.md (and
+  `mode: hackathon` from `.claude/acstack.md`).
 - **Permission rules.** Step 3's `git merge` goes through the user's rules
   as written. Step 6's `git update-ref` is what actually moves `main`, and a
   rule on `git merge *` does not cover it, so a user who wants every landing
@@ -84,7 +85,12 @@ work has landed, only from inside the worktree after C, or with
 **Find this task's branch by its ID, not by a name you choose.**
 `git for-each-ref --format='%(refname:short)' 'refs/heads/<branch-prefix><id>-*'`
 lists branches already made for task `<id>` (for example `feature/1.4-*`
-for task 1.4). A slug is only chosen when that prints nothing.
+for task 1.4). A slug is only chosen when that prints nothing. If it prints
+more than one, stop and list them.
+
+**One task, one session.** The lane cannot tell a worktree whose session
+stopped from one whose session is still working, for example waiting at a
+permission prompt. Give each task to one session.
 
 **A. In the main checkout, on a detached HEAD.** This is how the AGENTS
 block tells sessions to start. It does not matter which commit the checkout
@@ -96,7 +102,11 @@ sits on, since the worktree is built from `refs/heads/main` itself.
   `git worktree add .claude/worktrees/<branch-name-without-prefix> <branch>`,
   move in, continue at C.
 - None → `git worktree add -b <branch-prefix><id>-<slug> .claude/worktrees/<id>-<slug> refs/heads/main`,
-  move in, continue at C.
+  move in, continue at C. **Check the folder first:** if
+  `.claude/worktrees/<id>-<slug>` already exists (a worktree reused for a
+  later task keeps its first name), use `<id>-<slug>-2`, then `-3`. Checking
+  after is too late: a `git worktree add -b` that fails on the folder has
+  already created the branch, and the retry then fails on the branch.
 
 If the EnterWorktree tool is not available, tell the user to open a new
 session inside that folder and run the task there, and stop. **Why from
@@ -116,30 +126,42 @@ underneath it shows the other session's files as deleted, and its next
 commit records that deletion).
 
 **C. In a worktree on a task branch** (a branch other than `main`), in this
-order:
-0. `git status --porcelain --untracked-files=all` must print nothing except
-   files that pass the cache checks below, and changes **this session made
-   for this same task earlier in this conversation** (a retry after a
-   failed acceptance). Anything else (a file you did not write here, a
-   leftover from another task) → stop and list it; it would otherwise ride
-   into this task's commit or block the next step.
+order. "This task's branch" means a branch whose name starts with
+`<branch-prefix><id>-`, the dash included, so `1.1-` never matches `1.10-`.
+0. `git rev-parse -q --verify MERGE_HEAD` — if it prints a sha, an earlier
+   landing stopped halfway through step 3's merge. Run `git merge --abort`:
+   it undoes only that unfinished merge, the task's commits stay, and
+   step 3 merges again. Never finish it by removing files: the half-done
+   merge holds other tracks' work, and removing it deletes that work from
+   `main`. Then `git status --porcelain --untracked-files=all` must print
+   nothing except files that pass the cache checks below, and changes
+   **this session made for this same task earlier in this conversation** (a
+   retry after a failed acceptance). Anything else (a file you did not
+   write here, a leftover from another task) → stop and list it; it would
+   otherwise ride into this task's commit or block the next step.
 1. `git log --no-merges --format='%h %s' refs/heads/main..HEAD` lists this
    branch's own commits that are not on `main`. `--no-merges` leaves out the
    lane's own merges of `main` into the branch (step 3 below), which bring in
    only commits already on `main`.
-   - **None:** if the current branch is not this task's
-     (`<branch-prefix><id>-…`), switch to one: an existing branch for this
-     task (see above) or `git switch -c <branch-prefix><id>-<slug> refs/heads/main`.
-     A session doing a second task in the same worktree lands here. Go to 2.
-   - **Every one is this task's own** (its subject starts with this task's
-     commit prefix, e.g. `task <id>:`): the task was finished but never
-     landed, for example stopped at an unanswered merge or `update-ref`
-     prompt, a failed swap, or a failed merged-tree acceptance. Do not redo
-     it, even though its box already shows `[x]` here, which overrides
-     `/do`'s "already done, stop" rule for this case: go straight to
-     "Integrate into `main`".
-   - **Any other commit:** stop and name it; starting this task here would
-     land that work inside it.
+   - **None, on this task's branch:** go to 2.
+   - **None, on another branch:** get onto this task's branch. An existing
+     one (see above) that `git worktree list --porcelain` shows checked out
+     elsewhere → stop and name that worktree; the task continues there. An
+     existing one checked out nowhere → `git switch <branch>` and **start C
+     again at 0**, since it may hold unlanded commits of its own. None →
+     `git switch -c <branch-prefix><id>-<slug> refs/heads/main`, then go to 2.
+     A session doing a second task in the same worktree lands here.
+   - **Some, on this task's branch:** every commit on it was made for this
+     task, whatever its subject says (step 5's closing commit, a fix-up, a
+     configured commit format). Read this task's box in this worktree's
+     PLAN.md. **`[x]`:** the task was finished but never landed, for
+     example stopped at an unanswered merge or `update-ref` prompt, a failed
+     swap, or a failed merged-tree acceptance; do not redo it, which
+     overrides `/do`'s "already done, stop" rule for this case, and go
+     straight to "Integrate into `main`". **`[ ]`:** the task is unfinished;
+     skip 2, finish it on this branch, then commit and integrate as usual.
+   - **Some, on any other branch:** stop and name them; starting this task
+     here would land that work inside it.
 2. `git merge-base --is-ancestor refs/heads/main HEAD` — exit 0: the branch
    already has everything merged so far. Exit 1: run
    `git merge --ff-only refs/heads/main`. If it fails (for example
@@ -151,17 +173,18 @@ commit on `main` there moves `main` with no merge, no swap and no prompt.
 
 ## Caches the stack writes
 
-Steps C0, 1 and 4 require a clean `git status`, and running a Python or
-Node acceptance can leave an untracked cache. Plain `git status --porcelain`
+Step C0 and Integrate steps 1, 4 and 5 require a clean `git status`, and
+running a Python or Node acceptance can leave an untracked cache. Plain `git status --porcelain`
 names only the highest untracked folder (`?? pkg/` for
 `pkg/__pycache__/m.pyc`), which hides what is inside, so list every
 untracked file with `git status --porcelain --untracked-files=all`. A file
 is cache **only if all of these hold**, checked one command at a time:
 - it lies inside a folder named exactly `__pycache__` or `.pytest_cache`
-  (at any depth), or inside the **top-level** `node_modules/` while a
-  tracked `package.json` sits at the top level (`git ls-files -- package.json`
-  prints it). Never a general name such as `build` or `dist`, and never a
-  `node_modules` below the top level, where it can hold a track's source;
+  (at any depth), or inside a `node_modules` folder that sits directly
+  beside a tracked `package.json` (for `web/node_modules/`,
+  `git ls-files -- web/package.json` prints it). Never a
+  general name such as `build` or `dist`, and never a `node_modules` with no
+  `package.json` beside it, which can hold a track's source;
 - `git ls-files -- <that folder>` prints nothing (git tracks nothing in it);
 - for `__pycache__`, every file in that folder ends in `.pyc`.
 
@@ -172,7 +195,9 @@ Then add that folder's **exact path**, anchored with a leading slash
 to this clone, shared by every worktree, and never committed, so no track
 edits a shared file; the anchored path hides only that folder, never a
 same-named folder elsewhere. If any condition fails, it is not a cache:
-stop and report it.
+stop and report it, and name the line from the hackathon template's
+`.gitignore` that would cover it, if one does; `.gitignore` belongs to
+Phase 0, so the user adds that line on `main`.
 
 **Limit:** worktrees under `.claude/worktrees/` sit inside the main
 checkout, and Node looks for `node_modules` in parent folders, so an
@@ -183,7 +208,11 @@ before relying on a Node acceptance. **pytest does the same with
 a worktree can pick up the main checkout's `conftest.py`, so a test passes in
 the worktree and fails elsewhere. Commit a `pytest.ini` (or
 `[tool.pytest.ini_options]` in `pyproject.toml`) so each worktree is its own
-root.
+root. **An editable install does it too:** a venv made in the main checkout
+with `pip install -e .` imports the main checkout's code, not the
+worktree's, so the check runs old code, and its traceback points at a file
+in the main checkout, which nobody edits. Make the venv inside each
+worktree, or run the checks without an editable install.
 
 ## Integrate into `main`
 
@@ -194,14 +223,17 @@ a line that grouped commands in `{ }` with quotes was refused outright
 `$( )` would be needed to carry the sha within one line; single commands
 went through.
 
-1. `git status --porcelain` — must print **nothing**. `main` receives your
-   commits and nothing else, so an uncommitted or untracked file your task
-   needs would pass the check here and be missing on `main`. Measured: an
-   untracked `helper.py` let the acceptance pass in the worktree, and the
-   published `main` failed with `ModuleNotFoundError`. Use
-   `--untracked-files=all`; a cache that passes every check in "Caches the
-   stack writes" is excluded as described there; anything else listed →
-   commit it (if it belongs to the task) or remove it, then start again.
+1. `git status --porcelain --untracked-files=all` — must print
+   **nothing**. `main` receives your commits and nothing else, so an
+   uncommitted or untracked file your task needs would pass the check here
+   and be missing on `main`. Measured: an untracked `helper.py` let the
+   acceptance pass in the worktree, and the published `main` failed with
+   `ModuleNotFoundError`. A cache that passes every check in "Caches the
+   stack writes" is excluded as described there. Anything else listed that
+   this task wrote → commit it; anything this task did not write → stop and
+   name it. **Never commit a secrets file** (`.env`, `.env.local`, any
+   `.env.*` but `.env.example`): stop and tell the user to add it to
+   `.gitignore` on `main`.
    `git status --porcelain --ignored` also lists ignored files (`!!`
    lines). Those never reach `main`. Name any that are present in the
    report, as a fact about the worktree; whether the acceptance reads them
@@ -222,38 +254,56 @@ went through.
    written as `git merge *` does not match the `-C` form, and a session
    must not route around the user's own gate. If the merge asks for
    permission and nobody can answer, stop at the commit and say so.
-4. **If step 3's merge changed a dependency file** (`package.json`, a
-   lockfile, `requirements.txt`, `pyproject.toml`), install dependencies
-   again in this worktree first. Then **re-run the task's
+4. **If a merge into this branch changed a dependency file**
+   (`package.json`, a lockfile, `requirements.txt`, `pyproject.toml`), in
+   this run or in an earlier run of a resumed landing, install dependencies
+   again in this worktree first, with the command that installs exactly
+   what the committed files say and writes nothing: `npm ci` (never
+   `npm install`, which rewrites the lockfile), `pip install -r
+   requirements.txt`. If `npm ci` fails because no lockfile is committed,
+   stop and say so; Phase 0 owns that file. Then **re-run the task's
    `**Acceptance:**` command on the merged tree,** then
-   `git status --porcelain` again, which must still print nothing. A check
-   that passed without the other tracks' work proves nothing about this
-   tree, and a check that wrote tracked or untracked files has tested
-   something other than what will be published. A new entry that passes
-   every check in "Caches the stack writes" is excluded as described there;
-   anything else → stop and report. Failing acceptance → stop and report; do
-   not merge.
+   `git status --porcelain --untracked-files=all` again, which must still
+   print nothing. A check that passed without the other tracks' work proves
+   nothing about this tree, and a check that wrote tracked or untracked
+   files has tested something other than what will be published. A new
+   entry that passes every check in "Caches the stack writes" is excluded as
+   described there; anything else → stop and report. **Failing acceptance:
+   do not swap.** If the fix lies in this task's own files, make it on this
+   branch, commit it, and start again at step 1. If it needs another track's
+   file, stop and name the file and the track that owns it.
 5. **Re-derive, then close what the merge completed.** The merge may have
    brought in other tracks' ticks and their edits to anything stored.
    (a) If the project stores counts anyway, re-derive them with its own
    tool now, **every time**: two tracks' identical count edits merge with no
-   conflict and leave the number wrong (see Scope: a count conflict stops
-   the landing).
+   conflict and leave the number wrong (see Scope; when the two edits
+   differ, they conflict instead and the landing stops).
    (b) If every child of your task's parent is now `[x]`, run the parent's
    `**Acceptance:**` if it has one, and tick the parent only if it passes.
    (c) If every task in the phase is now `[x]`, run the phase's
-   `**Exit criterion:**` and tick the phase heading only if it passes. A
+   `**Exit criterion:**` and tick the phase heading only if it passes.
+   On a retry, run (b) and (c) again even when an earlier attempt already
+   ticked the box here: the tree has changed. If the check now fails, stop
+   and report; do not swap. A
    phase with no exit criterion flips when every child is checked, which is
-   `/do`'s own phase rule. Commit whatever changed as one more commit before
-   step 6. In this lane nobody integrates after you, so nothing else will
-   do this.
+   `/do`'s own phase rule. Stage **only** PLAN.md, plus any count file
+   re-derived in (a), by name and commit it as one more commit, in this task's
+   commit format (for example `task <id>: close 1.2`). Then
+   `git status --porcelain --untracked-files=all` must print nothing again,
+   caches aside: a parent acceptance or exit criterion that wrote files has
+   tested something other than what lands, so stop and report. In this
+   lane nobody integrates after you, so nothing else will do this.
 6. **Run step 2's check again, immediately before the swap.** Step 3's merge
    can wait at a permission prompt for as long as the user takes to answer,
    and the main checkout may have been switched onto `main` meanwhile.
    Re-checking right before the swap leaves only the gap between two
    commands; it does not close it, so the user's side of the rule (never
    switch the main checkout onto `main` while any session is mid-task) still
-   matters. Then move `main` forward only if it is still `<base>`:
+   matters. Then `git merge-base --is-ancestor <base> HEAD` once more: exit
+   1 means this branch does not contain `<base>` (a sha carried over from an
+   earlier attempt), and the swap below would still succeed and drop the
+   commits in between, so go back to step 3. Then move `main` forward only
+   if it is still `<base>`:
 
 ```bash
 git update-ref refs/heads/main HEAD <base>
@@ -264,10 +314,13 @@ git update-ref refs/heads/main HEAD <base>
 matches, and the swap then succeeds even when another session merged in the
 meantime. With the sha, `update-ref` is a compare-and-swap: it fails with
 `is at <sha> but expected <sha>` if `main` moved. **On that failure, go back
-to step 1** and try again, at most five times; then stop and report. With
-several sessions waiting at the same permission prompt, each approval moves
-`main` under the others, so a retry is expected rather than a fault, and
-each retry asks for the gated commands again.
+to step 1** with a fresh `<base>`, for at most **ten attempts in all**; then
+stop and report. Each failure means another session landed, so the lanes as
+a whole never stall, but one session can keep losing: a session that has
+just landed branches from the tip of `main` and needs one approval, while
+the one that lost needs a merge, a fresh acceptance run and a swap. In a
+simulation of four sessions with 1-3 minute tasks, a session lost six times
+in a row. Each retry asks for the gated commands again.
 
 7. **Check your own swap.** `git reflog show refs/heads/main -n 10 --format=%H`
    lists where `main` has pointed, newest first; another session may already

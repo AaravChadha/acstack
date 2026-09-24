@@ -13,11 +13,24 @@ wait for the user to approve a check. Measured 2026-09-23: four sessions ran
 **0 of 4** tasks were ticked. Write each acceptance so it uses only files
 that are committed: a `.gitignore`d file (a local `.env`, a data file) is
 never on `main`, so an acceptance that reads one can pass for its author and
-fail for everyone else. **For a web app, never check a fixed port** the demo
-might be using: the check then talks to the demo's server, which runs older
-code, and dev servers such as Vite and Next quietly move to the next free
-port instead of failing. Use the framework's test client, or start the app
-inside the command on a port the command picks itself.
+fail for everyone else. Write it to run from the project root with no `cd`
+(`python -m pytest api/tests`, `npm --prefix web test`): the session's shell
+keeps the folder a `cd` moved it to, and its next `git` command then runs in
+the wrong place. **For a web app, never start or call a server in an
+acceptance.** A server started in the background outlives the command; the
+next run's server then fails to bind and the check talks to the old one,
+running old code. Measured 2026-09-24: a second server started on the same
+port logged `Address already in use`, and the check's `curl` got the first
+server's old content. Dev servers such as Vite and Next also move to the
+next free port instead of failing. Use the framework's test client
+(FastAPI's `TestClient`, Flask's `test_client()`, `supertest` for Express),
+or for a front end its build or unit tests.
+
+**Phase 0 commits the project's setup to `main` before any session
+starts:** PLAN.md, AGENTS.md with the fast-lane block below,
+`.claude/acstack.md` with `mode: hackathon`, the `.gitignore` below, and the
+dependency files with their lockfile. Each session's worktree is built from
+`main`, so a file that is not committed there does not exist in it.
 
 ```markdown
 # <Project name>
@@ -43,7 +56,10 @@ inside the command on a port the command picks itself.
 
 <Every file the plan will create is in exactly one "Edits only" cell. A
 session that needs a change in another track's file asks that track; it does
-not edit it. PLAN.md is shared, and only `/do` edits it, one box per task.>
+not edit it. PLAN.md is shared, and only `/do` edits it, one box per task.
+The dependency files (`package.json` and its lockfile, `requirements.txt` or
+`pyproject.toml`) belong to Phase 0: it adds every dependency the plan
+names and commits the lockfile, so no track edits them mid-event.>
 
 ## Phases
 
@@ -62,6 +78,7 @@ not edit it. PLAN.md is shared, and only `/do` edits it, one box per task.>
   **Acceptance:** `<command>` prints `<expected>`.
 - [ ] **1.2 <task> (Track B — <owner>)** ← unblocks <owner 2>
   - [ ] 1.2.1 <leaf with exact file/endpoint/literal>
+    **Acceptance:** `<command for this leaf>` prints `<expected>`.
   **Acceptance:** `<command>` prints `<expected>`.
 
 <Physically reorder subtasks to match the build order — the document order
@@ -79,7 +96,9 @@ IS the execution order.>
 - <each on one line>
 
 ## Submission checklist `<final window>`
-- [ ] Confirm `.env` never committed: `git log --all -- '*.env'` is empty.
+- [ ] Confirm no secrets file was ever committed:
+  `git log --all --name-only --format= -- '*.env*' | sort -u` prints
+  nothing, or only `.env.example`.
 - [ ] README has run instructions verified on a teammate's clone.
 - [ ] Any event-required sections present and **user-authored** — the
   agent never writes them (see the pack's attribution setting).
@@ -108,6 +127,8 @@ personal instructions.
   Not `claude --worktree`, which branches from `origin/main`, and this lane
   never pushes. Nobody edits files in the main checkout; it is where sessions
   start and where the demo runs.
+- Give each session its task by ID (`/do 1.2`). A bare `/do` picks the
+  first open task in the plan, which is the same task for every session.
 - Edit only the files your track owns (PLAN.md, "File ownership"). For a
   change in another track's file, ask that track's session.
 - `/do` merges its own finished task into `main` as soon as the task's
@@ -123,6 +144,37 @@ land on `main`). It does not read the date: afterwards, remove this block
 and `mode: hackathon` to put them back.
 <!-- /acstack:hackathon-lane -->
 ```
+
+## The `.gitignore` for the event
+
+Add these lines to whatever `.gitignore` the project scaffold wrote. `/do`
+refuses to land a task while its worktree holds an untracked file, and each
+line here is something a common tool leaves behind. In a reviewer's scratch
+projects on 2026-09-24, a Python 3.9 `.venv` (572 files), `.coverage`,
+`*.egg-info/` and `.next/` each stopped a landing, and `.env.local` escaped
+a secrets check that looked only for `*.env`.
+
+```gitignore
+/.claude/worktrees/
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.venv/
+.next/
+# one anchored line per folder that holds a package.json:
+/node_modules/
+# your stack's build output, anchored at its real path:
+/dist/
+.env
+.env.*
+!.env.example
+```
+
+`node_modules/` and `dist/` are anchored because the bare names match at any
+depth, and a track can keep source in a folder with either name. A lockfile
+is never ignored: Phase 0 commits it.
 
 ## Change rules under time pressure
 

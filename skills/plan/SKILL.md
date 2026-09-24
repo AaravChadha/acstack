@@ -128,11 +128,11 @@ with hour estimates, a `> **Build order:**` blockquote with arrows and
 unblock rationale, owner tags from the config's `## Collaborators`,
 `← unblocks <owner>` annotations, a `## Demo Script` section, a
 `## Future Extensions (mention, don't build)` section, and a submission
-checklist that includes verifying `.env` was never committed
-(`git log --all -- '*.env'`) and that any event-required sections are
-present and user-authored.
+checklist that includes verifying no secrets file was ever committed
+(`git log --all --name-only --format= -- '*.env*'`) and that any
+event-required sections are present and user-authored.
 
-Three more things the event needs, all in the template:
+Four more things the event needs, all in the template:
 
 - **An `**Acceptance:**` line on every task**, runnable, written when the
   task is. `/do` will not tick a box without one. A hackathon plan that
@@ -141,12 +141,16 @@ Three more things the event needs, all in the template:
   exactly one track. That table is what keeps parallel sessions out of each
   other's files, because there is no time to review.
 - **The `acstack:hackathon-lane` block written into AGENTS.md**, between its
-  markers, with the event end filled in, and `.gitignore` covering
-  `.claude/worktrees/` plus the stack's caches and build output
-  (`__pycache__/`, `.pytest_cache/`, `node_modules/`, `dist/` or the like).
-  A cache left untracked by an acceptance run fails the lane's clean-tree
-  check. The block is how this one repo overrides a personal
-  "merge only through a pull request" rule; `/do` reads it through
-  `mode: hackathon` and merges each finished task into `main` itself.
-  Offer to set `mode: hackathon` in `.claude/acstack.md` if it is not
-  already set; without it, `/do` has no fast lane.
+  markers, with the event end filled in. The block is how this one repo
+  overrides a personal "merge only through a pull request" rule, and it is
+  what switches `/do` into the lane, since AGENTS.md is committed and so
+  present in every session's worktree. Offer to set `mode: hackathon` in
+  `.claude/acstack.md` as well if it is not already set.
+- **The template's `.gitignore` lines**, with `node_modules` and the build
+  output anchored at their real paths. `/do` will not land a task while its
+  worktree holds an untracked file, and these are what common tools leave.
+
+Then tell the user to commit all of it to `main` (PLAN.md, AGENTS.md,
+`.claude/acstack.md`, `.gitignore`, and the dependency files with their
+lockfile) before starting any session: each session's worktree is built from
+`main`, and a file not committed there is missing in it.
