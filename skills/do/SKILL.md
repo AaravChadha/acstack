@@ -170,10 +170,12 @@ none of it; the sequence above is the whole procedure there.
 ## Hackathon mode (`mode: hackathon`)
 
 Deltas: `references/hackathon-lane.md` — read it only when the resolved
-config sets `mode: hackathon`. Before the task, the branch must contain the
-local `main`; after step 4's commit, `/do` merges the task into `main`
-itself, with a compare-and-swap so parallel sessions cannot overwrite each
-other's merges. It still never pushes.
+config sets `mode: hackathon`. Before the task, the session gets onto its
+own task branch built from the local `main` (creating the worktree if it
+starts in the main checkout, and stopping on unlanded or uncommitted work);
+after step 4's commit, `/do` merges the task into `main` itself, with a
+compare-and-swap so parallel sessions cannot overwrite each other's merges.
+It still never pushes.
 
 ## Hard rules
 

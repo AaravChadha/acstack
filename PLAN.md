@@ -5942,7 +5942,21 @@ multi-PR build that would otherwise pay full price for every push.
   removed: stored counts are stated as unsupported. Each check was run both
   ways in a scratch repo; one gap surfaced (plain `git status --porcelain`
   shows `?? pkg/`, hiding `pkg/__pycache__/`) and the lane now lists every
-  untracked file with `--untracked-files=all`.
+  untracked file with `--untracked-files=all`. **A fifth agent** then
+  demonstrated seven more, fixed and each re-tested both ways: every session
+  started after the first landing stopped, because the main checkout still
+  sat on the old commit (the HEAD-equals-`main` condition is dropped, since
+  the worktree is built from `refs/heads/main` anyway); a worktree on `main`
+  committed straight to `main` (now stops); excluding `node_modules/` by name
+  hid another track's `src/node_modules/` source (exclusions are now anchored
+  exact paths, and `node_modules` counts only at the top level beside a
+  tracked `package.json`); leftovers rode into the next task and the
+  fast-forward could fail (a clean-tree check now runs first); a finished task
+  stopped at an unanswered prompt could never be landed (its own unlanded
+  commits now resume at the landing, and an existing branch is reused);
+  "a count conflict stops the landing" was false (reworded); and nested
+  worktrees can resolve the main checkout's `node_modules` (stated as a
+  limit).
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

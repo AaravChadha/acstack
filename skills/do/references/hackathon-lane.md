@@ -41,9 +41,11 @@ under a second with no conflicts. The missing piece was the step, not git.
   rehearsal all three sessions reported "no permission prompt" while the
   operator reported approving prompts in every terminal, because an earlier
   version of this paragraph told them to say so.
-- **Stored counts are not supported.** A count that two tracks both change
-  conflicts at landing, and the landing stops. The hackathon template stores
-  none; a project that adds one resolves those conflicts by hand.
+- **Stored counts are not supported.** Two tracks changing the same count
+  either merge silently to a wrong number (identical edits) or conflict and
+  stop the landing. Step 5(a) re-derives a count after a merge, which fixes
+  the first case only when the project has a tool for it. The hackathon
+  template stores none.
 - **Rolling `main` back during the event:** stop every session first. A
   session already mid-landing can land again on top of the rolled-back
   `main`, because nothing tells it the move was deliberate.
@@ -67,68 +69,92 @@ under a second with no conflicts. The missing piece was the step, not git.
 
 Work out where the session is, one command per call:
 `git rev-parse --path-format=absolute --git-dir`,
-`git rev-parse --path-format=absolute --git-common-dir`,
-`git branch --show-current` (prints nothing on a detached HEAD),
-`git rev-parse HEAD` and `git rev-parse refs/heads/main`. The session is in
-the **main checkout** when the first two print the same path, and in a
+`git rev-parse --path-format=absolute --git-common-dir` and
+`git branch --show-current` (prints nothing on a detached HEAD). The session
+is in the **main checkout** when the first two print the same path, and in a
 **worktree** when they differ.
 
-**A. In the main checkout, detached at the local `main`** (git dir equals
-common dir, no current branch, and HEAD equals `refs/heads/main`): this is
-how the AGENTS block tells sessions to start. Create the task's worktree from the local `main`:
+**A. In the main checkout, on a detached HEAD.** This is how the AGENTS
+block tells sessions to start. The checkout may sit on an older commit than
+`main`, because landings move `main` without touching it; that does not
+matter here, since the worktree is built from `refs/heads/main` itself. For
+branch name `<branch-prefix><id>-<slug>`:
+- `git worktree list --porcelain` shows the branch already checked out in
+  a worktree → move the session into that path with the EnterWorktree tool
+  and continue at C (this resumes a task that stopped earlier);
+- `git rev-parse -q --verify refs/heads/<branch>` succeeds, but no worktree
+  has it → `git worktree add .claude/worktrees/<id>-<slug> <branch>`, move
+  in, continue at C;
+- otherwise → `git worktree add -b <branch> .claude/worktrees/<id>-<slug> refs/heads/main`,
+  move in, continue at C.
 
-`git worktree add -b <branch-prefix><id>-<slug> .claude/worktrees/<id>-<slug> refs/heads/main`
+If the EnterWorktree tool is not available, tell the user to open a new
+session inside that folder and run the task there, and stop. **Why from
+`refs/heads/main`:** `claude --worktree` and EnterWorktree's own creation
+branch from `origin/main` by default, and this lane never pushes, so that
+base lacks every task merged so far. To run the demo in the main checkout,
+bring it up to date with `git switch --detach main` once no session is
+mid-landing.
 
-then move the session into it with the EnterWorktree tool, passing that
-path. If that tool is not available, tell the user to open a new session
-inside the new folder and run the task there, and stop. **Why from the
-local `main`:** `claude --worktree` and EnterWorktree's own creation branch
-from `origin/main` by default, and this lane never pushes, so that base
-lacks every task merged so far.
+**B. In the main checkout, on a branch** (including `main`): stop, and tell
+the user to run `git switch --detach main` there and start the session
+again. A commit made on `main` in a checkout is exactly how another
+session's merged work gets reverted (a checkout whose `main` was moved
+underneath it shows the other session's files as deleted, and its next
+commit records that deletion).
 
-**B. In the main checkout on any other HEAD** — on the `main` branch, or
-detached somewhere that is not the local `main`: stop and say so. A commit
-made on `main` in a checkout is exactly how another session's merged work
-gets reverted (a checkout whose `main` was moved underneath it shows the
-other session's files as deleted, and its next commit records that
-deletion).
+**C. In a worktree on a task branch** (a branch other than `main`), in this
+order:
+0. `git status --porcelain --untracked-files=all` must print nothing except
+   files that pass the cache checks below. Anything else (a modified file,
+   a leftover untracked file) → stop and list it; it would otherwise ride
+   into this task's commit or block the next step.
+1. `git log --format='%h %s' refs/heads/main..HEAD` lists commits on this
+   branch that are not on `main`. None → go to 2. If **every** one is this
+   task's own (its subject starts with this task's commit prefix, e.g.
+   `task <id>:`), the task was finished earlier but never landed, typically
+   stopped at an unanswered merge prompt: do not redo it, go straight to
+   "Integrate into `main`". Any other commit → stop and name it; starting
+   this task here would land that work inside it.
+2. `git merge-base --is-ancestor refs/heads/main HEAD` — exit 0: the branch
+   already has everything merged so far. Exit 1: run
+   `git merge --ff-only refs/heads/main`. If it fails (for example
+   "untracked working tree files would be overwritten") or asks for
+   permission and nobody answers, stop and report git's message.
 
-**C. In a worktree on a task branch:** two checks, in this order.
-1. `git log --oneline refs/heads/main..HEAD` must print **nothing**. Any
-   commit listed is earlier work that never landed, typically a task whose
-   acceptance failed on the merged tree. Stop and name those commits:
-   starting the next task here would land that work inside it.
-2. `git merge-base --is-ancestor refs/heads/main HEAD` — exit 0 means the
-   branch already has everything merged so far. Exit 1 means it was made
-   from something older: run `git merge --ff-only refs/heads/main`, which
-   only moves the branch forward and cannot conflict, since check 1 showed
-   the branch holds nothing of its own. If that merge asks for permission
-   and nobody can answer, stop and say so.
-
-**D. In a worktree on a detached HEAD:** stop and say so.
+**D. In a worktree on `main` or on a detached HEAD:** stop and say so. A
+commit on `main` there moves `main` with no merge, no swap and no prompt.
 
 ## Caches the stack writes
 
-Steps 1 and 4 below require `git status --porcelain` to print nothing, and
-running a Python or Node acceptance can leave an untracked cache. Plain
-`git status --porcelain` names only the highest untracked folder (`?? pkg/`
-for `pkg/__pycache__/m.pyc`), which hides what is inside, so list every
+Steps C0, 1 and 4 require a clean `git status`, and running a Python or
+Node acceptance can leave an untracked cache. Plain `git status --porcelain`
+names only the highest untracked folder (`?? pkg/` for
+`pkg/__pycache__/m.pyc`), which hides what is inside, so list every
 untracked file with `git status --porcelain --untracked-files=all`. A file
-may be treated as cache **only if all of these hold**, checked one command
-at a time:
-- one of its path components is exactly `__pycache__`, `.pytest_cache` or
-  `node_modules` (never a general name such as `build` or `dist`, which can
-  hold source); call that folder the cache folder;
-- `git ls-files -- <cache folder>` prints nothing (git tracks nothing in it);
-- for `__pycache__`, every file in the cache folder ends in `.pyc`.
+is cache **only if all of these hold**, checked one command at a time:
+- it lies inside a folder named exactly `__pycache__` or `.pytest_cache`
+  (at any depth), or inside the **top-level** `node_modules/` while a
+  tracked `package.json` sits at the top level (`git ls-files -- package.json`
+  prints it). Never a general name such as `build` or `dist`, and never a
+  `node_modules` below the top level, where it can hold a track's source;
+- `git ls-files -- <that folder>` prints nothing (git tracks nothing in it);
+- for `__pycache__`, every file in that folder ends in `.pyc`.
 
-Then append that exact folder name followed by `/` to
-`<common dir>/info/exclude`,
-where `<common dir>` is the output of
-`git rev-parse --path-format=absolute --git-common-dir`. That
-file is local to this clone, shared by every worktree, and never committed,
-so no track edits a shared file and nothing conflicts. If any condition
-fails, the entry is not a cache: stop and report it.
+Then add that folder's **exact path**, anchored with a leading slash
+(`/pkg/__pycache__/`, `/node_modules/`), as one line of
+`<common dir>/info/exclude`, where `<common dir>` is the output of
+`git rev-parse --path-format=absolute --git-common-dir`. That file is local
+to this clone, shared by every worktree, and never committed, so no track
+edits a shared file; the anchored path hides only that folder, never a
+same-named folder elsewhere. If any condition fails, it is not a cache:
+stop and report it.
+
+**Limit:** worktrees under `.claude/worktrees/` sit inside the main
+checkout, and Node looks for `node_modules` in parent folders, so an
+acceptance in a worktree can pass using packages installed only in the main
+checkout. Install dependencies in each worktree (`npm install` there)
+before relying on a Node acceptance.
 
 ## Integrate into `main`
 
@@ -143,10 +169,10 @@ went through.
    commits and nothing else, so an uncommitted or untracked file your task
    needs would pass the check here and be missing on `main`. Measured: an
    untracked `helper.py` let the acceptance pass in the worktree, and the
-   published `main` failed with `ModuleNotFoundError`. A cache that passes
-   every check in "Caches the stack writes" is excluded as described there;
-   anything else listed → commit it (if it belongs to the task) or remove
-   it, then start again.
+   published `main` failed with `ModuleNotFoundError`. Use
+   `--untracked-files=all`; a cache that passes every check in "Caches the
+   stack writes" is excluded as described there; anything else listed →
+   commit it (if it belongs to the task) or remove it, then start again.
    `git status --porcelain --ignored` also lists ignored files (`!!`
    lines). Those never reach `main`. Name any that are present in the
    report, as a fact about the worktree; whether the acceptance reads them

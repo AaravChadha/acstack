@@ -530,7 +530,11 @@ operator chose automations with checks: a session in the main checkout
 makes its own worktree from the local `main`; unlanded commits stop the
 next task; caches go to the clone-local `info/exclude` only when git tracks
 nothing in them. Each check was tested both ways, which caught one more gap
-(`git status` collapses an untracked folder, hiding the cache inside).
+(`git status` collapses an untracked folder, hiding the cache inside). A
+fifth agent demonstrated seven more, the worst being that **every session
+started after the first landing stopped**, since the main checkout sits on
+the old commit; all seven are fixed and re-tested both ways in a scratch
+repo.
 
 **Self-indicting, five.** (1) The lane's first design used `git rebase`
 without reading the operator's `ask` rules. (2) PLAN's first account of
