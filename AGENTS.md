@@ -7,7 +7,12 @@ build history lives in `JOURNAL.md`. Read those two before changing anything.
 Binding rules for this repo:
 
 - Run `scripts/check.sh` before every commit. A failing guard blocks the
-  commit — fix the drift, don't skip the check.
+  commit — fix the drift, don't skip the check. **Two tiers (5.20.2):**
+  check.sh is the fast tier (about 8 s); the full matrix
+  (`docs/guard-matrix.sh`, about 5 minutes locally) is the slow tier, run
+  before every push and by CI on every PR, and merge waits for it.
+  `ACSTACK_SKIP_SECTIONS` is for the matrix only; never set it for a
+  commit check.
 - **Never hand-edit a count marker — run `scripts/recount.sh`.** It re-derives
   every marked count and rewrites the ones that drifted, holding no
   derivation of its own (it uses `count-check.sh` as the oracle, so the two

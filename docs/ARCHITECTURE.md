@@ -183,6 +183,17 @@ write the guard.** `/qa`'s control needs a live server, so it is a documented sh
 procedure (`fixtures/qa/README.md`) instead — stated rather than
 pretended into a per-commit check.
 
+**When each runs (5.20.2).** Two tiers. The fast tier is
+`scripts/check.sh`: about 8 seconds locally, run before every commit, and
+CI's `guard` job (13 to 16 seconds) on every PR push and every push to
+`main`. The slow tier is the matrix: before every push, and CI's four
+shards on every PR, with merge waiting for the required `check` job. A
+feature-branch push with no PR open runs no CI, so the local check.sh is
+the only gate there. The matrix skips check.sh's three slowest sections
+(5, 8, 11) for a case that cannot need them, derived per case from the
+FAIL labels each section prints; that took a full local run from 578 to
+724 seconds down to 287. Every case still runs.
+
 **What the guards cannot do,** stated because a green run should not be
 mistaken for more than it is: check.sh proves *declarations* — that a
 skill declares a read-only tool set, that a fixture exists, that a rule

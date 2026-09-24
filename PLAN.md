@@ -5739,7 +5739,30 @@ multi-PR build that would otherwise pay full price for every push.
     and the `git branch -f` cleanup happened at all.
     **Acceptance:** the rule is in the canon, and the cleanup it prevents is
     recorded alongside it so the cost is visible rather than asserted.
-  - [ ] **5.20.2** CI tiering — a fast gate on every push, the slow gate
+  - [x] **5.20.2** *(Done 2026-09-24. Two parts. **A faster slow tier:**
+    check.sh's three slowest sections (§5 shell syntax and shellcheck, §8
+    cross-references, §11 positive controls; about 6 of its 8 seconds,
+    timed per section) are wrapped in `if ! _skip N`, driven by
+    `ACSTACK_SKIP_SECTIONS`, which is empty in every normal run; each skip
+    is announced and counted, so a run with skips never reports itself
+    clean. The matrix derives, per case and from that case's own check.sh,
+    which wrapped sections print no class the case asserts, and skips only
+    those. Every case still runs, so this is not the diff-based case
+    selection 5.26 declined. Three safety rules, each shown both ways on a
+    copy (`test-5.20.2.sh`): a wrapper outside its section stops the run; a
+    computed FAIL label keeps its section; a derivation that loses labels
+    turns the affected cases red (four cross-reference cases,
+    `got=PASS want=FAIL`). Measured on this machine: check.sh 8.1 s → 2.9 s
+    with all three skipped; the full matrix 578 to 724 s over its last four
+    runs → **287 s**, 211/211, tree unmoved. **The split, written down** in
+    AGENTS.md and ARCHITECTURE.md: the fast tier is check.sh, before every
+    commit and as CI's `guard` job (13 to 16 s on PRs #38 to #40); the slow
+    tier is the matrix, before every push and on every PR, and merge waits
+    for CI's required `check`. A feature push with no PR runs no CI, so the
+    local check.sh is the fast gate there; stated rather than filled with a
+    push trigger, which in this workflow would also run the matrix. The
+    pre-push matrix is kept, not relaxed: the speed-up is what makes it
+    affordable.)* CI tiering — a fast gate on every push, the slow gate
     before merge. Earned by this repo's own numbers: the pre-push bar is a
     **16–29 minute** matrix, which is the single biggest obstacle to the
     multi-session workflow, because slow feedback pushes branches toward
@@ -5785,6 +5808,7 @@ multi-PR build that would otherwise pay full price for every push.
   **Depends on 5.20.2 and does not duplicate it:** CI tiering is the general
   rule; the hackathon requirement is the specific target that the fast tier
   be **seconds, not minutes**. 5.21 cannot close before 5.20.2 does.
+  **(2026-09-24: 5.20.2 is closed; the fast tier is check.sh at about 8 s.)**
   **Acceptance:** `mode: hackathon` changes delivery as well as planning,
   demonstrated on a seeded two-owner scratch repo where two sessions land
   work concurrently with no gate and no conflict, and the whole edit → merged
