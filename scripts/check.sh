@@ -44,11 +44,16 @@ skipped=0
 # The skip set comes from the environment and is empty in every normal run
 # (pre-commit, CI's guard job), and a skip is announced and counted, so a
 # run with sections skipped can never report itself as clean. The matrix
-# derives which sections are skippable from the `if ! _skip N` lines below
-# and which classes each prints from its FAIL lines; see guard-matrix.sh.
+# derives which sections are skippable from the paired `# >>> skip N` /
+# `# <<< skip N` wrapper lines and which classes each prints from the FAIL
+# lines between them; see guard-matrix.sh. A run in which any section was
+# skipped this way exits 3 even with no failure, so a variable leaked into a
+# commit check or CI fails it instead of passing with a note (a
+# disprove-agent showed the note alone reads as the usual SKIP noise).
+env_skipped=0
 _skip() {
   case " ${ACSTACK_SKIP_SECTIONS:-} " in
-    *" $1 "*) echo "SKIP §$1: listed in ACSTACK_SKIP_SECTIONS"; skipped=$((skipped + 1)); return 0 ;;
+    *" $1 "*) echo "SKIP §$1: listed in ACSTACK_SKIP_SECTIONS"; skipped=$((skipped + 1)); env_skipped=$((env_skipped + 1)); return 0 ;;
   esac
   return 1
 }
@@ -240,7 +245,7 @@ done
 #    and CI's shellcheck step reads the same script. Until 2026-08-16 three
 #    rosters lived here and in check.yml and no two agreed — 7 files got
 #    `bash -n`, 6 got shellcheck, and four scripts were linted by nothing.
-if ! _skip 5; then
+if ! _skip 5; then # >>> skip 5
 shell_sources="$(bash scripts/shell-sources.sh)"
 if [ -z "$shell_sources" ]; then
   echo "FAIL syntax: scripts/shell-sources.sh returned no files — the derivation is broken"
@@ -257,7 +262,7 @@ if command -v shellcheck >/dev/null 2>&1; then
     fail=1
   fi
 fi
-fi
+fi # <<< skip 5
 
 # 6. VERSION / CHANGELOG agreement. VERSION is one bare semver line and must
 #    equal the first versioned heading in CHANGELOG.md (dated or "unreleased").
@@ -290,7 +295,7 @@ done
 #        so ../../<skill>/references/… resolves there too);
 #    plus: repo-root-relative skills/<x>/references/ citations are
 #    themselves a failure — they resolve in this repo but not on installs.
-if ! _skip 8; then
+if ! _skip 8; then # >>> skip 8
 XREF_EXCEPTIONS='doctor|script|api|dev|acstack|sandbox|node'
 #   doctor  — Claude Code's built-in diagnostic, named in /health's lineage note
 #   script  — the </script> HTML fragment in /qa's adversarial bank
@@ -358,7 +363,7 @@ if [ -s "$WORKTMP_RO" ]; then
   cat "$WORKTMP_RO"
   fail=1
 fi
-fi
+fi # <<< skip 8
 
 # 9. Config-key reachability: every key in README's config table appears in
 #    templates/acstack.md AND is read by each /skill the table names.
@@ -483,7 +488,7 @@ fi
 #     command is re-run against a seeded fixture (scripts/controls.sh).
 #     A pattern edit that stops catching its plant fails HERE, before it
 #     ships as a false pass.
-if ! _skip 11; then
+if ! _skip 11; then # >>> skip 11
 if [ -d fixtures ]; then
   if ! ctrl_out="$(bash scripts/controls.sh 2>&1)"; then
     echo "FAIL controls: a documented check missed its seeded plant:"
@@ -494,7 +499,7 @@ else
   echo "FAIL controls: fixtures/ directory missing — the positive-control layer is gone"
   fail=1
 fi
-fi
+fi # <<< skip 11
 
 # 12. Runtime preamble: marker-fenced block present in every SKILL.md,
 #     byte-identical to README's canonical copy, and within the hard line
@@ -1757,7 +1762,10 @@ else
     || { echo "FAIL hackathon: the acstack:hackathon-lane marker is gone from the template or the lane — /do would never find the block /plan writes"; fail=1; }
 fi
 if [ "$fail" -eq 0 ]; then
-  if [ "$skipped" -gt 0 ]; then
+  if [ "$env_skipped" -gt 0 ]; then
+    echo "check.sh: $env_skipped section(s) skipped by ACSTACK_SKIP_SECTIONS — NOT a full check; unset it (the variable is for the guard matrix only)"
+    exit 3
+  elif [ "$skipped" -gt 0 ]; then
     echo "check.sh: no failures, but $skipped check(s) SKIPPED — coverage is incomplete"
   else
     echo "check.sh: all clean"
