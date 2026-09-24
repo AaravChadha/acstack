@@ -39,8 +39,8 @@ cd "$REPO_DIR"
 fail=0
 skipped=0
 
-# 5.20.2: the matrix skips its three slowest sections (5, 8, 11: about 6 of
-# check.sh's 9 seconds) for a case whose guard class none of them prints.
+# 5.20.2: the matrix skips its three slowest sections (5, 8, 11: about 5 of
+# check.sh's 8 seconds) for a case whose guard class none of them prints.
 # The skip set comes from the environment and is empty in every normal run
 # (pre-commit, CI's guard job), and a skip is announced and counted, so a
 # run with sections skipped can never report itself as clean. The matrix

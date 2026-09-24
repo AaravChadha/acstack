@@ -5209,7 +5209,8 @@ multi-PR build that would otherwise pay full price for every push.
   spread across identical 42-case shards is runner variance, now the dominant
   term rather than case count — which is why 8 shards would buy less than the
   arithmetic suggests.)* Shard the matrix across parallel CI jobs. 5.20.2 tiers by
-  *event* (fast gate on push, full gate before merge); this is the other axis
+  *event* (fast gate on push, full gate before merge; as planned then, and
+  built instead as per-case section skipping, see 5.20.2); this is the other axis
   — the full gate itself is **156 cases × ~4.6 s** serially, measured from
   CI's 11m58s on 2026-09-16. `strategy.matrix` runs N jobs concurrently for
   the same total runner-minutes plus ~30–60s checkout each, so wall clock
@@ -5274,7 +5275,11 @@ multi-PR build that would otherwise pay full price for every push.
   case is added with no trigger wired — and the failure is invisible, since
   CI goes green having skipped the case that would have caught the bug.
   Event tiering (5.20.2) delivers the same feedback speed with no automated
-  coverage decision.
+  coverage decision. **Verdict (2026-09-24):** 5.20.2 was built without
+  event tiering; it made each case cheaper instead, skipping per case only
+  the check.sh sections that cannot print the case's class. That is an
+  automated decision about sections, not coverage: every case still runs,
+  and the guard it tests always runs. This decline stands.
   **Acceptance:** the full matrix runs as N shards whose `RAN=` counts sum to
   the case count derived by `count-check`'s `matrix-cases` rule, asserted by
   an aggregating step that **fails when a case is assigned to no shard** —
@@ -5739,30 +5744,35 @@ multi-PR build that would otherwise pay full price for every push.
     and the `git branch -f` cleanup happened at all.
     **Acceptance:** the rule is in the canon, and the cleanup it prevents is
     recorded alongside it so the cost is visible rather than asserted.
-  - [x] **5.20.2** *(Done 2026-09-24. Two parts. **A faster slow tier:**
-    check.sh's three slowest sections (§5 shell syntax and shellcheck, §8
-    cross-references, §11 positive controls; about 6 of its 8 seconds,
-    timed per section) are wrapped in `if ! _skip N`, driven by
-    `ACSTACK_SKIP_SECTIONS`, which is empty in every normal run; each skip
-    is announced and counted, so a run with skips never reports itself
-    clean. The matrix derives, per case and from that case's own check.sh,
-    which wrapped sections print no class the case asserts, and skips only
-    those. Every case still runs, so this is not the diff-based case
-    selection 5.26 declined. Three safety rules, each shown both ways on a
-    copy (`test-5.20.2.sh`): a wrapper outside its section stops the run; a
-    computed FAIL label keeps its section; a derivation that loses labels
-    turns the affected cases red (four cross-reference cases,
-    `got=PASS want=FAIL`). Measured on this machine: check.sh 8.1 s → 2.9 s
-    with all three skipped; the full matrix 578 to 724 s over its last four
-    runs → **287 s**, 211/211, tree unmoved. **The split, written down** in
-    AGENTS.md and ARCHITECTURE.md: the fast tier is check.sh, before every
-    commit and as CI's `guard` job (13 to 16 s on PRs #38 to #40); the slow
-    tier is the matrix, before every push and on every PR, and merge waits
-    for CI's required `check`. A feature push with no PR runs no CI, so the
-    local check.sh is the fast gate there; stated rather than filled with a
-    push trigger, which in this workflow would also run the matrix. The
-    pre-push matrix is kept, not relaxed: the speed-up is what makes it
-    affordable.)* CI tiering — a fast gate on every push, the slow gate
+  - [x] **5.20.2** *(Done 2026-09-24. **The acceptance is met as written,
+    not as titled.** No CI event split was built: check.yml is unchanged, and
+    `guard` and the matrix still run on the same events. That split is
+    declined, dated: a feature push with no PR needs no CI because check.sh
+    runs before every commit, and a PR push now gets the whole matrix back in
+    about 2.5 minutes, so little slow feedback is left to tier away. **What
+    was built: (1) a faster matrix.** check.sh's three slowest sections (§5
+    shell syntax and shellcheck, §8 cross-references, §11 positive controls;
+    about 5 of its 8 seconds, 8.1 s → 2.9 s with all three skipped) are
+    wrapped in paired `# >>> skip N` / `# <<< skip N` markers and skipped per
+    case, through `ACSTACK_SKIP_SECTIONS`, when none of their FAIL labels can
+    match the case's class; the rules are written in guard-matrix.sh. Every
+    case still runs; what is decided automatically is which *sections* a case
+    runs, and the guard under test always runs. A disprove-agent broke the
+    first version (a class such as `control: ` skipped §11; labels were filed
+    by heading, not by wrapper; a spacing variant and a leaked variable got
+    through) and it was hardened; a run with any section skipped by the
+    variable now exits 3. Each rule shown both ways in session scratch
+    scripts (`test-5.20.2.sh`, `test-5.20.2b.sh`), which are not in the repo.
+    **Measured in CI, the clean comparison:** matrix shards 4m55s to 7m24s
+    on PRs #38 to #40 → 2m19s to 2m56s on PR #41's first run. Local timings
+    are load-dependent (four parallel shards: 287 to 401 s after, 578 to
+    1396 s before, the slowest overlapping other work) and are not used for
+    the ratio. **(2) The split, written down** in AGENTS.md, ARCHITECTURE.md
+    and CONTRIBUTING.md: the fast tier is check.sh (about 8 s locally, 13 to
+    17 s as CI's `guard` job), before every commit; the slow tier is the
+    matrix (about 5 minutes as four parallel local shards, 15 minutes or
+    more unsharded), before every push and on every PR, with merge waiting
+    for CI's required `check`.)* CI tiering — a fast gate on every push, the slow gate
     before merge. Earned by this repo's own numbers: the pre-push bar is a
     **16–29 minute** matrix, which is the single biggest obstacle to the
     multi-session workflow, because slow feedback pushes branches toward
@@ -5808,7 +5818,10 @@ multi-PR build that would otherwise pay full price for every push.
   **Depends on 5.20.2 and does not duplicate it:** CI tiering is the general
   rule; the hackathon requirement is the specific target that the fast tier
   be **seconds, not minutes**. 5.21 cannot close before 5.20.2 does.
-  **(2026-09-24: 5.20.2 is closed; the fast tier is check.sh at about 8 s.)**
+  **(2026-09-24: 5.20.2 is closed as a faster matrix, not a CI event split.
+  The fast tier is check.sh at about 8 s, but merge still waits for the
+  matrix, about 2.5 minutes in CI; whether that meets "seconds, not
+  minutes" is 5.21's call when it closes.)**
   **Acceptance:** `mode: hackathon` changes delivery as well as planning,
   demonstrated on a seeded two-owner scratch repo where two sessions land
   work concurrently with no gate and no conflict, and the whole edit → merged
@@ -5941,7 +5954,8 @@ multi-PR build that would otherwise pay full price for every push.
   depends on.~~ **Verdict (2026-09-24):** the live re-run is done and
   passed (5.21.2, about 7 minutes for four tasks, one deliberate conflict
   stopped and resolved). What still stands between 5.21 and closing is
-  5.20.2's fast tier, and a live landing that re-tests the lane's corrected
+  5.20.2's fast tier (closed 2026-09-24 as a faster matrix, not a CI event
+  split; see 5.20.2), and a live landing that re-tests the lane's corrected
   report wording (sessions state only what they observed about prompts).
   ~~That re-test is the only live run owed.~~ **Verdict (2026-09-24):** it is
   not. The rehearsal ran the lane at c544238, which had no "Before the task"
