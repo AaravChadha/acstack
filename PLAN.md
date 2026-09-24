@@ -5810,18 +5810,26 @@ multi-PR build that would otherwise pay full price for every push.
     storage landed, so nothing to merge), recipes 23:56:27, CLI 23:59:32,
     about **7 minutes** from first landing to last. Every one of `main`'s
     five positions is contained in the final `20ec54c`, checked from the
-    reflog. The tracks that owned separate files produced **no conflict**.
+    reflog. Three sessions ran four tasks (terminal 2 did recipes, then the
+    CLI). The tracks that owned separate files produced **no conflict**.
     The one file the plan shared on purpose (`pantry/__init__.py`, both
     storage and recipes adding an import under `# Public API`) conflicted
-    for the second lander, which ran `git merge --abort`, named the file and
-    stopped without landing; told "keep both imports", it merged again with
-    both lines kept, ran the 1.1 and 1.2 checks on the combined tree and
-    landed. A fresh clone of `main` ran the README's demo correctly. **One
-    defect found:** all four sessions reported "no permission prompt" while
-    the operator had approved prompts in every terminal, because the lane
-    told them to say so; a headless probe confirmed the `update-ref` ask
-    rule is live (refused, ref not created). The lane's wording is fixed in
-    the same PR.)* *(Status 2026-09-23: the template has a `## File
+    for recipes, the second of the two sharing tracks to try to land
+    (23:52:56; it landed third, after the README): it ran `git merge
+    --abort`, named the file and stopped. Told "keep both imports", it
+    merged again (conflicting again, as expected), kept both lines, ran the
+    1.1 and 1.2 checks on the combined tree and landed. A fresh clone of
+    `main` ran the README's demo block verbatim (the `for` loop, `list`,
+    `suggest`) with the expected output. **One defect found:** all three
+    sessions reported "no permission prompt", because the lane told them to
+    say so, while the operator reports approving prompts in every terminal.
+    The transcripts, run in auto mode, record no prompt either way, so which
+    commands prompted is the operator's account, not a logged fact. A
+    headless probe showed the `update-ref` ask rule refusing (ref not
+    created); it is one arm, with no run without the rule and not an
+    interactive session. The lane's wording is fixed in the same PR, **in
+    text only: no live run has re-tested it yet** (owed under 5.21, per
+    AGENTS.md's re-test rule; raised by Codex).)* *(Status 2026-09-23: the template has a `## File
     ownership` table, one track per file, with PLAN.md shared and edited only
     by `/do`. **Not yet closed:** the acceptance's run is owed. Rehearsal 3
     used the table and produced no conflict, but only **two** tasks reached
@@ -5892,7 +5900,8 @@ multi-PR build that would otherwise pay full price for every push.
   depends on.~~ **Verdict (2026-09-24):** the live re-run is done and
   passed (5.21.2, about 7 minutes for four tasks, one deliberate conflict
   stopped and resolved). What still stands between 5.21 and closing is
-  5.20.2's fast tier.
+  5.20.2's fast tier, and a live landing that re-tests the lane's corrected
+  report wording (sessions state only what they observed about prompts).
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

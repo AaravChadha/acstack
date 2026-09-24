@@ -498,18 +498,22 @@ ignored files are invisible to `git status`) and one did not (a leaf task
 approving prompts in every one: storage 23:52:27, README 23:54:13, recipes
 23:56:27 after a deliberate conflict on the shared `pantry/__init__.py` was
 stopped with `git merge --abort` and then resolved keeping both lines, CLI
-23:59:32. Every earlier `main` is inside the final `20ec54c`, and a fresh
-clone ran the README's demo. **One defect:** every session reported "no
-permission prompt" while the operator had approved one in each terminal,
-because the lane told them to say so; a headless probe confirmed the
-`update-ref` rule is live. Fixed here. An outside README comment also caught
+23:59:32. Three sessions ran the four tasks. Every earlier `main` is inside
+the final `20ec54c`, and a fresh clone ran the README's demo block verbatim.
+**One defect:** all three sessions reported "no permission prompt" because
+the lane told them to say so, while the operator reports approving prompts
+in every terminal; the transcripts, in auto mode, record none either way. A
+one-armed headless probe showed the `update-ref` rule refusing. The wording
+is fixed here **in text only; no live run has re-tested it** (owed under
+5.21, raised by Codex). An outside README comment also caught
 line 162 saying "There is no runtime" beside the runtime preamble; reworded.
 
 **Self-indicting, five.** (1) The lane's first design used `git rebase`
 without reading the operator's `ask` rules. (2) PLAN's first account of
 rehearsal 3 said three tasks landed; two did, one by a gate slip. (3) `/ship`'s
 hackathon section was written without reading its own gate 1. (4) The lane
-told sessions to claim "no prompt", and four did. (5) Ten 5.22 runs measured
+told sessions to claim "no prompt", and three did (a first draft here said
+four; a disprove-agent caught it). (5) Ten 5.22 runs measured
 nothing because the method was assumed, not probed first.
 
 **What did NOT change:** CONDUCT · VERSION 0.4.0 · `setup` · branch
@@ -519,7 +523,7 @@ not fixed.
 **Validation close.** check.sh **47 → 48** sections; matrix **196 → 203**,
 each PR's final commit 203/203 or 196/196 with the tree hash unmoved; CI
 green on #35, #36, #37. Markers: `open-scheduled` **33 → 31** (5.32, 5.22,
-5.33 closed; 5.39 filed), `readme-lines` **461 → 508**. Wave 5 **18 of 38 →
+5.33 closed; 5.39 filed), `readme-lines` **457 → 508**. Wave 5 **18 of 38 →
 21 of 39**; 5.21 stays open on 5.20.2 alone.
 
 ### The README is rewritten in plain words, and a worktree breaks the integrator's check (2026-09-23)

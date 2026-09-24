@@ -36,8 +36,8 @@ under a second with no conflicts. The missing piece was the step, not git.
   session usually cannot see whether its own command was approved at a
   prompt or allowed with none, so the report states only what the session
   observed, and never "no prompt fired". Measured 2026-09-23: in a live
-  rehearsal all four landing sessions reported "no permission prompt" while
-  the operator had approved prompts in every terminal, because an earlier
+  rehearsal all three sessions reported "no permission prompt" while the
+  operator reported approving prompts in every terminal, because an earlier
   version of this paragraph told them to say so.
 
 ## When the lane applies
