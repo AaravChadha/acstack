@@ -1253,6 +1253,80 @@ fullcase "shell: new script enters the lint set" FAIL 'syntax' bash -c "printf '
 fullcase "shell: planted fixture stays excluded" PASS '.*'      bash -c "mkdir -p fixtures/shell-scope && printf '#!/usr/bin/env bash\ncd /tmp\necho hi\n' > fixtures/shell-scope/planted.sh"
 fullcase "shell: derivation returning nothing"   FAIL 'syntax' bash -c "printf '#!/usr/bin/env bash\ntrue\n' > scripts/shell-sources.sh"
 
+# 5.21: the hackathon lane. Two acceptance-line arms, because the guard's
+# awk reports a missing line from three places — the next task line, the
+# next heading, and the end of the PLAN block — and a seed that always
+# removes the first line proves only the first (the §41 lesson: direction
+# coverage and input coverage are different axes). The first arm exercises
+# "next task"; the last arm exercises "next heading", since the template's
+# task list is followed by a heading. "End of block" is not exercised: the
+# template has no task as the last line of its block. chr(96) is a
+# backtick: a literal one inside this double-quoted bash -c would be run as
+# command substitution by the shell before python ever saw it.
+fullcase "hackathon: first task loses acceptance" FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/plan/references/hackathon-template.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+a = '  **Acceptance:** ' + q + '<command>' + q + ' prints ' + q + '<expected>' + q + '.\n'
+assert s.count(a) >= 2, 'seed no-op: fewer than two acceptance lines to remove from'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, '', 1))
+EOF"
+fullcase "hackathon: last task loses acceptance"  FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/plan/references/hackathon-template.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+a = '  **Acceptance:** ' + q + '<command>' + q + ' prints ' + q + '<expected>' + q + '.\n'
+i = s.rfind(a)
+assert i >= 0, 'seed no-op: no acceptance line to remove'
+io.open(p, 'w', encoding='utf-8').write(s[:i] + s[i + len(a):])
+EOF"
+fullcase "hackathon: merge loses its old value"   FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/references/hackathon-lane.md'
+s = io.open(p, encoding='utf-8').read()
+a = 'git update-ref refs/heads/main HEAD <base>'
+assert a in s, 'seed no-op: the compare-and-swap form is not present'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, 'git update-ref refs/heads/main HEAD', 1))
+EOF"
+
+# 5.21, second round: one arm per bypass class a disprove-agent planted
+# against the first version of §46, each of which that version passed.
+fullcase "hackathon: acceptance left as prose"      FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/plan/references/hackathon-template.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+a = '  **Acceptance:** ' + q + '<command>' + q + ' prints ' + q + '<expected>' + q + '.'
+assert a in s, 'seed no-op: no acceptance line to blank'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, '  **Acceptance:** TBD', 1))
+EOF"
+fullcase "hackathon: task written without bold"     FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/plan/references/hackathon-template.md'
+s = io.open(p, encoding='utf-8').read()
+a = '\n<Physically reorder subtasks'
+assert s.count(a) == 1, 'seed no-op: the build-order note moved'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, '- [ ] 1.9 Extra task (Track A)' + a, 1))
+EOF"
+fullcase "hackathon: swap in prose loses old value" FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/references/hackathon-lane.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+assert '## Report' in s, 'seed no-op: the Report heading moved'
+io.open(p, 'w', encoding='utf-8').write(s.replace('## Report', 'Or run ' + q + 'git update-ref refs/heads/main HEAD' + q + ' to finish.\n\n## Report', 1))
+EOF"
+fullcase "hackathon: /do stops pointing at lane"    FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/SKILL.md'
+s = io.open(p, encoding='utf-8').read()
+a = 'references/hackathon-lane.md'
+assert a in s, 'seed no-op: /do does not name the lane'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, 'references/fast-lane.md'))
+EOF"
+
 echo
 # --list produced names, not results; say so and stop before any summary
 # that would read as a run. RAN here means "cases named".

@@ -167,6 +167,13 @@ Deltas: `references/tickets-mode.md` — read it only when the resolved
 config sets `tracking: tickets`. Document mode is the default and needs
 none of it; the sequence above is the whole procedure there.
 
+## Hackathon mode (`mode: hackathon`)
+
+Deltas: `references/hackathon-lane.md` — read it only when the resolved
+config sets `mode: hackathon`. After step 4's commit, `/do` merges the task
+into `main` itself, with a compare-and-swap so parallel sessions cannot
+overwrite each other's merges. It still never pushes.
+
 ## Hard rules
 
 - One subtask per invocation unless the user grouped them explicitly.

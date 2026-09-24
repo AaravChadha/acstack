@@ -177,3 +177,14 @@ since there is no PR to carry it.
 then one line per gate as its evidence. A reader who stops after one
 line must still know whether the release happened. /ship opens the PR;
 it never merges — the merge is a human act.
+
+## Hackathon mode (`mode: hackathon`)
+
+No hackathon path, deliberately. `/ship` releases a branch against the
+default branch, and in the lane there is no such branch left: `/do` has
+already merged every finished task into `main` (see
+`../do/references/hackathon-lane.md`). Running `/ship` from `main` would
+stop at gate 1 anyway, which refuses to ship from the default branch and
+blocks when nothing is ahead of it; both are right, and neither is bent for
+an event. At submission, run the project's tests yourself and push `main`
+(`git push origin main`); the plan's `## Submission checklist` is the gate.

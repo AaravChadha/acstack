@@ -31,6 +31,7 @@
 #   41 /audit's target roster agrees in all three places
 #   42 /verify's verdict set stays exhaustive
 #   43 config keys cover README's table    44 tickets commit subject agrees
+#   46 the hackathon lane keeps its acceptance lines and its merge guard
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1637,6 +1638,72 @@ if ! grep -q 'ticket #42: ' CONDUCT.md; then
   fail=1
 fi
 
+# 46. The hackathon lane keeps its load-bearing properties (5.21). A
+#     rehearsal on 2026-09-23 ran four /do sessions on the hackathon template
+#     and ticked 0 of 4 tasks: the template gave tasks no **Acceptance:**
+#     line, and /do rightly refuses to tick without one. The fix is text, so
+#     it can regress without a sound. Asserted on the files that carry it:
+#     (a) every top-level task in the template's PLAN block — any list
+#     marker, bold or not, [ ] or [x] or [X] — is followed, before the next
+#     task, heading or end of block, by an acceptance line at the task's own
+#     indent that names a backticked command. A disprove-agent got the first
+#     version to pass with unbolded tasks, `*` markers, an empty
+#     **Acceptance:**, a prose "(no **Acceptance:** yet)" and an acceptance
+#     moved under a subtask. (b) Every `update-ref refs/heads/...` the lane
+#     names, in code or in prose, carries both a new and an expected old
+#     value, and the canonical swap line is present: drop the old value and
+#     one session silently overwrites another's merge. (c) The lane names no
+#     known way to move main without a swap. That list is a denylist and
+#     cannot be finished; (b) is the part that holds. (d) /do still points at
+#     the lane, and the block marker /do looks for still exists on both
+#     sides. Not checked, because text cannot show it: a lane step that
+#     re-reads <base> right before the swap, which keeps the line and
+#     defeats it.
+hk_t=skills/plan/references/hackathon-template.md
+hk_l=skills/do/references/hackathon-lane.md
+if [ ! -f "$hk_t" ] || [ ! -f "$hk_l" ]; then
+  echo "FAIL hackathon: $hk_t or $hk_l is missing — the hackathon lane has no template or no merge procedure"
+  fail=1
+else
+  hk_out="$(awk '
+    /^```markdown/ && !blk { blk = 1; next }
+    blk && /^```/ { if (open != "") print "MISS " open; print "TASKS " n; closed = 1; exit }
+    blk && /^[-*] \[[ xX]\] (\*\*)?[0-9]/ { if (open != "") print "MISS " open; open = $0; n++; next }
+    blk && /^  \*\*Acceptance:\*\* `[^`]+`/ { open = ""; next }
+    blk && /^#/ { if (open != "") print "MISS " open; open = "" }
+    END { if (!closed) print "UNCLOSED" }
+  ' "$hk_t")"
+  hk_n="$(printf '%s\n' "$hk_out" | awk '/^TASKS /{print $2}')"
+  if printf '%s\n' "$hk_out" | grep -q '^UNCLOSED' || [ -z "$hk_n" ] || [ "$hk_n" -eq 0 ]; then
+    echo "FAIL hackathon: $hk_t has no closed PLAN block with task lines in it — the acceptance check would pass on nothing"
+    fail=1
+  fi
+  if printf '%s\n' "$hk_out" | grep -q '^MISS '; then
+    echo "FAIL hackathon: a task in $hk_t has no **Acceptance:** line with a backticked command at its own indent, so /do cannot tick it:"
+    printf '%s\n' "$hk_out" | sed -n 's/^MISS /  /p'
+    fail=1
+  fi
+  if ! grep -qE '^git update-ref refs/heads/main HEAD <base>$' "$hk_l"; then
+    echo "FAIL hackathon: $hk_l no longer carries the swap line git update-ref refs/heads/main HEAD <base>"
+    fail=1
+  fi
+  hk_bad="$(grep -noE 'update-ref[[:space:]]+refs/heads/[^[:space:]`]*([[:space:]]+[^[:space:]`]+)*' "$hk_l" | awk -F: '{ split($2, w, /[[:space:]]+/); if (length(w) < 4) print }' || true)"
+  if [ -n "$hk_bad" ]; then
+    echo "FAIL hackathon: $hk_l names an update-ref of main without both a new and an expected old value:"
+    printf '%s\n' "$hk_bad"
+    fail=1
+  fi
+  hk_alt="$(grep -nE 'branch[[:space:]]+(-f|--force)[[:space:]]+main|push[[:space:]]+\.[[:space:]]|HEAD:(refs/heads/)?main' "$hk_l" || true)"
+  if [ -n "$hk_alt" ]; then
+    echo "FAIL hackathon: $hk_l names a way to move main that is not a compare-and-swap:"
+    printf '%s\n' "$hk_alt"
+    fail=1
+  fi
+  grep -q 'references/hackathon-lane\.md' skills/do/SKILL.md \
+    || { echo "FAIL hackathon: skills/do/SKILL.md no longer points at references/hackathon-lane.md — the lane is a file nothing reads"; fail=1; }
+  grep -q '<!-- acstack:hackathon-lane -->' "$hk_t" && grep -q 'acstack:hackathon-lane' "$hk_l" \
+    || { echo "FAIL hackathon: the acstack:hackathon-lane marker is gone from the template or the lane — /do would never find the block /plan writes"; fail=1; }
+fi
 if [ "$fail" -eq 0 ]; then
   if [ "$skipped" -gt 0 ]; then
     echo "check.sh: no failures, but $skipped check(s) SKIPPED — coverage is incomplete"

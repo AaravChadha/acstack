@@ -5297,6 +5297,21 @@ multi-PR build that would otherwise pay full price for every push.
   multi-session work actually starts, not before. Until then the integrator
   is one person working sequentially, and the rule would tax them for a
   hazard that cannot yet occur.
+  **Mode caveat (2026-09-23, 5.21.1): not under `mode: hackathon`.** A timed
+  event is exactly when multi-session starts and a PR gate is least wanted,
+  so this trigger must not fire there. A hackathon project runs the posture
+  in its `acstack:hackathon-lane` block
+  (`skills/plan/references/hackathon-template.md`) instead: each session's
+  `/do` merges its own finished task into `main` with a compare-and-swap,
+  with no pull request, no required CI and no protected `main`. What that
+  gives up, for the event only: review before merge, CI before merge, and
+  protection against a bad push to `main`. The user's own permission rules
+  still apply to the lane's `git merge`, but ~~the lane asks, it does not
+  route around them~~ **Verdict (2026-09-23):** that overstated it, found by
+  a disprove-agent: the step that moves `main` is `git update-ref`, which a
+  rule on `git merge *` does not cover, so a landing with nothing to merge
+  moves `main` with no prompt. The lane now says so in its scope, and names
+  the rule (`Bash(git update-ref *)` in `ask`) that gates every landing.
   **Acceptance:** protection on `main` read back **from the server** shows
   `required_pull_request_reviews` present with its review count recorded,
   alongside the `enforce_admins`, linear-history and `check` settings
@@ -5777,7 +5792,10 @@ multi-PR build that would otherwise pay full price for every push.
   rule). The mode's honest scope is written down: exactly what protection is
   dropped, and that dropping it is a deliberate trade bounded by the event,
   never a default.
-  - [ ] **5.21.1** The gate must not fire in hackathon mode. 5.16 files
+  - [x] **5.21.1** *(Done 2026-09-23. 5.16 now carries a dated mode caveat
+    under its trigger, stating the hackathon posture and what it gives up:
+    review before merge, CI before merge, a protected `main`, for the event
+    only.)* The gate must not fire in hackathon mode. 5.16 files
     PR-mandatory on `main` triggered by *"when multi-session work starts"*
     with **no mode caveat** — which fires at precisely the wrong moment,
     since a hackathon is when multi-session and no-gate are both wanted.
@@ -5785,20 +5803,75 @@ multi-PR build that would otherwise pay full price for every push.
     the caveat into 5.16 so the two cannot be closed inconsistently.
     **Acceptance:** 5.16's trigger carries the mode caveat, and the hackathon
     protection posture is stated together with what it gives up.
-  - [ ] **5.21.2** Conflict avoidance at a hackathon is **file-ownership
+  - [ ] **5.21.2** *(Status 2026-09-23: the template has a `## File
+    ownership` table, one track per file, with PLAN.md shared and edited only
+    by `/do`. **Not yet closed:** the acceptance's run is owed. Rehearsal 3
+    used the table and produced no conflict, but only **two** tasks reached
+    `main` (1.2.1, then 1.4.1), and the one merge on top of another track's
+    work (1.4.1) got through only because that session ran
+    `git -C <path> merge`, which the operator's `ask` rule on `git merge *`
+    does not match. A disprove-agent found this; the first draft of this
+    note said three tasks landed.)* Conflict avoidance at a hackathon is
+    **file-ownership
     partitioning agreed up front**, not review. The hackathon template
     already carries owner tags and `← unblocks <owner>` arrows; it carries no
     statement of who owns which *files*, which is the thing that actually
     stops two parallel sessions colliding when there is no time to review.
     **Acceptance:** the template gains a file-ownership section, and the
     two-owner run in the parent acceptance uses it and produces no conflict.
-  - [ ] **5.21.3** `/ship` and `/do` have no hackathon branch at all. `/ship`'s
+  - [x] **5.21.3** *(Done 2026-09-23. `/do` gains
+    `references/hackathon-lane.md`: after its commit it merges the task into
+    `main` itself — `git merge` of the pinned `main` into the task branch,
+    re-run acceptance, then `git update-ref refs/heads/main HEAD <base>` as a
+    compare-and-swap — and refuses if `main` is checked out anywhere, with a
+    clean-tree check before and after the acceptance and a reflog check
+    after the swap. `/ship` records that it deliberately has no hackathon
+    path: its gate 1 refuses the default branch and there is no branch
+    left to release, so at submission the user runs the tests and pushes
+    `main`. Guarded by check.sh §46.)* `/ship` and
+    `/do` have no hackathon branch at all. `/ship`'s
     five gates and `/do`'s commit-and-stop are both shaped for a long-lived
     repo; under a clock each needs either a stated fast path or an explicit
     *"unchanged, and here is why"*.
     **Acceptance:** each of the two either gains a hackathon lane or records
     that it deliberately has none, with the reason — a silent absence is the
     outcome this subtask exists to prevent.
+  - [x] **5.21.4** *(Done 2026-09-23, found by rehearsal.)* The hackathon
+    template gave tasks no `**Acceptance:**` line, and `/do` rightly refuses
+    to tick a task without one, so under the old template **0 of 4** tasks
+    were ticked when four sessions ran `/do` at once. Every task in the
+    template now carries one, `/plan`'s hackathon section says to write it
+    when the task is written, and check.sh §46 fails if any task in the
+    template's PLAN block lacks one (both the "next task" and "next heading"
+    paths shown firing in the matrix).
+  **Status (2026-09-23): three rehearsals, one blocker left, and it is the
+  operator's own rule.** Four headless `/do` sessions in parallel on a
+  scratch "Pantry Pal" project, each timed. Rehearsal 1 (old shape): 0 of 4
+  ticked, 0 of 4 on `main`; a merge by hand took under a second with no
+  conflicts. Rehearsal 2 (lane using `git rebase`): 1 merged itself, 2
+  stopped at the operator's `ask` rule on `git rebase *`. Rehearsal 3 (lane
+  using `git merge`): 2 reached `main` (1.2.1 with nothing to merge, then
+  1.4.1 on top of it — but only by writing `git -C <path> merge`, which
+  slipped past the `ask` rule); 1.1.1 and 1.2.1 both hit the `git merge`
+  prompt, which a headless session cannot answer, and 1.1.1 stopped there;
+  the dependent CLI task correctly refused to start. **So no rehearsal has
+  yet shown a gated merge-then-swap landing**, which is the case the live
+  re-run must cover. Two disprove-agents then found two demonstrated
+  defects in the lane (an untracked file passing the check but missing
+  from `main`; a commit in a checkout moved onto `main` reverting another
+  session's landing) and a set of §46 bypasses; the lane gained a
+  clean-tree check, a re-check just before the swap, a reflog check after
+  it, and §46 was tightened. **§9 cannot show that `/do` or `/ship` reads
+  `mode`**: both already match its `mode:` pattern through unrelated text,
+  so deleting either skill's hackathon section still passes. Recorded, not
+  fixed here.
+  **Operator ruled (A): keep the merge gate and approve each merge prompt at
+  the event.** One rehearsal session got past that gate by writing
+  `git -C <path> merge`, which the pattern `git merge *` does not match; the
+  lane now forbids the `-C` form (5.39). **Owed before 5.21 closes:** a live
+  re-run of the full loop after this change, answering the merge prompts as
+  the operator will, timed; and 5.20.2's fast tier, which this task still
+  depends on.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
@@ -6427,6 +6500,24 @@ multi-PR build that would otherwise pay full price for every push.
   no-`.git` copy is the case the constraint exists for). Each arm shown on a
   copy. Guard logic, so all three review factors
   apply (5.35's scope).
+
+- [ ] **5.39** A git option placed before the subcommand slips past a
+  permission rule written for the subcommand. Measured 2026-09-23 during the
+  hackathon rehearsal: the operator's settings `ask` before
+  `Bash(git merge *)`, two headless sessions stopped at that prompt, and a
+  third ran `git -C <path> merge …` and **merged with no prompt**, because
+  the pattern starts at `git merge` and the command starts at `git -C`.
+  README's "Irreversible acts" section lists what the deny set cannot catch
+  (indirection through `sh -c`, reordered arguments, a prefix that stops
+  mid-word) and does not name this form, although it applies to every rule
+  it recommends: `Bash(git push --force:*)` is written the same way. The
+  hackathon lane now tells sessions to use the plain form; that is advice to
+  the agent, not a control.
+  **Acceptance:** measured on a scratch repo with the README's own deny set:
+  whether `git -C <path> push --force …` is blocked or runs, stated with the
+  host version. README's limits list then names the option-before-subcommand
+  form with that result, or states that it is caught if it is. The measured
+  wording lands in the list, not an assumed one.
 
 ## [ ] Wave 6 — The review board
 
