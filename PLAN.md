@@ -5803,13 +5803,15 @@ multi-PR build that would otherwise pay full price for every push.
     the caveat into 5.16 so the two cannot be closed inconsistently.
     **Acceptance:** 5.16's trigger carries the mode caveat, and the hackathon
     protection posture is stated together with what it gives up.
-  - [ ] **5.21.2** ~~[x]~~ → **Verdict (2026-09-24): re-opened.** The
+  - [x] **5.21.2** ~~[x]~~ → **Verdict (2026-09-24): re-opened.** The
     acceptance says the run "produces no conflict", and the run below
     conflicted on `pantry/__init__.py`, which its plan gave to two tracks on
     purpose, breaking the template's own rule that every file sits in exactly
     one "Edits only" cell. So the tick claimed more than the run showed. A
-    later run that day (5.21's status, "live re-test") does meet it; closing
-    on that evidence is the operator's call.
+    later run that day (5.21's status, "live re-test") does meet it.
+    **Verdict (2026-09-24, operator's call): closed again on that run.** Its
+    plan put every file in exactly one "Edits only" cell, and five landings
+    from three sessions produced no conflict.
     *(Done 2026-09-24, by a live rehearsal the operator ran
     in three interactive sessions on main at c544238, approving every
     `git merge` and `git update-ref` prompt as at the event. All four tasks
