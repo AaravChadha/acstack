@@ -10,7 +10,9 @@ sessions run by one person.
 box without one, so a plan that leaves them out makes every task stop and
 wait for the user to approve a check. Measured 2026-09-23: four sessions ran
 `/do` on this template's old shape, which had no acceptance lines, and
-**0 of 4** tasks were ticked.
+**0 of 4** tasks were ticked. Write each acceptance so it uses only files
+that are committed: `/do`'s hackathon lane cannot see a `.gitignore`d file
+(a local `.env`, a data file) that the command depends on.
 
 ```markdown
 # <Project name>

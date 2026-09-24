@@ -65,6 +65,10 @@ went through.
    untracked `helper.py` let the acceptance pass in the worktree, and the
    published `main` failed with `ModuleNotFoundError`. Anything listed →
    commit it (if it belongs to the task) or remove it, then start again.
+   **`git status` does not list ignored files.** An acceptance that reads a
+   file matched by `.gitignore` (a local `.env`, a data file) passes here
+   and may fail for everyone else, and this lane cannot tell. If the task's
+   acceptance needs any ignored file, say so in the report.
 2. `git worktree list --porcelain` — if any line reads exactly
    `branch refs/heads/main`, stop (see below). Moving `main` while it is
    checked out leaves that checkout's files stale, and one ordinary commit
@@ -87,12 +91,18 @@ went through.
    tree, and a check that wrote tracked or untracked files has tested
    something other than what will be published. Failing → stop and report;
    do not merge.
-5. **Parent boxes.** The merge may have brought in sibling tasks. If every
-   child of your task's parent is now `[x]` in PLAN.md, run the parent's
-   `**Acceptance:**` if it has one, tick the parent, and commit that as one
-   more commit before step 6. If the project stores counts that the tick
-   changes, re-derive them with the project's own tool in the same commit;
-   in this lane nobody integrates after you.
+5. **Re-derive, then close what the merge completed.** The merge may have
+   brought in other tracks' ticks and their edits to anything stored.
+   (a) If the project stores counts, re-derive them with its own tool now,
+   **every time**, whether or not your task closes anything: two tracks'
+   identical count edits merge with no conflict and leave the number wrong.
+   (b) If every child of your task's parent is now `[x]`, run the parent's
+   `**Acceptance:**` if it has one, and tick the parent only if it passes.
+   (c) If every task in the phase is now `[x]`, run the phase's
+   `**Exit criterion:**` and tick the phase heading only if it passes; that
+   is `/do`'s own phase rule, applied to the merged tree. Commit whatever
+   changed as one more commit before step 6. In this lane nobody integrates
+   after you, so nothing else will do this.
 6. **Run step 2's check again, immediately before the swap.** Step 3's merge
    can wait at a permission prompt for as long as the user takes to answer,
    and the main checkout may have been switched onto `main` meanwhile.
