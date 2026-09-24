@@ -5803,9 +5803,36 @@ multi-PR build that would otherwise pay full price for every push.
     the caveat into 5.16 so the two cannot be closed inconsistently.
     **Acceptance:** 5.16's trigger carries the mode caveat, and the hackathon
     protection posture is stated together with what it gives up.
-  - [ ] **5.21.2** *(Status 2026-09-23: the template has a `## File
+  - [x] **5.21.2** *(Done 2026-09-24, by a live rehearsal the operator ran
+    in three interactive sessions on main at c544238, approving every
+    `git merge` and `git update-ref` prompt as at the event. All four tasks
+    landed on `main`: storage 23:52:27, README 23:54:13 (branched 19 s after
+    storage landed, so nothing to merge), recipes 23:56:27, CLI 23:59:32,
+    about **7 minutes** from first landing to last. Every one of `main`'s
+    five positions is contained in the final `20ec54c`, checked from the
+    reflog. Three sessions ran four tasks (terminal 2 did recipes, then the
+    CLI). The tracks that owned separate files produced **no conflict**.
+    The one file the plan shared on purpose (`pantry/__init__.py`, both
+    storage and recipes adding an import under `# Public API`) conflicted
+    for recipes, the second of the two sharing tracks to try to land
+    (23:52:56; it landed third, after the README): it ran `git merge
+    --abort`, named the file and stopped. Told "keep both imports", it
+    merged again (conflicting again, as expected), kept both lines, ran the
+    1.1 and 1.2 checks on the combined tree and landed. A fresh clone of
+    `main` ran the README's demo block verbatim (the `for` loop, `list`,
+    `suggest`) with the expected output. **One defect found:** all three
+    sessions reported "no permission prompt", because the lane told them to
+    say so, while the operator reports approving prompts in every terminal.
+    The transcripts, run in auto mode, record no prompt either way, so which
+    commands prompted is the operator's account, not a logged fact. A
+    headless probe showed the `update-ref` ask rule refusing (ref not
+    created); it is one arm, with no run without the rule and not an
+    interactive session. The lane's wording is fixed in the same PR, **in
+    text only: no live run has re-tested it yet** (owed under 5.21, per
+    AGENTS.md's re-test rule; raised by Codex).)* *(Status 2026-09-23: the template has a `## File
     ownership` table, one track per file, with PLAN.md shared and edited only
-    by `/do`. **Not yet closed:** the acceptance's run is owed. Rehearsal 3
+    by `/do`. ~~**Not yet closed:** the acceptance's run is owed.~~ → superseded by the
+    Done note above. Rehearsal 3
     used the table and produced no conflict, but only **two** tasks reached
     `main` (1.2.1, then 1.4.1), and the one merge on top of another track's
     work (1.4.1) got through only because that session ran
@@ -5868,10 +5895,124 @@ multi-PR build that would otherwise pay full price for every push.
   **Operator ruled (A): keep the merge gate and approve each merge prompt at
   the event.** One rehearsal session got past that gate by writing
   `git -C <path> merge`, which the pattern `git merge *` does not match; the
-  lane now forbids the `-C` form (5.39). **Owed before 5.21 closes:** a live
+  lane now forbids the `-C` form (5.39). ~~**Owed before 5.21 closes:** a live
   re-run of the full loop after this change, answering the merge prompts as
   the operator will, timed; and 5.20.2's fast tier, which this task still
-  depends on.
+  depends on.~~ **Verdict (2026-09-24):** the live re-run is done and
+  passed (5.21.2, about 7 minutes for four tasks, one deliberate conflict
+  stopped and resolved). What still stands between 5.21 and closing is
+  5.20.2's fast tier, and a live landing that re-tests the lane's corrected
+  report wording (sessions state only what they observed about prompts).
+  ~~That re-test is the only live run owed.~~ **Verdict (2026-09-24):** it is
+  not. The rehearsal ran the lane at c544238, which had no "Before the task"
+  section at all, so no interactive session has run what every session now
+  does first: creating and entering its worktree, the C0-C2 checks and the
+  resume path. The owed live run covers all of it (found by a seventh
+  disprove-agent; two headless runs of that flow worked and stopped
+  correctly at the `update-ref` ask rule, which is partial evidence only).
+  **Status (2026-09-24):** the re-test's **refusal arm** ran headless and
+  passed: with the `update-ref` rule refusing, the session reported "needed
+  your permission and got 'you haven't granted it yet'. I stopped there"
+  and claimed nothing about prompts. The **approved arm** (the operator
+  answers yes in an interactive session) is still owed. A third
+  disprove-agent, attacking the whole lane rather than a diff, then
+  demonstrated seven more defects, all fixed in the same PR: step 7 read
+  whoever moved `main` last instead of this session's own swap (now it finds
+  its own reflog entry); step 7's automatic restore could undo a rollback the
+  operator made on purpose (removed: it reports and stops); a stored count
+  made every third landing conflict (now resolved by re-deriving, like the
+  checkbox exception); an acceptance leaving `__pycache__/` failed the
+  clean-tree check (caches are now gitignored by `/plan` and tolerated by the
+  lane); "the lane cannot see ignored files" was false (`git status
+  --ignored` lists them); a bare-repo layout has no prior reflog entry (now
+  reported as "could not run"); and, argued, a session started with
+  `claude --worktree` branches from `origin/main`, which the lane never
+  updates (the lane now merges the local `main` before the task, and the
+  AGENTS block says to start sessions with plain `claude`).
+  **Status (2026-09-24, later): five of those seven fixes were themselves
+  flawed**, demonstrated by a fourth disprove-agent in scratch repos and,
+  for the last, by Codex independently. The count exception let a line
+  holding a count *and* prose resolve to one side, dropping the prose; the
+  cache exception had every track append to `.gitignore`, so tracks
+  conflicted there, and "a build directory" could hide source; the
+  before-task merge let a task whose acceptance failed land inside the next
+  task; and "`/do` makes the worktree from the local `main`" was false, since
+  `/do` creates no worktree. The two fixes that held (step 7 checks the
+  session's own reflog entry; no automatic restore) were kept. The operator
+  chose automations *with checks* over removing them: **(1)** a session that
+  starts in the main checkout on a detached local `main` creates its own
+  worktree from `refs/heads/main` and moves into it; **(2)** before a task,
+  `git log refs/heads/main..HEAD` must be empty, so unlanded work stops the
+  next task; **(3)** a cache (`__pycache__`, `.pytest_cache`,
+  `node_modules` only) is excluded through the clone-local
+  `info/exclude`, never `.gitignore`, and only when git tracks nothing in it
+  and, for `__pycache__`, every file is `.pyc`. The count exception is
+  removed: stored counts are stated as unsupported. Each check was run both
+  ways in a scratch repo; one gap surfaced (plain `git status --porcelain`
+  shows `?? pkg/`, hiding `pkg/__pycache__/`) and the lane now lists every
+  untracked file with `--untracked-files=all`. **A fifth agent** then
+  demonstrated seven more, all fixed; the five that change behaviour were
+  each re-tested both ways, and the other two are a rewording and a stated
+  limit, which have no second way to test: every session
+  started after the first landing stopped, because the main checkout still
+  sat on the old commit (the HEAD-equals-`main` condition is dropped, since
+  the worktree is built from `refs/heads/main` anyway); a worktree on `main`
+  committed straight to `main` (now stops); excluding `node_modules/` by name
+  hid another track's `src/node_modules/` source (exclusions are now anchored
+  exact paths, and `node_modules` counts only at the top level beside a
+  tracked `package.json`); leftovers rode into the next task and the
+  fast-forward could fail (a clean-tree check now runs first); a finished task
+  stopped at an unanswered prompt could never be landed (its own unlanded
+  commits now resume at the landing, and an existing branch is reused);
+  "a count conflict stops the landing" was false (reworded); and nested
+  worktrees can resolve the main checkout's `node_modules` (stated as a
+  limit). **Then Codex and a sixth agent, aimed at realistic event flows,
+  independently found the same P1:** the resume check counted the lane's own
+  merge of `main` as foreign work, so every interrupted landing (and with
+  3-4 sessions `main` has nearly always moved) could never be resumed. Now
+  `git log --no-merges`. Also fixed: a task's branch is found by task ID
+  (`<prefix><id>-*`), not an exact slug; a second task in the same worktree
+  switches to a correctly named branch; the lane runs before `/do` reads
+  PLAN.md, which in hackathon mode is read from the worktree, not the stale
+  main checkout; a resume overrides the "box already ticked" stop; a retry's
+  own uncommitted work is allowed; a merge that changes a dependency file
+  reinstalls first; web acceptances must not hit a fixed port the demo may
+  hold; pytest's parent `conftest.py` pickup is stated with its fix; and a
+  failing demo refresh gets a next step. The resume, ID lookup and
+  second-task branch were each shown both ways in a scratch repo. ~~**Not
+  independently reviewed yet:** this last round.~~ → reviewed below.
+  **Status (2026-09-24, seventh round): Codex plus five disprove-agents,
+  each on its own angle** (resume, parallel landings, real stacks,
+  consistency and the guard, and one with no angle). One finding was worse
+  than every earlier one: **a session inside its worktree was not in
+  hackathon mode at all**, because `.claude/acstack.md` is uncommitted and a
+  worktree is built from `main`; a live headless `/do` in a worktree printed
+  `mode=standard` and landed only because the model looked further. `/do` now
+  switches into the lane on the AGENTS.md block, which is committed.
+  Codex and four agents (one demonstrated, three argued) independently
+  found that resume sorted commits by subject, so step 5's closing commit or a configured commit format stopped
+  it; resume now goes by branch name. Also fixed: a half-done merge found
+  on resume is aborted rather than finished by removing files (in a scratch
+  repo an agent deleted another track's file from `main` that way); an unfinished task
+  resumes building instead of landing; switching to an existing branch
+  re-runs C; a failing merged-tree acceptance gets a fix-and-retry path;
+  step 5 commits only PLAN.md and re-checks the tree; the reinstall uses
+  `npm ci`; a pre-swap `is-ancestor <base> HEAD` check stops a stale sha from
+  dropping a commit; retries go to ten attempts, since a simulation of 1495
+  landings had a session with 1-3 minute tasks lose six times in a row
+  (`main` never lost a commit in it); a worktree folder is checked before
+  `git worktree add -b`, which creates the branch even when it fails on the
+  folder (found by this round's own test). The template gains a
+  `.gitignore` block (in an agent's scratch projects a Python 3.9 `.venv`,
+  `.coverage`, `*.egg-info/` and `.next/` each stopped a landing), a no-server rule for acceptances (a
+  leftover server answered a merged tree's `curl`, reproduced here), a
+  Phase 0 commit of the setup, a leaf acceptance under each subtask, "give
+  each session its task ID", and a `'*.env*'` secrets check (`'*.env'` missed
+  `.env.local`, reproduced). §46(b) is now an allowlist: seven planted
+  bypasses had passed its pattern; each is a matrix case now, with a control
+  that the allowed prose form still passes. Each behaviour fix was shown
+  both ways in a scratch repo (`test-round7.sh`, `test-base-check.sh`);
+  **none has been re-tested live**, and the owed live run above covers them.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

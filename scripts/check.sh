@@ -274,13 +274,14 @@ done
 #        so ../../<skill>/references/… resolves there too);
 #    plus: repo-root-relative skills/<x>/references/ citations are
 #    themselves a failure — they resolve in this repo but not on installs.
-XREF_EXCEPTIONS='doctor|script|api|dev|acstack|sandbox'
+XREF_EXCEPTIONS='doctor|script|api|dev|acstack|sandbox|node'
 #   doctor  — Claude Code's built-in diagnostic, named in /health's lineage note
 #   script  — the </script> HTML fragment in /qa's adversarial bank
 #   api     — URL path in /secure's exploit-scenario example
 #   dev     — /dev/null in documented commands
 #   acstack — block-marker close tags (<!-- /acstack:principles -->)
 #   sandbox — URL path in /audit's report-template example
+#   node    — the anchored /node_modules/ line in the hackathon template's .gitignore
 for f in skills/*/SKILL.md skills/*/references/*.md; do
   d="$(dirname "$f")"
   case "$d" in */references) sdir="$(dirname "$d")" ;; *) sdir="$d" ;; esac
@@ -1649,16 +1650,26 @@ fi
 #     indent that names a backticked command. A disprove-agent got the first
 #     version to pass with unbolded tasks, `*` markers, an empty
 #     **Acceptance:**, a prose "(no **Acceptance:** yet)" and an acceptance
-#     moved under a subtask. (b) Every `update-ref refs/heads/...` the lane
-#     names, in code or in prose, carries both a new and an expected old
-#     value, and the canonical swap line is present: drop the old value and
-#     one session silently overwrites another's merge. (c) The lane names no
-#     known way to move main without a swap. That list is a denylist and
-#     cannot be finished; (b) is the part that holds. (d) /do still points at
-#     the lane, and the block marker /do looks for still exists on both
-#     sides. Not checked, because text cannot show it: a lane step that
-#     re-reads <base> right before the swap, which keeps the line and
-#     defeats it.
+#     moved under a subtask. A subtask line (two-space indent) needs its own
+#     acceptance one level deeper, before the next task, subtask, parent
+#     acceptance or heading: /do runs one subtask per invocation, so a leaf
+#     with no line of its own cannot be ticked. `+` markers count too.
+#     (b) An ALLOWLIST, not a pattern for bad forms: in the lane and the
+#     three hackathon skill files, every `update-ref` is followed by a
+#     backtick (a bare mention), by ` *)` (the permission rule), or by
+#     exactly ` refs/heads/main HEAD <base>`. The first version flagged
+#     update-refs it could parse and missed an option before the ref, a
+#     name as the old value, a comment counted as one, and a swap wrapped
+#     across two lines (a sixth disprove-agent, 2026-09-24). Cost, stated:
+#     the lane cannot quote a wrong form even as a warning, since a model
+#     can copy a quoted command. The canonical line must also sit inside a
+#     ```bash fence, and the lane carries no HTML comment to hide text in.
+#     (c) The lane names no known way to move main without a swap. That list
+#     is a denylist and cannot be finished; (b) is the part that holds.
+#     (d) /do still points at the lane, and the block marker /do looks for
+#     still exists on both sides. Not checked, because text cannot show it:
+#     a lane step that re-reads <base> right before the swap, which keeps the
+#     line and defeats it.
 hk_t=skills/plan/references/hackathon-template.md
 hk_l=skills/do/references/hackathon-lane.md
 if [ ! -f "$hk_t" ] || [ ! -f "$hk_l" ]; then
@@ -1667,10 +1678,12 @@ if [ ! -f "$hk_t" ] || [ ! -f "$hk_l" ]; then
 else
   hk_out="$(awk '
     /^```markdown/ && !blk { blk = 1; next }
-    blk && /^```/ { if (open != "") print "MISS " open; print "TASKS " n; closed = 1; exit }
-    blk && /^[-*] \[[ xX]\] (\*\*)?[0-9]/ { if (open != "") print "MISS " open; open = $0; n++; next }
-    blk && /^  \*\*Acceptance:\*\* `[^`]+`/ { open = ""; next }
-    blk && /^#/ { if (open != "") print "MISS " open; open = "" }
+    blk && /^```/ { if (sb != "") print "MISS " sb; if (open != "") print "MISS " open; print "TASKS " n; closed = 1; exit }
+    blk && /^[-*+] \[[ xX]\] (\*\*)?[0-9]/ { if (sb != "") print "MISS " sb; sb = ""; if (open != "") print "MISS " open; open = $0; n++; next }
+    blk && /^  [-*+] \[[ xX]\] (\*\*)?[0-9]/ { if (sb != "") print "MISS " sb; sb = $0; next }
+    blk && /^    \*\*Acceptance:\*\* `[^`]+`/ { sb = ""; next }
+    blk && /^  \*\*Acceptance:\*\* `[^`]+`/ { if (sb != "") print "MISS " sb; sb = ""; open = ""; next }
+    blk && /^#/ { if (sb != "") print "MISS " sb; sb = ""; if (open != "") print "MISS " open; open = "" }
     END { if (!closed) print "UNCLOSED" }
   ' "$hk_t")"
   hk_n="$(printf '%s\n' "$hk_out" | awk '/^TASKS /{print $2}')"
@@ -1683,17 +1696,29 @@ else
     printf '%s\n' "$hk_out" | sed -n 's/^MISS /  /p'
     fail=1
   fi
-  if ! grep -qE '^git update-ref refs/heads/main HEAD <base>$' "$hk_l"; then
-    echo "FAIL hackathon: $hk_l no longer carries the swap line git update-ref refs/heads/main HEAD <base>"
+  if ! awk '/^```/ { if (f) f = 0; else { f = 1; lang = substr($0, 4) }; next }
+            f && lang == "bash" && $0 == "git update-ref refs/heads/main HEAD <base>" { ok = 1 }
+            END { exit !ok }' "$hk_l"; then
+    echo "FAIL hackathon: $hk_l no longer carries the swap line git update-ref refs/heads/main HEAD <base> in a bash block"
     fail=1
   fi
-  hk_bad="$(grep -noE 'update-ref[[:space:]]+refs/heads/[^[:space:]`]*([[:space:]]+[^[:space:]`]+)*' "$hk_l" | awk -F: '{ split($2, w, /[[:space:]]+/); if (length(w) < 4) print }' || true)"
+  if grep -q '<!--' "$hk_l"; then
+    echo "FAIL hackathon: $hk_l contains an HTML comment — a model reads the raw file, so hidden text is still an instruction"
+    fail=1
+  fi
+  hk_bad="$(awk '{ s = $0
+      while ((i = index(s, "update-ref")) > 0) {
+        t = substr(s, i + 10)
+        if (!(t ~ /^`/ || t ~ /^ \*\)/ || t ~ /^ refs\/heads\/main HEAD <base>(`|$)/))
+          print FILENAME ":" FNR ": update-ref" substr(t, 1, 40)
+        s = t
+      } }' "$hk_l" "$hk_t" skills/do/SKILL.md skills/plan/SKILL.md)"
   if [ -n "$hk_bad" ]; then
-    echo "FAIL hackathon: $hk_l names an update-ref of main without both a new and an expected old value:"
+    echo "FAIL hackathon: an update-ref that is not one of the three allowed forms (a bare mention, the permission rule, or the swap with <base> as its old value):"
     printf '%s\n' "$hk_bad"
     fail=1
   fi
-  hk_alt="$(grep -nE 'branch[[:space:]]+(-f|--force)[[:space:]]+main|push[[:space:]]+\.[[:space:]]|HEAD:(refs/heads/)?main' "$hk_l" || true)"
+  hk_alt="$(grep -nE 'branch[[:space:]]+(-f|--force|-M|-C)[[:space:]]+([^[:space:]]+[[:space:]]+)?main|(checkout|switch)[[:space:]]+(-B|-C|--force-create)[[:space:]]+main|push[[:space:]]+\.[[:space:]]|HEAD:(refs/heads/)?main' "$hk_l" || true)"
   if [ -n "$hk_alt" ]; then
     echo "FAIL hackathon: $hk_l names a way to move main that is not a compare-and-swap:"
     printf '%s\n' "$hk_alt"

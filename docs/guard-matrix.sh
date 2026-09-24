@@ -1327,6 +1327,80 @@ assert a in s, 'seed no-op: /do does not name the lane'
 io.open(p, 'w', encoding='utf-8').write(s.replace(a, 'references/fast-lane.md'))
 EOF"
 
+# 5.21, third round: the bypasses a sixth disprove-agent planted against
+# §46 on 2026-09-24, each of which passed the pattern-based (b). (b) is now
+# an allowlist; one arm per planted form, plus a control that the allowed
+# prose form still passes (it fails if the allowlist stops accepting a
+# closing backtick). chr(36) is a dollar sign, for the same reason as
+# chr(96): the shell would expand it before python saw it.
+fullcase "hackathon: option before the ref"         FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/references/hackathon-lane.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+assert '## Report' in s, 'seed no-op: the Report heading moved'
+io.open(p, 'w', encoding='utf-8').write(s.replace('## Report', 'Or run ' + q + 'git update-ref -m land refs/heads/main HEAD <base>' + q + '.\n\n## Report', 1))
+EOF"
+fullcase "hackathon: swap wrapped across lines"     FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/references/hackathon-lane.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+assert '## Report' in s, 'seed no-op: the Report heading moved'
+io.open(p, 'w', encoding='utf-8').write(s.replace('## Report', 'Or run ' + q + 'git update-ref\nrefs/heads/main HEAD' + q + ' to finish.\n\n## Report', 1))
+EOF"
+fullcase "hackathon: a name as the old value"       FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/references/hackathon-lane.md'
+s = io.open(p, encoding='utf-8').read()
+a = 'git update-ref refs/heads/main HEAD <base>\n'
+assert a in s, 'seed no-op: the swap line is not present'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, a + 'git update-ref refs/heads/main HEAD main\n', 1))
+EOF"
+fullcase "hackathon: swap line hidden in comment"   FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/references/hackathon-lane.md'
+s = io.open(p, encoding='utf-8').read()
+a = 'git update-ref refs/heads/main HEAD <base>\n'
+assert a in s, 'seed no-op: the swap line is not present'
+r = 'git update-ref refs/heads/main HEAD ' + chr(36) + '(git rev-parse refs/heads/main)\n'
+s = s.replace(a, r, 1)
+io.open(p, 'w', encoding='utf-8').write(s.replace('## Report', '<!--\n' + a + '-->\n\n## Report', 1))
+EOF"
+fullcase "hackathon: subtask loses its acceptance"  FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/plan/references/hackathon-template.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+a = '    **Acceptance:** ' + q + '<command for this leaf>' + q + ' prints ' + q + '<expected>' + q + '.\n'
+assert a in s, 'seed no-op: no leaf acceptance line to remove'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, '', 1))
+EOF"
+fullcase "hackathon: task with a plus marker"       FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/plan/references/hackathon-template.md'
+s = io.open(p, encoding='utf-8').read()
+a = '\n<Physically reorder subtasks'
+assert s.count(a) == 1, 'seed no-op: the build-order note moved'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, '+ [ ] **1.9 Extra task (Track A)**' + a, 1))
+EOF"
+fullcase "hackathon: checkout -B moves main"        FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/references/hackathon-lane.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+assert '## Report' in s, 'seed no-op: the Report heading moved'
+io.open(p, 'w', encoding='utf-8').write(s.replace('## Report', 'Or run ' + q + 'git checkout -B main HEAD' + q + '.\n\n## Report', 1))
+EOF"
+fullcase "hackathon: swap quoted in prose passes"   PASS 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/references/hackathon-lane.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+assert '## Report' in s, 'seed no-op: the Report heading moved'
+io.open(p, 'w', encoding='utf-8').write(s.replace('## Report', 'The swap is ' + q + 'git update-ref refs/heads/main HEAD <base>' + q + '.\n\n## Report', 1))
+EOF"
+
 echo
 # --list produced names, not results; say so and stop before any summary
 # that would read as a run. RAN here means "cases named".

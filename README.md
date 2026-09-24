@@ -159,7 +159,8 @@ After that, use `/do <task>` to complete one task from start to finish, and
 **[the full roster](docs/SKILLS.md)**.
 
 **What the core needs:** git and bash 3.2 or later (the version macOS
-ships). There is no runtime, package manager or build step. It works on macOS
+ships). Nothing else needs installing: no language runtime such as Node or
+Python, no package manager, no build step. It works on macOS
 and Linux. On Windows, copy the `skills/*` folders into `~/.claude/skills/` by
 hand. Symlink support on Windows is **not planned**, so you will need to copy them
 again after each update, and the small script each skill runs at startup (the
@@ -457,7 +458,7 @@ people will want to drop first.
 ## About this document
 
 This README is longer and has more tables than most. It has
-<!-- count:readme-lines -->507<!-- /count --> lines,
+<!-- count:readme-lines -->508<!-- /count --> lines,
 <!-- count:readme-h2 -->16<!-- /count --> sections and
 <!-- count:readme-rows -->62<!-- /count --> table rows. Six comparison
 projects with over 100k stars had 96–346 lines, 4–12 sections and 0–19 table

@@ -169,10 +169,18 @@ none of it; the sequence above is the whole procedure there.
 
 ## Hackathon mode (`mode: hackathon`)
 
-Deltas: `references/hackathon-lane.md` — read it only when the resolved
-config sets `mode: hackathon`. After step 4's commit, `/do` merges the task
-into `main` itself, with a compare-and-swap so parallel sessions cannot
-overwrite each other's merges. It still never pushes.
+Deltas: `references/hackathon-lane.md` — read it when the project's
+AGENTS.md carries the `<!-- acstack:hackathon-lane -->` block, **whatever
+the config says**: AGENTS.md is committed, so every worktree has it, while an
+uncommitted `.claude/acstack.md` is missing in a worktree and resolves to
+`mode: standard` there. Read it **before** "Before starting" below, because
+in hackathon mode PLAN.md is read from the task's worktree, not the main
+checkout. Before the task, the session gets onto its own task branch built
+from the local `main` (creating the worktree if it starts in the main
+checkout, resuming its own unlanded task, and stopping on anything else);
+after step 4's commit, `/do` merges the task into `main` itself, with a
+compare-and-swap so parallel sessions cannot overwrite each other's merges.
+It still never pushes.
 
 ## Hard rules
 
