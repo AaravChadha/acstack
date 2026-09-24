@@ -6082,6 +6082,60 @@ multi-PR build that would otherwise pay full price for every push.
   stopped at the refused swap (a model inference, not a lane step); and
   Claude Code refused the pack's runtime preamble in both worktree sessions
   that ran it, filed as 5.40.
+  **Status (2026-09-24, eighth round): Codex plus five disprove-agents on
+  `c544238..main`.** Codex found no actionable regression, by inspection
+  only (its sandbox could not run check.sh). The agents found what Codex did
+  not. **The rest of the pack knew nothing of the lane:** `/journal`,
+  `/retro` and `/learn` in two worktrees made conflicting JOURNAL.md or
+  LEARNINGS.md commits that stop landings; `/ticket` numbered from a stale
+  plan and two filings conflicted; writing skills in the main checkout
+  committed on its stale detached HEAD; `/ship`'s "no such branch left" was
+  false. Fixed once for all 26 skills with a principles-block line: under
+  the lane block, only `/do` changes the repository. **Nothing but `/do` had
+  a route onto `main`**, and a commit on `main` made while a session waited
+  at its swap removed that session's file with every history check passing
+  (reproduced in a scratch repo); the lane gains an operator route (an
+  `ops-<n>` worktree landed with the Integrate steps) and Phase 0 installs a
+  pre-commit hook refusing commits on `main`, shown refusing in the main
+  checkout and in a worktree on `main` while task-branch commits and the
+  swap still work. Also fixed: an unfinished task resumed without `main`
+  and could never pass (it now merges `main` first); a resumed landing with
+  `main` unmoved could publish a failing tree (step 4 now always re-runs the
+  acceptance); a failing parent check stopped a retry but not a first
+  attempt (now the parent stays open and the task lands, every time); step
+  5 committed when nothing changed; the checkbox-conflict path had no next
+  step; one worktree case lacked the folder check; the lane said both
+  `npm install` and `npm ci` (now `npm ci` only, in a new "Dependencies in a
+  worktree" section, since a fresh worktree has nothing installed); the
+  template gained the branch name, the test setup (`pytest.ini` with
+  `pythonpath`, a Node `test` script), runtime databases and more secret
+  names in `.gitignore`, a broader secrets check, and AGENTS-block lines on
+  what waits until after the event and where to read progress. Each shown
+  both ways in `test-round8.sh`, with the hook, `.gitignore` and secrets
+  check extracted from the template itself. **Operator rulings the same
+  day:** drop an `update-ref` ask rule for the event and keep `git merge`
+  gated (an agent calculated up to ten swap approvals to clear four queued
+  sessions; the live run measured 11 prompts for 5 landings); add the hook.
+  **Declined, with reasons:** the leaf-acceptance shape renders under the
+  leaf in Markdown, but `/do` read the raw text correctly in the live run;
+  `/verify` checking out `main` by name is caught by step 2, which names the
+  worktree; whether a skill in the main checkout sees `.claude/worktrees/`
+  doc sets was argued, not measured, and ignored folders are normally
+  skipped by file search. ~~**None of this round is re-tested live.**~~ **Re-tested the
+  same day, headless, in the live-run venue** brought up to this round's
+  setup (the template's current lane block on `main`, its hook installed):
+  a plain request typed in the main checkout, "add a new task 2.2 to the
+  plan", took the operator route unprompted (`ops-1` worktree from
+  `refs/heads/main`, `EnterWorktree`, PLAN.md edited, committed as
+  `ops: add phase 2 task 2.2`, the landing checks, then `update-ref`,
+  refused by the operator's ask rule in headless mode), and the only ref
+  that changed was the new `ops-1`; `/journal` run inside a task worktree
+  wrote nothing tracked, committed nothing, moved no ref, and said the lane
+  holds it until after submission. Not isolated: `/journal` cited `main`'s
+  AGENTS.md, so this run cannot say whether the new principles line alone
+  would have stopped it. Seen in passing: the operator-route commit carried
+  a `Co-Authored-By` trailer, because the venue's AGENTS.md held only the
+  lane block and no conduct block, and no acstack skill was running.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
@@ -6751,6 +6805,76 @@ multi-PR build that would otherwise pay full price for every push.
   transcript, with a control showing the current form refused on the same
   host version; or, if no form passes, the preamble's stated degradation
   covers this case and the README says so.
+
+- [ ] **5.41** check.sh §46 guards less than its header claimed.
+  Demonstrated 2026-09-24 by a disprove-agent on a clone of `96247c7`, each
+  planted change passing check.sh: (b)'s bare-mention arm lets
+  `` `git update-ref` with just `refs/heads/main HEAD` `` through, and prose
+  saying "without its old value" too; (c)'s denylist and the HTML-comment
+  check read the lane only, so `git branch -f main HEAD` in the template's
+  AGENTS block and `git checkout -B main HEAD` in /do pass, as do
+  `git worktree add -B main` and a `[//]: #` comment in the lane; (a) passes
+  a four-space subtask, a sub-leaf, a `1. [ ]` ordered task, a `TBD`
+  command and an `N.1` placeholder ID; (d) misses a rename of /do's own
+  lane marker; §8's `node` exception exempts `/node` in every skill file
+  (a crossref regex that includes `_` in the name would make it
+  unnecessary). Nine §46 branches have no matrix case (the HTML-comment and
+  fence checks, the swap-line presence, the marker check, UNCLOSED, and
+  four subtask report sites), and "option before the ref" plants a correct
+  compare-and-swap, so it shows strictness, not a caught defect. Correct
+  text also fails: an indented fence under a list item, and `update-ref`
+  written without backticks. Not needed for the event: the guard protects
+  the pack's text from regressing, and nothing at the event runs it.
+  **Acceptance:** each planted change above fails check.sh (or is recorded
+  as a stated limit with a reason), each §46 branch has a matrix case shown
+  failing with that branch disabled, and the two correct-text forms pass.
+
+- [ ] **5.42** The secret scans miss secrets in Markdown. Found by a Codex
+  review on 2026-09-24 and confirmed at the lines: both key greps in
+  `skills/secure/references/security-surfaces.md` §2 end `':!*.md'`, and the
+  separate Markdown sweep there covers only `sk[-_]…` and `AKIA…`, so a
+  `ghp_` token, a private-key block or a `password = "…"` assignment in a
+  `.md` file is found by neither; `/health` §5 runs the same commands.
+  **Acceptance:** a planted placeholder `ghp_` token, a private-key header
+  and an assignment in a `.md` file are each reported by the prescribed
+  commands, shown failing on the current form, with the positive-control
+  fixtures updated so check.sh §11 still passes.
+
+- [ ] **5.43** The eval regression gate can pass a coverage loss. Found by a
+  Codex review on 2026-09-24 and confirmed at the lines: `ids()`
+  (`skills/eval-run/references/regression-gate.py:88`) collects every id
+  whatever its status, so case A going scored → skipped while case B goes
+  skipped → scored keeps the ids, the scored total and the rate, and the
+  gate exits 0, although its own docstring says a scored-to-skipped case is
+  exactly what it surfaces; and a mistyped baseline path takes the
+  "no baseline" exit 0 at line 130. **Acceptance:** the swap fixture exits
+  1 naming case A, shown passing on the current code first; a baseline path
+  that does not exist exits non-zero unless the caller says there is no
+  baseline.
+
+- [ ] **5.44** The update check can give wrong or unusable advice. Found by
+  a Codex review on 2026-09-24 and confirmed at the lines: with no
+  upstream, `rev-list HEAD..@{u}` fails and `|| echo 0` prints
+  "acstack: up to date" (`bin/acstack-update-check:30`); the printed
+  `git -C %s pull && %s/setup` leaves the pack path unquoted, so it cannot
+  run as printed from a path with spaces. **Acceptance:** a checkout with no
+  upstream says the update state is unknown, and a pack under a path with a
+  space prints a command that runs as printed, both shown in temporary
+  copies.
+
+- [ ] **5.45** Recall truncation can break its own output. Found by a Codex
+  review on 2026-09-24 and confirmed at the line: `bin/acstack-recall:43`
+  cuts the output at 3 KB with `dd`, which can land inside the
+  `<<<acstack-recall-data` fence (no closing `>>>`) or inside a multibyte
+  character. **Acceptance:** a long LEARNINGS.md produces output whose fence
+  is closed and which is valid UTF-8, shown failing on the current form.
+
+- [ ] **5.46** Two descriptions are stale. Found by a Codex review on
+  2026-09-24: `docs/ARCHITECTURE.md` says an offline update check "exits 0
+  silently", while `bin/acstack-update-check:29` prints "remote
+  unreachable"; `docs/guard-matrix.sh`'s header states "150 cases" as if
+  current, while the matrix declares 211. **Acceptance:** both say what the
+  code does, and the case count is a derived marker or is dated as history.
 
 ## [ ] Wave 6 — The review board
 

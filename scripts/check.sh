@@ -1644,8 +1644,8 @@ fi
 #     and ticked 0 of 4 tasks: the template gave tasks no **Acceptance:**
 #     line, and /do rightly refuses to tick without one. The fix is text, so
 #     it can regress without a sound. Asserted on the files that carry it:
-#     (a) every top-level task in the template's PLAN block — any list
-#     marker, bold or not, [ ] or [x] or [X] — is followed, before the next
+#     (a) every top-level task in the template's PLAN block — a `-`, `*` or
+#     `+` marker, bold or not, [ ] or [x] or [X] — is followed, before the next
 #     task, heading or end of block, by an acceptance line at the task's own
 #     indent that names a backticked command. A disprove-agent got the first
 #     version to pass with unbolded tasks, `*` markers, an empty
@@ -1665,7 +1665,14 @@ fi
 #     can copy a quoted command. The canonical line must also sit inside a
 #     ```bash fence, and the lane carries no HTML comment to hide text in.
 #     (c) The lane names no known way to move main without a swap. That list
-#     is a denylist and cannot be finished; (b) is the part that holds.
+#     is a denylist and cannot be finished. ~~(b) is the part that holds.~~
+#     Verdict (2026-09-24, a disprove-agent): (b) is stronger, not complete.
+#     It checks written commands only: a bare `git update-ref` followed by
+#     words telling a session to drop the old value passes, and so does
+#     prose that says it without a command. (c) and the HTML-comment check
+#     read the lane only, (a) misses deeper nesting, ordered markers and a
+#     `TBD` command, and nine branches of this section have no matrix case.
+#     All filed as 5.41.
 #     (d) /do still points at the lane, and the block marker /do looks for
 #     still exists on both sides. Not checked, because text cannot show it:
 #     a lane step that re-reads <base> right before the swap, which keeps the
