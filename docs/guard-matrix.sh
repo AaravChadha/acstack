@@ -229,10 +229,14 @@ FULL="$WORK/full"
 #      whose label is computed (`FAIL $x`) makes the section never skipped;
 #   3. a section is skipped only if NONE of its labels matches this case's
 #      class, tested with the same `grep -E` the case's assertion uses.
-# A skipped section cannot change the outcome: the assertion only greps for
-# "FAIL (<class>)", which that section cannot print, and no later section
-# reads its variables (checked 2026-09-24: shell_sources and XREF_EXCEPTIONS
-# are read nowhere else; its loop variables are set again before use).
+# A skip cannot hide a real failure of the guard under test: that guard's
+# own section prints its class, so it is never skipped, and no later
+# section reads a skipped section's variables (checked 2026-09-24:
+# shell_sources and XREF_EXCEPTIONS are read nowhere else; its loop
+# variables are set again before use). What a skip CAN remove is text a
+# skipped section echoes from elsewhere (shellcheck quoting a source line,
+# §8 quoting an offending line): if that text happened to contain
+# "FAIL <class>", a full run would count it, as a false alarm.
 _skip_set() { # check.sh-path class-regex -> space-separated sections to skip
   local f="$1" cls="$2" rows sec lab keep out=""
   [ -f "$f" ] || return 0
