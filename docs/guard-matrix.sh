@@ -216,6 +216,11 @@ check "unknown frontmatter key" FAIL $'---\nname: tc\ndescription: Does a thing.
 
 echo
 [ "$LIST" -eq 1 ] || echo "=== full-tree seeded-defect matrix ==="
+# 5.20.2: ACSTACK_MATRIX_NO_SKIP=1 turns per-case section skipping off, so
+# every case runs the whole of check.sh. CI sets it on pushes to main,
+# where nobody waits: a skip that hid a failure through a construct no
+# rule in _skip_set foresaw turns main red right after that merge.
+[ "$LIST" -eq 1 ] || echo "per-case section skipping: $([ "${ACSTACK_MATRIX_NO_SKIP:-}" = 1 ] && echo OFF || echo ON)"
 # Cases here copy the REAL tree (minus .git), seed exactly one defect via a
 # mutation command, and expect check.sh to emit "FAIL <class>". This tests
 # each guard against the tree shape it actually polices; the section above
@@ -253,23 +258,16 @@ FULL="$WORK/full"
 _skip_set() { # check.sh-path class-regex -> space-separated sections to skip
   local f="$1" rows out
   [ -f "$f" ] || return 0
+  [ "${ACSTACK_MATRIX_NO_SKIP:-}" = 1 ] && return 0
   rows="$(CLS="$2" awk '
     BEGIN {
-      q = sprintf("%c", 39); cls = ENVIRON["CLS"]
-      n = 0; depth = 0; br = 0; esc = 0; cur = ""
-      for (i = 1; i <= length(cls); i++) {
-        c = substr(cls, i, 1)
-        if (esc) { cur = cur c; esc = 0; continue }
-        if (c == "\\") { cur = cur c; esc = 1; continue }
-        if (br) { cur = cur c; if (c == "]") br = 0; continue }
-        if (c == "[") { br = 1; cur = cur c; continue }
-        if (c == "(") depth++
-        if (c == ")") depth--
-        if (c == "|" && depth == 0) { alt[++n] = cur; cur = ""; continue }
-        cur = cur c
-      }
-      alt[++n] = cur; readable = 1
-      for (k = 1; k <= n; k++) {
+      q = sprintf("%c", 39); dq = "\""; cls = ENVIRON["CLS"]; readable = 1
+      # 3. The class: brackets, groups and an escaped bar can hide a
+      #    top-level alternative from a simple splitter, so any of them
+      #    means nothing is skipped.
+      if (cls ~ /[][()]/ || index(cls, "\\|")) readable = 0
+      np = split(cls, alt, "|")
+      for (k = 1; k <= np && readable; k++) {
         if (match(alt[k], /^[a-z][a-z-]*/)) {
           t = substr(alt[k], 1, RLENGTH); nx = substr(alt[k], RLENGTH + 1, 1)
           if (nx == "?" || nx == "*" || nx == "+" || nx == "{") t = substr(t, 1, length(t) - 1)
@@ -277,34 +275,53 @@ _skip_set() { # check.sh-path class-regex -> space-separated sections to skip
           pre[k] = t
         } else readable = 0
       }
-      np = n
+    }
+    # Pass 1: functions whose bodies print FAIL. A block that calls one is
+    # never skipped, since its FAIL text lives outside the block.
+    NR == FNR {
+      if (match($0, /^[A-Za-z_][A-Za-z0-9_]*\(\) *\{/)) { fn = substr($0, 1, index($0, "(") - 1); infn = 1 }
+      if (infn && index($0, "FAIL")) failfn[fn] = 1
+      if (infn && $0 ~ /^\}/) infn = 0
+      next
     }
     /^# [0-9]+[a-z]?\. / { sec = $2; sub(/\.$/, "", sec) }
+    $0 ~ /^[[:space:]]*#/ { next }
     {
-      if ($0 ~ /_skip[[:space:]]+[0-9]/ || $0 ~ /(>>>|<<<) skip [0-9]/) {
-        if ($0 ~ /^if ! _skip [0-9]+[a-z]?; then # >>> skip [0-9]+[a-z]?$/) {
-          w = $4; sub(/;$/, "", w)
-          if (w != $NF) bad = bad "\n  open line names two numbers: " $0
-          else if (open != "") bad = bad "\n  wrapper " w " opened inside wrapper " open
-          else if (w != sec) bad = bad "\n  wrapper " w " opens in section " sec
-          else { open = w; wrapped[w] = 1 }
-        } else if ($0 ~ /^fi # <<< skip [0-9]+[a-z]?$/) {
-          if ($NF != open) bad = bad "\n  close " $NF " does not match the open wrapper (" open ")"
-          else open = ""
-        } else bad = bad "\n  non-standard skip line: " $0
+      # 1. Wrapper lines. Any other use of _skip, or a stray marker,
+      #    stops the run: bash would still act on it.
+      std_open = ($0 ~ /^if ! _skip [0-9]+[a-z]?; then # >>> skip [0-9]+[a-z]?$/)
+      std_close = ($0 ~ /^fi # <<< skip [0-9]+[a-z]?$/)
+      if (!std_open && !std_close && ($0 ~ /(^|[^A-Za-z0-9_])_skip([^A-Za-z0-9_]|$)/ || $0 ~ /(>>>|<<<) skip/) && $0 != "_skip() {") {
+        bad = bad "\n  non-standard skip line: " $0; next
+      }
+      if (std_open) {
+        w = $4; sub(/;$/, "", w)
+        if (w != $NF) bad = bad "\n  open line names two numbers: " $0
+        else if (open != "") bad = bad "\n  wrapper " w " opened inside wrapper " open
+        else if (w != sec) bad = bad "\n  wrapper " w " opens in section " sec
+        else { open = w; wrapped[w] = 1; depth = 0 }
         next
       }
+      if (std_close) {
+        if ($NF != open) bad = bad "\n  close " $NF " does not match the open wrapper (" open ")"
+        else if (depth != 0) bad = bad "\n  wrapper " open " holds unbalanced if/fi (" depth "): bash pairs its fi elsewhere"
+        open = ""; next
+      }
       if (open == "") next
+      # Structure inside the block, as bash pairs it.
+      if ($0 ~ /^[[:space:]]*if[[:space:]].*(;|[[:space:]])then[[:space:]]*(#.*)?$/) depth++
+      if ($0 ~ /^[[:space:]]*fi([[:space:]]*(#.*)?|[[:space:]]*;.*)$/) depth--
+      # 2. FAIL text, allowlisted: "FAIL <label>: or '"'"'FAIL <label>'"'"'.
       line = $0
-      while ((i = index(line, "FAIL ")) > 0) {
-        rest = substr(line, i + 5)
-        if (match(rest, /^[a-z][a-z-]*/)) {
-          lab = substr(rest, 1, RLENGTH); after = substr(rest, RLENGTH + 1, 1)
-          if (after == "" || after == ":" || after == " " || after == "\"" || after == q) labels[open] = labels[open] " " lab
-          else dynamic[open] = 1
-        } else dynamic[open] = 1
+      while ((i = index(line, "FAIL")) > 0) {
+        before = (i > 1) ? substr(line, i - 1, 1) : ""
+        rest = substr(line, i + 4)
+        if (before == dq && match(rest, /^ [a-z][a-z-]*: /)) labels[open] = labels[open] " " substr(rest, 2, RLENGTH - 3)
+        else if (before == q && match(rest, /^ [a-z][a-z-]*/) && substr(rest, RLENGTH + 1, 1) == q) labels[open] = labels[open] " " substr(rest, 2, RLENGTH - 1)
+        else dynamic[open] = 1
         line = rest
       }
+      for (g in failfn) if ($0 ~ ("(^|[^A-Za-z0-9_])" g "([^A-Za-z0-9_]|$)")) dynamic[open] = 1
     }
     END {
       if (open != "") bad = bad "\n  wrapper " open " is never closed"
@@ -319,7 +336,7 @@ _skip_set() { # check.sh-path class-regex -> space-separated sections to skip
       }
       print "SKIP" out
     }
-  ' "$f")"
+  ' "$f" "$f")"
   case "$rows" in
     BAD*) echo "MATRIX: check.sh's skip wrappers are malformed in $f:${rows#BAD}" >&2; exit 2 ;;
     SKIP*) out="${rows#SKIP}"; printf '%s' "${out# }" ;;

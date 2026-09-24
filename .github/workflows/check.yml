@@ -61,6 +61,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: guard matrix shard ${{ matrix.shard }} of ${{ env.SHARDS }}
+        # 5.20.2: pull requests run with per-case section skipping, the fast
+        # form; a push to main or a manual run turns it off, so main is
+        # always verified by the whole of check.sh on every case. A skip
+        # that hid a failure shows up there right after the merge.
+        env:
+          ACSTACK_MATRIX_NO_SKIP: ${{ github.event_name != 'pull_request' && '1' || '' }}
         run: |
           set -o pipefail
           bash docs/guard-matrix.sh "$PWD" --shard "${{ matrix.shard }}/${{ env.SHARDS }}" | tee shard.log

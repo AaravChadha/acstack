@@ -9,8 +9,8 @@ Binding rules for this repo:
 - Run `scripts/check.sh` before every commit. A failing guard blocks the
   commit — fix the drift, don't skip the check. **Two tiers (5.20.2):**
   check.sh is the fast tier (about 8 s); the full matrix
-  (`docs/guard-matrix.sh`: about 5 minutes as four parallel shards, see
-  CONTRIBUTING.md, 15 minutes or more unsharded) is the slow tier, run
+  (`bash scripts/matrix.sh`: about 5 minutes as four parallel shards, 15
+  minutes or more unsharded) is the slow tier, run
   before every push and by CI on every PR, and merge waits for it.
   `ACSTACK_SKIP_SECTIONS` is for the matrix only; never set it for a
   commit check.

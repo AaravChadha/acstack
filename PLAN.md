@@ -5761,8 +5761,31 @@ multi-PR build that would otherwise pay full price for every push.
     first version (a class such as `control: ` skipped §11; labels were filed
     by heading, not by wrapper; a spacing variant and a leaked variable got
     through) and it was hardened; a run with any section skipped by the
-    variable now exits 3. Each rule shown both ways in session scratch
-    scripts (`test-5.20.2.sh`, `test-5.20.2b.sh`), which are not in the repo.
+    variable now exits 3. Re-attacked, the second version held against all
+    of that and fell to five new constructs (a helper function printing
+    FAIL from outside the block, an inner `fi` moved so bash paired the
+    wrapper elsewhere, bracket syntax in a class, `_skip "8"` in quotes, two
+    quoted strings glued into one label), none present in check.sh. That
+    is the denylist shape: static rules about bash text cannot be finished.
+    So the third version does two things. It turns the rules into an
+    allowlist of what a skippable block may contain (the only `_skip` uses
+    are the definition and the two marker lines; `if`/`fi` balance inside
+    the wrapper; FAIL appears only as `"FAIL <label>: ` or
+    `'FAIL <label>'`; no call to a function whose body prints FAIL; a class
+    with brackets, groups or `\|` skips nothing), with anything outside it
+    making the block unskippable or stopping the run. And it adds a
+    **complete backstop**: `ACSTACK_MATRIX_NO_SKIP=1` turns skipping off,
+    and CI sets it on every push to `main` and every manual run, so `main`
+    is always verified by the whole of check.sh on every case, and a skip
+    that hid a failure by a construct no rule foresaw turns `main` red right
+    after that merge. Pull requests keep the fast form. Each rule shown both
+    ways in session scratch scripts (`test-5.20.2.sh`, `test-5.20.2b.sh`,
+    `test-5.20.2c.sh`), which are not in the repo; the switch measured on
+    the 15 hackathon cases, 15/15 both ways, 109 s on and 316 s off under
+    the same load. **The local runner** is `scripts/matrix.sh`, which fails
+    when any shard fails: the one-line version first written into
+    CONTRIBUTING.md used a bare `wait`, which returns 0 however its jobs
+    ended (a Codex review).
     **Measured in CI, the clean comparison:** matrix shards 4m55s to 7m24s
     on PRs #38 to #40 → 2m19s to 2m56s on PR #41's first run. Local timings
     are load-dependent (four parallel shards: 287 to 401 s after, 578 to
@@ -5770,9 +5793,9 @@ multi-PR build that would otherwise pay full price for every push.
     the ratio. **(2) The split, written down** in AGENTS.md, ARCHITECTURE.md
     and CONTRIBUTING.md: the fast tier is check.sh (about 8 s locally, 13 to
     17 s as CI's `guard` job), before every commit; the slow tier is the
-    matrix (about 5 minutes as four parallel local shards, 15 minutes or
-    more unsharded), before every push and on every PR, with merge waiting
-    for CI's required `check`.)* CI tiering — a fast gate on every push, the slow gate
+    matrix (about 5 minutes as four parallel local shards with
+    `bash scripts/matrix.sh`, 15 minutes or more unsharded), before every
+    push and on every PR, with merge waiting for CI's required `check`.)* CI tiering — a fast gate on every push, the slow gate
     before merge. Earned by this repo's own numbers: the pre-push bar is a
     **16–29 minute** matrix, which is the single biggest obstacle to the
     multi-session workflow, because slow feedback pushes branches toward

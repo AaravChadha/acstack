@@ -192,7 +192,12 @@ feature-branch push with no PR open runs no CI, so the local check.sh is
 the only gate there. The matrix skips check.sh's three slowest sections
 (5, 8, 11) for a case that cannot need them, derived per case from the
 FAIL labels each section prints; in CI that took each of the four matrix
-shards from 4m55s–7m24s down to 2m19s–2m56s. Every case still runs.
+shards from 4m55s–7m24s down to 2m19s–2m56s. Every case still runs. Pull
+requests use that fast form; a push to `main` sets
+`ACSTACK_MATRIX_NO_SKIP=1`, so `main` is always checked with the whole of
+check.sh on every case, and a skip that hid a failure turns `main` red
+right after the merge. Locally, `bash scripts/matrix.sh` runs the four
+shards and fails if any does.
 
 **What the guards cannot do,** stated because a green run should not be
 mistaken for more than it is: check.sh proves *declarations* — that a
