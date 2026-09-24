@@ -31,6 +31,7 @@
 #   41 /audit's target roster agrees in all three places
 #   42 /verify's verdict set stays exhaustive
 #   43 config keys cover README's table    44 tickets commit subject agrees
+#   46 the hackathon lane keeps its acceptance lines and its merge guard
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1635,6 +1636,51 @@ fi
 if ! grep -q 'ticket #42: ' CONDUCT.md; then
   echo "FAIL ticket-subject: CONDUCT.md no longer states the canonical 'ticket #42: ...' subject — the shape every other site is checked against has vanished"
   fail=1
+fi
+
+# 46. The hackathon lane keeps its two load-bearing properties (5.21). A
+#     rehearsal on 2026-09-23 ran four /do sessions on the hackathon template
+#     and ticked 0 of 4 tasks: the template gave tasks no **Acceptance:**
+#     line, and /do rightly refuses to tick without one. The fix is text, so
+#     it can regress without a sound. (a) Every task line in the template's
+#     PLAN block is followed by an Acceptance line before the next task,
+#     heading or end of block. (b) /do's merge into main stays a
+#     compare-and-swap, `git update-ref refs/heads/main HEAD <base>`: drop
+#     the third operand and one session silently overwrites another's merge.
+#     Both are asserted on the files that carry them, not on prose about them.
+hk_t=skills/plan/references/hackathon-template.md
+hk_l=skills/do/references/hackathon-lane.md
+if [ ! -f "$hk_t" ] || [ ! -f "$hk_l" ]; then
+  echo "FAIL hackathon: $hk_t or $hk_l is missing — the hackathon lane has no template or no merge procedure"
+  fail=1
+else
+  hk_out="$(awk '
+    /^```markdown/ && !blk { blk = 1; next }
+    blk && /^```/ { if (open != "") print "MISS " open; print "TASKS " n; exit }
+    blk && /^- \[[ x]\] \*\*[0-9]/ { if (open != "") print "MISS " open; open = $0; n++; next }
+    blk && /\*\*Acceptance:\*\*/ { open = "" }
+    blk && /^#/ { if (open != "") print "MISS " open; open = "" }
+  ' "$hk_t")"
+  hk_n="$(printf '%s\n' "$hk_out" | awk '/^TASKS /{print $2}')"
+  if [ -z "$hk_n" ] || [ "$hk_n" -eq 0 ]; then
+    echo "FAIL hackathon: no task lines found in $hk_t's PLAN block — the acceptance check would pass on nothing"
+    fail=1
+  fi
+  if printf '%s\n' "$hk_out" | grep -q '^MISS '; then
+    echo "FAIL hackathon: a task in $hk_t has no **Acceptance:** line, so /do cannot tick it:"
+    printf '%s\n' "$hk_out" | sed -n 's/^MISS /  /p'
+    fail=1
+  fi
+  if ! grep -qE '^[[:space:]]*git update-ref refs/heads/main HEAD <base>[[:space:]]*$' "$hk_l"; then
+    echo "FAIL hackathon: $hk_l no longer merges with the compare-and-swap form git update-ref refs/heads/main HEAD <base>"
+    fail=1
+  fi
+  hk_bad="$(grep -nE '^[[:space:]]*git update-ref' "$hk_l" | grep -vE 'update-ref refs/heads/main HEAD <base>[[:space:]]*$' || true)"
+  if [ -n "$hk_bad" ]; then
+    echo "FAIL hackathon: $hk_l moves a ref without naming its expected old value:"
+    printf '%s\n' "$hk_bad"
+    fail=1
+  fi
 fi
 
 if [ "$fail" -eq 0 ]; then

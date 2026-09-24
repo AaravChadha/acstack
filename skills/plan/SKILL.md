@@ -131,3 +131,21 @@ unblock rationale, owner tags from the config's `## Collaborators`,
 checklist that includes verifying `.env` was never committed
 (`git log --all -- '*.env'`) and that any event-required sections are
 present and user-authored.
+
+Three more things the event needs, all in the template:
+
+- **An `**Acceptance:**` line on every task**, runnable, written when the
+  task is. `/do` will not tick a box without one. A hackathon plan that
+  leaves them out stops every session to ask the user.
+- **A `## File ownership` table**: every file the plan creates is owned by
+  exactly one track. That table is what keeps parallel sessions out of each
+  other's files, because there is no time to review.
+- **The `acstack:hackathon-lane` block written into AGENTS.md**, between its
+  markers, with the event end filled in, and `.claude/worktrees/` added to
+  `.gitignore`. The block is how this one repo overrides a personal
+  "merge only through a pull request" rule; `/do` reads it through
+  `mode: hackathon` and merges each finished task into `main` itself.
+  Offer to set `mode: hackathon` and `push: direct` in `.claude/acstack.md`
+  if they are not already set. Without `mode: hackathon`, `/do` has no fast
+  lane; without `push: direct`, `/ship` at submission would try to open a
+  pull request from `main` into `main`.

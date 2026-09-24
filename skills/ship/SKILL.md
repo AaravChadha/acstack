@@ -177,3 +177,16 @@ since there is no PR to carry it.
 then one line per gate as its evidence. A reader who stops after one
 line must still know whether the release happened. /ship opens the PR;
 it never merges — the merge is a human act.
+
+## Hackathon mode (`mode: hackathon`)
+
+No fast path, deliberately. During the event `/do` already merges each
+finished task into `main` (`../do/references/hackathon-lane.md`), so there is
+no per-task branch left for `/ship` to release. The five gates are what the
+repo needs **once, at submission**, before judges clone it: a clean tree,
+passing tests, no drifted docs, no stray attribution. Run it then, from a
+checkout on `main` (`git switch main` in the main checkout once every
+session has stopped), with `push: direct` set for the project, since a
+pull request from `main` into `main` means nothing. Backup pushes during the
+event are the user's own `git push origin main`; `/ship` is not needed for
+them.

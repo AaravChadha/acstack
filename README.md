@@ -318,7 +318,7 @@ looked exactly the same as having no config at all.
 
 | Key | Values (default first) | Consumed by |
 |---|---|---|
-| `mode` | `standard` \| `hackathon` | /plan |
+| `mode` | `standard` \| `hackathon` | /plan, /do, /ship |
 | `tracking` | `document` \| `tickets` | all tracking-aware skills |
 | `push` | `direct` \| `branch-pr`. Only affects **/ship**, because /do never pushes | /ship |
 | `branch-prefix` | `feature/` | /do (branch name), /ship |
