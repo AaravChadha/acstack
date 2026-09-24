@@ -6792,6 +6792,29 @@ multi-PR build that would otherwise pay full price for every push.
   host version; or, if no form passes, the preamble's stated degradation
   covers this case and the README says so.
 
+- [ ] **5.41** check.sh §46 guards less than its header claimed.
+  Demonstrated 2026-09-24 by a disprove-agent on a clone of `96247c7`, each
+  planted change passing check.sh: (b)'s bare-mention arm lets
+  `` `git update-ref` with just `refs/heads/main HEAD` `` through, and prose
+  saying "without its old value" too; (c)'s denylist and the HTML-comment
+  check read the lane only, so `git branch -f main HEAD` in the template's
+  AGENTS block and `git checkout -B main HEAD` in /do pass, as do
+  `git worktree add -B main` and a `[//]: #` comment in the lane; (a) passes
+  a four-space subtask, a sub-leaf, a `1. [ ]` ordered task, a `TBD`
+  command and an `N.1` placeholder ID; (d) misses a rename of /do's own
+  lane marker; §8's `node` exception exempts `/node` in every skill file
+  (a crossref regex that includes `_` in the name would make it
+  unnecessary). Nine §46 branches have no matrix case (the HTML-comment and
+  fence checks, the swap-line presence, the marker check, UNCLOSED, and
+  four subtask report sites), and "option before the ref" plants a correct
+  compare-and-swap, so it shows strictness, not a caught defect. Correct
+  text also fails: an indented fence under a list item, and `update-ref`
+  written without backticks. Not needed for the event: the guard protects
+  the pack's text from regressing, and nothing at the event runs it.
+  **Acceptance:** each planted change above fails check.sh (or is recorded
+  as a stated limit with a reason), each §46 branch has a matrix case shown
+  failing with that branch disabled, and the two correct-text forms pass.
+
 ## [ ] Wave 6 — The review board
 
 **Goal:** Multi-perspective review — the team — expressed as lenses, not
