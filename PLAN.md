@@ -6082,6 +6082,46 @@ multi-PR build that would otherwise pay full price for every push.
   stopped at the refused swap (a model inference, not a lane step); and
   Claude Code refused the pack's runtime preamble in both worktree sessions
   that ran it, filed as 5.40.
+  **Status (2026-09-24, eighth round): Codex plus five disprove-agents on
+  `c544238..main`.** Codex found no actionable regression, by inspection
+  only (its sandbox could not run check.sh). The agents found what Codex did
+  not. **The rest of the pack knew nothing of the lane:** `/journal`,
+  `/retro` and `/learn` in two worktrees made conflicting JOURNAL.md or
+  LEARNINGS.md commits that stop landings; `/ticket` numbered from a stale
+  plan and two filings conflicted; writing skills in the main checkout
+  committed on its stale detached HEAD; `/ship`'s "no such branch left" was
+  false. Fixed once for all 26 skills with a principles-block line: under
+  the lane block, only `/do` changes the repository. **Nothing but `/do` had
+  a route onto `main`**, and a commit on `main` made while a session waited
+  at its swap removed that session's file with every history check passing
+  (reproduced in a scratch repo); the lane gains an operator route (an
+  `ops-<n>` worktree landed with the Integrate steps) and Phase 0 installs a
+  pre-commit hook refusing commits on `main`, shown refusing in the main
+  checkout and in a worktree on `main` while task-branch commits and the
+  swap still work. Also fixed: an unfinished task resumed without `main`
+  and could never pass (it now merges `main` first); a resumed landing with
+  `main` unmoved could publish a failing tree (step 4 now always re-runs the
+  acceptance); a failing parent check stopped a retry but not a first
+  attempt (now the parent stays open and the task lands, every time); step
+  5 committed when nothing changed; the checkbox-conflict path had no next
+  step; one worktree case lacked the folder check; the lane said both
+  `npm install` and `npm ci` (now `npm ci` only, in a new "Dependencies in a
+  worktree" section, since a fresh worktree has nothing installed); the
+  template gained the branch name, the test setup (`pytest.ini` with
+  `pythonpath`, a Node `test` script), runtime databases and more secret
+  names in `.gitignore`, a broader secrets check, and AGENTS-block lines on
+  what waits until after the event and where to read progress. Each shown
+  both ways in `test-round8.sh`, with the hook, `.gitignore` and secrets
+  check extracted from the template itself. **Operator rulings the same
+  day:** drop an `update-ref` ask rule for the event and keep `git merge`
+  gated (an agent calculated up to ten swap approvals to clear four queued
+  sessions; the live run measured 11 prompts for 5 landings); add the hook.
+  **Declined, with reasons:** the leaf-acceptance shape renders under the
+  leaf in Markdown, but `/do` read the raw text correctly in the live run;
+  `/verify` checking out `main` by name is caught by step 2, which names the
+  worktree; whether a skill in the main checkout sees `.claude/worktrees/`
+  doc sets was argued, not measured, and ignored folders are normally
+  skipped by file search. **None of this round is re-tested live.**
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

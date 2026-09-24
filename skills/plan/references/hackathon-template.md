@@ -11,7 +11,8 @@ box without one, so a plan that leaves them out makes every task stop and
 wait for the user to approve a check. Measured 2026-09-23: four sessions ran
 `/do` on this template's old shape, which had no acceptance lines, and
 **0 of 4** tasks were ticked. Write each acceptance so it uses only files
-that are committed: a `.gitignore`d file (a local `.env`, a data file) is
+that are committed, plus the dependencies installed from committed files
+(the lane installs them in each worktree first): a `.gitignore`d file (a local `.env`, a data file) is
 never on `main`, so an acceptance that reads one can pass for its author and
 fail for everyone else. Write it to run from the project root with no `cd`
 (`python -m pytest api/tests`, `npm --prefix web test`): the session's shell
@@ -26,11 +27,34 @@ next free port instead of failing. Use the framework's test client
 (FastAPI's `TestClient`, Flask's `test_client()`, `supertest` for Express),
 or for a front end its build or unit tests.
 
+A Python folder needs a committed `pytest.ini` with `pythonpath` set to it,
+so `api/.venv/bin/python -m pytest api/tests` finds its modules from the
+root; a Node folder needs a `test` script whose runner is a dev dependency
+(`npm --prefix web test`). A task that needs a secret key or data too big to
+commit gets an acceptance that uses a stub or a small committed sample; the
+real call is checked by hand in the demo.
+
 **Phase 0 commits the project's setup to `main` before any session
-starts:** PLAN.md, AGENTS.md with the fast-lane block below,
-`.claude/acstack.md` with `mode: hackathon`, the `.gitignore` below, and the
-dependency files with their lockfile. Each session's worktree is built from
-`main`, so a file that is not committed there does not exist in it.
+starts**, on a branch called `main` (`git init -b main`, or
+`git branch -m main` if git made `master`): everything `/plan` wrote
+(BRIEF.md, PLAN.md, AGENTS.md with the fast-lane block below, CLAUDE.md,
+`.claude/acstack.md` with `mode: hackathon`), the `.gitignore` below, the
+dependency files with their lockfiles, and the test setup above. Each
+session's worktree is built from `main`, so a file that is not committed
+there does not exist in it. Then install the hook that refuses any commit
+on `main`, in every checkout of this clone (task branches and the lane's
+swap are unaffected; it is local and never committed):
+
+```bash
+h="$(git rev-parse --git-common-dir)/hooks/pre-commit"
+printf '%s\n' '#!/bin/sh' '[ "$(git symbolic-ref -q HEAD)" = refs/heads/main ] && { echo "refused: no commits on main during the event; use the operator route"; exit 1; }' 'exit 0' > "$h"
+chmod +x "$h"
+```
+
+**On event day,** if your Claude Code settings `ask` before
+`Bash(git update-ref *)`, remove that rule until the event ends and keep
+`git merge` gated: each swap you approve after another session landed fails
+and retries (see the lane's "Permission rules").
 
 ```markdown
 # <Project name>
@@ -56,7 +80,8 @@ dependency files with their lockfile. Each session's worktree is built from
 
 <Every file the plan will create is in exactly one "Edits only" cell. A
 session that needs a change in another track's file asks that track; it does
-not edit it. PLAN.md is shared, and only `/do` edits it, one box per task.
+not edit it. PLAN.md is shared: `/do` ticks one box per task, and new
+tasks go in through the lane's operator route.
 The dependency files (`package.json` and its lockfile, `requirements.txt` or
 `pyproject.toml`) belong to Phase 0: it adds every dependency the plan
 names and commits the lockfile, so no track edits them mid-event.>
@@ -97,8 +122,9 @@ IS the execution order.>
 
 ## Submission checklist `<final window>`
 - [ ] Confirm no secrets file was ever committed:
-  `git log --all --name-only --format= -- '*.env*' | sort -u` prints
-  nothing, or only `.env.example`.
+  `git log --all --name-only --format= | sort -u | grep -iE '(^|/)\.env|\.envrc$|secret|\.pem$|\.key$|service.?account|credential'`
+  prints nothing, or only `.env.example` files. No name list is complete:
+  also read `git ls-files` once for anything else that holds a key.
 - [ ] README has run instructions verified on a teammate's clone.
 - [ ] Any event-required sections present and **user-authored** — the
   agent never writes them (see the pack's attribution setting).
@@ -131,6 +157,14 @@ personal instructions.
   first open task in the plan, which is the same task for every session.
 - Edit only the files your track owns (PLAN.md, "File ownership"). For a
   change in another track's file, ask that track's session.
+- During the event only `/do` changes the repo: `/journal`, `/retro`,
+  `/learn`, `/ticket`, `/triage` and `/ship` wait until after submission.
+  To change `main` outside a task (add a task, a `.gitignore` line, a
+  dependency), ask a session to land it through the operator route in
+  `/do`'s hackathon lane. Nobody commits on `main`; the Phase 0 hook
+  refuses it.
+- To see progress, read `git show main:PLAN.md`. The main checkout's copy
+  is stale until someone runs `git switch --detach main` there.
 - `/do` merges its own finished task into `main` as soon as the task's
   acceptance passes. There is no pull request, no review and no integrator.
 - Before starting a task that builds on another track, check that the other
@@ -170,11 +204,22 @@ htmlcov/
 .env
 .env.*
 !.env.example
+.envrc
+secrets.toml
+*.pem
+*.key
+*serviceAccount*.json
+*service-account*.json
+# databases the app creates when it runs; commit seed data as SQL or CSV:
+*.db
+*.sqlite
+*.sqlite3
 ```
 
 `node_modules/` and `dist/` are anchored because the bare names match at any
-depth, and a track can keep source in a folder with either name. A lockfile
-is never ignored: Phase 0 commits it.
+depth, and a track can keep source in a folder with either name. Check the
+scaffold's own `.gitignore` files too: a framework's `web/.gitignore` often
+ignores `dist` unanchored. A lockfile is never ignored: Phase 0 commits it.
 
 ## Change rules under time pressure
 
@@ -185,5 +230,7 @@ Same as standard, faster notation:
 - Moved work leaves the one-line breadcrumb; decimal phases (`3.5`) for
   integrations discovered mid-event.
 - Done-by attribution appended: `— done by <owner> in Phase 3`.
+- A task or a decimal phase added mid-event goes in through the lane's
+  operator route, one at a time.
 - A task added mid-event gets its `**Acceptance:**` line when it is added,
   not later. Without it `/do` cannot finish the task.

@@ -47,6 +47,7 @@ fi
 - Docs: BRIEF.md (frozen seed) / PLAN.md (living plan) / JOURNAL.md (rolling journal). If the repo uses legacy names (PLANNING_PROMPT.md / PLANNING.md / STATUS.md), use those instead — never create both.
 - Recall: if `LEARNINGS.md` exists at the project root, read it before starting.
 - Conduct: follow the `acstack-conduct` block in this repo's AGENTS.md — the word is the mode; the user sets the pace.
+- Hackathon lane: if the project's AGENTS.md carries the `acstack:hackathon-lane` block, only `/do` changes the repository during the event. Any other skill that would write a tracked file, commit or push says what it would have done and stops; a change that is not a task goes through the lane's operator route.
 <!-- /acstack:principles -->
 
 ## Preconditions — all three, before touching anything

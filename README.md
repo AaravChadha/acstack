@@ -370,6 +370,7 @@ changing one word means a deliberate, visible edit to 27 files at once (the
 - Docs: BRIEF.md (frozen seed) / PLAN.md (living plan) / JOURNAL.md (rolling journal). If the repo uses legacy names (PLANNING_PROMPT.md / PLANNING.md / STATUS.md), use those instead — never create both.
 - Recall: if `LEARNINGS.md` exists at the project root, read it before starting.
 - Conduct: follow the `acstack-conduct` block in this repo's AGENTS.md — the word is the mode; the user sets the pace.
+- Hackathon lane: if the project's AGENTS.md carries the `acstack:hackathon-lane` block, only `/do` changes the repository during the event. Any other skill that would write a tracked file, commit or push says what it would have done and stops; a change that is not a task goes through the lane's operator route.
 <!-- /acstack:principles -->
 
 The second block, the runtime preamble, is the only code that runs each time
@@ -458,7 +459,7 @@ people will want to drop first.
 ## About this document
 
 This README is longer and has more tables than most. It has
-<!-- count:readme-lines -->508<!-- /count --> lines,
+<!-- count:readme-lines -->509<!-- /count --> lines,
 <!-- count:readme-h2 -->16<!-- /count --> sections and
 <!-- count:readme-rows -->62<!-- /count --> table rows. Six comparison
 projects with over 100k stars had 96–346 lines, 4–12 sections and 0–19 table

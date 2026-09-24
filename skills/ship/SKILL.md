@@ -44,6 +44,7 @@ fi
 - Docs: BRIEF.md (frozen seed) / PLAN.md (living plan) / JOURNAL.md (rolling journal). If the repo uses legacy names (PLANNING_PROMPT.md / PLANNING.md / STATUS.md), use those instead — never create both.
 - Recall: if `LEARNINGS.md` exists at the project root, read it before starting.
 - Conduct: follow the `acstack-conduct` block in this repo's AGENTS.md — the word is the mode; the user sets the pace.
+- Hackathon lane: if the project's AGENTS.md carries the `acstack:hackathon-lane` block, only `/do` changes the repository during the event. Any other skill that would write a tracked file, commit or push says what it would have done and stops; a change that is not a task goes through the lane's operator route.
 <!-- /acstack:principles -->
 
 **One document set.** Resolve exactly ONE BRIEF/PLAN/JOURNAL set and name
@@ -180,11 +181,13 @@ it never merges — the merge is a human act.
 
 ## Hackathon mode (`mode: hackathon`)
 
-No hackathon path, deliberately. `/ship` releases a branch against the
-default branch, and in the lane there is no such branch left: `/do` has
-already merged every finished task into `main` (see
-`../do/references/hackathon-lane.md`). Running `/ship` from `main` would
-stop at gate 1 anyway, which refuses to ship from the default branch and
-blocks when nothing is ahead of it; both are right, and neither is bent for
-an event. At submission, run the project's tests yourself and push `main`
-(`git push origin main`); the plan's `## Submission checklist` is the gate.
+No hackathon path, deliberately. When the project's AGENTS.md carries the
+`acstack:hackathon-lane` block, **stop before gate 1** and say so. Every
+session there sits on a task branch that `/do` merges into the local `main`
+itself (see `../do/references/hackathon-lane.md`); shipping one would push
+it, or open a pull request against `origin/main`, which has none of the
+local landings. ~~In the lane there is no such branch left.~~
+**Correction (2026-09-24):** there always is one, the session's own task
+branch, found by a disprove-agent. At submission, run the project's tests
+yourself and push `main` (`git push origin main`); the plan's
+`## Submission checklist` is the gate.

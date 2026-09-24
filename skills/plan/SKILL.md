@@ -41,6 +41,7 @@ fi
 - Docs: BRIEF.md (frozen seed) / PLAN.md (living plan) / JOURNAL.md (rolling journal). If the repo uses legacy names (PLANNING_PROMPT.md / PLANNING.md / STATUS.md), use those instead — never create both.
 - Recall: if `LEARNINGS.md` exists at the project root, read it before starting.
 - Conduct: follow the `acstack-conduct` block in this repo's AGENTS.md — the word is the mode; the user sets the pace.
+- Hackathon lane: if the project's AGENTS.md carries the `acstack:hackathon-lane` block, only `/do` changes the repository during the event. Any other skill that would write a tracked file, commit or push says what it would have done and stops; a change that is not a task goes through the lane's operator route.
 <!-- /acstack:principles -->
 
 **One document set.** Resolve exactly ONE BRIEF/PLAN/JOURNAL set and name
@@ -129,7 +130,7 @@ unblock rationale, owner tags from the config's `## Collaborators`,
 `← unblocks <owner>` annotations, a `## Demo Script` section, a
 `## Future Extensions (mention, don't build)` section, and a submission
 checklist that includes verifying no secrets file was ever committed
-(`git log --all --name-only --format= -- '*.env*'`) and that any
+(the template's name check over `git log --all --name-only`) and that any
 event-required sections are present and user-authored.
 
 Four more things the event needs, all in the template:
@@ -150,7 +151,9 @@ Four more things the event needs, all in the template:
   output anchored at their real paths. `/do` will not land a task while its
   worktree holds an untracked file, and these are what common tools leave.
 
-Then tell the user to commit all of it to `main` (PLAN.md, AGENTS.md,
-`.claude/acstack.md`, `.gitignore`, and the dependency files with their
-lockfile) before starting any session: each session's worktree is built from
-`main`, and a file not committed there is missing in it.
+Then walk the user through the template's Phase 0 before any session
+starts: the branch is called `main`; everything above, plus the dependency
+files with their lockfiles and the test setup, is committed there (each
+session's worktree is built from `main`, and a file not committed there is
+missing in it); the hook that refuses commits on `main` is installed; and on
+event day an `update-ref` ask rule, if they have one, comes off.
