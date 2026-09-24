@@ -6065,8 +6065,18 @@ multi-PR build that would otherwise pay full price for every push.
   which is the approved arm of the report-wording re-test. A
   disprove-agent checked this paragraph against the reflog and transcripts
   and found six errors, five in the author's favour, all corrected here.
-  **Still owed:** a session whose only signal is the worktree (started
-  inside it, as the lane's fallback does when `EnterWorktree` is missing).
+  ~~**Still owed:** a session whose only signal is the worktree (started
+  inside it, as the lane's fallback does when `EnterWorktree` is missing).~~
+  **Done the same day, headless:** a fresh `claude -p "/do 2.1"` started
+  inside an existing worktree, on a non-task branch, with no
+  `.claude/acstack.md` there. It printed `mode=standard (default)` and
+  still followed the lane: task branch looked up by ID, `MERGE_HEAD` and
+  clean-tree checks, `git switch -c feature/2.1-count-chars refs/heads/main`,
+  commit, the landing checks, then `git update-ref`, which the operator's
+  ask rule refused in headless mode; the session stopped there, reported
+  the refusal as it saw it, and `main` stayed put. So the AGENTS.md switch
+  works when it is the only signal. No control was run without the block
+  (the lane's "When the lane applies" rule covers that case in text only).
   Two findings: a
   report guessed that another session was "still committing" when it had
   stopped at the refused swap (a model inference, not a lane step); and
@@ -6731,8 +6741,11 @@ multi-PR build that would otherwise pay full price for every push.
   should hit this in every such session; measured for `/do` only.
   Both sessions recovered by running the three steps separately, as the
   message says; that is the model working around the preamble, not the
-  preamble working. Not yet measured: whether a `claude --worktree` session
-  is treated the same way, and whether any form of the preamble passes.
+  preamble working. A session **started** inside a worktree folder (headless,
+  the same day) ran the preamble with no refusal, so the check seems to
+  apply only to sessions `EnterWorktree` moved (one observation). Not yet
+  measured: whether a `claude --worktree` session is treated the same way,
+  and whether any form of the preamble passes.
   **Acceptance:** in a session moved into a worktree by `EnterWorktree`, a
   skill's runtime preamble runs as written with no refusal, read from the
   transcript, with a control showing the current form refused on the same
