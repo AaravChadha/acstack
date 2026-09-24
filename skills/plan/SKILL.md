@@ -141,8 +141,11 @@ Three more things the event needs, all in the template:
   exactly one track. That table is what keeps parallel sessions out of each
   other's files, because there is no time to review.
 - **The `acstack:hackathon-lane` block written into AGENTS.md**, between its
-  markers, with the event end filled in, and `.claude/worktrees/` added to
-  `.gitignore`. The block is how this one repo overrides a personal
+  markers, with the event end filled in, and `.gitignore` covering
+  `.claude/worktrees/` plus the stack's caches and build output
+  (`__pycache__/`, `.pytest_cache/`, `node_modules/`, `dist/` or the like).
+  A cache left untracked by an acceptance run fails the lane's clean-tree
+  check. The block is how this one repo overrides a personal
   "merge only through a pull request" rule; `/do` reads it through
   `mode: hackathon` and merges each finished task into `main` itself.
   Offer to set `mode: hackathon` in `.claude/acstack.md` if it is not

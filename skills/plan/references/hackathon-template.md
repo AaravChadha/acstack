@@ -96,8 +96,11 @@ This project is a timed event. For this repo, these rules replace any
 "merge only through a pull request" or "one integrator merges" rule in
 personal instructions.
 
-- One session per track, each in its own git worktree and branch. Nobody
-  edits in the main checkout; keep it on a detached `main`
+- One session per track, each in its own git worktree and branch. Start
+  each session with plain `claude` in this folder, not `claude --worktree`:
+  `/do` makes the worktree from the local `main`, while `claude --worktree`
+  branches from `origin/main`, which this lane never updates. Nobody edits
+  in the main checkout; keep it on a detached `main`
   (`git switch --detach main`) and use it only to run the demo.
 - Edit only the files your track owns (PLAN.md, "File ownership"). For a
   change in another track's file, ask that track's session.

@@ -5902,6 +5902,25 @@ multi-PR build that would otherwise pay full price for every push.
   stopped and resolved). What still stands between 5.21 and closing is
   5.20.2's fast tier, and a live landing that re-tests the lane's corrected
   report wording (sessions state only what they observed about prompts).
+  **Status (2026-09-24):** the re-test's **refusal arm** ran headless and
+  passed: with the `update-ref` rule refusing, the session reported "needed
+  your permission and got 'you haven't granted it yet'. I stopped there"
+  and claimed nothing about prompts. The **approved arm** (the operator
+  answers yes in an interactive session) is still owed. A third
+  disprove-agent, attacking the whole lane rather than a diff, then
+  demonstrated seven more defects, all fixed in the same PR: step 7 read
+  whoever moved `main` last instead of this session's own swap (now it finds
+  its own reflog entry); step 7's automatic restore could undo a rollback the
+  operator made on purpose (removed: it reports and stops); a stored count
+  made every third landing conflict (now resolved by re-deriving, like the
+  checkbox exception); an acceptance leaving `__pycache__/` failed the
+  clean-tree check (caches are now gitignored by `/plan` and tolerated by the
+  lane); "the lane cannot see ignored files" was false (`git status
+  --ignored` lists them); a bare-repo layout has no prior reflog entry (now
+  reported as "could not run"); and, argued, a session started with
+  `claude --worktree` branches from `origin/main`, which the lane never
+  updates (the lane now merges the local `main` before the task, and the
+  AGENTS block says to start sessions with plain `claude`).
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

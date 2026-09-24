@@ -508,6 +508,21 @@ is fixed here **in text only; no live run has re-tested it** (owed under
 5.21, raised by Codex). An outside README comment also caught
 line 162 saying "There is no runtime" beside the runtime preamble; reworded.
 
+**A third agent, and a re-test.** Codex held that the prompt-report fix was
+declared done without the live re-test AGENTS.md requires; a headless re-test
+then ran its refusal arm (the `update-ref` rule refused and the session said
+so, claiming nothing about prompts), while the approved arm stays owed. A
+disprove-agent aimed at the whole lane rather than the diff demonstrated
+seven more defects, all fixed: step 7 checked whoever moved `main` last
+rather than its own swap; its automatic restore could undo an operator's
+deliberate rollback (removed); a stored count deadlocked every third
+landing; `__pycache__/` from a Python acceptance failed the clean-tree check;
+"cannot see ignored files" was false; a bare repository has no prior reflog
+entry; and, argued, `claude --worktree` sessions branch from `origin/main`,
+which the lane never pushes to, so tasks would be built on stale code. The
+lane now merges the local `main` before a task starts, and the AGENTS block
+says to start sessions with plain `claude`.
+
 **Self-indicting, five.** (1) The lane's first design used `git rebase`
 without reading the operator's `ask` rules. (2) PLAN's first account of
 rehearsal 3 said three tasks landed; two did, one by a gate slip. (3) `/ship`'s
