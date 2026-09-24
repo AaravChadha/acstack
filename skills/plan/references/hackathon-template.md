@@ -105,8 +105,11 @@ personal instructions.
   track's work is already on `main`.
 - Pushing `main` to the remote is a backup. Nothing waits for it.
 
-What this gives up on purpose, for the length of the event: review before
-merge, CI before merge, and a protected `main`. Put them back afterwards.
+This lane is for several sessions on one machine, sharing one clone. What
+it gives up on purpose, for the length of the event: review before merge,
+CI before merge, a protected `main`, and a linear history (merge commits
+land on `main`). It does not read the date: afterwards, remove this block
+and `mode: hackathon` to put them back.
 <!-- /acstack:hackathon-lane -->
 ```
 

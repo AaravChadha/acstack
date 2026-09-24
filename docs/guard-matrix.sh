@@ -1291,6 +1291,42 @@ assert a in s, 'seed no-op: the compare-and-swap form is not present'
 io.open(p, 'w', encoding='utf-8').write(s.replace(a, 'git update-ref refs/heads/main HEAD', 1))
 EOF"
 
+# 5.21, second round: one arm per bypass class a disprove-agent planted
+# against the first version of §46, each of which that version passed.
+fullcase "hackathon: acceptance left as prose"      FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/plan/references/hackathon-template.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+a = '  **Acceptance:** ' + q + '<command>' + q + ' prints ' + q + '<expected>' + q + '.'
+assert a in s, 'seed no-op: no acceptance line to blank'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, '  **Acceptance:** TBD', 1))
+EOF"
+fullcase "hackathon: task written without bold"     FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/plan/references/hackathon-template.md'
+s = io.open(p, encoding='utf-8').read()
+a = '\n<Physically reorder subtasks'
+assert s.count(a) == 1, 'seed no-op: the build-order note moved'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, '- [ ] 1.9 Extra task (Track A)' + a, 1))
+EOF"
+fullcase "hackathon: swap in prose loses old value" FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/references/hackathon-lane.md'
+s = io.open(p, encoding='utf-8').read()
+q = chr(96)
+assert '## Report' in s, 'seed no-op: the Report heading moved'
+io.open(p, 'w', encoding='utf-8').write(s.replace('## Report', 'Or run ' + q + 'git update-ref refs/heads/main HEAD' + q + ' to finish.\n\n## Report', 1))
+EOF"
+fullcase "hackathon: /do stops pointing at lane"    FAIL 'hackathon' bash -c "python3 - <<'EOF'
+import io
+p = 'skills/do/SKILL.md'
+s = io.open(p, encoding='utf-8').read()
+a = 'references/hackathon-lane.md'
+assert a in s, 'seed no-op: /do does not name the lane'
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, 'references/fast-lane.md'))
+EOF"
+
 echo
 # --list produced names, not results; say so and stop before any summary
 # that would read as a run. RAN here means "cases named".

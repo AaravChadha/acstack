@@ -5306,7 +5306,12 @@ multi-PR build that would otherwise pay full price for every push.
   with no pull request, no required CI and no protected `main`. What that
   gives up, for the event only: review before merge, CI before merge, and
   protection against a bad push to `main`. The user's own permission rules
-  still apply; the lane asks, it does not route around them.
+  still apply to the lane's `git merge`, but ~~the lane asks, it does not
+  route around them~~ **Verdict (2026-09-23):** that overstated it, found by
+  a disprove-agent: the step that moves `main` is `git update-ref`, which a
+  rule on `git merge *` does not cover, so a landing with nothing to merge
+  moves `main` with no prompt. The lane now says so in its scope, and names
+  the rule (`Bash(git update-ref *)` in `ask`) that gates every landing.
   **Acceptance:** protection on `main` read back **from the server** shows
   `required_pull_request_reviews` present with its review count recorded,
   alongside the `enforce_admins`, linear-history and `check` settings
@@ -5798,12 +5803,16 @@ multi-PR build that would otherwise pay full price for every push.
     the caveat into 5.16 so the two cannot be closed inconsistently.
     **Acceptance:** 5.16's trigger carries the mode caveat, and the hackathon
     protection posture is stated together with what it gives up.
-  - [x] **5.21.2** *(Done 2026-09-23. The template has a `## File
+  - [ ] **5.21.2** *(Status 2026-09-23: the template has a `## File
     ownership` table, one track per file, with PLAN.md shared and edited only
-    by `/do`. Rehearsal 3 used it with three tracks landing on `main` in
-    parallel and produced **no conflict**; one of those merges brought
-    another track's already-merged work into its branch first.)* Conflict
-    avoidance at a hackathon is **file-ownership
+    by `/do`. **Not yet closed:** the acceptance's run is owed. Rehearsal 3
+    used the table and produced no conflict, but only **two** tasks reached
+    `main` (1.2.1, then 1.4.1), and the one merge on top of another track's
+    work (1.4.1) got through only because that session ran
+    `git -C <path> merge`, which the operator's `ask` rule on `git merge *`
+    does not match. A disprove-agent found this; the first draft of this
+    note said three tasks landed.)* Conflict avoidance at a hackathon is
+    **file-ownership
     partitioning agreed up front**, not review. The hackathon template
     already carries owner tags and `← unblocks <owner>` arrows; it carries no
     statement of who owns which *files*, which is the thing that actually
@@ -5814,9 +5823,12 @@ multi-PR build that would otherwise pay full price for every push.
     `references/hackathon-lane.md`: after its commit it merges the task into
     `main` itself — `git merge` of the pinned `main` into the task branch,
     re-run acceptance, then `git update-ref refs/heads/main HEAD <base>` as a
-    compare-and-swap — and refuses if `main` is checked out anywhere. `/ship`
-    records that it deliberately has no fast path: it runs once at
-    submission, with `push: direct`. Guarded by check.sh §46.)* `/ship` and
+    compare-and-swap — and refuses if `main` is checked out anywhere, with a
+    clean-tree check before and after the acceptance and a reflog check
+    after the swap. `/ship` records that it deliberately has no hackathon
+    path: its gate 1 refuses the default branch and there is no branch
+    left to release, so at submission the user runs the tests and pushes
+    `main`. Guarded by check.sh §46.)* `/ship` and
     `/do` have no hackathon branch at all. `/ship`'s
     five gates and `/do`'s commit-and-stop are both shaped for a long-lived
     repo; under a clock each needs either a stated fast path or an explicit
@@ -5838,9 +5850,21 @@ multi-PR build that would otherwise pay full price for every push.
   ticked, 0 of 4 on `main`; a merge by hand took under a second with no
   conflicts. Rehearsal 2 (lane using `git rebase`): 1 merged itself, 2
   stopped at the operator's `ask` rule on `git rebase *`. Rehearsal 3 (lane
-  using `git merge`): 2 merged themselves, one of them on top of the other's
-  work; 1 stopped at the `ask` rule on `git merge *`, which a headless
-  session cannot answer; the dependent CLI task correctly refused to start.
+  using `git merge`): 2 reached `main` (1.2.1 with nothing to merge, then
+  1.4.1 on top of it — but only by writing `git -C <path> merge`, which
+  slipped past the `ask` rule); 1.1.1 and 1.2.1 both hit the `git merge`
+  prompt, which a headless session cannot answer, and 1.1.1 stopped there;
+  the dependent CLI task correctly refused to start. **So no rehearsal has
+  yet shown a gated merge-then-swap landing**, which is the case the live
+  re-run must cover. Two disprove-agents then found two demonstrated
+  defects in the lane (an untracked file passing the check but missing
+  from `main`; a commit in a checkout moved onto `main` reverting another
+  session's landing) and a set of §46 bypasses; the lane gained a
+  clean-tree check, a re-check just before the swap, a reflog check after
+  it, and §46 was tightened. **§9 cannot show that `/do` or `/ship` reads
+  `mode`**: both already match its `mode:` pattern through unrelated text,
+  so deleting either skill's hackathon section still passes. Recorded, not
+  fixed here.
   **Operator ruled (A): keep the merge gate and approve each merge prompt at
   the event.** One rehearsal session got past that gate by writing
   `git -C <path> merge`, which the pattern `git merge *` does not match; the

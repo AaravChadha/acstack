@@ -180,13 +180,11 @@ it never merges — the merge is a human act.
 
 ## Hackathon mode (`mode: hackathon`)
 
-No fast path, deliberately. During the event `/do` already merges each
-finished task into `main` (`../do/references/hackathon-lane.md`), so there is
-no per-task branch left for `/ship` to release. The five gates are what the
-repo needs **once, at submission**, before judges clone it: a clean tree,
-passing tests, no drifted docs, no stray attribution. Run it then, from a
-checkout on `main` (`git switch main` in the main checkout once every
-session has stopped), with `push: direct` set for the project, since a
-pull request from `main` into `main` means nothing. Backup pushes during the
-event are the user's own `git push origin main`; `/ship` is not needed for
-them.
+No hackathon path, deliberately. `/ship` releases a branch against the
+default branch, and in the lane there is no such branch left: `/do` has
+already merged every finished task into `main` (see
+`../do/references/hackathon-lane.md`). Running `/ship` from `main` would
+stop at gate 1 anyway, which refuses to ship from the default branch and
+blocks when nothing is ahead of it; both are right, and neither is bent for
+an event. At submission, run the project's tests yourself and push `main`
+(`git push origin main`); the plan's `## Submission checklist` is the gate.

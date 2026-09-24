@@ -145,7 +145,5 @@ Three more things the event needs, all in the template:
   `.gitignore`. The block is how this one repo overrides a personal
   "merge only through a pull request" rule; `/do` reads it through
   `mode: hackathon` and merges each finished task into `main` itself.
-  Offer to set `mode: hackathon` and `push: direct` in `.claude/acstack.md`
-  if they are not already set. Without `mode: hackathon`, `/do` has no fast
-  lane; without `push: direct`, `/ship` at submission would try to open a
-  pull request from `main` into `main`.
+  Offer to set `mode: hackathon` in `.claude/acstack.md` if it is not
+  already set; without it, `/do` has no fast lane.
