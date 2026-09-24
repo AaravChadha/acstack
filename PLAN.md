@@ -5049,7 +5049,39 @@ multi-PR build that would otherwise pay full price for every push.
   is why `repo-rules` stays 7 rather than going to 8.
   **Carried, not closed:** which registration wins when both are present is
   not established as deterministic → **5.22**.
-- [ ] **5.22** Two registrations of every skill coexist, and precedence is
+- [x] **5.22** *(Done 2026-09-23. **The premise does not hold on Claude Code
+  2.1.280: a symlink install has one registration, so precedence is
+  deterministic because there is nothing to choose between.** Measured with
+  typed `/why` and the served body read from each session's on-disk
+  transcript (`Base directory for this skill:`), which is the only place it
+  now appears. Headless `claude -p` no longer puts it in the stream-json,
+  and there the Skill tool returns only `Execute skill: why`, so a first
+  batch of ten Skill-tool runs measured nothing and was discarded.
+  | Venue (CWD) | Runs | Served | canary |
+  |---|---|---|---|
+  | scratch clone, `/why` tagged CLONE | 1 probe + 10 + control (`.claude-plugin` moved aside) | `~/.claude/skills/why`, 12 of 12 | 0 |
+  | worktree of that clone, tagged WORKTREE | 10 + control | `~/.claude/skills/why`, 11 of 11 | 0 |
+  | same worktree, **interactive** session | 1 | `~/.claude/skills/why` | 0 |
+  | main checkout | plugin list only | — | — |
+  Every served body was the same 7,031 characters. The session's plugin list
+  was `codex`, `agents-md`, `telemetry` in every venue, **including the main
+  checkout**: the repo's `.claude-plugin/plugin.json` is never loaded, so
+  5.15's second registration (one run, on an earlier host, whose control
+  measured nothing) does not reproduce. One run's transcript carried the
+  canary twice, from the session **reading** the clone's `SKILL.md`, not
+  from the served body; separating the two is the same trap 5.15 recorded.
+  **Consequence:** on this host a skill edited in a worktree is not what a
+  session in that worktree runs. It runs the copy `~/.claude/skills` points
+  at. Recorded in `docs/shakedown-method.md` and as a dated verdict in
+  AGENTS.md. **5.13's double listing:** the operator saw `/plan` twice in
+  the interactive autocomplete, while headless listed `plan` once. With one
+  registration, the likelier source is the built-in `/plan` next to
+  acstack's `/plan`, the two names 5.13 reported being exactly the two that
+  shadow built-ins. **Not proven:** the discriminator (does `/why`, which
+  has no built-in, also list twice interactively) was not run; that
+  discoverability question already lives in `/audit readme` check 9. Not
+  measured: a plugin install, which this machine does not have.)*
+  Two registrations of every skill coexist, and precedence is
   unmeasured. `./setup` links `~/.claude/skills/<name>` at one fixed
   checkout; `.claude-plugin/plugin.json` registers `./skills` at whichever
   checkout the session opened in. 5.15 measured the plugin path winning in a
@@ -6167,7 +6199,21 @@ multi-PR build that would otherwise pay full price for every push.
   README pointing at it — and the route is confirmed reachable by the
   operator rather than assumed from the setting being on.
 
-- [ ] **5.33** Neither the README nor `docs/EXAMPLE.md` contains a captured
+- [x] **5.33** *(Done 2026-09-23. README's `## See it work` now carries a
+  transcript captured from a real `/do 1.1.1` run in a scratch project,
+  `textstats`, from start commit `77a7b1a`: the acceptance command failing
+  with its full traceback (`AssertionError: 3`), the change as `git show`
+  prints it, `acceptance PASSES` and `phase 1 PASSES`, the local commit
+  `bfe9a8c`, and the report's opening verdict. Each block is copied from
+  the run's stream-json or from `git show`, and none was reconstructed. The
+  run was headless (`claude -p "/do 1.1.1"`, Claude Code 2.1.280, default
+  model, 23 turns, about $0.66). The README states what was left out and
+  that the run worked in a worktree only because the author's personal
+  instructions ask every session to; by default `/do` commits on the
+  current branch (one branch per issue in tickets mode, per
+  `skills/do/references/tickets-mode.md:14`). The old "passes before any
+  work" example is kept as a pointer to `docs/EXAMPLE.md`.)*
+  Neither the README nor `docs/EXAMPLE.md` contains a captured
   record of a skill actually running. Both show an **acceptance command's
   output** — the same `python3 -c "from wordfreq import top_words…"` block —
   which demonstrates that a runnable acceptance exists, not that an agent

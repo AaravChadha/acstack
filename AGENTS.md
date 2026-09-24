@@ -147,7 +147,14 @@ defect this repo shipped):
   verification point, not the hazard: **two registrations of every skill
   coexist and which one a live run served is a fact to establish, never to
   infer from `readlink`** — 5.15 for the measurement, 5.22 for whether
-  precedence is even deterministic.
+  precedence is even deterministic. **Verdict (2026-09-23):** on Claude Code
+  2.1.280, a symlink install has one registration, not two. 24 of 24 served
+  skill bodies — headless and interactive, from a clone, from a worktree,
+  and with `.claude-plugin` moved aside — came from `~/.claude/skills`; the
+  repo's `.claude-plugin/plugin.json` was never loaded, not even in the main
+  checkout. 5.15's single run on an earlier host does not reproduce. The
+  verification point stands: which copy ran is read from the served body,
+  never inferred from `readlink`.
 
 These <!-- count:repo-rules -->7<!-- /count --> are repo-binding, not part of the shipped conduct block. Promote
 one into CONDUCT.md only if it proves out across projects — the same bar

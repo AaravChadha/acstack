@@ -79,6 +79,18 @@ re-derive these; they cost a round's budget once already.
   two live copies without touching any symlink. Which registration wins when
   both exist is still unmeasured and is task 5.22's whole subject; do not
   infer it from `readlink`.
+  **Verdict (2026-09-23, task 5.22):** that does not reproduce on Claude Code
+  2.1.280. From a clone and from a worktree, each with its own tagged copy
+  of `/why`, all 23 served bodies (headless, plus controls with
+  `.claude-plugin` moved aside) and one interactive run came from
+  `~/.claude/skills`, and the session's plugin list never included the
+  repo's `.claude-plugin`, even in the main checkout. **So on this host a
+  skill edited in a worktree is NOT what a session in that worktree runs**;
+  it runs the copy the symlinks point at. Read the served body out of the
+  session transcript (`~/.claude/projects/<cwd>/<session>.jsonl`, the
+  `Base directory for this skill:` message): headless `claude -p` no longer
+  puts it in the stream-json output, and the Skill tool there returns only
+  `Execute skill: <name>`.
 
 **Consequence: an A/B between two versions of the SAME skill cannot be run
 on one machine without re-pointing the live `~/.claude/skills/<name>`

@@ -32,30 +32,76 @@ change in a pull request. Nothing is hidden away on your machine.
 ## See it work
 
 Tasks in the plan come with an acceptance command: a command that only passes
-once the task is done. `/do` runs it **before** starting the work. Here is a real
-example from a small Python project, where task 1.1.1 said a contraction like
-"don't" must count as one word. This is the task's acceptance command and what
-it printed:
+once the task is done. `/do` runs it **before** it changes anything, and again
+after. Below is one real run, recorded on 2026-09-23. Every block is copied
+from the run's own output, not written by hand.
+
+**The setup.** A scratch project called `textstats`: one Python file and a
+PLAN.md whose only task, 1.1.1, says `word_count('wait - what')` should
+return 2, not 3. It started at commit `77a7b1a`. The run used Claude Code
+2.1.280 with its default model, started as `claude -p "/do 1.1.1"`, which is
+the same as typing `/do 1.1.1` in a session.
+
+**1. The acceptance command, before any change.** It fails:
 
 ```
-$ python3 -c "from wordfreq import top_words; assert top_words(\"don't don't stop\")[0] == (\"don't\", 2); print('acceptance PASSES before any work')"
-acceptance PASSES before any work
+$ python3 -c "from textstats.words import word_count as w; assert w('wait - what') == 2, w('wait - what'); assert w('one, two, three') == 3; print('acceptance PASSES')"
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from textstats.words import word_count as w; assert w('wait - what') == 2, w('wait - what'); assert w('one, two, three') == 3; print('acceptance PASSES')
+                                                        ^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 3
 ```
 
-It passed before any work was done. The code that splits text into words
-already kept the apostrophe inside a word, so the bug the task described did
-not exist. The task was marked done with that finding, and no code was
-written.
+**2. The change it made**, as `git show` prints it:
 
-A check you can run can tell you the work isn't needed. A written description
-of "done" never can.
+```diff
+@@ -1,3 +1,7 @@
+ def word_count(text):
+-    """Return the number of words in text."""
+-    return len(text.split())
++    """Return the number of words in text.
++
++    A whitespace-separated token counts only if it contains at least one
++    letter or digit, so a stand-alone dash or other punctuation is not a word.
++    """
++    return sum(1 for token in text.split() if any(ch.isalnum() for ch in token))
+```
 
-**What this shows and what it doesn't.** That is the command's real output,
-copied from the project it ran in. It is not a record of the whole agent
-session. That project isn't this repo, so the command won't run here.
-**[The full worked session](docs/EXAMPLE.md)** shows the same task with every
-output copied exactly. It also shows the next task, which did need real work,
-with the failing output before the fix.
+**3. The acceptance command again, plus the phase's own exit check:**
+
+```
+acceptance PASSES
+phase 1 PASSES
+```
+
+**4. The commit.** Local only; `/do` never pushes:
+
+```
+[feature/1.1.1-punctuation bfe9a8c] task 1.1.1: stop counting stand-alone punctuation as words
+ 2 files changed, 9 insertions(+), 5 deletions(-)
+```
+
+**5. Its report opened with the verdict:**
+
+> Subtask 1.1.1 is done: `word_count('wait - what')` now returns 2, and both
+> the subtask's acceptance check and the Phase 1 exit criterion pass. The
+> commit is local and not pushed.
+
+**What this shows and what it doesn't.** Left out of the blocks above: the
+setup commands, its reads of the plan, 14 extra edge cases it tried on its own
+(all matched), and the rest of its report. It worked on a separate branch in
+a git worktree because the author's personal instructions ask every session
+to do that. By default `/do` commits on whatever branch you are on (in
+tickets mode it makes one branch per issue). The project
+isn't in this repo, so these commands won't run here. To reproduce it, make
+the same one-file project and PLAN.md and type `/do 1.1.1`. The wording of
+the report will differ from run to run; the commands and their results
+should not.
+
+An acceptance command can also show the work isn't needed. In
+**[the full worked session](docs/EXAMPLE.md)**, one task's acceptance passed
+before any change, so `/do` marked it done without writing any code.
 
 ## Install
 
@@ -411,7 +457,7 @@ people will want to drop first.
 ## About this document
 
 This README is longer and has more tables than most. It has
-<!-- count:readme-lines -->461<!-- /count --> lines,
+<!-- count:readme-lines -->507<!-- /count --> lines,
 <!-- count:readme-h2 -->16<!-- /count --> sections and
 <!-- count:readme-rows -->62<!-- /count --> table rows. Six comparison
 projects with over 100k stars had 96–346 lines, 4–12 sections and 0–19 table
