@@ -74,18 +74,28 @@ Work out where the session is, one command per call:
 is in the **main checkout** when the first two print the same path, and in a
 **worktree** when they differ.
 
+**Do this section before `/do`'s own "Before starting" reads PLAN.md.** The
+main checkout can sit on an older commit than `main`, because landings move
+`main` without touching it, so its PLAN.md can be missing tasks and ticks
+that are already on `main`. Read PLAN.md, and check whether another track's
+work has landed, only from inside the worktree after C, or with
+`git show refs/heads/main:PLAN.md`.
+
+**Find this task's branch by its ID, not by a name you choose.**
+`git for-each-ref --format='%(refname:short)' 'refs/heads/<branch-prefix><id>-*'`
+lists branches already made for task `<id>` (for example `feature/1.4-*`
+for task 1.4). A slug is only chosen when that prints nothing.
+
 **A. In the main checkout, on a detached HEAD.** This is how the AGENTS
-block tells sessions to start. The checkout may sit on an older commit than
-`main`, because landings move `main` without touching it; that does not
-matter here, since the worktree is built from `refs/heads/main` itself. For
-branch name `<branch-prefix><id>-<slug>`:
-- `git worktree list --porcelain` shows the branch already checked out in
-  a worktree → move the session into that path with the EnterWorktree tool
-  and continue at C (this resumes a task that stopped earlier);
-- `git rev-parse -q --verify refs/heads/<branch>` succeeds, but no worktree
-  has it → `git worktree add .claude/worktrees/<id>-<slug> <branch>`, move
-  in, continue at C;
-- otherwise → `git worktree add -b <branch> .claude/worktrees/<id>-<slug> refs/heads/main`,
+block tells sessions to start. It does not matter which commit the checkout
+sits on, since the worktree is built from `refs/heads/main` itself.
+- An existing branch for this task that `git worktree list --porcelain`
+  shows checked out → move the session into that worktree with the
+  EnterWorktree tool and continue at C (this resumes a task that stopped).
+- An existing branch for this task that no worktree has →
+  `git worktree add .claude/worktrees/<branch-name-without-prefix> <branch>`,
+  move in, continue at C.
+- None → `git worktree add -b <branch-prefix><id>-<slug> .claude/worktrees/<id>-<slug> refs/heads/main`,
   move in, continue at C.
 
 If the EnterWorktree tool is not available, tell the user to open a new
@@ -94,7 +104,9 @@ session inside that folder and run the task there, and stop. **Why from
 branch from `origin/main` by default, and this lane never pushes, so that
 base lacks every task merged so far. To run the demo in the main checkout,
 bring it up to date with `git switch --detach main` once no session is
-mid-landing.
+mid-landing. If that refuses because untracked files would be overwritten
+(typically a lockfile such as `package-lock.json` left by a local
+`npm install`), move those files aside, switch, and install again.
 
 **B. In the main checkout, on a branch** (including `main`): stop, and tell
 the user to run `git switch --detach main` there and start the session
@@ -106,16 +118,28 @@ commit records that deletion).
 **C. In a worktree on a task branch** (a branch other than `main`), in this
 order:
 0. `git status --porcelain --untracked-files=all` must print nothing except
-   files that pass the cache checks below. Anything else (a modified file,
-   a leftover untracked file) → stop and list it; it would otherwise ride
+   files that pass the cache checks below, and changes **this session made
+   for this same task earlier in this conversation** (a retry after a
+   failed acceptance). Anything else (a file you did not write here, a
+   leftover from another task) → stop and list it; it would otherwise ride
    into this task's commit or block the next step.
-1. `git log --format='%h %s' refs/heads/main..HEAD` lists commits on this
-   branch that are not on `main`. None → go to 2. If **every** one is this
-   task's own (its subject starts with this task's commit prefix, e.g.
-   `task <id>:`), the task was finished earlier but never landed, typically
-   stopped at an unanswered merge prompt: do not redo it, go straight to
-   "Integrate into `main`". Any other commit → stop and name it; starting
-   this task here would land that work inside it.
+1. `git log --no-merges --format='%h %s' refs/heads/main..HEAD` lists this
+   branch's own commits that are not on `main`. `--no-merges` leaves out the
+   lane's own merges of `main` into the branch (step 3 below), which bring in
+   only commits already on `main`.
+   - **None:** if the current branch is not this task's
+     (`<branch-prefix><id>-…`), switch to one: an existing branch for this
+     task (see above) or `git switch -c <branch-prefix><id>-<slug> refs/heads/main`.
+     A session doing a second task in the same worktree lands here. Go to 2.
+   - **Every one is this task's own** (its subject starts with this task's
+     commit prefix, e.g. `task <id>:`): the task was finished but never
+     landed, for example stopped at an unanswered merge or `update-ref`
+     prompt, a failed swap, or a failed merged-tree acceptance. Do not redo
+     it, even though its box already shows `[x]` here, which overrides
+     `/do`'s "already done, stop" rule for this case: go straight to
+     "Integrate into `main`".
+   - **Any other commit:** stop and name it; starting this task here would
+     land that work inside it.
 2. `git merge-base --is-ancestor refs/heads/main HEAD` — exit 0: the branch
    already has everything merged so far. Exit 1: run
    `git merge --ff-only refs/heads/main`. If it fails (for example
@@ -154,7 +178,12 @@ stop and report it.
 checkout, and Node looks for `node_modules` in parent folders, so an
 acceptance in a worktree can pass using packages installed only in the main
 checkout. Install dependencies in each worktree (`npm install` there)
-before relying on a Node acceptance.
+before relying on a Node acceptance. **pytest does the same with
+`conftest.py`:** with no pytest configuration file in the project, pytest in
+a worktree can pick up the main checkout's `conftest.py`, so a test passes in
+the worktree and fails elsewhere. Commit a `pytest.ini` (or
+`[tool.pytest.ini_options]` in `pyproject.toml`) so each worktree is its own
+root.
 
 ## Integrate into `main`
 
@@ -193,7 +222,10 @@ went through.
    written as `git merge *` does not match the `-C` form, and a session
    must not route around the user's own gate. If the merge asks for
    permission and nobody can answer, stop at the commit and say so.
-4. **Re-run the task's `**Acceptance:**` command on the merged tree,** then
+4. **If step 3's merge changed a dependency file** (`package.json`, a
+   lockfile, `requirements.txt`, `pyproject.toml`), install dependencies
+   again in this worktree first. Then **re-run the task's
+   `**Acceptance:**` command on the merged tree,** then
    `git status --porcelain` again, which must still print nothing. A check
    that passed without the other tracks' work proves nothing about this
    tree, and a check that wrote tracked or untracked files has tested

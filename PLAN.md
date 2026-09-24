@@ -5956,7 +5956,21 @@ multi-PR build that would otherwise pay full price for every push.
   commits now resume at the landing, and an existing branch is reused);
   "a count conflict stops the landing" was false (reworded); and nested
   worktrees can resolve the main checkout's `node_modules` (stated as a
-  limit).
+  limit). **Then Codex and a sixth agent, aimed at realistic event flows,
+  independently found the same P1:** the resume check counted the lane's own
+  merge of `main` as foreign work, so every interrupted landing (and with
+  3-4 sessions `main` has nearly always moved) could never be resumed. Now
+  `git log --no-merges`. Also fixed: a task's branch is found by task ID
+  (`<prefix><id>-*`), not an exact slug; a second task in the same worktree
+  switches to a correctly named branch; the lane runs before `/do` reads
+  PLAN.md, which in hackathon mode is read from the worktree, not the stale
+  main checkout; a resume overrides the "box already ticked" stop; a retry's
+  own uncommitted work is allowed; a merge that changes a dependency file
+  reinstalls first; web acceptances must not hit a fixed port the demo may
+  hold; pytest's parent `conftest.py` pickup is stated with its fix; and a
+  failing demo refresh gets a next step. The resume, ID lookup and
+  second-task branch were each shown both ways in a scratch repo. **Not
+  independently reviewed yet:** this last round.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

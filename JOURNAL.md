@@ -534,7 +534,13 @@ nothing in them. Each check was tested both ways, which caught one more gap
 fifth agent demonstrated seven more, the worst being that **every session
 started after the first landing stopped**, since the main checkout sits on
 the old commit; all seven are fixed and re-tested both ways in a scratch
-repo.
+repo. Codex and a sixth agent, aimed at realistic event flows, then
+independently found the same P1: the resume check treated the lane's own
+merge of `main` as foreign work, so every interrupted landing was stranded.
+Fixed with `git log --no-merges`, alongside eight smaller event-flow gaps
+(branch lookup by task ID, reading PLAN.md from the worktree, a second task's
+branch name, retries, dependency reinstall, ports, pytest `conftest.py`, the
+demo refresh). That last round has not had its own independent review.
 
 **Self-indicting, five.** (1) The lane's first design used `git rebase`
 without reading the operator's `ask` rules. (2) PLAN's first account of

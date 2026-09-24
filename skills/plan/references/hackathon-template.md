@@ -13,7 +13,11 @@ wait for the user to approve a check. Measured 2026-09-23: four sessions ran
 **0 of 4** tasks were ticked. Write each acceptance so it uses only files
 that are committed: a `.gitignore`d file (a local `.env`, a data file) is
 never on `main`, so an acceptance that reads one can pass for its author and
-fail for everyone else.
+fail for everyone else. **For a web app, never check a fixed port** the demo
+might be using: the check then talks to the demo's server, which runs older
+code, and dev servers such as Vite and Next quietly move to the next free
+port instead of failing. Use the framework's test client, or start the app
+inside the command on a port the command picks itself.
 
 ```markdown
 # <Project name>
