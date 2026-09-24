@@ -6121,7 +6121,21 @@ multi-PR build that would otherwise pay full price for every push.
   `/verify` checking out `main` by name is caught by step 2, which names the
   worktree; whether a skill in the main checkout sees `.claude/worktrees/`
   doc sets was argued, not measured, and ignored folders are normally
-  skipped by file search. **None of this round is re-tested live.**
+  skipped by file search. ~~**None of this round is re-tested live.**~~ **Re-tested the
+  same day, headless, in the live-run venue** brought up to this round's
+  setup (the template's current lane block on `main`, its hook installed):
+  a plain request typed in the main checkout, "add a new task 2.2 to the
+  plan", took the operator route unprompted (`ops-1` worktree from
+  `refs/heads/main`, `EnterWorktree`, PLAN.md edited, committed as
+  `ops: add phase 2 task 2.2`, the landing checks, then `update-ref`,
+  refused by the operator's ask rule in headless mode), and the only ref
+  that changed was the new `ops-1`; `/journal` run inside a task worktree
+  wrote nothing tracked, committed nothing, moved no ref, and said the lane
+  holds it until after submission. Not isolated: `/journal` cited `main`'s
+  AGENTS.md, so this run cannot say whether the new principles line alone
+  would have stopped it. Seen in passing: the operator-route commit carried
+  a `Co-Authored-By` trailer, because the venue's AGENTS.md held only the
+  lane block and no conduct block, and no acstack skill was running.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the
@@ -6814,6 +6828,53 @@ multi-PR build that would otherwise pay full price for every push.
   **Acceptance:** each planted change above fails check.sh (or is recorded
   as a stated limit with a reason), each §46 branch has a matrix case shown
   failing with that branch disabled, and the two correct-text forms pass.
+
+- [ ] **5.42** The secret scans miss secrets in Markdown. Found by a Codex
+  review on 2026-09-24 and confirmed at the lines: both key greps in
+  `skills/secure/references/security-surfaces.md` §2 end `':!*.md'`, and the
+  separate Markdown sweep there covers only `sk[-_]…` and `AKIA…`, so a
+  `ghp_` token, a private-key block or a `password = "…"` assignment in a
+  `.md` file is found by neither; `/health` §5 runs the same commands.
+  **Acceptance:** a planted placeholder `ghp_` token, a private-key header
+  and an assignment in a `.md` file are each reported by the prescribed
+  commands, shown failing on the current form, with the positive-control
+  fixtures updated so check.sh §11 still passes.
+
+- [ ] **5.43** The eval regression gate can pass a coverage loss. Found by a
+  Codex review on 2026-09-24 and confirmed at the lines: `ids()`
+  (`skills/eval-run/references/regression-gate.py:88`) collects every id
+  whatever its status, so case A going scored → skipped while case B goes
+  skipped → scored keeps the ids, the scored total and the rate, and the
+  gate exits 0, although its own docstring says a scored-to-skipped case is
+  exactly what it surfaces; and a mistyped baseline path takes the
+  "no baseline" exit 0 at line 130. **Acceptance:** the swap fixture exits
+  1 naming case A, shown passing on the current code first; a baseline path
+  that does not exist exits non-zero unless the caller says there is no
+  baseline.
+
+- [ ] **5.44** The update check can give wrong or unusable advice. Found by
+  a Codex review on 2026-09-24 and confirmed at the lines: with no
+  upstream, `rev-list HEAD..@{u}` fails and `|| echo 0` prints
+  "acstack: up to date" (`bin/acstack-update-check:30`); the printed
+  `git -C %s pull && %s/setup` leaves the pack path unquoted, so it cannot
+  run as printed from a path with spaces. **Acceptance:** a checkout with no
+  upstream says the update state is unknown, and a pack under a path with a
+  space prints a command that runs as printed, both shown in temporary
+  copies.
+
+- [ ] **5.45** Recall truncation can break its own output. Found by a Codex
+  review on 2026-09-24 and confirmed at the line: `bin/acstack-recall:43`
+  cuts the output at 3 KB with `dd`, which can land inside the
+  `<<<acstack-recall-data` fence (no closing `>>>`) or inside a multibyte
+  character. **Acceptance:** a long LEARNINGS.md produces output whose fence
+  is closed and which is valid UTF-8, shown failing on the current form.
+
+- [ ] **5.46** Two descriptions are stale. Found by a Codex review on
+  2026-09-24: `docs/ARCHITECTURE.md` says an offline update check "exits 0
+  silently", while `bin/acstack-update-check:29` prints "remote
+  unreachable"; `docs/guard-matrix.sh`'s header states "150 cases" as if
+  current, while the matrix declares 211. **Acceptance:** both say what the
+  code does, and the case count is a derived marker or is dated as history.
 
 ## [ ] Wave 6 — The review board
 
