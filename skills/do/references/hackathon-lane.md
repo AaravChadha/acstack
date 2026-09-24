@@ -30,10 +30,15 @@ under a second with no conflicts. The missing piece was the step, not git.
   `acstack:hackathon-lane` block from AGENTS.md.
 - **Permission rules.** Step 3's `git merge` goes through the user's rules
   as written. Step 6's `git update-ref` is what actually moves `main`, and a
-  rule on `git merge *` does not cover it: when step 3 has nothing to merge,
-  `main` moves with no prompt. A user who wants every landing gated adds
-  `Bash(git update-ref *)` to their `ask` rules. Say this in the report the
-  first time a task lands, once per session.
+  rule on `git merge *` does not cover it, so a user who wants every landing
+  gated adds `Bash(git update-ref *)` to their `ask` rules. This paragraph
+  describes the possibilities; it is not something to repeat as a fact. A
+  session usually cannot see whether its own command was approved at a
+  prompt or allowed with none, so the report states only what the session
+  observed, and never "no prompt fired". Measured 2026-09-23: in a live
+  rehearsal all four landing sessions reported "no permission prompt" while
+  the operator had approved prompts in every terminal, because an earlier
+  version of this paragraph told them to say so.
 
 ## When the lane applies
 
@@ -154,7 +159,9 @@ Replace step 5's `committed locally — not pushed` with:
 `merged into main at <short sha> (local, not pushed)`
 
 plus the number of attempts if the compare-and-swap had to retry, and step
-7's result. Pushing `main` to the remote stays the user's call
+7's result. Say nothing about whether a permission prompt appeared unless
+the session actually saw one; see "Permission rules" above. Pushing `main`
+to the remote stays the user's call
 (`git push origin main`); the lane never pushes. To start the next task in
 the same worktree, branch from the new `main`:
 `git switch -c <branch-prefix><id>-<slug> refs/heads/main`.

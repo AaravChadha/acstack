@@ -5803,7 +5803,25 @@ multi-PR build that would otherwise pay full price for every push.
     the caveat into 5.16 so the two cannot be closed inconsistently.
     **Acceptance:** 5.16's trigger carries the mode caveat, and the hackathon
     protection posture is stated together with what it gives up.
-  - [ ] **5.21.2** *(Status 2026-09-23: the template has a `## File
+  - [x] **5.21.2** *(Done 2026-09-24, by a live rehearsal the operator ran
+    in three interactive sessions on main at c544238, approving every
+    `git merge` and `git update-ref` prompt as at the event. All four tasks
+    landed on `main`: storage 23:52:27, README 23:54:13 (branched 19 s after
+    storage landed, so nothing to merge), recipes 23:56:27, CLI 23:59:32,
+    about **7 minutes** from first landing to last. Every one of `main`'s
+    five positions is contained in the final `20ec54c`, checked from the
+    reflog. The tracks that owned separate files produced **no conflict**.
+    The one file the plan shared on purpose (`pantry/__init__.py`, both
+    storage and recipes adding an import under `# Public API`) conflicted
+    for the second lander, which ran `git merge --abort`, named the file and
+    stopped without landing; told "keep both imports", it merged again with
+    both lines kept, ran the 1.1 and 1.2 checks on the combined tree and
+    landed. A fresh clone of `main` ran the README's demo correctly. **One
+    defect found:** all four sessions reported "no permission prompt" while
+    the operator had approved prompts in every terminal, because the lane
+    told them to say so; a headless probe confirmed the `update-ref` ask
+    rule is live (refused, ref not created). The lane's wording is fixed in
+    the same PR.)* *(Status 2026-09-23: the template has a `## File
     ownership` table, one track per file, with PLAN.md shared and edited only
     by `/do`. **Not yet closed:** the acceptance's run is owed. Rehearsal 3
     used the table and produced no conflict, but only **two** tasks reached
@@ -5868,10 +5886,13 @@ multi-PR build that would otherwise pay full price for every push.
   **Operator ruled (A): keep the merge gate and approve each merge prompt at
   the event.** One rehearsal session got past that gate by writing
   `git -C <path> merge`, which the pattern `git merge *` does not match; the
-  lane now forbids the `-C` form (5.39). **Owed before 5.21 closes:** a live
+  lane now forbids the `-C` form (5.39). ~~**Owed before 5.21 closes:** a live
   re-run of the full loop after this change, answering the merge prompts as
   the operator will, timed; and 5.20.2's fast tier, which this task still
-  depends on.
+  depends on.~~ **Verdict (2026-09-24):** the live re-run is done and
+  passed (5.21.2, about 7 minutes for four tasks, one deliberate conflict
+  stopped and resolved). What still stands between 5.21 and closing is
+  5.20.2's fast tier.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

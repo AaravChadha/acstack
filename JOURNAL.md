@@ -3,7 +3,20 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-23. **The README is rewritten in plain words, and
+> **Last update**: 2026-09-23 (2nd), run past midnight. **A hackathon fast
+> lane ships and passes a live rehearsal** (PRs #35–#37, and this one). In
+> `mode: hackathon`, `/do` now merges its own finished task into `main` with
+> a compare-and-swap. Four parallel sessions on the old template ticked **0 of
+> 4** tasks and landed **0 of 4**; in the operator's live rehearsal on the
+> new lane all **4 of 4** landed in about 7 minutes, one deliberately shared
+> file conflicted and was stopped and resolved, and nothing was lost. Two
+> disprove-agents and Codex found two demonstrated defects and a dozen gaps
+> first. Also closed: **5.32** (private vulnerability reporting), **5.22**
+> (a symlink install has one skill registration on 2.1.280, 24 of 24
+> served bodies), **5.33** (a captured `/do` run in the README). `checks`
+> **47 → 48**; matrix **196 → 203**; scheduled open **33 → 31**; wave 5
+> **18 of 38 → 21 of 39**.
+> Earlier (2026-09-23). **The README is rewritten in plain words, and
 > a worktree turns out to break the integrator's own check** (PRs #32, #33).
 > The prose pass took README's em-dash rate **1.80 → 0.20** per 100 words,
 > re-derived live rather than trusted, after the operator rejected the first
@@ -420,6 +433,94 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### A hackathon fast lane ships and passes a live rehearsal (2026-09-23, 2nd)
+
+*(Four PRs: **#35** 5.32, **#36** 5.22 + 5.33, **#37** 5.21.1/.3/.4, and this
+one, which closes 5.21.2 and fixes the one defect the live rehearsal found.
+Run from late 09-23 past midnight; the operator has a hackathon in two days,
+which set the order.)*
+
+**5.32: a private route to report a vulnerability, with no SECURITY.md.**
+The operator enabled GitHub's private vulnerability reporting (API:
+`{"enabled":true}`) and README's `## More` points at the form. Reachability
+was checked from a stranger's side: an unauthenticated fetch of `/security`
+returned 200 with the "Report a vulnerability" link, and its URL answered 302
+to sign-in with a `return_to` of the form. The acceptance asks the operator to
+confirm; what happened is a session's logged-out fetch the operator ruled
+sufficient, and PLAN says so in those words.
+
+**5.22: one skill registration on 2.1.280, not two.** 24 of 24 served skill
+bodies came from `~/.claude/skills`, from a scratch clone and a worktree each
+carrying its own tagged `/why`, headless and one interactive run, with
+`.claude-plugin` moved aside as control; the repo's plugin never appeared in
+the session's plugin list, even in the main checkout. 5.15's single-run
+finding does not reproduce, so **a skill edited in a worktree is not what that
+worktree's session runs.** Method found on the way: headless `claude -p` no
+longer puts the served body in stream-json and the headless Skill tool
+returns only `Execute skill: why`, so a first batch of ten measured nothing;
+the body is in the on-disk transcript. AGENTS.md gained a dated verdict in
+approved wording.
+
+**5.33: the README shows a real `/do` run.** A headless `/do 1.1.1` in a
+scratch `textstats` project: acceptance failing with its full traceback, the
+diff as `git show` prints it, both checks passing, the local commit, and the
+report's first sentence, all copied from the run.
+
+**5.21: the fast lane, built after a rehearsal showed why.** Four headless
+sessions on the hackathon template ticked **0 of 4** (the template gave tasks
+no acceptance line) and landed **0 of 4** (each committed on its own branch
+and stopped); merging their branches by hand took under a second. The
+template now carries an acceptance line per task, a File ownership table, and
+an `acstack:hackathon-lane` block for AGENTS.md; `/do`'s
+`references/hackathon-lane.md` merges the pinned `main` into the task branch,
+re-runs the acceptance, and moves `main` with
+`git update-ref refs/heads/main HEAD <base>`, a compare-and-swap, then checks
+the reflog and restores `main` if anything was dropped. **Rehearsal 2** used
+`git rebase` and stopped at the operator's `ask` rule on it; **rehearsal 3**
+used `git merge` and two tasks landed, one of them on top of the other only
+because the session wrote `git -C <path> merge`, which a `git merge *` rule
+does not match (filed 5.39). **Operator ruling (A):** keep the merge gate and
+approve each merge at the event; `Bash(git update-ref *)` was then added to
+the `ask` rules so every landing prompts.
+
+**Review, three factors.** Two disprove-agents found two **demonstrated**
+lane defects (an untracked file let the acceptance pass while the published
+`main` failed with `ModuleNotFoundError`; a commit in a checkout moved onto
+`main` reverted another session's landing), `/ship`'s hackathon section
+unable to run at all (gate 1 refuses the default branch), rehearsal 3
+overstated in PLAN, and nine ways past the first §46. Codex raised four; three
+held (re-derive counts after every merge, run the phase's exit criterion,
+ignored files are invisible to `git status`) and one did not (a leaf task
+*can* be ticked: `/do` reads the parent's acceptance, and rehearsal 3 did).
+
+**The live rehearsal passed.** Three interactive sessions, the operator
+approving prompts in every one: storage 23:52:27, README 23:54:13, recipes
+23:56:27 after a deliberate conflict on the shared `pantry/__init__.py` was
+stopped with `git merge --abort` and then resolved keeping both lines, CLI
+23:59:32. Every earlier `main` is inside the final `20ec54c`, and a fresh
+clone ran the README's demo. **One defect:** every session reported "no
+permission prompt" while the operator had approved one in each terminal,
+because the lane told them to say so; a headless probe confirmed the
+`update-ref` rule is live. Fixed here. An outside README comment also caught
+line 162 saying "There is no runtime" beside the runtime preamble; reworded.
+
+**Self-indicting, five.** (1) The lane's first design used `git rebase`
+without reading the operator's `ask` rules. (2) PLAN's first account of
+rehearsal 3 said three tasks landed; two did, one by a gate slip. (3) `/ship`'s
+hackathon section was written without reading its own gate 1. (4) The lane
+told sessions to claim "no prompt", and four did. (5) Ten 5.22 runs measured
+nothing because the method was assumed, not probed first.
+
+**What did NOT change:** CONDUCT · VERSION 0.4.0 · `setup` · branch
+protection · the principles block · 5.34/5.35 still not due · 5.38 filed,
+not fixed.
+
+**Validation close.** check.sh **47 → 48** sections; matrix **196 → 203**,
+each PR's final commit 203/203 or 196/196 with the tree hash unmoved; CI
+green on #35, #36, #37. Markers: `open-scheduled` **33 → 31** (5.32, 5.22,
+5.33 closed; 5.39 filed), `readme-lines` **461 → 508**. Wave 5 **18 of 38 →
+21 of 39**; 5.21 stays open on 5.20.2 alone.
 
 ### The README is rewritten in plain words, and a worktree breaks the integrator's check (2026-09-23)
 
@@ -1053,7 +1154,7 @@ of the thing that section exists to prove is the defect the pack forbids, and
 no guard would have seen it.**
 
 **Operator ruling (density): declare, do not cut** — "we can always change
-later". README is <!-- count:readme-lines -->507<!-- /count --> lines,
+later". README is <!-- count:readme-lines -->508<!-- /count --> lines,
 <!-- count:readme-h2 -->16<!-- /count --> sections and
 <!-- count:readme-rows -->62<!-- /count --> table rows against the field's
 96–346 / 4–12 / 0–19, and now says so in an `## About this document` section
