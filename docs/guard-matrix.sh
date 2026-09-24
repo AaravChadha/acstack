@@ -21,6 +21,9 @@
 # the case count derived from this file — the equality count-check.sh has
 # assumed since 2026-08-06 on the strength of one hand-check.
 set -uo pipefail
+# 5.20.2: a value inherited from the shell would skip sections in case types
+# that never ask for it; fullcase sets its own per case.
+unset ACSTACK_SKIP_SECTIONS
 # ABSOLUTE, resolved before anything cds (2026-09-10). This was
 # `${BASH_SOURCE[0]}` for four minutes and that is a defect: the run cds
 # into the copied tree at line 67, so the unfiltered RAN assertion below
@@ -213,11 +216,132 @@ check "unknown frontmatter key" FAIL $'---\nname: tc\ndescription: Does a thing.
 
 echo
 [ "$LIST" -eq 1 ] || echo "=== full-tree seeded-defect matrix ==="
+# 5.20.2: ACSTACK_MATRIX_NO_SKIP=1 turns per-case section skipping off, so
+# every case runs the whole of check.sh. CI sets it on pushes to main,
+# where nobody waits: a skip that hid a failure through a construct no
+# rule in _skip_set foresaw turns main red right after that merge.
+[ "$LIST" -eq 1 ] || echo "per-case section skipping: $([ "${ACSTACK_MATRIX_NO_SKIP:-}" = 1 ] && echo OFF || echo ON)"
 # Cases here copy the REAL tree (minus .git), seed exactly one defect via a
 # mutation command, and expect check.sh to emit "FAIL <class>". This tests
 # each guard against the tree shape it actually polices; the section above
 # tests frontmatter parsing in isolation.
 FULL="$WORK/full"
+
+# 5.20.2: which of check.sh's slow sections this case may skip. Derived per
+# case from the case's OWN copy of check.sh (some cases mutate check.sh).
+# Each rule fails safe; the second version, after a disprove-agent broke
+# the first (2026-09-24):
+#   1. a skippable block is exactly the lines between `if ! _skip N; then
+#      # >>> skip N` and `fi # <<< skip N`; the open line must sit in section
+#      N, and a mismatched, nested, unclosed or non-standard `_skip` line
+#      stops the whole run. Labels are attributed by that extent, not by
+#      section headings, so a moved `fi` or a sub-heading cannot misfile one.
+#   2. a block's labels are the literal words after `FAIL ` in it, trusted
+#      only when a `:`, space, quote or line end follows; anything else
+#      (`FAIL $x`, `FAIL crossref$y`) makes the block never skipped.
+#   3. the case's class is read as top-level alternatives, each by its
+#      leading literal run of [a-z-] (minus a last letter a quantifier
+#      makes optional). The block is kept if any label starts with any such
+#      prefix, since `grep "FAIL (<class>)"` must match from the label's
+#      first letter; an alternative with no readable prefix (`.*`, `(`,
+#      `[`, `\`) means nothing is skipped. The first version tested the
+#      class against the bare `FAIL <label>`, which missed a class such as
+#      `control: ` that needs the text after the label.
+# A skip cannot hide a real failure of the guard under test: that guard's
+# own block prints its class, so it is never skipped, and no later section
+# reads a skipped block's variables (checked 2026-09-24: shell_sources and
+# XREF_EXCEPTIONS are read nowhere else; its loop variables are set again
+# before use). What a skip CAN remove is text a skipped block echoes from
+# elsewhere (shellcheck quoting a source line, §8 quoting an offending
+# line): if that text happened to contain "FAIL <class>", a full run would
+# count it, as a false alarm.
+_skip_set() { # check.sh-path class-regex -> space-separated sections to skip
+  local f="$1" rows out
+  [ -f "$f" ] || return 0
+  [ "${ACSTACK_MATRIX_NO_SKIP:-}" = 1 ] && return 0
+  rows="$(CLS="$2" awk '
+    BEGIN {
+      q = sprintf("%c", 39); dq = "\""; cls = ENVIRON["CLS"]; readable = 1
+      # 3. The class: brackets, groups and an escaped bar can hide a
+      #    top-level alternative from a simple splitter, so any of them
+      #    means nothing is skipped.
+      if (cls ~ /[][()]/ || index(cls, "\\|")) readable = 0
+      np = split(cls, alt, "|")
+      for (k = 1; k <= np && readable; k++) {
+        if (match(alt[k], /^[a-z][a-z-]*/)) {
+          t = substr(alt[k], 1, RLENGTH); nx = substr(alt[k], RLENGTH + 1, 1)
+          if (nx == "?" || nx == "*" || nx == "+" || nx == "{") t = substr(t, 1, length(t) - 1)
+          if (t == "") readable = 0
+          pre[k] = t
+        } else readable = 0
+      }
+    }
+    # Pass 1: functions whose bodies print FAIL. A block that calls one is
+    # never skipped, since its FAIL text lives outside the block.
+    NR == FNR {
+      if (match($0, /^[A-Za-z_][A-Za-z0-9_]*\(\) *\{/)) { fn = substr($0, 1, index($0, "(") - 1); infn = 1 }
+      if (infn && index($0, "FAIL")) failfn[fn] = 1
+      if (infn && $0 ~ /^\}/) infn = 0
+      next
+    }
+    /^# [0-9]+[a-z]?\. / { sec = $2; sub(/\.$/, "", sec) }
+    $0 ~ /^[[:space:]]*#/ { next }
+    {
+      # 1. Wrapper lines. Any other use of _skip, or a stray marker,
+      #    stops the run: bash would still act on it.
+      std_open = ($0 ~ /^if ! _skip [0-9]+[a-z]?; then # >>> skip [0-9]+[a-z]?$/)
+      std_close = ($0 ~ /^fi # <<< skip [0-9]+[a-z]?$/)
+      if (!std_open && !std_close && ($0 ~ /(^|[^A-Za-z0-9_])_skip([^A-Za-z0-9_]|$)/ || $0 ~ /(>>>|<<<) skip/) && $0 != "_skip() {") {
+        bad = bad "\n  non-standard skip line: " $0; next
+      }
+      if (std_open) {
+        w = $4; sub(/;$/, "", w)
+        if (w != $NF) bad = bad "\n  open line names two numbers: " $0
+        else if (open != "") bad = bad "\n  wrapper " w " opened inside wrapper " open
+        else if (w != sec) bad = bad "\n  wrapper " w " opens in section " sec
+        else { open = w; wrapped[w] = 1; depth = 0 }
+        next
+      }
+      if (std_close) {
+        if ($NF != open) bad = bad "\n  close " $NF " does not match the open wrapper (" open ")"
+        else if (depth != 0) bad = bad "\n  wrapper " open " holds unbalanced if/fi (" depth "): bash pairs its fi elsewhere"
+        open = ""; next
+      }
+      if (open == "") next
+      # Structure inside the block, as bash pairs it.
+      if ($0 ~ /^[[:space:]]*if[[:space:]].*(;|[[:space:]])then[[:space:]]*(#.*)?$/) depth++
+      if ($0 ~ /^[[:space:]]*fi([[:space:]]*(#.*)?|[[:space:]]*;.*)$/) depth--
+      # 2. FAIL text, allowlisted: "FAIL <label>: or '"'"'FAIL <label>'"'"'.
+      line = $0
+      while ((i = index(line, "FAIL")) > 0) {
+        before = (i > 1) ? substr(line, i - 1, 1) : ""
+        rest = substr(line, i + 4)
+        if (before == dq && match(rest, /^ [a-z][a-z-]*: /)) labels[open] = labels[open] " " substr(rest, 2, RLENGTH - 3)
+        else if (before == q && match(rest, /^ [a-z][a-z-]*/) && substr(rest, RLENGTH + 1, 1) == q) labels[open] = labels[open] " " substr(rest, 2, RLENGTH - 1)
+        else dynamic[open] = 1
+        line = rest
+      }
+      for (g in failfn) if ($0 ~ ("(^|[^A-Za-z0-9_])" g "([^A-Za-z0-9_]|$)")) dynamic[open] = 1
+    }
+    END {
+      if (open != "") bad = bad "\n  wrapper " open " is never closed"
+      if (bad != "") { print "BAD" bad; exit }
+      if (!readable) exit
+      out = ""
+      for (w in wrapped) {
+        if (dynamic[w]) continue
+        keep = 0; nl = split(labels[w], L, " ")
+        for (j = 1; j <= nl; j++) for (k = 1; k <= np; k++) if (index(L[j], pre[k]) == 1) keep = 1
+        if (!keep) out = out " " w
+      }
+      print "SKIP" out
+    }
+  ' "$f" "$f")"
+  case "$rows" in
+    BAD*) echo "MATRIX: check.sh's skip wrappers are malformed in $f:${rows#BAD}" >&2; exit 2 ;;
+    SKIP*) out="${rows#SKIP}"; printf '%s' "${out# }" ;;
+  esac
+}
 
 fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
   local n="$1" exp="$2" cls="$3"; shift 3
@@ -231,7 +355,8 @@ fullcase() { # name expected(PASS|FAIL) class-regex mutation-command...
     printf '  BAD  %-42s SEED NO-OP — tree unchanged, the case tested nothing\n' "$n"
     failed=$((failed+1)); return 0
   fi
-  out="$(cd "$FULL" && ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
+  local skip; skip="$(_skip_set "$FULL/scripts/check.sh" "$cls")" || exit 2
+  out="$(cd "$FULL" && ACSTACK_SKIP_SECTIONS="$skip" ACSTACK_BANNED_FILE=/dev/null bash scripts/check.sh 2>&1)"
   if printf '%s' "$out" | grep -qE "FAIL ($cls)"; then got=FAIL; else got=PASS; fi
   if [ "$got" = "$exp" ]; then printf '  ok   %-42s %s\n' "$n" "$got"; pass=$((pass+1))
   else printf '  BAD  %-42s got=%s want=%s\n' "$n" "$got" "$exp"; failed=$((failed+1)); fi

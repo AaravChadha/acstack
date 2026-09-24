@@ -10,7 +10,8 @@ guard blocks the commit. Fix the drift; do not skip the check.
 
 ```bash
 scripts/check.sh                    # the pack guard; its header lists every section, includes positive controls
-bash docs/guard-matrix.sh "$PWD"    # every guard shown firing on a seeded defect (16–29 min; keep the machine awake for all of it)
+bash docs/guard-matrix.sh "$PWD"    # every guard shown firing on a seeded defect (15+ min unsharded; keep the machine awake for all of it)
+bash scripts/matrix.sh             # the same as four parallel shards: about 5 min; fails if any shard fails
 bash docs/guard-matrix.sh "$PWD" 'count|reach'   # only cases whose name matches, while iterating
 # installer round-trip — NOT on a machine where you actually use acstack.
 # `--uninstall` removes the real links in ~/.claude/skills, so running this
