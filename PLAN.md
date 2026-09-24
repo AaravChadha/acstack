@@ -5921,6 +5921,28 @@ multi-PR build that would otherwise pay full price for every push.
   `claude --worktree` branches from `origin/main`, which the lane never
   updates (the lane now merges the local `main` before the task, and the
   AGENTS block says to start sessions with plain `claude`).
+  **Status (2026-09-24, later): five of those seven fixes were themselves
+  flawed**, demonstrated by a fourth disprove-agent in scratch repos and,
+  for the last, by Codex independently. The count exception let a line
+  holding a count *and* prose resolve to one side, dropping the prose; the
+  cache exception had every track append to `.gitignore`, so tracks
+  conflicted there, and "a build directory" could hide source; the
+  before-task merge let a task whose acceptance failed land inside the next
+  task; and "`/do` makes the worktree from the local `main`" was false, since
+  `/do` creates no worktree. The two fixes that held (step 7 checks the
+  session's own reflog entry; no automatic restore) were kept. The operator
+  chose automations *with checks* over removing them: **(1)** a session that
+  starts in the main checkout on a detached local `main` creates its own
+  worktree from `refs/heads/main` and moves into it; **(2)** before a task,
+  `git log refs/heads/main..HEAD` must be empty, so unlanded work stops the
+  next task; **(3)** a cache (`__pycache__`, `.pytest_cache`,
+  `node_modules` only) is excluded through the clone-local
+  `info/exclude`, never `.gitignore`, and only when git tracks nothing in it
+  and, for `__pycache__`, every file is `.pyc`. The count exception is
+  removed: stored counts are stated as unsupported. Each check was run both
+  ways in a scratch repo; one gap surfaced (plain `git status --porcelain`
+  shows `?? pkg/`, hiding `pkg/__pycache__/`) and the lane now lists every
+  untracked file with `--untracked-files=all`.
 > **Decision (2026-07-29):** /verify folded into this wave rather than
 > leaving /verify alone under a theme that had departed. Its two companions
 > (/audit tests, /why) moved out — first to wave 4, then to wave 4.5 in the

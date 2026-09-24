@@ -521,7 +521,16 @@ landing; `__pycache__/` from a Python acceptance failed the clean-tree check;
 entry; and, argued, `claude --worktree` sessions branch from `origin/main`,
 which the lane never pushes to, so tasks would be built on stale code. The
 lane now merges the local `main` before a task starts, and the AGENTS block
-says to start sessions with plain `claude`.
+says to start sessions with plain `claude`. **A fourth agent then showed
+five of those seven fixes were flawed** (a count exception that dropped
+prose, a cache exception that made tracks conflict on `.gitignore` and could
+hide source, a before-task merge that let a failed task land inside the
+next, and a false "`/do` makes the worktree", which Codex also found). The
+operator chose automations with checks: a session in the main checkout
+makes its own worktree from the local `main`; unlanded commits stop the
+next task; caches go to the clone-local `info/exclude` only when git tracks
+nothing in them. Each check was tested both ways, which caught one more gap
+(`git status` collapses an untracked folder, hiding the cache inside).
 
 **Self-indicting, five.** (1) The lane's first design used `git rebase`
 without reading the operator's `ask` rules. (2) PLAN's first account of

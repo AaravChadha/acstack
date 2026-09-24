@@ -11,8 +11,9 @@ box without one, so a plan that leaves them out makes every task stop and
 wait for the user to approve a check. Measured 2026-09-23: four sessions ran
 `/do` on this template's old shape, which had no acceptance lines, and
 **0 of 4** tasks were ticked. Write each acceptance so it uses only files
-that are committed: `/do`'s hackathon lane cannot see a `.gitignore`d file
-(a local `.env`, a data file) that the command depends on.
+that are committed: a `.gitignore`d file (a local `.env`, a data file) is
+never on `main`, so an acceptance that reads one can pass for its author and
+fail for everyone else.
 
 ```markdown
 # <Project name>
@@ -97,11 +98,12 @@ This project is a timed event. For this repo, these rules replace any
 personal instructions.
 
 - One session per track, each in its own git worktree and branch. Start
-  each session with plain `claude` in this folder, not `claude --worktree`:
-  `/do` makes the worktree from the local `main`, while `claude --worktree`
-  branches from `origin/main`, which this lane never updates. Nobody edits
-  in the main checkout; keep it on a detached `main`
-  (`git switch --detach main`) and use it only to run the demo.
+  each session with plain `claude` in this folder, with the folder on a
+  detached `main` (`git switch --detach main`): on its first `/do`, the
+  session creates its own worktree from the local `main` and moves into it.
+  Not `claude --worktree`, which branches from `origin/main`, and this lane
+  never pushes. Nobody edits files in the main checkout; it is where sessions
+  start and where the demo runs.
 - Edit only the files your track owns (PLAN.md, "File ownership"). For a
   change in another track's file, ask that track's session.
 - `/do` merges its own finished task into `main` as soon as the task's

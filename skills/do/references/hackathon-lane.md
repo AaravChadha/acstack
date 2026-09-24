@@ -1,10 +1,10 @@
 # /do — hackathon lane (`mode: hackathon`)
 
 Read this only when the resolved config sets `mode: hackathon`. It changes
-two things: before the task starts, the branch must contain the local
-`main`; and after step 4's commit, `/do` merges the task into `main` itself.
-Everything else is unchanged, including the rule that a task with no
-`**Acceptance:**` line is not ticked.
+two things: before the task starts, the session gets onto its own task
+branch built from the local `main`; and after step 4's commit, `/do` merges
+the task into `main` itself. Everything else is unchanged, including the
+rule that a task with no `**Acceptance:**` line is not ticked.
 
 ## Why the lane exists
 
@@ -41,6 +41,12 @@ under a second with no conflicts. The missing piece was the step, not git.
   rehearsal all three sessions reported "no permission prompt" while the
   operator reported approving prompts in every terminal, because an earlier
   version of this paragraph told them to say so.
+- **Stored counts are not supported.** A count that two tracks both change
+  conflicts at landing, and the landing stops. The hackathon template stores
+  none; a project that adds one resolves those conflicts by hand.
+- **Rolling `main` back during the event:** stop every session first. A
+  session already mid-landing can land again on top of the rolled-back
+  `main`, because nothing tells it the move was deliberate.
 - **"Nothing was dropped" is about history, not file contents.** Step 7
   checks that the commits on `main` before your landing are still in it. A
   commit made in a checkout that has `main` checked out can still delete
@@ -49,29 +55,80 @@ under a second with no conflicts. The missing piece was the step, not git.
 
 ## When the lane applies
 
-- **You are on a task branch in a worktree:** follow the two sections below.
-- **You are on `main`, or on a detached HEAD:** stop after the commit and
-  say so. The lane needs every session on its own branch; a commit made on
-  `main` in a checkout is exactly how another session's merged work gets
-  reverted (a checkout whose `main` was moved underneath it shows the other
-  session's files as deleted, and its next commit records that deletion).
 - **The project's AGENTS.md has no `acstack:hackathon-lane` block:** say so
-  and stop after the commit, as in standard mode. Personal instructions may
-  forbid merging without a pull request, and that block is the project's
-  written permission to do otherwise.
+  and follow standard mode. Personal instructions may forbid merging
+  without a pull request, and that block is the project's written
+  permission to do otherwise.
 - **The default branch is not called `main`:** read `main` below as that
   branch's name, and `refs/heads/main` as `refs/heads/<name>`.
+- Otherwise, **before writing anything**, get onto a task branch as below.
 
-## Before the task: start from the local `main`
+## Before the task: a task branch built from the local `main`
 
-`git merge-base --is-ancestor refs/heads/main HEAD` — exit 0 means your
-branch already contains everything merged so far. Exit 1 means it was made
-from something older, typically `origin/main`: a session started with
-`claude --worktree` branches from `origin/main` by default, and this lane
-never pushes, so that base lacks every task merged since. Run
-`git merge --no-edit refs/heads/main` before writing anything. Otherwise a
-task that builds on another track is written without that track's code, and
-shared scaffolding gets recreated and conflicts at landing.
+Work out where the session is, one command per call:
+`git rev-parse --path-format=absolute --git-dir`,
+`git rev-parse --path-format=absolute --git-common-dir`,
+`git branch --show-current` (prints nothing on a detached HEAD),
+`git rev-parse HEAD` and `git rev-parse refs/heads/main`. The session is in
+the **main checkout** when the first two print the same path, and in a
+**worktree** when they differ.
+
+**A. In the main checkout, detached at the local `main`** (git dir equals
+common dir, no current branch, and HEAD equals `refs/heads/main`): this is
+how the AGENTS block tells sessions to start. Create the task's worktree from the local `main`:
+
+`git worktree add -b <branch-prefix><id>-<slug> .claude/worktrees/<id>-<slug> refs/heads/main`
+
+then move the session into it with the EnterWorktree tool, passing that
+path. If that tool is not available, tell the user to open a new session
+inside the new folder and run the task there, and stop. **Why from the
+local `main`:** `claude --worktree` and EnterWorktree's own creation branch
+from `origin/main` by default, and this lane never pushes, so that base
+lacks every task merged so far.
+
+**B. In the main checkout on any other HEAD** — on the `main` branch, or
+detached somewhere that is not the local `main`: stop and say so. A commit
+made on `main` in a checkout is exactly how another session's merged work
+gets reverted (a checkout whose `main` was moved underneath it shows the
+other session's files as deleted, and its next commit records that
+deletion).
+
+**C. In a worktree on a task branch:** two checks, in this order.
+1. `git log --oneline refs/heads/main..HEAD` must print **nothing**. Any
+   commit listed is earlier work that never landed, typically a task whose
+   acceptance failed on the merged tree. Stop and name those commits:
+   starting the next task here would land that work inside it.
+2. `git merge-base --is-ancestor refs/heads/main HEAD` — exit 0 means the
+   branch already has everything merged so far. Exit 1 means it was made
+   from something older: run `git merge --ff-only refs/heads/main`, which
+   only moves the branch forward and cannot conflict, since check 1 showed
+   the branch holds nothing of its own. If that merge asks for permission
+   and nobody can answer, stop and say so.
+
+**D. In a worktree on a detached HEAD:** stop and say so.
+
+## Caches the stack writes
+
+Steps 1 and 4 below require `git status --porcelain` to print nothing, and
+running a Python or Node acceptance can leave an untracked cache. Plain
+`git status --porcelain` names only the highest untracked folder (`?? pkg/`
+for `pkg/__pycache__/m.pyc`), which hides what is inside, so list every
+untracked file with `git status --porcelain --untracked-files=all`. A file
+may be treated as cache **only if all of these hold**, checked one command
+at a time:
+- one of its path components is exactly `__pycache__`, `.pytest_cache` or
+  `node_modules` (never a general name such as `build` or `dist`, which can
+  hold source); call that folder the cache folder;
+- `git ls-files -- <cache folder>` prints nothing (git tracks nothing in it);
+- for `__pycache__`, every file in the cache folder ends in `.pyc`.
+
+Then append that exact folder name followed by `/` to
+`<common dir>/info/exclude`,
+where `<common dir>` is the output of
+`git rev-parse --path-format=absolute --git-common-dir`. That
+file is local to this clone, shared by every worktree, and never committed,
+so no track edits a shared file and nothing conflicts. If any condition
+fails, the entry is not a cache: stop and report it.
 
 ## Integrate into `main`
 
@@ -86,8 +143,10 @@ went through.
    commits and nothing else, so an uncommitted or untracked file your task
    needs would pass the check here and be missing on `main`. Measured: an
    untracked `helper.py` let the acceptance pass in the worktree, and the
-   published `main` failed with `ModuleNotFoundError`. Anything listed →
-   commit it (if it belongs to the task) or remove it, then start again.
+   published `main` failed with `ModuleNotFoundError`. A cache that passes
+   every check in "Caches the stack writes" is excluded as described there;
+   anything else listed → commit it (if it belongs to the task) or remove
+   it, then start again.
    `git status --porcelain --ignored` also lists ignored files (`!!`
    lines). Those never reach `main`. Name any that are present in the
    report, as a fact about the worktree; whether the acceptance reads them
@@ -112,16 +171,16 @@ went through.
    `git status --porcelain` again, which must still print nothing. A check
    that passed without the other tracks' work proves nothing about this
    tree, and a check that wrote tracked or untracked files has tested
-   something other than what will be published. **Exception:** if every new
-   entry is a cache the stack writes (`__pycache__/`, `.pytest_cache/`,
-   `node_modules/`, a build directory), add it to `.gitignore`, commit that,
-   and continue. Anything else → stop and report. Failing acceptance → stop
-   and report; do not merge.
+   something other than what will be published. A new entry that passes
+   every check in "Caches the stack writes" is excluded as described there;
+   anything else → stop and report. Failing acceptance → stop and report; do
+   not merge.
 5. **Re-derive, then close what the merge completed.** The merge may have
    brought in other tracks' ticks and their edits to anything stored.
-   (a) If the project stores counts, re-derive them with its own tool now,
-   **every time**, whether or not your task closes anything: two tracks'
-   identical count edits merge with no conflict and leave the number wrong.
+   (a) If the project stores counts anyway, re-derive them with its own
+   tool now, **every time**: two tracks' identical count edits merge with no
+   conflict and leave the number wrong (see Scope: a count conflict stops
+   the landing).
    (b) If every child of your task's parent is now `[x]`, run the parent's
    `**Acceptance:**` if it has one, and tick the parent only if it passes.
    (c) If every task in the phase is now `[x]`, run the phase's
@@ -175,16 +234,13 @@ conflicting files, and stop. A conflict here means two tracks edited the
 same file, which the plan's "File ownership" table exists to prevent. Say
 which track owns the file. Never resolve it by picking a side.
 
-**Two exceptions, both resolved without picking a side.** (a) **PLAN.md
-checkboxes.** Two tracks ticking boxes on neighbouring lines conflict in git
-even though neither is wrong. If, for every conflicting line, the two sides
-differ **only** by `[ ]` against `[x]`, keep the `[x]`, which takes both
-sides' ticks. (b) **Stored counts.** If every conflicting line holds a count
-the project re-derives with its own tool, take either side and re-run the
-tool on the merged tree; the result does not depend on which side you took.
-Then `git add` the files and `git commit --no-edit`. Any other difference,
-including a struck-out `~~[x]~~` on one side or a line present on only one
-side → abort and stop, as above.
+**The one exception is PLAN.md checkboxes.** Two tracks ticking boxes on
+neighbouring lines conflict in git even though neither is wrong. If, for
+every conflicting line, the two sides differ **only** by `[ ]` against
+`[x]`, keep the `[x]`, which takes both sides' ticks, then `git add PLAN.md`
+and `git commit --no-edit`. Any other difference, including a struck-out
+`~~[x]~~` on one side or a line present on only one side → abort and stop,
+as above.
 
 ## Report
 
