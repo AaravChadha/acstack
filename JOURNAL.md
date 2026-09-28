@@ -3,7 +3,18 @@
 > **What this file is.** A rolling snapshot of where the pack actually is,
 > so a fresh session (or future-you) can open the repo and resume in 5
 > minutes. Read this first, then `PLAN.md` for the wave roadmap.
-> **Last update**: 2026-09-23 (2nd), run past midnight. **A hackathon fast
+> **Last update**: 2026-09-24. **The hackathon lane survives two more review
+> rounds and a live re-test, and the matrix gets about 2.3x faster in CI**
+> (PRs #38–#41). Codex plus ten disprove-agents found, among much else,
+> that a session inside its worktree was not in hackathon mode at all and
+> that no other skill knew the lane existed; both are fixed, and three
+> interactive sessions then landed 5 of 5 tasks in about 12 minutes with no
+> conflict. 5.20.2 closed as written, not as titled: each matrix case now
+> skips check.sh sections it cannot need (CI shards **4m55s–7m24s →
+> 2m19s–3m14s**), while `main` still runs every case in full. Matrix **203 →
+> 211**; scheduled open **31 → 38** (5.40–5.46 filed); wave 5 **21 of 39 →
+> 21 of 46**.
+> Earlier (2026-09-23, 2nd), run past midnight. **A hackathon fast
 > lane ships and passes a live rehearsal** (PRs #35–#37, and this one). In
 > `mode: hackathon`, `/do` now merges its own finished task into `main` with
 > a compare-and-swap. Four parallel sessions on the old template ticked **0 of
@@ -360,7 +371,7 @@
   **<!-- count:wave45-open -->2<!-- /count -->**) → 5 (17) → 6
   (7) → 7 (4), plus 10 unscheduled deferred items (Wave B's 5 browser,
   Wave C's 5 retrieval). Full detail in PLAN.md.
-- Next: **wave 5** — ~~5.17.2 first~~ **Verdict (2026-09-14, 3rd):** 5.17.2 is closed (`scripts/recount.sh`, acceptance shown wrong first on a merge that lost a count silently). ~~The remaining multi-session critical path is 5.17.1, .3, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — eight items~~ **Verdict (2026-09-16):** 5.17.3 closed too, so the path is **5.17.1, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — seven items** *(2026-09-23: 5.22 closed — one registration on 2.1.280, so precedence is not a hazard there)*. All ten affected skills still stand, since multi-session is the default in *every* mode rather than tickets-mode-only. **5.23 `/skill` sits behind them as the leverage point**: patching shipped skills is finite work, a generator that does not know the four classes makes it infinite. ~~**5.4's ordering is OPEN for the operator**~~ **Verdict (2026-09-16):** ruled — /verify scheduled after 5.17.4/.5/.6 and 5.26, and **shipped 2026-09-17**.  **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 since shipped; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-23: 5.22 (one registration on 2.1.280, not two), 5.32 (private vulnerability reporting), 5.33 (a captured `/do` run in the README), 5.36, and 5.9's prose pass (5.9 stays open on its own acceptance); filed 5.37 and 5.38. Shipped 2026-09-17: 5.4, 5.28, 5.29, 5.30, 5.9 (partial). Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
+- Next: **wave 5** — ~~5.17.2 first~~ **Verdict (2026-09-14, 3rd):** 5.17.2 is closed (`scripts/recount.sh`, acceptance shown wrong first on a merge that lost a count silently). ~~The remaining multi-session critical path is 5.17.1, .3, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — eight items~~ **Verdict (2026-09-16):** 5.17.3 closed too, so the path is **5.17.1, .4, .5, .6 + 5.22 + 5.21.1 + 5.16 — seven items** *(2026-09-23: 5.22 closed — one registration on 2.1.280, so precedence is not a hazard there)*. All ten affected skills still stand, since multi-session is the default in *every* mode rather than tickets-mode-only. **5.23 `/skill` sits behind them as the leverage point**: patching shipped skills is finite work, a generator that does not know the four classes makes it infinite. ~~**5.4's ordering is OPEN for the operator**~~ **Verdict (2026-09-16):** ruled — /verify scheduled after 5.17.4/.5/.6 and 5.26, and **shipped 2026-09-17**.  **Verdict (2026-09-14):** 5.15 is closed and its premise was false — a worktree session *is* served its own skills, so skill edits from a worktree never needed gating; **5.22** now carries the residual (whether that precedence is deterministic). Then 5.14 (collision guard; the roster capture from the 2026-09-10 recheck is the input), 5.3 `/careful`, 5.9, 5.10, with 5.4 since shipped; 5.6 before any rename. **Note (2026-09-14):** three of 5.17's six subtasks are document-mode artifacts and vanish in tickets mode — 5.17.2, .1 and .5; .3/.4/.6 persist. Shipped 2026-09-24: 5.20.2 (check tiers written down; per-case section skipping, CI matrix shards about 2.3x faster, `main` still verified in full); 5.21 hardened through review rounds 7 and 8 and a live re-test, and stays open on its acceptance's "no gate" wording; filed 5.40–5.46. Shipped 2026-09-23: 5.22 (one registration on 2.1.280, not two), 5.32 (private vulnerability reporting), 5.33 (a captured `/do` run in the README), 5.36, and 5.9's prose pass (5.9 stays open on its own acceptance); filed 5.37 and 5.38. Shipped 2026-09-17: 5.4, 5.28, 5.29, 5.30, 5.9 (partial). Shipped 2026-09-13: 5.13. Shipped 2026-09-10: 5.5, 5.11, 5.12, 5.8. 4.3/4.4 stay adopter-gated. Previously next was **wave 4.5**, which reopened 2026-08-06 after being called done.
   4.45–4.47 carry three findings from a survey of two high-star
   single-idea skills: eval-runner isolation from the operator's own
   config, a per-dimension non-regression floor on the release gate, and a
@@ -413,8 +424,8 @@
 cd ~/Documents/acstack
 ./setup            # links skills into ~/.claude/skills (idempotent)
 scripts/check.sh   # pack guard; its header enumerates every section — clean before any commit
-bash docs/guard-matrix.sh "$PWD"   # every guard shown firing on a seeded defect (~17 min serial; a run the machine sleeps through is not a timing — awake-while holds off IDLE sleep only)
-for i in 1 2 3 4; do bash docs/guard-matrix.sh "$PWD" --shard $i/4 & done; wait   # 5.26: same coverage, ~6 min
+bash scripts/matrix.sh             # every guard shown firing on a seeded defect: four parallel shards, ~5 min on a cool machine; fails if any shard fails (5.20.2)
+bash docs/guard-matrix.sh "$PWD"   # the same, serial: 15+ min; a run the machine sleeps through is not a timing — awake-while holds off IDLE sleep only
 bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, for iterating
 # then start a new Claude Code session; the whole skill roster loads at start
 ```
@@ -433,6 +444,115 @@ bash docs/guard-matrix.sh "$PWD" 'count|reach'   # 5.11: only matching cases, fo
 | C — Retrieval | ⬜ | Unscheduled, trigger-gated (build when /resume or /why demonstrably fails to find something); graph over PLAN/JOURNAL with per-edge EXTRACTED/INFERRED provenance, and the verify-against-truth check none of the three surveyed implementations has |
 
 ## Key decisions and journey (so you don't relearn)
+
+### The hackathon lane survives two more review rounds and a live re-test, and the matrix gets 2.3x faster (2026-09-24, written 2026-09-28)
+
+*(Four PRs, all squash-merged with corrected bodies: **#38** review round 7
+and the rehearsal record, **#39** the live re-test, **#40** review round 8,
+**#41** 5.20.2. The operator had a hackathon the next day, which set the
+order.)*
+
+**Round 7 (Codex plus five disprove-agents, each on one angle), PR #38.**
+The worst finding: **a session inside its worktree was not in hackathon mode
+at all.** `.claude/acstack.md` is normally uncommitted and a worktree is built
+from `main`, so a headless `/do` there printed `mode=standard` and landed only
+because the model looked further. `/do` now enters the lane on the committed
+AGENTS.md block. Codex and four agents independently found that resume
+sorted commits by subject, so step 5's own closing commit stopped it; resume
+now goes by branch name. Also fixed and each shown both ways in a scratch
+repo: a half-done merge found on resume is aborted, never finished by
+removing files (an agent deleted another track's file from `main` that way);
+an unfinished task resumes building; step 5 commits only PLAN.md and
+re-checks the tree; the reinstall uses `npm ci`; a pre-swap
+`merge-base --is-ancestor <base> HEAD` stops a stale sha from dropping a
+commit; retries went to ten attempts after a simulation of 1,495 landings had
+one session with 1–3 minute tasks lose six times in a row (`main` never lost
+a commit in it); the template gained a `.gitignore` block (a Python 3.9
+`.venv` of 572 files, `.coverage`, `*.egg-info/`, `.next/` each stopped a
+landing), a no-server rule for acceptances (a leftover server answered a new
+tree's `curl`, reproduced) and a `'*.env*'` secrets check. §46(b) became an
+allowlist after seven planted bypasses passed its pattern. Matrix **203 → 211**.
+
+**The live re-test, PR #39.** Three interactive terminals on a scratch
+project built from the current template, `.claude/acstack.md` deliberately
+uncommitted, the operator refusing one `update-ref` prompt: **5 of 5 tasks
+landed** in about 12 minutes from the first `/do` to the phase tick, no merge
+conflicted, two swaps were refused live with `is at … but expected …` and
+retried, and a fresh session resumed the refused landing across its closing
+commit. A disprove-agent then found **six errors in my first record of it,
+five in my favour**: the interactive run isolated neither the mode switch
+(both `mode=standard` sessions had read the lane in their first task) nor
+the new resume rule (the closing commit used the task's own prefix, which the
+old rule also accepted). A headless `/do` started inside a worktree then
+isolated the switch: `mode=standard`, lane followed. 5.21.2 was re-opened
+(its first run conflicted on a file shared on purpose) and re-closed on this
+run by the operator's call; its acceptance names a "no gate" run, which
+conflicts with ruling (A), recorded as 5.21's to fix. 5.40 filed: Claude Code
+refuses the runtime preamble in `EnterWorktree` sessions (2 of 2).
+
+**Round 8 (Codex plus five agents, one aimed at code the change never
+touched), PR #40.** Codex found nothing, by inspection only. The agent aimed
+at the unchanged skills found the largest gap of the whole effort: **22
+skills knew nothing of the lane**, so `/journal`, `/learn` and `/ticket`
+mid-event made conflicting commits and `/ship` could push a task branch.
+Fixed once for all 26 with a principles-block line. The free agent found
+that nothing but `/do` had a route onto `main`, and reproduced a commit on
+`main`, made while a session waited at its swap, deleting that session's
+file with every history check passing; the lane gained an operator route and
+Phase 0 a pre-commit hook refusing commits on `main`. The operator ruled to
+drop an `update-ref` ask rule for the event (an agent calculated up to ten
+approvals to clear four queued swaps). Headless re-tests: a plain "add a
+task" request took the operator route unprompted; `/journal` in a worktree
+wrote nothing. The guard's gaps were filed as 5.41 rather than rushed, and a
+separate whole-pack Codex review's five findings (secret scans skip
+Markdown, the eval gate passes a coverage swap, the update check misreports,
+recall truncation, stale docs) as 5.42–5.46, each confirmed at file:line.
+
+**5.20.2, PR #41: closed as written, not as titled.** No CI event split was
+built; with a PR's whole matrix back in about 2.5 minutes there is little
+left to tier away, and that is declined in PLAN. What was built: check.sh's
+slowest sections (§5, §8, §11; 8.1 s → 2.9 s skipped) sit in paired
+`# >>> skip N` / `# <<< skip N` wrappers, and each matrix case skips the ones
+whose FAIL labels cannot match its class; every case still runs. **Two
+disprove rounds broke the first two versions of the skip rules, five ways
+each** (a `control: ` class skipped §11; labels filed by heading; a helper
+printing FAIL from outside the block; bracket classes; glued strings). Static
+rules about bash text are a denylist, so the third version made them an
+allowlist and added a backstop that needs no rules: CI sets
+`ACSTACK_MATRIX_NO_SKIP=1` on pushes to `main`, and the first such run
+printed `per-case section skipping: OFF` on all four shards, 211/211. Codex
+caught that the CONTRIBUTING one-liner's bare `wait` returns 0 when a shard
+fails; `scripts/matrix.sh` replaced it and was shown exiting 1 on a seeded
+failing case. CI shards **4m55s–7m24s → 2m19s–3m14s** on PRs; local timings
+on this fanless laptop ran 287 → 556 s back to back, so they are not used for
+the ratio.
+
+**Self-indicting, six.** (1) I wrote "about 5 minutes locally" for the matrix
+from four parallel shards; the documented serial command took 1,001 s. (2) I
+told the operator the mode switch and the new resume rule were "confirmed
+live" before an agent showed the run isolated neither. (3) My first comment
+on the skip logic said a skip "cannot change the outcome"; it can remove a
+false alarm echoed from files. (4) My fix for a worktree folder collision
+failed its own test: a `git worktree add -b` that fails on the folder has
+already made the branch. (5) A CI watcher I wrote used `set -- $run` under
+zsh, which does not word-split, and never saw the run finish; the rule is in
+my own notes. (6) The re-test venue carried no conduct block, so its operator-
+route commit got an attribution trailer.
+
+**What did NOT change:** CONDUCT · VERSION 0.4.0 · `setup` · branch
+protection · `check.sh`'s section count (48) · 5.34/5.35 still not due · 5.38
+filed, not fixed. **Pending from the operator:** delete the seven merged
+local branches (`feature/5.20.2-ci-tiering`, `5.21-hackathon-fast-lane`,
+`5.21-live-rerun`, `5.21-review-round-8`, `5.21.2-live-rehearsal`,
+`5.32-private-reporting`, `5.33-5.22-do-transcript`; each tip equals its
+merged PR's head).
+
+**Validation close.** check.sh **48** clean on every final commit; matrix
+**203 → 211**, 211/211 on each PR's final commit with the tree hash unmoved,
+the last one through `bash scripts/matrix.sh`; CI green on #38–#41; `main`'s
+first no-skip run 211/211. Markers: `open-scheduled` **31 → 38**,
+`readme-lines` **508 → 509** (the principles line). Wave 5 **21 of 39 → 21 of
+46**; 5.21 stays open on its "no gate" wording.
 
 ### A hackathon fast lane ships and passes a live rehearsal (2026-09-23, 2nd)
 
